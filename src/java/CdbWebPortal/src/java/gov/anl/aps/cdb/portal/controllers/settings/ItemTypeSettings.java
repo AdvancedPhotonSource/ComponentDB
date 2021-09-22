@@ -84,8 +84,8 @@ public class ItemTypeSettings extends CdbEntitySettingsBase<ItemTypeController> 
             return;
         }
 
-        Map<String, FilterMeta> filters = dataTable.getFilterBy();
-        filterByCategory = (String) filters.get("itemTypeCategory.name").getFilterField();
+        Map<String, FilterMeta> filters = dataTable.getFilterByAsMap();
+        filterByCategory = (String) filters.get("itemTypeCategory.name").getField();
     }
     
     public String getFilterByCategory() {

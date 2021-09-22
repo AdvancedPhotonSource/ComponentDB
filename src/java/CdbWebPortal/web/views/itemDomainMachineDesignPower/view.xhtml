@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../itemDomainMachineDesignBase/private/templates/itemDomainMachineListViewTemplate.xhtml">
+
+    <ui:param name="entityController" value="#{itemDomainMachineDesignPowerController}" />
+    <ui:param name="itemObject" value="#{entityController.current}" />    
+    <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}" />
+
+    <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
+        <f:viewAction action="#{itemDomainMachineDesignPowerController.processViewRequestParams}"/>
+        <f:viewAction action="#{propertyValueController.processPreRender()}"/>
+        <f:viewAction action="#{logController.processPreRender()}"/>
+        <f:viewAction action="#{itemElementController.processPreRender()}"/>
+        <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
+    </f:metadata>
+    
+    <ui:define name="pageTitle">
+        : View #{entityController.displayEntityTypeName} #{entityController.currentItemDisplayTitle}
+    </ui:define>
+    
+    <ui:define name="pageHeaderTitle">
+        #{entityController.detailsPageHeader}
+    </ui:define>
+
+    <ui:define name="additionalSupport" >
+        <ui:include src="../itemDomainMachineDesignBase/private/itemDomainMachineDesignViewSupport.xhtml"/> 
+    </ui:define>
+    
+    <ui:define name="machineDesignViewDetailsPanel" >
+        <ui:include src="../itemDomainMachineDesignRelationshipBase/private/itemDomainMachineDesignRelationshipBaseDetailsPanel.xhtml" > 
+            <ui:param name="relationshipName" value="Powered" /> 
+        </ui:include>
+    </ui:define>
+
+</ui:composition>
+
+

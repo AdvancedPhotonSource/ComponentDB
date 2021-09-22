@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                   nodeType="MachineDesignTemplate"
+                   id="machineDesignDualViewTemplateContextMenu"
+                   widgetVar="machineDesignDualViewTemplateContextMenuWidget"
+                   event="select contextmenu">
+        <ui:include src="../machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />
+        <ui:include src="../machineDesignContextMenu/assignCatalogItemContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/moveToTrashMachineDesignContextMenuItem.xhtml" /> 
+        <ui:include src="../machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
+    </p:contextMenu>
+
+    <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                   nodeType="MachineDesignTemplateCatalog"
+                   id="machineDesignDualViewTemplateCatalogContextMenu"
+                   widgetVar="machineDesignDualViewTemplateCatalogContextMenuWidget"
+                   event="select contextmenu">
+        <ui:include src="../machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />            
+        <ui:include src="../machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/moveToTrashMachineDesignContextMenuItem.xhtml" /> 
+        <ui:include src="../machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/unlinkContainedItem2ContextMenuItem.xhtml" />
+    </p:contextMenu>
+
+    <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                   nodeType="MachineDesignTemplateMember"
+                   id="machineDesignDualViewTemplateMemberContextMenu"
+                   widgetVar="machineDesignDualViewTemplateMemberContextMenuWidget"
+                   event="select contextmenu">
+        <ui:include src="../machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />
+        <ui:include src="../machineDesignContextMenu/assignCatalogItemContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />                        
+        <ui:include src="../machineDesignContextMenu/moveToTrashMachineDesignContextMenuItem.xhtml" /> 
+        <ui:include src="../machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" /> 
+        <ui:include src="../machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
+    </p:contextMenu>
+
+    <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                   nodeType="MachineDesignTemplateMemberCatalog"
+                   id="machineDesignDualViewTemplateMemberCatalogContextMenu"
+                   widgetVar="machineDesignDualViewTemplateMemberCatalogContextMenuWidget"
+                   event="select contextmenu">
+        <ui:include src="../machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />            
+        <ui:include src="../machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />                        
+        <ui:include src="../machineDesignContextMenu/moveToTrashMachineDesignContextMenuItem.xhtml" /> 
+        <ui:include src="../machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" /> 
+        <ui:include src="../machineDesignContextMenu/unlinkContainedItem2ContextMenuItem.xhtml" /> 
+    </p:contextMenu>
+
+    <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                   nodeType="MachineDesignTemplatePlaceholder"
+                   id="machineDesignDualViewMachineDesignPlaceholderContextMenu"
+                   widgetVar="machineDesignDualViewMachineDesignPlaceholderContextMenuWidget"
+                   event="select contextmenu">
+        <ui:include src="../machineDesignContextMenu/fullfilPlaceholderItemContextMenuItem.xhtml" /> 
+    </p:contextMenu>
+
+    <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                   nodeType="MachineDesignTemplatePlaceholderCatalog"
+                   id="machineDesignDualViewMachineDesignPlaceholderCatalogContextMenu"
+                   widgetVar="machineDesignDualViewMachineDesignPlaceholderCatalogContextMenuWidget"
+                   event="select contextmenu">
+        <ui:include src="../machineDesignContextMenu/fullfilPlaceholderItemContextMenuItem.xhtml" /> 
+    </p:contextMenu>
+
+    <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                   nodeType="MachineDesign"
+                   id="machineDesignDualViewMachineDesignContextMenu"
+                   widgetVar="machineDesignDualViewMachineDesignContextMenuWidget"
+                   event="select contextmenu">
+        <ui:include src="../machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />                 
+        <ui:include src="../machineDesignContextMenu/assignCatalogItemContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/moveToTrashMachineDesignContextMenuItem.xhtml" /> 
+        <ui:include src="../machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
+    </p:contextMenu>    
+
+    <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                   nodeType="MachineDesignCatalog"
+                   id="machineDesignCatalogDualViewMachineDesignContextMenu"
+                   widgetVar="machineDesignCatalogDualViewMachineDesignContextMenuWidget"
+                   event="select contextmenu">
+        <ui:include src="../machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />                 
+        <ui:include src="../machineDesignContextMenu/assignInventoryItemContextMenuItem.xhtml" />            
+        <ui:include src="../machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/moveToTrashMachineDesignContextMenuItem.xhtml" /> 
+        <ui:include src="../machineDesignContextMenu/unlinkContainedItem2ContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
+    </p:contextMenu>  
+
+    <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                   nodeType="MachineDesignInventory"
+                   id="machineDesignInventoryDualViewMachineDesignContextMenu"
+                   widgetVar="machineDesignInventoryDualViewMachineDesignContextMenuWidget"
+                   event="select contextmenu">
+        <ui:include src="../machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />                                         
+        <ui:include src="../machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/moveToTrashMachineDesignContextMenuItem.xhtml" /> 
+        <ui:include src="../machineDesignContextMenu/installedInventorySubMenu.xhtml" />
+        <ui:include src="../machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
+    </p:contextMenu>  
+
+    <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                   nodeType="MachineDesignMember"
+                   id="machineDesignDualViewMachineDesignMemberContextMenu"
+                   widgetVar="machineDesignDualViewMachineDesignMemberContextMenuWidget"
+                   event="select contextmenu">
+        <ui:include src="../machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />
+        <ui:include src="../machineDesignContextMenu/assignCatalogItemContextMenuItem.xhtml" />
+        <ui:insert name="additionalPromotedMenuOptionMachineDesignMember"/>        
+        <ui:include src="../machineDesignContextMenu/templateSubMenu.xhtml"/> 
+        <ui:include src="../machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/moveToTrashMachineDesignContextMenuItem.xhtml" /> 
+        <ui:include src="../machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
+    </p:contextMenu>
+
+    <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                   nodeType="MachineDesignMemberCatalog"
+                   id="machineDesignDualViewMachineDesignMemberCatalogContextMenu"
+                   widgetVar="machineDesignDualViewMachineDesignMemberCatalogContextMenuWidget"
+                   event="select contextmenu">
+        <ui:include src="../machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />
+        <ui:include src="../machineDesignContextMenu/assignInventoryItemContextMenuItem.xhtml" />
+        <ui:insert name="additionalPromotedMenuOptionMachineDesignCatalogMember"/>
+        <ui:include src="../machineDesignContextMenu/templateSubMenu.xhtml"/> 
+        <ui:include src="../machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />     
+        <ui:include src="../machineDesignContextMenu/moveToTrashMachineDesignContextMenuItem.xhtml" /> 
+        <ui:include src="../machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/unlinkContainedItem2ContextMenuItem.xhtml" />     
+        <ui:include src="../machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
+    </p:contextMenu>
+
+    <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                   nodeType="MachineDesignMemberInventory"
+                   id="machineDesignDualViewMachineDesignMemberInventoryContextMenu"
+                   widgetVar="machineDesignDualViewMachineDesignMemberInventoryContextMenuWidget">
+        <ui:include src="../machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />
+        <ui:insert name="additionalPromotedMenuOptionMachineDesignInventoryMember"/>        
+        <ui:include src="../machineDesignContextMenu/templateSubMenu.xhtml"/> 
+        <ui:include src="../machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />    
+        <ui:include src="../machineDesignContextMenu/moveToTrashMachineDesignContextMenuItem.xhtml" /> 
+        <ui:include src="../machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/installedInventorySubMenu.xhtml" />
+        <ui:include src="../machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
+    </p:contextMenu>
+    
+    <ui:insert name="additionalContextMenuTypes"/>
+
+</ui:composition>
+
+

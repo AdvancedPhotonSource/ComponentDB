@@ -166,7 +166,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      *
      * @return created entity instance
      */
-    protected EntityType createEntityInstance() {
+    public EntityType createEntityInstance() {
         UserInfo user = SessionUtility.getUser();
         return getControllerUtility().createEntityInstance(user); 
     }
@@ -548,7 +548,11 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      */
     public EntityType getSelected() {
         if (getCurrent() == null) {
-            setCurrent(createEntityInstance());
+            UserInfo user = SessionUtility.getUser();
+            // Only when logged in.. 
+            if (user != null) {                
+                setCurrent(createEntityInstance());
+            }
         }
         return getCurrent();
     }
@@ -1504,7 +1508,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
 
     public void clearSelectFiltersAndResetSelectDataModel() {
         if (selectDataTable != null) {
-            selectDataTable.getFilterBy().clear();
+            selectDataTable.getFilterByAsMap().clear();
         }
         settingObject.clearSelectFilters();
         resetSelectDataModel();

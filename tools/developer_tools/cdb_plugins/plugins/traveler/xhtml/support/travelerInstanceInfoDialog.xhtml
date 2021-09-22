@@ -142,17 +142,17 @@ See LICENSE file.
 
         <f:facet name="footer" class="dialog">
             <p:commandButton value="Configure Traveler"
-                             icon="ui-icon-gear"
+                             icon="fa fa-wrench"
                              action="#{travelerDomainInstanceController.reloadCurrentTravelerInstance('updateTravelerInstanceConfigureDialog()')}"
                              rendered="#{travelerDomainInstanceController.currentTravelerConfigPermission}"/>
             <p:commandButton value="Refresh"
                              action="#{travelerDomainInstanceController.reloadCurrentTravelerInstance('updateTravelerInstanceInfoDialog()')}"
                              onstart="PF('loadingDialog').show()"
                              oncomplete="PF('loadingDialog').hide()"
-                             icon="ui-icon-refresh" />
+                             icon="fa fa-refresh" />
             <p:commandButton value="Close" alt="Close" 
                              oncomplete="PF('travelerInstanceInfoDialogWidget').hide()" 
-                             icon="ui-icon-arrowreturnthick-1-w"/>
+                             icon="fa fa-close"/>
         </f:facet>
 
     </p:dialog>

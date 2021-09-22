@@ -120,6 +120,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevel",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY"),
+    @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevelExcludeEntityType",
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and (i.id not in (SELECT DISTINCT(i.id) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :excludeEntityTypeName)) and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevelOrderByDerivedFromItem",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY ORDER BY i.derivedFromItem.id DESC"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevelExcludeEntityTypeOrderByDerivedFromItem",
@@ -231,6 +233,67 @@ import org.primefaces.model.TreeNode;
                         name = "locatable_item_id",
                         mode = ParameterMode.IN,
                         type = Integer.class
+                )
+            }
+    ),
+    @NamedStoredProcedureQuery(
+            name = "item.fetchRelationshipChildrenItems",
+            procedureName = "fetch_relationship_children_items",
+            resultClasses = Item.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "item_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "relationship_type_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                )
+            }
+    ),
+    @NamedStoredProcedureQuery(
+            name = "item.fetchRelationshipParentItems",
+            procedureName = "fetch_relationship_parent_items",
+            resultClasses = Item.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "item_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "relationship_type_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                )
+            }
+    ),
+    @NamedStoredProcedureQuery(
+            name = "item.fetchNameFilterForRelationshipHierarchy",
+            procedureName = "fetch_name_filter_for_relationship_hierarchy",
+            resultClasses = Item.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "domain_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "entity_type_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "relationship_type_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "name_pattern",
+                        mode = ParameterMode.IN,
+                        type = String.class
                 )
             }
     ),
@@ -532,10 +595,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @Override
     public CdbEntityControllerUtility getControllerUtility() {
-        return getItemControllerUtility(); 
+        return getItemControllerUtility();
     }
-    
-    @JsonIgnore     
+
+    @JsonIgnore
     public ItemControllerUtility getItemControllerUtility() {
         return null;
     }
@@ -764,6 +827,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @Override
     public List<Log> getLogList() {
+        // Useful for mock machines 
+        if (getSelfElement() == null) {
+            return null;
+        }
         return getSelfElement().getLogList();
     }
 
@@ -1035,6 +1102,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public List<ItemElement> getItemElementDisplayList() {
         if (itemElementDisplayList == null) {
+            if (fullItemElementList == null) {
+                itemElementDisplayList = new ArrayList<>();
+                return itemElementDisplayList;
+            }
             itemElementDisplayList = new ArrayList<>(fullItemElementList);
 
             for (ItemElement itemElement : itemElementDisplayList) {
@@ -1200,7 +1271,7 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @JsonIgnore
     public List<ItemConnector> getItemConnectorListSorted() {
-        
+
         // return sorted itemConnectorList
         Comparator<ItemConnector> comparator
                 = Comparator
@@ -1209,7 +1280,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         return itemConnectorList
                 .stream()
                 .sorted(comparator)
-                .collect(Collectors.toList());        
+                .collect(Collectors.toList());
     }
 
     public void setItemConnectorList(List<ItemConnector> itemConnectorList) {
@@ -1280,6 +1351,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public ItemElement getSelfElement() {
+        if (this.fullItemElementList == null) {
+            return null;
+        }
         if (selfItemElement == null) {
             for (ItemElement ie : this.fullItemElementList) {
                 if (ie.getName() == null && ie.getDerivedFromItemElement() == null) {
@@ -1319,6 +1393,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     @Override
     @JsonIgnore
     public List<PropertyValue> getPropertyValueList() {
+        if (this.getSelfElement() == null) {
+            return null;
+        }
         return this.getSelfElement().getPropertyValueList();
     }
 

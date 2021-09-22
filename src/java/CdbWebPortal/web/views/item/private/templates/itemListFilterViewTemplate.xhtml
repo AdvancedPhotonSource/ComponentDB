@@ -15,6 +15,9 @@ See LICENSE file.
         <p:dataTable value="#{filterViewListDataModel}"
                      var="filterViewItemResultObject"
                      id="filterViewDatatable"
+                     rowKey="#{filterViewItemResultObject.viewUUID}"
+                     sortMode="single"
+                     stripedRows="true"
                      paginator="true"
                      rows="20">
             <ui:param name="itemListObject" value="#{filterViewItemResultObject.itemObject}"/>

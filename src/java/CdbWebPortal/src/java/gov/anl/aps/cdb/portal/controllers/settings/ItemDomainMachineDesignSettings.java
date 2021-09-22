@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers.settings;
 
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignBaseController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
@@ -13,7 +14,7 @@ import java.util.Map;
  *
  * @author djarosz
  */
-public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMachineDesignController> {
+public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMachineDesignBaseController> {
 
     private static final String DisplayAlternateNameSettingTypeKey = "ItemDomainMachineDesign.List.Display.AlternateName";
     private static final String DisplayDesignDescriptionSettingTypeKey = "ItemDomainMachineDesign.List.Display.Description";
@@ -44,7 +45,7 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     
     protected Boolean displayInstalledQrId = null; 
 
-    public ItemDomainMachineDesignSettings(ItemDomainMachineDesignController parentController) {
+    public ItemDomainMachineDesignSettings(ItemDomainMachineDesignBaseController parentController) {
         super(parentController);
     }
 

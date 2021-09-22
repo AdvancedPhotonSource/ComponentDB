@@ -20,6 +20,8 @@ See LICENSE file.
                  value="#{propertyTypeObject.allowedPropertyValueList}" 
                  rows="#{allowedPropertyValueSettingObject.displayNumberOfItemsPerPage}"
                  editable="true"
+                 sortMode="single"
+                 stripedRows="true"
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No allowed property values have been specified."
@@ -55,7 +57,7 @@ See LICENSE file.
             <div class="actionLink">
                 <p:commandLink action="#{propertyTypeController.deleteAllowedPropertyValue(allowedPropertyValueObject)}" 
                                actionListener="#{allowedPropertyValueController.destroy(allowedPropertyValueObject)}"
-                               styleClass="ui-icon ui-icon-trash" title="Delete" update="allowedPropertyValueEditListDataTable" immediate="true"/>
+                               styleClass="fa fa-link-icon fa-trash" title="Delete" update="allowedPropertyValueEditListDataTable" immediate="true"/>
             </div>
         </p:column>
 

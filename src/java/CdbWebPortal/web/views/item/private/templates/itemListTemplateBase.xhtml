@@ -51,6 +51,10 @@ See LICENSE file.
                 </p:outputPanel>
 
                 <p:outputPanel rendered="#{entitySettingObject.displayItemListTreeView}">
+                    <!-- PF10 tree pre-render solution --> 
+                    <ui:param name="listTreeTableRendered"
+                              value="#{entitySettingObject.displayItemListTreeView}" /> 
+                    
                     <p:outputPanel>
                         <ui:insert name="treeListActionButtons" />
                     </p:outputPanel>

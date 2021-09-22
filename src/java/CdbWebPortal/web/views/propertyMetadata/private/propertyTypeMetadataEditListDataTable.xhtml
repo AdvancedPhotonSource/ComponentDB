@@ -10,6 +10,8 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dataTable id="propertyTypeMetadataEditListDataTable"
+                 sortMode="single"
+                 stripedRows="true"
                  value="#{propertyTypeObject.propertyTypeMetadataList}"
                  var="propertyTypeMetadataObject">
         
@@ -33,7 +35,7 @@ See LICENSE file.
 
         <p:column headerText="Actions">
             <p:commandLink id="PropertyTypeMetadataDestroyButton" 
-                           styleClass="ui-icon ui-icon-trash" title="Delete" 
+                           styleClass="fa fa-link-icon fa-trash" title="Delete" 
                            update="propertyTypeMetadataEditListDataTable"
                            immediate="true"
                            onclick="PF('loadingDialog').show()"

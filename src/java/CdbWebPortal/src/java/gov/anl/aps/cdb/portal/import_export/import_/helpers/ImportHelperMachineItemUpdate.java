@@ -76,7 +76,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
     }
 
     @Override
-    protected List<ColumnSpec> getColumnSpecs() {
+    protected List<ColumnSpec> initColumnSpecs() {
 
         List<ColumnSpec> specs = new ArrayList<>();
 

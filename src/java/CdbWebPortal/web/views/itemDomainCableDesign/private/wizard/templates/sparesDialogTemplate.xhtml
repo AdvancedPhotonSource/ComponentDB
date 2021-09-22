@@ -59,13 +59,13 @@ See LICENSE file.
                                   alt="Select" 
                                   update="#{viewName}"
                                   disabled="#{wizardController.dialogSpares.disableButtonSelect}"
-                                  icon="ui-icon-check"/>
+                                  icon="fa fa-check"/>
 
                 <p:commandButton action="#{wizardController.dialogSpares.cancel()}" 
                                  immediate="true" 
                                  value="Cancel" alt="Cancel" 
                                  update="#{viewName}"
-                                 icon="ui-icon-cancel" />
+                                 icon="fa fa-close" />
 
                 <p:remoteCommand name="selectCableTypeSuccess"                             
                                  actionListener="#{wizardController.dialogSpares.actionListenerSelectSuccess}"

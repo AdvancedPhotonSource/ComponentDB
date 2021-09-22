@@ -23,6 +23,8 @@ See LICENSE file.
             <p:dataTable value="#{currentMultiEditPropertyRecord.relatedPropertyValueList}"
                          var="relatedPropertyValue"
                          selection="#{currentMultiEditPropertyRecord.propertyValue}"
+                         sortMode="single"
+                         stripedRows="true"
                          rowKey="#{relatedPropertyValue.viewUUID}">
 
                 <p:ajax event="rowSelect" 

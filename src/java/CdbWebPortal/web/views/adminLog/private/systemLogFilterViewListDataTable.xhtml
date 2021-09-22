@@ -11,7 +11,7 @@ See LICENSE file.
     <p:commandButton id="systemLogCustomizeDisplay" 
                      onclick="PF('#{logController.entityTypeName}ListCustomizeDisplayDialogWidget').show()"
                      alt="Customize log view." 
-                     icon="ui-icon-wrench" 
+                     icon="fa fa-wrench" 
                      styleClass="actionButtonRight">
         <p:tooltip for="systemLogCustomizeDisplay" value="Customize selection view."/>
     </p:commandButton>
@@ -23,6 +23,8 @@ See LICENSE file.
                  var="logObject"
                  emptyMessage="No log entries found."
                  rows="#{logSettingObject.displayNumberOfItemsPerPage}"
+                 sortMode="single"
+                 stripedRows="true"
                  paginator="true"
                  paginatorAlwaysVisible="false">
         <ui:include src="../../log/private/logListObject.xhtml" >

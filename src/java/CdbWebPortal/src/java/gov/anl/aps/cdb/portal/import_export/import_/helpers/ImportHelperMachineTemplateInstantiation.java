@@ -69,7 +69,7 @@ public class ImportHelperMachineTemplateInstantiation
     }
     
     @Override
-    protected List<ColumnSpec> getColumnSpecs() {
+    protected List<ColumnSpec> initColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         
@@ -144,7 +144,7 @@ public class ImportHelperMachineTemplateInstantiation
         CreateInfo loadTemplateInfo = MachineImportHelperCommon.loadTemplateAndSetParamValues(rowMap);
         ItemDomainMachineDesign templateItem = (ItemDomainMachineDesign) loadTemplateInfo.getEntity();
         if (templateItem == null) {
-            return loadTemplateInfo;
+            return new CreateInfo(invalidInstance, loadTemplateInfo.getValidInfo());
         }
 
         ItemDomainMachineDesign item = 

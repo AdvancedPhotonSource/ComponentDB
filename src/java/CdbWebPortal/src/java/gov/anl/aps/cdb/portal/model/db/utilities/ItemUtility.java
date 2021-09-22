@@ -90,7 +90,8 @@ public class ItemUtility {
         if (selected != null) {
             node.setSelected(selected);
         }
-        for (TreeNode childNode : node.getChildren()) {
+        List<TreeNode> children = node.getChildren();
+        for (TreeNode childNode : children) {
             setExpandedSelectedOnAllChildren(childNode, expanded, selected);
         }
     }
@@ -108,8 +109,8 @@ public class ItemUtility {
         if (nodeItem != null && nodeItem.equals(item)) {
             return nodeRoot;
         }
-
-        for (TreeNode childNode : nodeRoot.getChildren()) {
+        List<TreeNode> children = nodeRoot.getChildren();
+        for (TreeNode childNode : children) {
             TreeNode foundNode = findTreeNodeWithItem(item, childNode);
             if (foundNode != null) {
                 return foundNode;
@@ -150,9 +151,13 @@ public class ItemUtility {
      */
     public static List<ItemElementRelationship> getItemRelationshipList(Item item, String relationshipTypeName, boolean itemFirstInRelationship) {
         ItemElement selfElement = item.getSelfElement();
+        
+        if (selfElement == null) {
+            return new ArrayList<>(); 
+        }
 
         List<ItemElementRelationship> ierList = new ArrayList<>();
-        List<ItemElementRelationship> ierListToLookAt = null;
+        List<ItemElementRelationship> ierListToLookAt = null;                
 
         if (itemFirstInRelationship) {
             ierListToLookAt = selfElement.getItemElementRelationshipList();

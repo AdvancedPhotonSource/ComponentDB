@@ -4,7 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers.settings;
 
-import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignBaseController;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class ItemDomainMachineDesignInventorySettings extends ItemDomainMachineD
     private static final String DisplayPropertyTypeId5SettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.PropertyTypeId5";
 
 
-    public ItemDomainMachineDesignInventorySettings(ItemDomainMachineDesignController parentController) {
+    public ItemDomainMachineDesignInventorySettings(ItemDomainMachineDesignBaseController parentController) {
         super(parentController);        
     }  
     

@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -269,6 +270,11 @@ public class CdbEntity implements Serializable, Cloneable {
         } else {
             return "";
         }
+    }
+    
+    public boolean isValidCableEndDesignation(String designation) {
+        List<String> list = Arrays.asList(VALUE_CABLE_END_1, VALUE_CABLE_END_2);
+        return list.contains(designation);
     }
 
 }

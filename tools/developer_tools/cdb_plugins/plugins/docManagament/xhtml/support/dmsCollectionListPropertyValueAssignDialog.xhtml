@@ -51,6 +51,8 @@ See LICENSE file.
                              selection="#{docManagamentBean.selectedCollection}"
                              rowKey="#{collectionsObject.collectionId}"
                              rows="10"
+                             stripedRows="true"
+                             sortMode="single"
                              paginator="true">
 
                     <p:ajax event="rowDblselect"                                
@@ -91,6 +93,8 @@ See LICENSE file.
                         <p:dataTable value="#{collectionsObject.documents}"
                                      var="documentObject"
                                      rows="5"
+                                     stripedRows="true"
+                                     sortMode="single"
                                      paginator="true"
                                      paginatorPosition="bottom">
                             <ui:include src="dmsDocumentListDataObject.xhtml" />

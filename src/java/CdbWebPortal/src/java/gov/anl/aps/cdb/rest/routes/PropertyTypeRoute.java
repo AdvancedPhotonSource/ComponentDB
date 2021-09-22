@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.rest.routes;
 
+import gov.anl.aps.cdb.portal.constants.SystemPropertyTypeNames;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -64,6 +65,15 @@ public class PropertyTypeRoute extends BaseRoute {
     public PropertyType getInventoryStatusPropertyType() { 
         LOGGER.debug("Fetching inventory item status property type.");
         return propertyTypeFacade.findByName(ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME); 
+    }
+    
+    @GET
+    @Path("/controlInterfaceToParentPropertyType")    
+    @Produces(MediaType.APPLICATION_JSON)    
+    public PropertyType getControlInterfaceToParentPropertyType() { 
+        String propertyTypeName = SystemPropertyTypeNames.cotrolInterface.getValue();
+        LOGGER.debug("Fetching operty type: " + propertyTypeName);
+        return propertyTypeFacade.findByName(propertyTypeName); 
     }
     
 }

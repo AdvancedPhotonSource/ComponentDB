@@ -19,7 +19,8 @@ See LICENSE file.
                   flowListener="#{wizardController.onFlowProcess}" 
                   widgetVar="#{rootViewId}"
                   showStepStatus="false" 
-                  showNavBar="false">
+                  showNavBar="false"
+                  onnext="PF('loadingDialog').show();">
 
             <ui:decorate template="templates/selectFormatTabTemplate.xhtml">
                 <ui:param name="viewId" value="#{rootViewId}" />                

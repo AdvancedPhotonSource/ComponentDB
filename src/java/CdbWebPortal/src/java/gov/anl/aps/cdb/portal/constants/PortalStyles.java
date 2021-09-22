@@ -14,6 +14,8 @@ public enum PortalStyles {
     itemConnectorIcon("ui-icon-item-connector"), 
     
     machineDesingTemplateIcon("ui-icon-machine-design-template"),
+    machineDesignControlIcon("fa fa-code"), 
+    machineDesignPowerIcon("fa fa-bolt"),
     machineDesignIcon("ui-icon-machine-design"),
     catalogIcon("ui-icon-catalog"),
     inventoryIcon("ui-icon-inventory"),

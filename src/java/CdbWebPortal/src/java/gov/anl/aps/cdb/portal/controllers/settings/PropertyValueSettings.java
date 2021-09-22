@@ -165,16 +165,16 @@ public class PropertyValueSettings extends CdbEntitySettingsBase<PropertyValueCo
         if (dataTable == null) {
             return;
         }
-        Map<String, FilterMeta> filters = dataTable.getFilterBy();
-        filterByEnteredByUser = (String) filters.get("enteredByUser").getFilterField();
-        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime").getFilterField();
-        filterByIsDynamic = (String) filters.get("isDynamic").getFilterField();
-        filterByIsUserWriteable = (String) filters.get("isUserWriteable").getFilterField();
-        filterByTag = (String) filters.get("tag").getFilterField();
-        filterByType = (String) filters.get("type").getFilterField();
-        filterByTypeCategory = (String) filters.get("typeCategory").getFilterField();
-        filterByUnits = (String) filters.get("units").getFilterField();
-        filterByValue = (String) filters.get("value").getFilterField();
+        Map<String, FilterMeta> filters = dataTable.getFilterByAsMap();
+        filterByEnteredByUser = (String) filters.get("enteredByUser").getField();
+        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime").getField();
+        filterByIsDynamic = (String) filters.get("isDynamic").getField();
+        filterByIsUserWriteable = (String) filters.get("isUserWriteable").getField();
+        filterByTag = (String) filters.get("tag").getField();
+        filterByType = (String) filters.get("type").getField();
+        filterByTypeCategory = (String) filters.get("typeCategory").getField();
+        filterByUnits = (String) filters.get("units").getField();
+        filterByValue = (String) filters.get("value").getField();
     }
 
     public Boolean getDisplayEffectiveFromDateTime() {

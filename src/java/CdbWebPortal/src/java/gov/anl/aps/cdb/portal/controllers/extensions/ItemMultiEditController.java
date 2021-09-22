@@ -179,7 +179,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
                     menuItem.setIcon("fa fa-pencil-square-o");
                 }
 
-                editStepsMenuModel.addElement(menuItem);
+                editStepsMenuModel.getElements().add(menuItem);
             }
         }
 
@@ -196,14 +196,15 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
                 if (multipleCreateConstant == MultipleCreateMenu.updateNewItems) {
                     menuItem.setIcon("fa fa-pencil-square-o");
                 }
-                createStepsMenuModel.addElement(menuItem);
+                createStepsMenuModel.getElements().add(menuItem);
             }
         }
         return createStepsMenuModel;
     }
 
     private DefaultMenuItem createMenuModelMenuItem(String constantValue, int ordinal) {
-        DefaultMenuItem menuItem = new DefaultMenuItem(constantValue);
+        DefaultMenuItem menuItem = new DefaultMenuItem();
+        menuItem.setValue(constantValue);
         menuItem.setCommand("#{" + getControllerNamedConstant() + ".setActiveIndex(" + ordinal + ")}");
         menuItem.setOnstart("PF('loadingDialog').show();");
         menuItem.setOncomplete("PF('loadingDialog').hide();");

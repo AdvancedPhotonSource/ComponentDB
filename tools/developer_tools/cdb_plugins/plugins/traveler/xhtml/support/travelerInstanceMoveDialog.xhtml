@@ -27,6 +27,8 @@ See LICENSE file.
             <ui:include src="../../../../item/private/itemSelectDataTable.xhtml">
                 <ui:param name="viewName" value="travelerInstanceMoveDialog#{viewName}" />
                 <ui:param name="updateTarget" value="travelerInstanceMoveDialogOutputPanel" /> 
+                <ui:param name="overrideSelectionDataModel" value="#{true}" /> 
+                <ui:param name="overrideSelectionDataModel" value="#{true}" /> 
                 <ui:param name="selectionValue" value="#{travelerDomainInstanceController.itemToMoveCurrentTraveler}" />
                 <ui:param name="selectionTarget" value="#{travelerDomainInstanceController.itemToMoveCurrentTraveler}" />
                 <ui:param name="entityController" value="#{itemDomainInventoryController}" />                           
@@ -36,7 +38,7 @@ See LICENSE file.
         <f:facet name="footer" class="dialog">
             <p:commandButton value="Close" alt="Close" 
                              oncomplete="PF('travelerInstanceMoveDialogWidget').hide()" 
-                             icon="ui-icon-arrowreturnthick-1-w"/>
+                             icon="fa fa-close"/>
             
             <p:commandButton value="Move" alt="Move"
                              onclick="PF('loadingDialog').show()"

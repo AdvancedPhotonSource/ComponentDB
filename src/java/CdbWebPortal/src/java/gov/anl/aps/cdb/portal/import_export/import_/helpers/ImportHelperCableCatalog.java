@@ -21,7 +21,7 @@ import java.util.List;
 public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomainCableCatalog, ItemDomainCableCatalogController> {
 
     @Override
-    protected List<ColumnSpec> getColumnSpecs() {
+    protected List<ColumnSpec> initColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         
@@ -34,7 +34,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "setName", 
                 "Cable type name, uniquely identifies cable type.", 
                 "getName",
-                ColumnModeOptions.rCREATErUPDATE(),
+                ColumnModeOptions.rdCREATErUPDATE(),
                 128));
         
         specs.add(new StringColumnSpec(

@@ -1,0 +1,184 @@
+Interface,Item Project,Machine Parent,Control Group,Level 0,Level 1,Level 2,Level 3
+,3,Powerful server VM1,Power Supply,sioc2s02s03bpsc,,,
+Subnet 1001,3,,,,S02-PS:BPSC1A,,
+Subnet 1001,3,,,,,S02A:FH1:PS,
+Direct Connection,3,,,,,,S02A:FH1
+Subnet 1001,3,,,,,S02A:FV1:PS,
+Direct Connection,3,,,,,,S02A:FV1
+Subnet 1001,3,,,,,S02A:SQ1:PS,
+Direct Connection,3,,,,,,S02A:SQ1
+Subnet 1001,3,,,,,S02A:H1:PS,
+Direct Connection,3,,,,,,S02A:H1
+Subnet 1001,3,,,,,S02A:V1:PS,
+Direct Connection,3,,,,,,S02A:V1
+Subnet 1001,3,,,,,S02A:Q4T:PS,
+Direct Connection,3,,,,,,S02A:Q4T
+Subnet 1001,3,,,,,S02-PS:BPSECM1A,
+Subnet 1001,3,,,,S02-PS:BPSC2A,,
+Subnet 1001,3,,,,,S02A:FH2:PS,
+Direct Connection,3,,,,,,S02A:FH2
+Subnet 1001,3,,,,,S02A:FV2:PS,
+Direct Connection,3,,,,,,S02A:FV2
+Subnet 1001,3,,,,,S02A:SQ2:PS,
+Direct Connection,3,,,,,,S02A:SQ2
+Subnet 1001,3,,,,,S02A:Q5T:PS,
+Direct Connection,3,,,,,,S02A:Q5T
+Subnet 1001,3,,,,,S02A:H7:PS,
+Direct Connection,3,,,,,,S02A:H7
+Subnet 1001,3,,,,,S02A:V7:PS,
+Direct Connection,3,,,,,,S02A:V7
+Subnet 1001,3,,,,,S02A:M3T:PS,
+Direct Connection,3,,,,,,S02A:M3T
+Subnet 1001,3,,,,,S02-PS:BPSECM2A,
+Subnet 1001,3,,,,S02-PS:BPSC3A,,
+Subnet 1001,3,,,,,S02A:Q8T:PS,
+Direct Connection,3,,,,,,S02A:Q8T
+Subnet 1001,3,,,,,S02A:V8:PS,
+Direct Connection,3,,,,,,S02A:V8
+Subnet 1001,3,,,,,S02A:M4T:PS,
+Direct Connection,3,,,,,,S02A:M4T
+Subnet 1001,3,,,,,S02B:Q8T:PS,
+Direct Connection,3,,,,,,S02B:Q8T
+Subnet 1001,3,,,,,S02B:V8:PS,
+Direct Connection,3,,,,,,S02B:V8
+Subnet 1001,3,,,,,S02-PS:BPSECM3A,
+Subnet 1001,3,,,,S02-PS:BPSC4A,,
+Subnet 1001,3,,,,,S02B:FH2:PS,
+Direct Connection,3,,,,,,S02B:FH2
+Subnet 1001,3,,,,,S02B:FV2:PS,
+Direct Connection,3,,,,,,S02B:FV2
+Subnet 1001,3,,,,,S02B:SQ2:PS,
+Direct Connection,3,,,,,,S02B:SQ2
+Subnet 1001,3,,,,,S02B:M3T:PS,
+Direct Connection,3,,,,,,S02B:M3T
+Subnet 1001,3,,,,,S02B:H7:PS,
+Direct Connection,3,,,,,,S02B:H7
+Subnet 1001,3,,,,,S02B:V7:PS,
+Direct Connection,3,,,,,,S02B:V7
+Subnet 1001,3,,,,,S02B:Q5T:PS,
+Direct Connection,3,,,,,,S02B:Q5T
+Subnet 1001,3,,,,,S02-PS:BPSECM4A,
+Subnet 1001,3,,,,S02-PS:BPSC5A,,
+Subnet 1001,3,,,,,S02B:FH1:PS,
+Direct Connection,3,,,,,,S02B:FH1
+Subnet 1001,3,,,,,S02B:FV1:PS,
+Direct Connection,3,,,,,,S02B:FV1
+Subnet 1001,3,,,,,S02B:SQ1:PS,
+Direct Connection,3,,,,,,S02B:SQ1
+Subnet 1001,3,,,,,S02B:Q4T:PS,
+Direct Connection,3,,,,,,S02B:Q4T
+Subnet 1001,3,,,,,S02B:H1:PS,
+Direct Connection,3,,,,,,S02B:H1
+Subnet 1001,3,,,,,S02B:V1:PS,
+Direct Connection,3,,,,,,S02B:V1
+Subnet 1001,3,,,,,S02-PS:BPSECM5A,
+Subnet 1001,3,,,,S03-PS:BPSC1A,,
+Subnet 1001,3,,,,S03-PS:BPSC2A,,
+Subnet 1001,3,,,,S03-PS:BPSC3A,,
+Subnet 1001,3,,,,S03-PS:BPSC4A,,
+Subnet 1001,3,,,,S03-PS:BPSC5A,,
+,3,Powerful server VM1,Power Supply,sioc2s04s05bpsc,,,
+Subnet 1001,3,,,,S04-PS:BPSC1A,,
+Subnet 1001,3,,,,S04-PS:BPSC2A,,
+Subnet 1001,3,,,,S04-PS:BPSC3A,,
+Subnet 1001,3,,,,S04-PS:BPSC4A,,
+Subnet 1001,3,,,,S04-PS:BPSC5A,,
+Subnet 1001,3,,,,S05-PS:BPSC1A,,
+Subnet 1001,3,,,,S05-PS:BPSC2A,,
+Subnet 1001,3,,,,S05-PS:BPSC3A,,
+Subnet 1001,3,,,,S05-PS:BPSC4A,,
+Subnet 1001,3,,,,S05-PS:BPSC5A,,
+,3,Powerful server VM1,Power Supply,sioc2s06s07bpsc,,,
+Subnet 1001,3,,,,S06-PS:BPSC1A,,
+Subnet 1001,3,,,,S06-PS:BPSC2A,,
+Subnet 1001,3,,,,S06-PS:BPSC3A,,
+Subnet 1001,3,,,,S06-PS:BPSC4A,,
+Subnet 1001,3,,,,S06-PS:BPSC5A,,
+Subnet 1001,3,,,,S07-PS:BPSC1A,,
+Subnet 1001,3,,,,S07-PS:BPSC2A,,
+Subnet 1001,3,,,,S07-PS:BPSC3A,,
+Subnet 1001,3,,,,S07-PS:BPSC4A,,
+Subnet 1001,3,,,,S07-PS:BPSC5A,,
+,3,Powerful server VM1,Power Supply,sioc2s08s09bpsc,,,
+,3,Powerful server VM2,Power Supply,sioc2s10s11bpsc,,,
+,3,Powerful server VM2,Power Supply,sioc2s12s13bpsc,,,
+,3,Powerful server VM2,Power Supply,sioc2s14s15bpsc,,,
+,3,Powerful server VM2,Power Supply,sioc2s16s17bpsc,,,
+,3,Powerful server VM2,Power Supply,sioc2s18s19bpsc,,,
+,3,Powerful server VM2,Power Supply,sioc2s20s21bpsc,,,
+,3,Powerful server VM2,Power Supply,sioc2s22s23bpsc,,,
+,3,Powerful server VM2,Power Supply,sioc2s24s25bpsc,,,
+,3,Powerful server VM3,Power Supply,sioc2s26s27bpsc,,,
+,3,Powerful server VM3,Power Supply,sioc2s28s29bpsc,,,
+,3,Powerful server VM3,Power Supply,sioc2s30s31bpsc,,,
+,3,Powerful server VM3,Power Supply,sioc2s32s33bpsc,,,
+,3,Powerful server VM3,Power Supply,sioc2s34s35bpsc,,,
+,3,Powerful server VM3,Power Supply,sioc2s36s37bpsc,,,
+,3,Powerful server VM3,Power Supply,sioc2s38s39bpsc,,,
+,3,Powerful server VM3,Power Supply,sioc2s40s01bpsc,,,
+,3,,,,,,
+,3,Powerful server VM4,Vacuum,sioc2s01vac,,,
+Subnet 1003,3,,,,S01:SDS1,,
+RS232,3,,,,,S01:VVC1,
+Direct Connection,3,,,,,,S01A:GV1
+Direct Connection,3,,,,,,S01B:GV1
+RS232,3,,,,,S01:IPC1,
+Direct Connection,3,,,,,,S01:IP1
+Direct Connection,3,,,,,,S01:IP2
+Direct Connection,3,,,,,,S01:IP3
+Direct Connection,3,,,,,,S01:IP4
+RS232,3,,,,,S01:IPC2,
+Direct Connection,3,,,,,,S01:IP5
+Direct Connection,3,,,,,,S01:IP6
+Direct Connection,3,,,,,,S01:IP7
+Direct Connection,3,,,,,,S01:IP8
+RS232,3,,,,,S01:IPC3,
+Direct Connection,3,,,,,,S01:IP9
+Direct Connection,3,,,,,,S01:IP2
+RS232,3,,,,,S01:IPC4,
+Direct Connection,3,,,,,,S01ID:IP1
+Direct Connection,3,,,,,,S01ID:IP2
+RS232,3,,,,,S01:VGC1,
+Direct Connection,3,,,,,,S01:CVG1
+Direct Connection,3,,,,,,S01:CCG1
+Direct Connection,3,,,,,,S02:CVG1
+Direct Connection,3,,,,,,S02:CCG1
+RS232,3,,,,,S02:VVC1,
+Direct Connection,3,,,,,,S02A:GV1
+Direct Connection,3,,,,,,S02B:GV1
+RS232,3,,,,,S02:IPC1,
+Direct Connection,3,,,,,,S02:IP1
+Direct Connection,3,,,,,,S02:IP2
+Direct Connection,3,,,,,,S02:IP3
+Direct Connection,3,,,,,,S02:IP4
+RS232,3,,,,,S02:IPC2,
+Direct Connection,3,,,,,,S02:IP5
+Direct Connection,3,,,,,,S02:IP6
+Direct Connection,3,,,,,,S02:IP7
+Direct Connection,3,,,,,,S02:IP8
+RS232,3,,,,,S02:IPC3,
+Direct Connection,3,,,,,,S02:IP9
+Direct Connection,3,,,,,,S02:IP2
+RS232,3,,,,,S02:IPC4,
+Direct Connection,3,,,,,,S02ID:IP1
+Direct Connection,3,,,,,,S02ID:IP2
+RS232,3,,,,,S02:VGC1,
+Direct Connection,3,,,,,,S02:CVG1
+Direct Connection,3,,,,,,S02:CCG1
+Direct Connection,3,,,,,,S02:CVG1
+Direct Connection,3,,,,,,S02:CCG1
+,3,Powerful server VM4,Vacuum,sioc2s03vac,,,
+Subnet 1003,3,,,,S03:SDS1,,
+RS232,3,,,,,S03:VVC1,
+RS232,3,,,,,S03:IPC1,
+RS232,3,,,,,S03:IPC2,
+RS232,3,,,,,S03:IPC3,
+RS232,3,,,,,S03:IPC4,
+RS232,3,,,,,S03:VGC1,
+RS232,3,,,,,S04:SDS1,
+RS232,3,,,,,S04:VVC1,
+RS232,3,,,,,S04:IPC1,
+RS232,3,,,,,S04:IPC2,
+RS232,3,,,,,S04:IPC3,
+RS232,3,,,,,S04:IPC4,
+RS232,3,,,,,S04:VGC1,

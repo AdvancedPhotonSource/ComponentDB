@@ -4,69 +4,18 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.common.constants.CdbRole;
-import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
-import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.common.utilities.ObjectUtility;
-import gov.anl.aps.cdb.portal.constants.EntityTypeName;
-import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.constants.PortalStyles;
-import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
-import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
-import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineAssignTemplate;
-import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineHierarchy;
-import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineItemUpdate;
-import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineTemplateInstantiation;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
-import gov.anl.aps.cdb.portal.model.db.entities.Log;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
-import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
-import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
-import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
-import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
-import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
-import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
-import java.util.logging.Level;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.primefaces.event.DragDropEvent;
-import org.primefaces.event.NodeSelectEvent;
-import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -74,738 +23,92 @@ import org.primefaces.model.TreeNode;
  */
 @Named(ItemDomainMachineDesignController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignController
-        extends ItemController<ItemDomainMachineDesignControllerUtility, ItemDomainMachineDesign, ItemDomainMachineDesignFacade, ItemDomainMachineDesignSettings>
-        implements ItemDomainCableDesignWizardClient {
+public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignControllerUtility> implements ItemDomainCableDesignWizardClient {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignController.class.getName());
 
-    public final static String controllerNamed = "itemDomainMachineDesignController";
-    private final static String cableWizardRedirectSuccess
-            = "/views/itemDomainMachineDesign/list?faces-redirect=true";
+    public final static String controllerNamed = "itemDomainMachineDesignController";      
 
-    private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignDetailsViewSections";
-
-    private TreeNode searchResultsTreeNode;
-
-    // <editor-fold defaultstate="collapsed" desc="Favorites toggle variables">
-    private boolean favoritesShown = false;
-    private ItemDomainMachineDesignTreeNode favoriteMachineDesignTreeRootTreeNode;
-
-    // </editor-fold>       
-    // <editor-fold defaultstate="collapsed" desc="Dual list view configuration variables ">
-    private ItemDomainMachineDesignTreeNode selectedItemInListTreeTable = null;
-    private ItemDomainMachineDesignTreeNode lastExpandedNode = null;
-
-    private ItemDomainMachineDesignTreeNode currentMachineDesignListRootTreeNode = null;
-    private ItemDomainMachineDesignTreeNode machineDesignTreeRootTreeNode = null;
-    private ItemDomainMachineDesignTreeNode machineDesignTemplateRootTreeNode = null;
-    private boolean currentViewIsTemplate = false;
-
-    private boolean displayListConfigurationView = false;
-    private boolean displayListViewItemDetailsView = false;
-    private boolean displayAddMDPlaceholderListConfigurationPanel = true;
-    private boolean displayAddMDFromTemplateConfigurationPanel = true;
-    private boolean displayAddMDMoveExistingConfigurationPanel = true;
-    private boolean displayAddCatalogItemListConfigurationPanel = true;
-    private boolean displayAssignCatalogItemListConfigurationPanel = true;
-    private boolean displayAssignInventoryItemListConfigurationPanel = true;
-    private boolean displayUpdateInstalledInventoryStateDialogContents = true; 
-    private boolean displayAttachTemplateToMachine = true;
-    private boolean displayMachineDesignReorderOverlayPanel = true;
-    private boolean displayAddCablePanel = true;
-    private boolean displayAddCableCircuitPanel = true;
-    private boolean displayAddCableBundlePanel = true;
-
-    private List<ItemDomainCatalog> catalogItemsDraggedAsChildren = null;
-    private TreeNode newCatalogItemsInMachineDesignModel = null;
-
-    // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop variables">
-    private static final String JS_SOURCE_MD_ID_PASSED_KEY = "sourceId";
-    private static final String JS_DESTINATION_MD_ID_PASSED_KEY = "destinationId";
-    // </editor-fold>   
-
-    // <editor-fold defaultstate="collapsed" desc="Delete support variables">
-    private Boolean moveToTrashAllowed;
-    private Boolean moveToTrashHasWarnings;
-    private TreeNode moveToTrashNode = new DefaultTreeNode();
-    private String moveToTrashDisplayName = null;
-    private String moveToTrashMessage = null;
-    private List<ItemDomainMachineDesign> moveToTrashItemsToUpdate = null;
-    private List<ItemElement> moveToTrashElementsToDelete = null;
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop implementation">
-    public void onDropFromJS() {
-        LoginController loginController = LoginController.getInstance();
-        if (loginController.isLoggedIn() == false) {
-            SessionUtility.addInfoMessage("Cannot complete move.", "Please login and try again.");
-            return;
-        }
-
-        String sourceIdStr = SessionUtility.getRequestParameterValue(JS_SOURCE_MD_ID_PASSED_KEY);
-        String destinationIdStr = SessionUtility.getRequestParameterValue(JS_DESTINATION_MD_ID_PASSED_KEY);
-        int sourceId = Integer.parseInt(sourceIdStr);
-        int destId = Integer.parseInt(destinationIdStr);
-
-        ItemDomainMachineDesign parent = findById(destId);
-        ItemDomainMachineDesign child = findById(sourceId);
-
-        // Permission check
-        if (loginController.isEntityWriteable(parent.getEntityInfo()) == false) {
-            SessionUtility.addErrorMessage("Insufficient privilages", "The user doesn't have permissions to item: " + parent.toString());
-            return;
-        }
-        if (loginController.isEntityWriteable(child.getEntityInfo()) == false) {
-            SessionUtility.addErrorMessage("Insufficient privilages", "The user doesn't have permissions to item: " + child.toString());
-            return;
-        }
-
-        UserInfo sessionUser = SessionUtility.getUser();
-        try {
-            getControllerUtility().performMachineMove(parent, child, sessionUser);
-            resetListDataModel();
-            resetSelectDataModel();
-        } catch (CdbException ex) {
-            LOGGER.error(ex);
-            SessionUtility.addErrorMessage("Error", ex.getMessage());
-            return;
-        }
-
-        child = findById(sourceId);
-        expandToSpecificMachineDesignItem(child);
+    @Override
+    protected ItemDomainMachineDesignSettings createNewSettingObject() {
+        return new ItemDomainMachineDesignSettings(this);
     }
-
-    // </editor-fold>   
-    // <editor-fold defaultstate="collapsed" desc="Undocumented Fold">
-    private String mdSearchString;
-    private List<ItemDomainMachineDesignTreeNode> searchResultsList;
-    private boolean searchCollapsed;
-
-    protected ItemElement currentHierarchyItemElement;
-
-    @EJB
-    ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
 
     public static ItemDomainMachineDesignController getInstance() {
         return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);
     }
 
-    public boolean isItemInventory(Item item) {
-        return item instanceof ItemDomainInventory;
+    public boolean isCablesShown() {
+        ItemDomainMachineDesignTreeNode.MachineTreeConfiguration config = getCurrentMachineDesignListRootTreeNode().getConfig();
+        return config.isShowCables();
     }
 
-    public boolean isItemCatalog(Item item) {
-        return item instanceof ItemDomainCatalog;
-    }
-
-    public boolean isItemMachineDesign(Item item) {
-        return isItemMachineDesignStatic(item);
-    }
-
-    public static boolean isItemMachineDesignStatic(Item item) {
-        return item instanceof ItemDomainMachineDesign;
-    }
-
-    public boolean isItemMachineDesignAndTemplate(Item item) {
-        if (item instanceof ItemDomainMachineDesign) {
-            return ((ItemDomainMachineDesign) item).getIsItemTemplate();
-        }
-
-        return false;
-    }
-
-    public String getMdNodeRepIcon(ItemElement ie) {
-        Item containedItem = ie.getContainedItem();
-        if (containedItem != null) {
-            return getItemRepIcon(containedItem);
-        }
-        Item parentItem = ie.getParentItem();
-        if (parentItem != null) {
-            return getItemRepIcon(parentItem);
-        }
-        ItemConnector conn = ie.getMdConnector();
-        if (conn != null) {
-            return PortalStyles.itemConnectorIcon.getValue();
-        }
-
-        return "";
-    }
-
-    public String getItemRepIcon(Item item) {
-        if (isItemMachineDesignAndTemplate(item)) {
-            return PortalStyles.machineDesingTemplateIcon.getValue();
-        } else {
-            return item.getDomain().getDomainRepIcon();
-        }
-    }
-
-    public boolean isCollapsedRelatedMAARCItemsForCurrent() {
-        return getRelatedMAARCRelationshipsForCurrent().size() < 1;
-    }
-
-    public List<ItemElementRelationship> getRelatedMAARCRelationshipsForCurrent() {
-        ItemDomainMachineDesign current = getCurrent();
-        List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = current.getRelatedMAARCRelationshipsForCurrent();
-        if (relatedMAARCRelationshipsForCurrent == null) {
-            relatedMAARCRelationshipsForCurrent = ItemDomainMAARCController.getRelatedMAARCRelationshipsForItem(getCurrent());
-            current.setRelatedMAARCRelationshipsForCurrent(relatedMAARCRelationshipsForCurrent);
-        }
-
-        return relatedMAARCRelationshipsForCurrent;
-    }
-
+    public void setCablesShown(boolean cablesShown) {
+        ItemDomainMachineDesignTreeNode.MachineTreeConfiguration config = getCurrentMachineDesignListRootTreeNode().getConfig();
+        config.setShowCables(cablesShown);
+    }  
+    
     @Override
-    public void resetListDataModel() {
-        super.resetListDataModel();
-        currentMachineDesignListRootTreeNode = null;
-        machineDesignTemplateRootTreeNode = null;
-        machineDesignTreeRootTreeNode = null;
-    }
-    // </editor-fold>   
-
-    // <editor-fold defaultstate="collapsed" desc="Dual list view configuration implementation ">   
-    public ItemDomainMachineDesignTreeNode getCurrentMachineDesignListRootTreeNode() {
-        if (currentMachineDesignListRootTreeNode == null) {
-            if (currentViewIsTemplate) {
-                currentMachineDesignListRootTreeNode = getMachineDesignTemplateRootTreeNode();
-            } else {
-                if (favoritesShown) {
-                    currentMachineDesignListRootTreeNode = getFavoriteMachineDesignTreeRootTreeNode();
-                } else {
-                    currentMachineDesignListRootTreeNode = getMachineDesignTreeRootTreeNode();
-                }
+    public void processPreRenderList() {        
+        super.processPreRenderList();
+        
+        String paramValue = SessionUtility.getRequestParameterValue("id");
+        
+        if (paramValue != null) {
+            Integer idParam = Integer.parseInt(paramValue);
+            ItemDomainMachineDesign result = itemDomainMachineDesignFacade.find(idParam);
+            
+            if (result != null) {
+                ItemDomainMachineDesignTreeNode machineDesignTreeRootTreeNode = getMachineDesignTreeRootTreeNode();
+                expandToSpecificMachineDesignItem(machineDesignTreeRootTreeNode, result);
             }
         }
-        return currentMachineDesignListRootTreeNode;
     }
-
-    public ItemDomainMachineDesignTreeNode getMachineDesignTreeRootTreeNode() {
-        if (machineDesignTreeRootTreeNode == null) {
-            machineDesignTreeRootTreeNode = loadMachineDesignRootTreeNode();
-        }
-        return machineDesignTreeRootTreeNode;
-    }
-
-    public ItemDomainMachineDesignTreeNode getMachineDesignTemplateRootTreeNode() {
-        if (machineDesignTemplateRootTreeNode == null) {
-            List<ItemDomainMachineDesign> itemsWithoutParents;
-            itemsWithoutParents = getEntityDbFacade().findByDomainNameWithNoParentsAndWithEntityType(getDefaultDomainName(), EntityTypeName.template.getValue());
-            for (int i = itemsWithoutParents.size() - 1; i >= 0; i--) {
-                ItemDomainMachineDesign item = itemsWithoutParents.get(i);
-                if (item.getIsItemDeleted()) {
-                    itemsWithoutParents.remove(i);
-                }
-            }
-            machineDesignTemplateRootTreeNode = loadMachineDesignRootTreeNode(itemsWithoutParents);
-        }
-        return machineDesignTemplateRootTreeNode;
-    }
-
-    public void loadMachineDesignFilters() {
-        ItemDomainMachineDesignTreeNode node = getCurrentMachineDesignListRootTreeNode();
-        node.getConfig().setLoadAllChildren(true);
-    }
-
-    public boolean isFiltersLoaded() {
-        ItemDomainMachineDesignTreeNode node = getCurrentMachineDesignListRootTreeNode();
-        return node.getConfig().isLoadAllChildren();
-    }
-
-    /**
-     * Override this function as default tree parents for the list of derived
-     * machine entity.
-     *
-     * @return parent list of machine items.
-     */
-    public List<ItemDomainMachineDesign> getDefaultTopLevelMachineList() {
-        return getEntityDbFacade().findByDomainNameWithNoParentsAndEntityType(getDefaultDomainName());
-    }
-
-    public ItemDomainMachineDesignTreeNode loadMachineDesignRootTreeNode() {
-        List<ItemDomainMachineDesign> defaultTopLevelMachineList = getDefaultTopLevelMachineList();
-        return loadMachineDesignRootTreeNode(defaultTopLevelMachineList);
-    }
-
-    public ItemDomainMachineDesignTreeNode loadMachineDesignRootTreeNode(List<ItemDomainMachineDesign> itemsWithoutParents) {
-        ItemDomainMachineDesignTreeNode rootTreeNode = new ItemDomainMachineDesignTreeNode(itemsWithoutParents, getDefaultDomain(), getEntityDbFacade());
-
-        return rootTreeNode;
-    }
-
-    public void searchMachineDesign() {
-        Pattern searchPattern = Pattern.compile(Pattern.quote(mdSearchString), Pattern.CASE_INSENSITIVE);
-
-        ItemDomainMachineDesignTreeNode mdRoot = getCurrentMachineDesignListRootTreeNode();
-
-        searchResultsList = new ArrayList();
-
-        searchMachineDesign(mdRoot, searchPattern, searchResultsList);
-
-        if (searchResultsList.size() > 0) {
-            for (TreeNode node : searchResultsList) {
-                TreeNode parent = node.getParent();
-                while (parent != null) {
-                    parent.setExpanded(true);
-                    parent = parent.getParent();
-                }
-            }
-
-            selectItemInTreeTable(searchResultsList.get(0));
-        }
-        searchCollapsed = true;
-    }
-
-    public void searchMachineDesign(ItemDomainMachineDesignTreeNode parentNode,
-            Pattern searchPattern, List<ItemDomainMachineDesignTreeNode> results) {
-        Object data = parentNode.getData();
-        parentNode.setExpanded(false);
-        if (data != null) {
-            ItemElement ie = (ItemElement) data;
-            Item parentItem = ie.getContainedItem();
-            if (parentItem != null) {
-                SearchResult search = parentItem.search(searchPattern);
-                if (search.getObjectAttributeMatchMap().size() > 0) {
-                    results.add(parentNode);
-                    ie.setRowStyle(SearchResult.SEARCH_RESULT_ROW_STYLE);
-                } else {
-                    ie.setRowStyle(null);
-                }
-            }
-        }
-
-        for (ItemDomainMachineDesignTreeNode node : parentNode.getMachineChildren()) {
-            searchMachineDesign(node, searchPattern, results);
-        }
-    }
-
-    public void selectNextResult() {
-        if (searchResultsList != null && searchResultsList.size() > 0) {
-            TreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
-            int indx = 0;
-            if (selectedItemInListTreeTable != null) {
-                for (int i = 0; i < searchResultsList.size(); i++) {
-                    TreeNode node = searchResultsList.get(i);
-                    if (node.equals(selectedItemInListTreeTable)) {
-                        indx = i + 1;
-                        break;
-                    }
-                }
-
-                // Last index
-                if (indx == searchResultsList.size() - 1) {
-                    indx = 0;
-                }
-            }
-
-            ItemDomainMachineDesignTreeNode result = searchResultsList.get(indx);
-            selectItemInTreeTable(result);
-        }
-    }
-
-    public String getMdSearchString() {
-        return mdSearchString;
-    }
-
-    public void setMdSearchString(String mdSearchString) {
-        this.mdSearchString = mdSearchString;
-    }
-
-    public boolean isSearchCollapsed() {
-        return searchCollapsed;
-    }
-
-    public void setSearchCollapsed(boolean searchCollapsed) {
-        this.searchCollapsed = searchCollapsed;
-    }
-
-    public void expandSelectedTreeNode() {
-        ItemDomainMachineDesignTreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
-        if (selectedItemInListTreeTable != null) {
-            boolean expanded = !selectedItemInListTreeTable.isExpanded();
-            try {
-                selectedItemInListTreeTable.expandAllChildren(expanded);
-            } catch (CdbException ex) {
-                selectedItemInListTreeTable.setExpanded(true);
-                SessionUtility.addWarningMessage("Warning", ex.getErrorMessage());
-            }
-        } else {
-            SessionUtility.addInfoMessage("No tree node is selected", "Select a tree node and try again.");
-        }
-    }
-
-    public ItemDomainMachineDesignTreeNode getSelectedItemInListTreeTable() {
-        return selectedItemInListTreeTable;
-    }
-
-    public void setSelectedItemInListTreeTable(ItemDomainMachineDesignTreeNode selectedItemInListTreeTable) {
-        this.selectedItemInListTreeTable = selectedItemInListTreeTable;
-    }
-
-    private void selectItemInTreeTable(ItemDomainMachineDesignTreeNode newSelection) {
-        TreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
-        if (selectedItemInListTreeTable != null) {
-            selectedItemInListTreeTable.setSelected(false);
-        }
-
-        newSelection.setSelected(true);
-        setSelectedItemInListTreeTable(newSelection);
-    }
-
-    public boolean isSelectedItemInListReorderable() {
-        if (isSelectedItemInListTreeViewWriteable()) {
-            ItemDomainMachineDesign selectedItem = getItemFromSelectedItemInTreeTable();
-            List<ItemElement> itemElementDisplayList = selectedItem.getItemElementDisplayList();
-            return itemElementDisplayList.size() > 1;
-        }
-        return false;
-    }
-
-    public boolean isSelectedItemInListTreeViewWriteable() {
-        if (selectedItemInListTreeTable != null) {
-            ItemDomainMachineDesign selectedItem = getItemFromSelectedItemInTreeTable();
-            if (selectedItem != null) {
-                LoginController instance = LoginController.getInstance();
-                return instance.isEntityWriteable(selectedItem.getEntityInfo());
-            }
-        }
-        return false;
-    }
-
-    public boolean isParentOfSelectedItemInListTreeViewWriteable() {
-        if (selectedItemInListTreeTable != null) {
-            ItemElement itemElement = (ItemElement) selectedItemInListTreeTable.getData();
-            Item parentItem = itemElement.getParentItem();
-            if (parentItem != null) {
-                LoginController instance = LoginController.getInstance();
-                return instance.isEntityWriteable(parentItem.getEntityInfo());
-            } else {
-                // Top level
-                return isSelectedItemInListTreeViewWriteable();
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public String prepareView(Item item) {
-        return super.prepareView(item) + "&mode=detail";
-    }
-
-    public String showDetailsForCurrentSelectedTreeNode() {
+    
+    public String showInControlHierarchyForSelectedTreeNode() {
         updateCurrentUsingSelectedItemInTreeTable();
 
         ItemDomainMachineDesign item = getCurrent();
+        
+        // Verify if has control relationship..
+        int relationshipId = ItemElementRelationshipTypeNames.control.getDbId();
+        List<ItemDomainMachineDesign> machines = itemDomainMachineDesignFacade.fetchRelationshipParentItems(item.getId(), relationshipId);        
+        
+        if (machines.size() == 0) {
+            SessionUtility.addErrorMessage("No control relationship", 
+                    "This item does not show up in control hierarchy.");
+            return null;
+        }
 
         if (item != null) {
-            return viewForCurrentEntity() + "&mode=detail";
+            String redirect = "/views/itemDomainMachineDesignControl/list";
+            redirect += "?id=" + item.getId() + "&faces-redirect=true";
+            return redirect;
         }
 
         SessionUtility.addErrorMessage("Error", "Cannot load details for a non machine design.");
         return null;
     }
 
-    public void resetListConfigurationVariables() {
-        searchCollapsed = true;
-        displayListConfigurationView = false;
-        displayListViewItemDetailsView = false;
-        displayAddMDPlaceholderListConfigurationPanel = false;
-        displayAddMDFromTemplateConfigurationPanel = false;
-        displayAddMDMoveExistingConfigurationPanel = false;
-        displayAddCatalogItemListConfigurationPanel = false;
-        displayAssignCatalogItemListConfigurationPanel = false;
-        displayAssignInventoryItemListConfigurationPanel = false;
-        displayUpdateInstalledInventoryStateDialogContents = false; 
-        displayAttachTemplateToMachine = false;
-        displayMachineDesignReorderOverlayPanel = false;
-        displayAddCablePanel = false;
-        displayAddCableCircuitPanel = false;
-        displayAddCableBundlePanel = false;
-        catalogItemsDraggedAsChildren = null;
-        newCatalogItemsInMachineDesignModel = null;
-        currentMachineDesignListRootTreeNode = null;
+    @Override
+    protected ItemDomainMachineDesignControllerUtility createControllerUtilityInstance() {
+        return new ItemDomainMachineDesignControllerUtility();
     }
 
-    public void prepareAddPlaceholder() {
-        UserInfo user = SessionUtility.getUser();
-        ItemDomainMachineDesign parentMachine = getItemFromSelectedItemInTreeTable();
-        ItemElement machinePlaceholder = null;
-        try {
-            machinePlaceholder = getControllerUtility().prepareMachinePlaceholder(parentMachine, user);
-        } catch (CdbException ex) {
-            LOGGER.error(ex);
-            SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
-            return;
-        }
+    @Override
+    public ItemDomainMachineDesignTreeNode loadMachineDesignRootTreeNode(List<ItemDomainMachineDesign> itemsWithoutParents) {
+        ItemDomainMachineDesignTreeNode rootTreeNode = new ItemDomainMachineDesignTreeNode(itemsWithoutParents, getDefaultDomain(), getEntityDbFacade());
 
-        prepareAddNewMachineDesignListConfiguration(machinePlaceholder);
-        displayAddMDPlaceholderListConfigurationPanel = true;
+        return rootTreeNode;
     }
 
-    public void prepareAssignTemplate() {
-        prepareAddNewMachineDesignListConfiguration();
-        templateToCreateNewItem = null;
-        displayAttachTemplateToMachine = true;
+    @Override
+    public ItemDomainMachineDesignTreeNode createMachineTreeNodeInstance() {
+        return new ItemDomainMachineDesignTreeNode();
     }
 
-    public void prepareAddMdFromPlaceholder() {
-        prepareAddNewMachineDesignListConfiguration();
-        displayAddMDFromTemplateConfigurationPanel = true;
-
-        ItemDomainMachineDesign current = getCurrent();
-        current.setCurrentEditItemElementSaveButtonEnabled(true);
-    }
-
-    public void prepareAddMdFromCatalog() {
-        prepareAddNewMachineDesignListConfiguration();
-        displayAddCatalogItemListConfigurationPanel = true;
-    }
-
-    public void prepareAddMoveExistingMd() {
-        prepareAddNewMachineDesignListConfiguration();
-        displayAddMDMoveExistingConfigurationPanel = true;
-    }
-
-    public boolean isDisplayFollowInstructionOnRightOnBlockUI() {
-        return displayAddMDMoveExistingConfigurationPanel
-                || displayAddMDFromTemplateConfigurationPanel
-                || displayAddMDPlaceholderListConfigurationPanel
-                || displayAssignCatalogItemListConfigurationPanel
-                || displayAssignInventoryItemListConfigurationPanel
-                || displayAttachTemplateToMachine;
-    }
-
-    public boolean isDisplayListConfigurationView() {
-        return displayListConfigurationView;
-    }
-
-    public boolean isDisplayListViewItemDetailsView() {
-        return displayListViewItemDetailsView;
-    }
-
-    public boolean isDisplayAddMDPlaceholderListConfigurationPanel() {
-        return displayAddMDPlaceholderListConfigurationPanel;
-    }
-
-    public boolean isDisplayAddMDFromTemplateConfigurationPanel() {
-        return displayAddMDFromTemplateConfigurationPanel;
-    }
-
-    public boolean isDisplayAddMDMoveExistingConfigurationPanel() {
-        return displayAddMDMoveExistingConfigurationPanel;
-    }
-
-    public boolean isDisplayAddCatalogItemListConfigurationPanel() {
-        return displayAddCatalogItemListConfigurationPanel;
-    }
-
-    public boolean isDisplayAssignCatalogItemListConfigurationPanel() {
-        return displayAssignCatalogItemListConfigurationPanel;
-    }
-
-    public boolean isDisplayAssignInventoryItemListConfigurationPanel() {
-        return displayAssignInventoryItemListConfigurationPanel;
-    }
-
-    public boolean isDisplayUpdateInstalledInventoryStateDialogContents() {
-        return displayUpdateInstalledInventoryStateDialogContents;
-    }
-
-    public boolean isDisplayAttachTemplateToMachine() {
-        return displayAttachTemplateToMachine;
-    }
-
-    public boolean isDisplayMachineDesignReorderOverlayPanel() {
-        return displayMachineDesignReorderOverlayPanel;
-    }
-
-    public boolean isDisplayAddCablePanel() {
-        return displayAddCablePanel;
-    }
-
-    public boolean isDisplayAddCableCircuitPanel() {
-        return displayAddCableCircuitPanel;
-    }
-
-    public boolean isDisplayAddCableBundlePanel() {
-        return displayAddCableBundlePanel;
-    }
-
-    protected void updateCurrentUsingSelectedItemInTreeTable() {
-        setCurrent(getItemFromSelectedItemInTreeTable());
-        setCurrentHierarchyItemElement(getItemElementFromSelectedItemInTreeTable());
-    }
-
-    private ItemElement getItemElementFromSelectedItemInTreeTable() {
-        if (selectedItemInListTreeTable != null) {
-            ItemElement element = (ItemElement) selectedItemInListTreeTable.getData();
-            return element;
-        }
-        return null;
-    }
-
-    private ItemDomainMachineDesign getItemFromSelectedItemInTreeTable() {
-        ItemElement itemElement = getItemElementFromSelectedItemInTreeTable();
-        if (itemElement != null) {
-            Item item = itemElement.getContainedItem();
-
-            if (item instanceof ItemDomainMachineDesign) {
-                return (ItemDomainMachineDesign) item;
-            }
-        }
-
-        return null;
-    }
-
-    public void unlinkContainedItem2ToDerivedFromItem() {
-        ItemElement element = (ItemElement) selectedItemInListTreeTable.getData();
-
-        ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) element.getContainedItem();
-
-        Item assignedItem = mdItem.getAssignedItem();
-        Item derivedFromItem = assignedItem.getDerivedFromItem();
-
-        mdItem.setAssignedItem(derivedFromItem);
-        mdItem.setIsHoused(true);
-
-        setCurrent(mdItem);
-        update();
-
-        resetListDataModel();
-        expandToSpecificTreeNode(selectedItemInListTreeTable);
-    }
-
-    public void unlinkContainedItem2FromSelectedItem() {
-        ItemElement element = (ItemElement) selectedItemInListTreeTable.getData();
-
-        ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) element.getContainedItem();
-        Item originalContainedItem = mdItem.getAssignedItem();
-
-        mdItem.setAssignedItem(null);
-
-        updateTemplateReferenceElementContainedItem2(element, originalContainedItem, null);
-
-        setCurrent(mdItem);
-        update();
-
-        resetListDataModel();
-        expandToSpecificTreeNode(selectedItemInListTreeTable);
-    }
-
-    public void detachSelectedItemFromHierarchyInDualView() {
-        ItemElement element = (ItemElement) selectedItemInListTreeTable.getData();
-
-        Item containedItem = element.getContainedItem();
-        Integer detachedDomainId = containedItem.getDomain().getId();
-
-        ItemElementController instance = ItemElementController.getInstance();
-
-        if (currentViewIsTemplate) {
-            List<ItemElement> derivedFromItemElementList = element.getDerivedFromItemElementList();
-            boolean needsUpdate = false;
-            for (ItemElement itemElement : derivedFromItemElementList) {
-                if (!containedItem.equals(itemElement.getContainedItem())) {
-                    // fullfilled Element
-                    itemElement.setDerivedFromItemElement(null);
-                    needsUpdate = true;
-
-                    try {
-                        instance.performUpdateOperations(itemElement);
-                    } catch (Exception ex) {
-                        LOGGER.error(ex);
-                        SessionUtility.addErrorMessage("Error", ex.getMessage());
-                    }
-                }
-            }
-            if (needsUpdate) {
-                element = instance.findById(element.getId());
-            }
-        }
-
-        instance.destroy(element);
-
-        selectedItemInListTreeTable = selectedItemInListTreeTable.getParent();
-
-        resetListDataModel();
-
-        expandToSpecificTreeNode(selectedItemInListTreeTable);
-        if (detachedDomainId == ItemDomainName.MACHINE_DESIGN_ID) {
-            for (ItemDomainMachineDesignTreeNode node : getCurrentMachineDesignListRootTreeNode().getMachineChildren()) {
-                ItemElement ie = (ItemElement) node.getData();
-                Item ci = ie.getContainedItem();
-                if (containedItem.equals(ci)) {
-                    node.setSelected(true);
-                    selectedItemInListTreeTable = node;
-                    break;
-                }
-            }
-        }
-    }
-
-    @Deprecated
-    /**
-     * Templates are only created fully and only previously partially created md
-     * from templates will utilize this.
-     */
-    public void prepareFullfilPlaceholder() {
-        // Element with template to be fullfilled
-        ItemElement templateElement = (ItemElement) selectedItemInListTreeTable.getData();
-
-        // Select Parent where the template will be created 
-        selectedItemInListTreeTable = selectedItemInListTreeTable.getParent();
-
-        // Execute standard add template function 
-        prepareAddMdFromPlaceholder();
-
-        // Remove the template element                 
-        getCurrent().removeItemElement(templateElement);
-
-        // Select current template 
-        templateToCreateNewItem = (ItemDomainMachineDesign) templateElement.getContainedItem();
-        generateTemplateForElementMachineDesignNameVars();
-    }
-    
-    public void prepareUpdateInventoryInstallState() {
-        updateCurrentUsingSelectedItemInTreeTable();
-                
-        ItemDomainMachineDesign current = getCurrent();
-        boolean isHoused = current.isIsHoused();
-        current.setInventoryIsInstalled(isHoused); 
-        
-        displayUpdateInstalledInventoryStateDialogContents = true; 
-    }
-    
-    public void updateInventoryInstallState() {
-        boolean inventoryIsInstalled = isInventoryIsInstalled();
-        ItemDomainMachineDesign current = getCurrent();
-        current.setIsHoused(inventoryIsInstalled);        
-       
-        update(); 
-        
-        resetListConfigurationVariables();        
-        expandToSelectedTreeNodeAndSelect();
-    }
-
-    public void prepareAssignInventoryMachineDesignListConfiguration() {
-        setCurrentEditItemElement((ItemElement) selectedItemInListTreeTable.getData());
-        ItemElement currentEditItemElement = getCurrentEditItemElement();
-        setCatalogForElement(currentEditItemElement.getCatalogItem());
-
-        prepareUpdateInstalledInventoryItem();
-
-        displayAssignInventoryItemListConfigurationPanel = true;
-        displayListConfigurationView = true;
-    }
-
-    public void assignInventoryMachineDesignListConfiguration() {
-        updateInstalledInventoryItem();
-
-        resetListConfigurationVariables();
-        resetListDataModel();
-        expandToSelectedTreeNodeAndSelect();
-    }
-
+<<<<<<< HEAD
+=======
     private void updateItemElement(ItemElement itemElement) {
         ItemElementController itemElementController = ItemElementController.getInstance();
         itemElementController.setCurrent(itemElement);
@@ -1499,6 +802,7 @@ public class ItemDomainMachineDesignController
             //Generate connector list
             ItemDomainMachineDesign item = getCurrent();
             current.setMdConnectorList(getMdConnectorListForItem(item));
+            mdConnectorList = current.getMdConnectorList();
         }
         return mdConnectorList;
     }
@@ -3063,4 +2367,5 @@ public class ItemDomainMachineDesignController
     protected ItemDomainMachineDesignControllerUtility createControllerUtilityInstance() {
         return new ItemDomainMachineDesignControllerUtility();
     }
+>>>>>>> rel-3.12.3
 }

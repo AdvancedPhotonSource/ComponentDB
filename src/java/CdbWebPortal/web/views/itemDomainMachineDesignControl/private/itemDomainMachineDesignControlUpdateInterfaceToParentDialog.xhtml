@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="updateInterfaceToParentDialog"
+              header="Update Interface to Parent"
+              modal="true"
+              widgetVar="updateInterfaceToParentDialogWidget"
+              styleClass="viewTransparentBackgroundDialog" >
+
+        <ui:include src="itemDomainMachineDesignControlInterfaceToParentSelectOneMenu.xhtml" /> 
+
+        <f:facet name="footer">
+            <p:commandButton value="Yes"
+                             update="@form"
+                             action="#{entityController.updateInterfaceToParent()}"
+                             onclick="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"
+                             icon="fa fa-save"/>
+            <p:commandButton value="No"
+                             onclick="PF('updateInterfaceToParentDialogWidget').hide()"
+                             icon="fa fa-close"/>
+        </f:facet>
+    </p:dialog>
+
+</ui:composition>
+
+

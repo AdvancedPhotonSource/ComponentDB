@@ -78,6 +78,7 @@ class Catalog(ItemBase):
 		# TODO add id for sources column
 
 	def search_for_sample_catalog_item(self):
+		time.sleep(1)
 		self.navigate_to_catalog_list()
 
 		nameFilter = self._wait_for_id('componentListForm:componentListDataTable:componentListObjectNameColumn:filter')

@@ -8,7 +8,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
-              
+
     <p:dataTable id="pdmLinkSuggestedComponentTypeSelectDataTable" 
                  widgetVar="pdmLinkSuggestedComponentTypeSelectDataTableWidget"
                  var="componentTypeObject" 
@@ -19,6 +19,8 @@ See LICENSE file.
                  paginator="true"
                  paginatorAlwaysVisible="true"
                  rows="#{resources.SelectDataTableNumberOfRows}"
+                 stripedRows="true"
+                 sortMode="single"
                  emptyMessage="No available component types found."
                  >
 

@@ -4,7 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers.settings;
 
-import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignBaseController;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class ItemDomainMachineDesignDeletedItemSettings extends ItemDomainMachin
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.NumberOfItemsPerPage";
 
 
-    public ItemDomainMachineDesignDeletedItemSettings(ItemDomainMachineDesignController parentController) {
+    public ItemDomainMachineDesignDeletedItemSettings(ItemDomainMachineDesignBaseController parentController) {
         super(parentController);
         displayNumberOfItemsPerPage = 25; 
     }  

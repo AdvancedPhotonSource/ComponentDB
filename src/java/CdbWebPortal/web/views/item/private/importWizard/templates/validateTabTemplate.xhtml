@@ -17,11 +17,11 @@ See LICENSE file.
     <p:tab id="#{rootViewId}ValidateTab">
         <p:panel header="Review validation table, then click Next Step.">
             <p:outputPanel id="#{rootViewId}ValidatePanel">
-                
+
                 <p:panelGrid>
-                    
+
                     <p:row>
-                        
+
                         <p:column colspan="4">
                             <p:commandButton id="#{rootViewid}ExportXlsButton" 
                                              styleClass="actionButtonRight" 
@@ -33,28 +33,31 @@ See LICENSE file.
                                                 target="#{rootViewId}TableContent" 
                                                 fileName="ValidationReport" />
                             </p:commandButton>  
-                            
+
                         </p:column>
 
                     </p:row>
 
                     <p:remoteCommand name="selectedViewStyleChanged"
                                      update="#{rootViewId}ValidatePanel"/>
-                    
+
                     <p:row>
-                        
+
                         <p:column colspan="1" styleClass="topAlignedDataCell">
-                            
+
                             <p:outputLabel value="Select an item in tree view to highlight item in table" 
                                            rendered="#{wizardController.hasTreeView()}"
                                            styleClass="entityDataEmphasizedLabel"/>
-                            
-                            <p:tree value="#{wizardController.rootTreeNode}" 
+
+                            <!-- PF10 tree pre-render solution --> 
+                            <ui:param name="importTreeValue" value="#{wizardController.hasTreeView() ? wizardController.rootTreeNode : null}" />
+
+                            <p:tree value="#{importTreeValue}" 
                                     var="node"
                                     rendered="#{wizardController.hasTreeView()}"
                                     selectionMode="single"
                                     selection="#{wizardController.selectedTreeNode}">
-                                
+
                                 <p:ajax event="select" 
                                         listener="#{wizardController.treeSelectionChanged}" 
                                         update="@form:#{rootViewId}ValidatePanel"
@@ -74,16 +77,16 @@ See LICENSE file.
                                          rendered="true"
                                          var="row"
                                          rowKey="#{row.viewUUID}"
+                                         sortMode="single"
+                                         stripedRows="true"
                                          selectionMode="single"
                                          selection="#{wizardController.selectedTableRow}"
                                          rowStyleClass="#{row.isValidImport ? null : 'invalidTableData'}">    
 
                                 <p:columns value="#{wizardController.columns}" 
                                            var="column" 
-                                           columnIndexVar="colIndex">
-                                    <f:facet name="header">
-                                        <h:outputText value="#{column.header}" />
-                                    </f:facet>
+                                           columnIndexVar="colIndex"
+                                           headerText="#{column.header}">
                                     <h:outputText value="#{row[column.domainProperty]}" 
                                                   escape="false" />
                                 </p:columns>
@@ -92,7 +95,7 @@ See LICENSE file.
 
                         </p:column>
                     </p:row>
-                    
+
                     <script type="text/javascript">
                         function scrollToSelectedNode() {
                             selectedRows = document.getElementsByClassName('ui-widget-content ui-datatable-selectable ui-state-highlight');
@@ -102,7 +105,7 @@ See LICENSE file.
                             }
                         }
                     </script>
-                
+
                 </p:panelGrid>
 
                 <div>
@@ -116,5 +119,5 @@ See LICENSE file.
             </p:outputPanel>
         </p:panel>
     </p:tab>
-    
+
 </ui:composition>
