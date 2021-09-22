@@ -583,6 +583,7 @@ public class ItemRoute extends ItemBaseRoute {
 
     private void updateDbPropertyValueWithPassedInDate(PropertyValue dbPropertyValue, PropertyValue userPassedValue) {
         dbPropertyValue.setValue(userPassedValue.getValue());
+        dbPropertyValue.setTargetValue(userPassedValue.getTargetValue());
         dbPropertyValue.setDisplayValue(userPassedValue.getDisplayValue());
         dbPropertyValue.setTag(userPassedValue.getTag());
         dbPropertyValue.setDescription(userPassedValue.getDescription());
