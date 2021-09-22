@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignContr
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
@@ -21,6 +22,7 @@ import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
 import gov.anl.aps.cdb.rest.entities.ItemDomanMachineDesignIdListRequest;
 import gov.anl.aps.cdb.rest.entities.NewMachinePlaceholderOptions;
+import gov.anl.aps.cdb.rest.entities.UpdateMachineAssignedItemInformation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -244,6 +246,21 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
 
         return itemHierarchy;
     }
+    
+    @POST
+    @Path("/UpdateAssignedItem")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Update assigned item in a machine design item.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured    
+    public ItemDomainMachineDesign updateAssignedItem(@RequestBody(required = true) UpdateMachineAssignedItemInformation info) throws CdbException {
+        int mdItemId = info.getMdItemId();
+        Integer assignedItemId = info.getAssignedItemId();
+        Boolean isInstalled = info.getIsInstalled();
+        
+        return updateAssignedItemForMd(mdItemId, assignedItemId, isInstalled); 
+    }            
 
     @POST
     @Path("/UpdateAssignedItem/{mdItemId}/{assignedItemId}")
@@ -251,7 +268,16 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @Operation(summary = "Update assigned item in a machine design item.")
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public ItemDomainMachineDesign updateAssignedItem(@PathParam("mdItemId") int mdItemId, @PathParam("assignedItemId") Integer assignedItemId) throws ObjectNotFound, CdbException {
+    @Deprecated
+    public ItemDomainMachineDesign updateAssignedItemDeprecated(@PathParam("mdItemId") int mdItemId, @PathParam("assignedItemId") Integer assignedItemId) throws ObjectNotFound, CdbException {
+        return updateAssignedItemForMd(mdItemId, assignedItemId);
+    }
+    
+    private ItemDomainMachineDesign updateAssignedItemForMd(int mdItemId, Integer assignedItemId) throws ObjectNotFound, CdbException {
+        return updateAssignedItemForMd(mdItemId, assignedItemId, null); 
+    }
+    
+    private ItemDomainMachineDesign updateAssignedItemForMd(int mdItemId, Integer assignedItemId, Boolean isInstalled) throws ObjectNotFound, CdbException {
         Item currentItem = getItemByIdBase(mdItemId);
         Item assignedItem = null;
         if (assignedItemId != null) { 
@@ -266,6 +292,9 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) currentItem;
         
         mdItem.setAssignedItem(assignedItem);
+        if (isInstalled != null && assignedItem instanceof ItemDomainInventory) {
+            mdItem.setIsHoused(isInstalled);
+        }
         
         ItemControllerUtility itemControllerUtility = mdItem.getItemControllerUtility();
         
@@ -281,7 +310,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public ItemDomainMachineDesign clearAssignedItem(@PathParam("mdItemId") int mdItemId) throws CdbException {
-        return updateAssignedItem(mdItemId, null); 
+        return updateAssignedItemForMd(mdItemId, null); 
     }
     
     @PUT
