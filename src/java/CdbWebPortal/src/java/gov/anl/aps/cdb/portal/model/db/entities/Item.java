@@ -213,6 +213,18 @@ import org.primefaces.model.TreeNode;
             }
     ),
     @NamedStoredProcedureQuery(
+            name = "item.fetchItemsWithPropertyValue",
+            procedureName = "fetch_items_with_property_value",
+            resultClasses = Item.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "property_value_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                )
+            }
+    ),
+    @NamedStoredProcedureQuery(
             name = "item.fetchLocationItemForLocatableItem",
             procedureName = "fetch_location_item_for_locatable_item",
             resultClasses = Item.class,
