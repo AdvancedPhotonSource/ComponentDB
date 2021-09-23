@@ -1263,6 +1263,16 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         }
 
         getCurrent().deleteCableRelationship(cableRelationship);
+        
+        // remove connectors from itemConnectorList for cable and endpoint
+        ItemConnector cableConnector = cableRelationship.getSecondItemConnector();
+        if (cableConnector != null) {
+            getCurrent().getItemConnectorList().remove(cableConnector);
+        }
+        ItemConnector deviceConnector = cableRelationship.getFirstItemConnector();
+        if (deviceConnector != null) {
+            deviceConnector.getItem().getItemConnectorList().remove(deviceConnector);
+        }
 
         String updateResult = update();
         refreshConnectionListForCurrent(true);

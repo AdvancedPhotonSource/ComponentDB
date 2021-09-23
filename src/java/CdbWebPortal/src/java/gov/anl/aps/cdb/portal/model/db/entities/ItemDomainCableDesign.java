@@ -8,9 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
-import gov.anl.aps.cdb.portal.controllers.ItemElementRelationshipController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.RelationshipTypeControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
@@ -338,9 +336,25 @@ public class ItemDomainCableDesign extends Item {
                 && (!newItemElement.getId().equals(origItemElement.getId()))) {
             origItemElement.getItemElementRelationshipList().remove(cableRelationship);
         }
-        
         cableRelationship.setFirstItemElement(newItemElement);
+
+        
+        // delete original connector if updating to new one
+        ItemConnector origEndpointConnector = cableRelationship.getFirstItemConnector();
+        if ((origEndpointConnector != null) 
+                && ((endpointConnector == null) || (!endpointConnector.getId().equals(origEndpointConnector.getId())))) {
+            this.getDeletedConnectorList().add(origEndpointConnector);
+            itemEndpoint.getItemConnectorList().remove(origEndpointConnector);
+        }
         cableRelationship.setFirstItemConnector(endpointConnector);
+        
+        // delete original connector if updating to new one
+        ItemConnector origCableConnector = cableRelationship.getSecondItemConnector();
+        if ((((origCableConnector != null) && (origCableConnector.getId() != null)))
+                && ((cableConnector == null) || (cableConnector.getId() == null) || (!cableConnector.getId().equals(origCableConnector.getId())))) {
+            this.getDeletedConnectorList().add(origCableConnector);
+            this.getItemConnectorList().remove(origCableConnector);
+        }
         cableRelationship.setSecondItemConnector(cableConnector);
         
         // don't update cable end for primary cable connection
