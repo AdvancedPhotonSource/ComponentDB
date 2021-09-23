@@ -1839,18 +1839,22 @@ public abstract class ItemController<
     public static List<Item> getParentItemList(Item itemEntity) {
 
         List<Item> itemList = new ArrayList<>();
-
         List<ItemElement> itemElementList = new ArrayList<>();
-        itemElementList.addAll(itemEntity.getItemElementMemberList());
-        itemElementList.addAll(itemEntity.getItemElementMemberList2());
+        
+        if (itemEntity.getItemElementMemberList() != null) {
+            itemElementList.addAll(itemEntity.getItemElementMemberList());
+        }
+        
+        if (itemEntity.getItemElementMemberList2() != null) {
+            itemElementList.addAll(itemEntity.getItemElementMemberList2());
+        }
+        
         // Remove currently being viewed item. 
-        if (itemElementList != null) {
-            for (ItemElement itemElement : itemElementList) {
-                Item memberItem = itemElement.getParentItem();
+        for (ItemElement itemElement : itemElementList) {
+            Item memberItem = itemElement.getParentItem();
 
-                if (itemList.contains(memberItem) == false) {
-                    itemList.add(memberItem);
-                }
+            if (itemList.contains(memberItem) == false) {
+                itemList.add(memberItem);
             }
         }
 

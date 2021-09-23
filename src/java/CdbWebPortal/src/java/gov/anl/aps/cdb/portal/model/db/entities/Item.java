@@ -1261,6 +1261,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @JsonIgnore
     public List<ItemConnector> getItemConnectorListSorted() {
+        
+        if (itemConnectorList == null) {
+            return new ArrayList<>();
+        }
 
         // return sorted itemConnectorList
         Comparator<ItemConnector> comparator
@@ -1871,18 +1875,18 @@ public class Item extends CdbDomainEntity implements Serializable {
         // create list of connectors not in use for this item that can be used for new connections
         List<ItemConnector> syncedConnectors = new ArrayList<>();
         for (ItemConnector catalogConnector : inheritedConnectors) {
+            boolean connectorInUse = false;
             for (ItemConnector itemConnector : itemConnectors) {
-                boolean connectorInUse = false;
                 if (catalogConnector.getConnector().getName().equals(itemConnector.getConnector().getName())) {
                     // connector already in use for item
                     connectorInUse = true;
                     break;
                 }
-                if (!connectorInUse) {
-                    // connector not in use for item, so "sync" it
-                    ItemConnector syncedConnector = cloneInheritedConnector(catalogConnector);
-                    syncedConnectors.add(syncedConnector);
-                }
+            }
+            if (!connectorInUse) {
+                // connector not in use for item, so "sync" it
+                ItemConnector syncedConnector = cloneInheritedConnector(catalogConnector);
+                syncedConnectors.add(syncedConnector);
             }
         }
         
