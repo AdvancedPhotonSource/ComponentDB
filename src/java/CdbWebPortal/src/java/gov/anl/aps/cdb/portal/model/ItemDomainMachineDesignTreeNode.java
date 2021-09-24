@@ -83,9 +83,9 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
             cablesLoaded = true;
             if (idm != null) {
 
-                // sync connectors and build list of connectors for this md item
-                getConfig().getMdControllerUtility().syncMachineDesignConnectors(idm);
-                List<MachineDesignConnectorListObject> connList = MachineDesignConnectorListObject.createMachineDesignConnectorList(idm);
+                // build list of connectors for this md item (syncs available connectors from catalog item)
+                List<MachineDesignConnectorListObject> connList = 
+                        MachineDesignConnectorListObject.createMachineDesignConnectorList(idm);
 
                 for (MachineDesignConnectorListObject connObj : connList) {
                     ItemDomainMachineDesignTreeNode connectorNode = null;

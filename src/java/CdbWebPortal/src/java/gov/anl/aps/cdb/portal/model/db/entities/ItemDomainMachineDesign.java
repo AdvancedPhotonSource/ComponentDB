@@ -26,7 +26,6 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInven
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignPowerControllerUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
-import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +76,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
-    private transient MachineDesignConnectorCableMapperItem mdccmi;
     private transient List<MachineDesignConnectorListObject> mdConnectorList;
     private transient ItemDomainMachineDesign newMdInventoryItem = null;
 
@@ -756,15 +754,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public void setRelatedMAARCRelationshipsForCurrent(List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent) {
         this.relatedMAARCRelationshipsForCurrent = relatedMAARCRelationshipsForCurrent;
-    }
-
-    @JsonIgnore
-    public MachineDesignConnectorCableMapperItem getMdccmi() {
-        return mdccmi;
-    }
-
-    public void setMdccmi(MachineDesignConnectorCableMapperItem mdccmi) {
-        this.mdccmi = mdccmi;
     }
 
     @JsonIgnore
