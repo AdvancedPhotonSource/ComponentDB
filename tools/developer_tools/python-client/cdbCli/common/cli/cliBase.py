@@ -1,6 +1,6 @@
 import os
 
-from click._compat import raw_input
+from click import prompt
 
 from getpass import getpass
 
@@ -55,7 +55,7 @@ class CliBase:
         except ApiException as ex:
             # Need to prompt for credentials
             print("The command requires authentication.")
-            username = raw_input("Username: ")
+            username = prompt("Username: ")
             password = getpass("Password: ")
             try:
                 factory.authenticateUser(username, password)

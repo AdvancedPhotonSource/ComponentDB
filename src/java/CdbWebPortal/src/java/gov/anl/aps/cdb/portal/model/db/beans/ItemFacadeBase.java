@@ -329,7 +329,19 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
+    
+    public List<ItemDomainEntity> fetchItemsWithPropertyValue(Integer propertyValueId) {
+        try {
+            StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchItemsWithPropertyValue");
+            query.setParameter("property_value_id", propertyValueId);
+            List<ItemDomainEntity> itemList = query.getResultList();
 
+            return itemList;
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+    
     public ItemDomainLocation fetchLocationItemForLocatableItem(Integer locatableItemId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchLocationItemForLocatableItem");

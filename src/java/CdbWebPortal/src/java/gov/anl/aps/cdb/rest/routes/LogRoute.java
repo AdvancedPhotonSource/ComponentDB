@@ -77,11 +77,12 @@ public class LogRoute extends BaseRoute {
     @Produces(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public List<Log> getSuccessfulEntityUpdateLogSinceEnteredDate(@PathParam("sinceDate") DateParam sinceDate) throws ParseException, InvalidSession {        
+    public List<Log> getSuccessfulEntityUpdateLogSinceEnteredDate(@PathParam("sinceDate") String sinceDate) throws ParseException, InvalidSession {        
+        DateParam sinceDateParam = new DateParam(sinceDate); 
         checkSystemLogPrivilage();
         LOGGER.debug("Fetching entity info since: " + sinceDate);
         String loginInfoLevel = SystemLogLevel.entityInfo.toString(); 
-        return logFacade.findByLogLevel(loginInfoLevel, sinceDate.getDate());
+        return logFacade.findByLogLevel(loginInfoLevel, sinceDateParam.getDate());
     }
     
     @GET
@@ -101,11 +102,12 @@ public class LogRoute extends BaseRoute {
     @Produces(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public List<Log> getUnsuccessfulEntityUpdateLogSinceEnteredDate(@PathParam("sinceDate") DateParam sinceDate) throws ParseException, InvalidSession {        
+    public List<Log> getUnsuccessfulEntityUpdateLogSinceEnteredDate(@PathParam("sinceDate") String sinceDate) throws ParseException, InvalidSession {        
+        DateParam sinceDateParam = new DateParam(sinceDate);
         checkSystemLogPrivilage();
         LOGGER.debug("Fetching entity warnings since: " + sinceDate);
         String loginInfoLevel = SystemLogLevel.entityWarning.toString(); 
-        return logFacade.findByLogLevel(loginInfoLevel, sinceDate.getDate());
+        return logFacade.findByLogLevel(loginInfoLevel, sinceDateParam.getDate());
     }
     
     private void checkSystemLogPrivilage() throws InvalidSession {        
