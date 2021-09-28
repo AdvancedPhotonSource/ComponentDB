@@ -26,7 +26,6 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInven
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignPowerControllerUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
-import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +76,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
-    private transient MachineDesignConnectorCableMapperItem mdccmi;
     private transient List<MachineDesignConnectorListObject> mdConnectorList;
     private transient ItemDomainMachineDesign newMdInventoryItem = null;
 
@@ -183,6 +181,12 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         }
 
         return parentMachineElement;
+    }
+
+    @Override
+    @JsonIgnore
+    protected Item getInheritedItemConnectorParent() {
+        return getAssignedItem();
     }
 
     @Override
@@ -456,6 +460,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     // <editor-fold defaultstate="collapsed" desc="Import functionality">
     @JsonIgnore
     public Float getImportSortOrder() {
+        if ((importSortOrder == null) && (getId() != null)) {
+            return getExportSortOrder();
+        }
         return importSortOrder;
     }
 
@@ -534,6 +541,8 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             return importAssignedInventoryItem.getName();
         } else if (importAssignedCatalogItem != null) {
             return importAssignedCatalogItem.getName();
+        } else if ((getId() != null) && (getAssignedItem() != null)) {
+            return this.getAssignedItem().getName();
         } else {
             return "";
         }
@@ -597,6 +606,11 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     @JsonIgnore
     public String getImportLocationItemString() {
+        if ((importLocationItemString == null) 
+                && (getId() != null) 
+                && (this.getExportLocation() != null)) {
+            return this.getExportLocation().getName();
+        }
         return importLocationItemString;
     }
 
@@ -722,15 +736,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public void setRelatedMAARCRelationshipsForCurrent(List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent) {
         this.relatedMAARCRelationshipsForCurrent = relatedMAARCRelationshipsForCurrent;
-    }
-
-    @JsonIgnore
-    public MachineDesignConnectorCableMapperItem getMdccmi() {
-        return mdccmi;
-    }
-
-    public void setMdccmi(MachineDesignConnectorCableMapperItem mdccmi) {
-        this.mdccmi = mdccmi;
     }
 
     @JsonIgnore

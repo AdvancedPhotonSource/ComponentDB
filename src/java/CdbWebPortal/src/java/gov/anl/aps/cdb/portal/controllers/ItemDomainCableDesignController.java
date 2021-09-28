@@ -12,6 +12,8 @@ import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDesign;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDesignConnections;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDesignPullList;
 import gov.anl.aps.cdb.portal.model.ItemDomainCableDesignLazyDataModel;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
@@ -144,7 +146,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     return view();
                 }
 
-                refreshConnectionListForCurrent();
+                refreshConnectionListForCurrent(true);
 
                 SessionUtility.executeRemoteCommand(remoteCommandSuccess);
             }
@@ -316,6 +318,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         public void setOrigMdItem(Item origMdItem) {
             this.origMdItem = origMdItem;
+            selectedMdItem = origMdItem;
         }
 
         public String getItemEndpointString() {
@@ -370,6 +373,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         public void setOrigMdConnector(ItemConnector origMdConnector) {
             this.origMdConnector = origMdConnector;
+            selectedMdConnector = origMdConnector;
         }
 
         public ItemConnector getOrigCableConnector() {
@@ -536,8 +540,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     machineDesignTreeRootTreeNode, 
                     (ItemDomainMachineDesign)getOrigMdItem());
             
-            selectedMdTreeNode = selectedNode;
-            
             if ((selectedNode != null) && (getOrigMdConnector() != null)) {
                 selectedNode.setSelected(false);
                 selectedNode.setExpanded(true);
@@ -548,10 +550,13 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                                 ((ItemElement) (child.getData())).getMdConnector();
                         if (connectorChild.equals(getOrigMdConnector())) {
                             child.setSelected(true);
+                            selectedMdTreeNode = child;
                             break;
                         }
                     }
                 }
+            } else {
+                selectedMdTreeNode = selectedNode;
             }
         }
         
@@ -577,11 +582,11 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
             } else {
                 
-                ItemConnector selectedCableConnector = getSelectedCableConnector();
+                ItemConnector selCableConnector = getSelectedCableConnector();
                 
                 if ((((selectedMdItem == null) && (getOrigMdItem() == null)) || ((selectedMdItem != null) && (selectedMdItem.equals(getOrigMdItem()))))
-                        && (((selectedMdConnector == null) && (getOrigMdConnector() == null)) || ((selectedMdConnector != null) &&(selectedMdConnector.equals(getOrigMdConnector()))))
-                        && (((selectedCableConnector == null) && (getOrigCableConnector() == null)) || ((selectedCableConnector != null) && (selectedCableConnector.equals(getOrigCableConnector()))))) {
+                        && (((selectedMdConnector == null) && (getOrigMdConnector() == null)) || ((selectedMdConnector != null) && (selectedMdConnector.equals(getOrigMdConnector()))))
+                        && (((selCableConnector == null) && (getOrigCableConnector() == null)) || ((selCableConnector != null) && (selCableConnector.equals(getOrigCableConnector()))))) {
                     
                     setDisableButtonSave((Boolean) true);
                     
@@ -611,9 +616,12 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                         } else {
                             messages.add("Selected device and device port are valid.");
                         }
-                    } else if ((selectedMdItem != null) && (!selectedMdItem.equals(origMdItem))) {
+                    } else if ((selectedMdItem != null) 
+                            && ((!selectedMdItem.equals(origMdItem)) 
+                                || ((selectedMdItem.equals(origMdItem)) && (selectedMdConnector == null)))) {
+                            disableSaveButton = false;
                             messages.add("Selected device is valid, optional device port not selected.");
-                    } else if (((selectedCableConnector == null) && (getOrigCableConnector() != null)) || ((selectedCableConnector != null) && (!selectedCableConnector.equals(getOrigCableConnector())))) {
+                    } else if (((selCableConnector == null) && (getOrigCableConnector() != null)) || ((selCableConnector != null) && (!selCableConnector.equals(getOrigCableConnector())))) {
                         disableSaveButton = false;
                     } else {
                         disableSaveButton = true;
@@ -627,7 +635,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         
         protected void updateItem(String remoteCommandSuccess) {
             String updateResult = update();
-            refreshConnectionListForCurrent();
+            refreshConnectionListForCurrent(true);
             SessionUtility.executeRemoteCommand(remoteCommandSuccess);
 
         }
@@ -680,7 +688,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             // check device/port
             if (selectedMdItem == null) {
                 warnings.add("Device or device port is required.");
-                setDisableButtonSave((Boolean) true);
+                disableSaveButton = true;
 
             } else {
 
@@ -1016,7 +1024,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         // expand MD tree to specified md item and connector
         dialogConnection.expandTreeAndSelectNode();
-        dialogConnection.setSelectedEndpointAndConnector();
         
     }
     
@@ -1184,17 +1191,25 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
     
     public List<ItemConnector> getUnmappedConnectorsForCurrent(String cableEnd) {
+        
+        List<ItemConnector> result = new ArrayList<>();
         boolean filterCableEnd = (cableEnd != null);
-        List<ItemConnector> unmappedConnectors = new ArrayList<>();
-        if (getCurrent().getItemConnectorList() == null) {
-            return unmappedConnectors;
-        }
-        for (ItemConnector connector : getCurrent().getItemConnectorList()) {
-            if (!connector.isConnected()) {
-                if ((!filterCableEnd) 
-                        || ((connector.getConnector().getCableEndDesignation() != null) && (connector.getConnector().getCableEndDesignation().equals(cableEnd))))
-                unmappedConnectors.add(connector);
+        ItemDomainCableDesign current = getCurrent();
+        List<ItemConnector> unmappedConnectors = current.getSyncedConnectorList();
+        
+        // filter cable end if specified to do so
+        if (filterCableEnd) {
+            // return empty list if filtering but end not specified
+            if ((cableEnd == null) || (cableEnd.isEmpty())) {
+                return result;
             }
+            for (ItemConnector c : unmappedConnectors) {
+                if (c.getConnector().getCableEndDesignation().equals(cableEnd)) {
+                    result.add(c);
+                }
+            }
+        } else {
+            result.addAll(unmappedConnectors);
         }
         
         // sort by end, device name, device port name, cable connector name
@@ -1202,20 +1217,25 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                 = Comparator
                         .comparing((ItemConnector c) -> c.getConnectorCableEndDesignation())
                         .thenComparing(c -> c.getConnectorName().toLowerCase());
-        unmappedConnectors
-                = unmappedConnectors.stream()
-                        .sorted(comparator)
-                        .collect(Collectors.toList());
+        result = result.stream()
+                .sorted(comparator)
+                .collect(Collectors.toList());
 
-        return unmappedConnectors;
+        return result;
     }
 
     public List<CableDesignConnectionListObject> getConnectionListForItem(ItemDomainCableDesign item) {
-        this.getControllerUtility().syncConnectors(item);
         return CableDesignConnectionListObject.getConnectionList(item);
     }
     
     private void refreshConnectionListForCurrent() {
+        refreshConnectionListForCurrent(false);
+    }
+
+    private void refreshConnectionListForCurrent(boolean reload) {
+        if (reload) {
+            reloadCurrent();
+        }
         ItemDomainCableDesign item = getCurrent();
         connectionListForCurrent = getConnectionListForItem(item);
     }
@@ -1243,12 +1263,20 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         }
 
         getCurrent().deleteCableRelationship(cableRelationship);
+        
+        // remove connectors from itemConnectorList for cable and endpoint
+        ItemConnector cableConnector = cableRelationship.getSecondItemConnector();
+        if (cableConnector != null) {
+            getCurrent().getItemConnectorList().remove(cableConnector);
+        }
+        ItemConnector deviceConnector = cableRelationship.getFirstItemConnector();
+        if (deviceConnector != null) {
+            deviceConnector.getItem().getItemConnectorList().remove(deviceConnector);
+        }
 
         String updateResult = update();
-        refreshConnectionListForCurrent();
+        refreshConnectionListForCurrent(true);
         connectionToDelete = null;
-        
-//        SessionUtility.executeRemoteCommand(remoteCommandSuccess);
     }
 
     // <editor-fold defaultstate="collapsed" desc="import/export support">   
@@ -1262,7 +1290,13 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     protected DomainImportExportInfo initializeDomainImportInfo() {
         
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportExportFormatInfo("Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
+        
+        formatInfo.add(new ImportExportFormatInfo(
+                "Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
+
+        formatInfo.add(new ImportExportFormatInfo(
+                "Add Connections to Existing Cables Format", 
+                ImportHelperCableDesignConnections.class));
         
         String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";
         
@@ -1280,6 +1314,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         
         formatInfo.add(new ImportExportFormatInfo("Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
+        formatInfo.add(new ImportExportFormatInfo("Cable Design Pull List Extract Format", ImportHelperCableDesignPullList.class));
         
         String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";
         

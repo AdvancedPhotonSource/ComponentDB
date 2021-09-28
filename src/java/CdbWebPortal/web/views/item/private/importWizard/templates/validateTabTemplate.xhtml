@@ -85,10 +85,8 @@ See LICENSE file.
 
                                 <p:columns value="#{wizardController.columns}" 
                                            var="column" 
-                                           columnIndexVar="colIndex">
-                                    <f:facet name="header">
-                                        <h:outputText value="#{column.header}" />
-                                    </f:facet>
+                                           columnIndexVar="colIndex"
+                                           headerText="#{column.header}">
                                     <h:outputText value="#{row[column.domainProperty]}" 
                                                   escape="false" />
                                 </p:columns>

@@ -32,7 +32,7 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
 
     private static final String HEADER_SORT_ORDER = "Sort Order";
     
-    protected List<ColumnSpec> getColumnSpecs() {
+    protected List<ColumnSpec> initColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         

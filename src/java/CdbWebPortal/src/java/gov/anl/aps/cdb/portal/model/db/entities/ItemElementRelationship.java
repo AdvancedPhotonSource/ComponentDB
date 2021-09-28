@@ -92,7 +92,7 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     @ManyToOne
     private ItemElement secondItemElement;
     @JoinColumn(name = "second_item_connector_id", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private ItemConnector secondItemConnector;
     @Column(name = "second_sort_order")
     private Float secondSortOrder;
@@ -109,6 +109,11 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     public static String VALUE_LABEL_PRIMARY_CABLE_CONN = "PRI";
     public static String VALUE_LABEL_DETAIL_CABLE_CONN = "DET";
     private static String PRIMARY_CABLE_CONN_INDICATOR = "*";
+    
+    private transient Item importFirstItem;
+    private transient Item importSecondItem;
+    private transient String importFirstItemConnectorName;
+    private transient String importSecondItemConnectorName;
 
     public ItemElementRelationship() {
     }
@@ -158,6 +163,7 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
         this.propertyValueList = propertyValueList;
     }
 
+    @Override
     public void addPropertyValueToPropertyValueList(PropertyValue propertyValue) {
         if (propertyValueList == null) {
             propertyValueList = new ArrayList<>();
@@ -268,21 +274,25 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
         
         if (other.getId() != null) {
             return (other.getId().equals(id));
+        } else {
+            return false;
         }
-        
-        // check attributes if id is null
-        return (ObjectUtility.equals(other.getRelationshipType(), this.getRelationshipType())
-                && ObjectUtility.equals(other.getFirstItemElement(), this.getFirstItemElement())
-                && ObjectUtility.equals(other.getSecondItemElement(), this.getSecondItemElement())
-                && ObjectUtility.equals(other.getDescription(), this.getDescription())
-                && ObjectUtility.equals(other.getFirstItemConnector(), this.getFirstItemConnector())
-                && ObjectUtility.equals(other.getFirstSortOrder(), this.getFirstSortOrder())
-                && ObjectUtility.equals(other.getLabel(), this.getLabel())
-                && ObjectUtility.equals(other.getLinkItemElement(), this.getLinkItemElement())
-                && ObjectUtility.equals(other.getRelationshipDetails(), this.getRelationshipDetails())
-                && ObjectUtility.equals(other.getResourceType(), this.getResourceType())
-                && ObjectUtility.equals(other.getSecondItemConnector(), this.getSecondItemConnector())
-                && ObjectUtility.equals(other.getSecondSortOrder(), this.getSecondSortOrder()));
+
+// craig commented this out, I think it's up to the domain to determine if two IERs are equal,
+// e.g., for cable connections, the key attributes can be the same
+//        // check attributes if id is null
+//        return (ObjectUtility.equals(other.getRelationshipType(), this.getRelationshipType())
+//                && ObjectUtility.equals(other.getFirstItemElement(), this.getFirstItemElement())
+//                && ObjectUtility.equals(other.getSecondItemElement(), this.getSecondItemElement())
+//                && ObjectUtility.equals(other.getDescription(), this.getDescription())
+//                && ObjectUtility.equals(other.getFirstItemConnector(), this.getFirstItemConnector())
+//                && ObjectUtility.equals(other.getFirstSortOrder(), this.getFirstSortOrder())
+//                && ObjectUtility.equals(other.getLabel(), this.getLabel())
+//                && ObjectUtility.equals(other.getLinkItemElement(), this.getLinkItemElement())
+//                && ObjectUtility.equals(other.getRelationshipDetails(), this.getRelationshipDetails())
+//                && ObjectUtility.equals(other.getResourceType(), this.getResourceType())
+//                && ObjectUtility.equals(other.getSecondItemConnector(), this.getSecondItemConnector())
+//                && ObjectUtility.equals(other.getSecondSortOrder(), this.getSecondSortOrder()));
     }
 
     @Override
@@ -315,5 +325,40 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
             return "2";
         }
     }
+
+    // <editor-fold defaultstate="collapsed" desc="import/export support">   
     
+    public Item getImportFirstItem() {
+        return importFirstItem;
+    }
+
+    public void setImportFirstItem(Item importFirstItem) {
+        this.importFirstItem = importFirstItem;
+    }
+
+    public Item getImportSecondItem() {
+        return importSecondItem;
+    }
+
+    public void setImportSecondItem(Item importSecondItem) {
+        this.importSecondItem = importSecondItem;
+    }
+
+    public String getImportFirstItemConnectorName() {
+        return importFirstItemConnectorName;
+    }
+
+    public void setImportFirstItemConnectorName(String importFirstItemConnectorName) {
+        this.importFirstItemConnectorName = importFirstItemConnectorName;
+    }
+
+    public String getImportSecondItemConnectorName() {
+        return importSecondItemConnectorName;
+    }
+
+    public void setImportSecondItemConnectorName(String importSecondItemConnectorName) {
+        this.importSecondItemConnectorName = importSecondItemConnectorName;
+    }
+    
+    // </editor-fold>   
 }

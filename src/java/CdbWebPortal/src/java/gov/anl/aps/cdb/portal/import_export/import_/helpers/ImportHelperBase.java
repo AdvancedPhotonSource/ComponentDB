@@ -47,6 +47,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -95,10 +96,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private static final String PROPERTY_IS_VALID = "isValidImportString";
     private static final String HEADER_VALID_STRING = "Validation Info";
     private static final String PROPERTY_VALID_STRING = "validStringImport";
-    private static final String HEADER_DIFFS = "Differences";
+    private static final String HEADER_DIFFS = "Changed Attributes";
     private static final String PROPERTY_DIFFS = "importDiffs";
-    private static final String HEADER_ORIG = "Unchanged";
+    private static final String HEADER_ORIG = "Unchanged Attributes";
     private static final String PROPERTY_ORIG = "importUnchanged";
+    private static final String HEADER_CREATE_ATTRIBUTES = "Attributes";
     
     protected static final String KEY_USER = "ownerDisplayName";
     protected static final String KEY_GROUP = "ownerUserGroupName";
@@ -114,11 +116,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     protected ImportMode importMode;
     protected ExportMode exportMode;
     
+    private List<ColumnSpec> columnSpecs = null;
+    
     protected SortedMap<Integer, InputColumnModel> inputColumnMap = new TreeMap<>();
     
     protected List<InputHandler> inputHandlers = null;
     
     private List<OutputColumnModel> outputColumns = new ArrayList<>();
+    private List<OutputColumnModel> attributeModels = new ArrayList<>();
     
     private List<String> unchangeableProperties = new ArrayList<>();
     
@@ -289,7 +294,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             
             ColumnSpecInitInfo initInfo = spec.initialize(
                     colIndex, 
-                    headerValueMap);  
+                    headerValueMap,
+                    getImportMode());  
             
             if (!initInfo.getValidInfo().isValid()) {
                 validInfo = initInfo.getValidInfo();
@@ -326,7 +332,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (initValidInfo.isValid()) {
             initializeInputColumns(initInfo.inputColumns);
             initializeInputHandlers(initInfo.inputHandlers);
-            initializeValidationTableColumns(initInfo.outputColumns);
+            initializeOutputColumns(initInfo.outputColumns);
         }
         
         return initValidInfo;
@@ -342,19 +348,42 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         inputHandlers = specs;
     }
     
-    protected void initializeValidationTableColumns(List<OutputColumnModel> columns) {        
-        // these are special columns for displaying validation info for each row
-        columns.add(new OutputColumnModel(HEADER_IS_VALID, PROPERTY_IS_VALID));
-        columns.add(new OutputColumnModel(HEADER_VALID_STRING, PROPERTY_VALID_STRING));
-        if (getImportMode() == ImportMode.COMPARE) {
-            columns.add(new OutputColumnModel(HEADER_ORIG, PROPERTY_ORIG));
+    protected void initializeOutputColumns(List<OutputColumnModel> columns) {
+        
+        // save all entity OutputColumnModels to attributeModels for used in generating attribute value map etc
+        attributeModels.addAll(columns);
+        
+        // add attribute columns with display flag set for current mode
+        for (OutputColumnModel columnModel : columns) {
+            if (columnModel.isDisplayed()) {
+                outputColumns.add(columnModel);
+            }
         }
-        if ((getImportMode() == ImportMode.UPDATE) 
-                || (getImportMode() == ImportMode.DELETE) 
-                || (getImportMode() == ImportMode.COMPARE)) {
-            columns.add(new OutputColumnModel(HEADER_DIFFS, PROPERTY_DIFFS));
+        
+        // column handling for create mode
+        if (getImportMode() == ImportMode.CREATE) {
+            // add attributes column for displaying all attribute values in single column
+            outputColumns.add(new OutputColumnModel(HEADER_CREATE_ATTRIBUTES, PROPERTY_DIFFS));
         }
-        outputColumns = columns;
+        
+        // column handling for update/compare modes
+        else if ((getImportMode() == ImportMode.UPDATE) || (getImportMode() == ImportMode.COMPARE)) {
+            // add column for unchanged attribute values
+            outputColumns.add(new OutputColumnModel(HEADER_ORIG, PROPERTY_ORIG));
+            // add column for changed attribute values
+            outputColumns.add(new OutputColumnModel(HEADER_DIFFS, PROPERTY_DIFFS));
+        }
+        
+        // column handling for delete mode
+        else if (getImportMode() == ImportMode.DELETE) {
+            // add diffs column for update/compare modes
+            outputColumns.add(new OutputColumnModel(HEADER_DIFFS, PROPERTY_DIFFS));
+        }
+        
+        // add validation info columns for all modes
+        outputColumns.add(new OutputColumnModel(HEADER_IS_VALID, PROPERTY_IS_VALID));
+        outputColumns.add(new OutputColumnModel(HEADER_VALID_STRING, PROPERTY_VALID_STRING));
+        
     }
 
     /**
@@ -598,27 +627,30 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         boolean isValid = true;
         String validString = "";
         
-        // get field values via output handlers for each column
+        // get field values via reflection for each column
         FieldValueMap valueMap = new FieldValueMap();
-        for (ColumnSpec spec : getColumnSpecs()) {
+        for (OutputColumnModel columnModel : attributeModels) {
             
-            // skip columns not used for update mode
-            if (!spec.isUsedForMode(ImportMode.UPDATE)) {
-                continue;
-            }
-            
-            OutputHandler handler = spec.getOutputHandler(ExportMode.EXPORT);
-            if (handler == null) {                
-                ValidInfo validInfo = new ValidInfo(false, "Unexpected error, no output handler for column: " + spec.getHeader());
+            // get column property value using reflection, as is done in validation table
+            String property = columnModel.getDomainProperty();
+            Object returnValue = null;
+            try {
+                String methodName = "get" + property.substring(0,1).toUpperCase() 
+                        + property.substring(1, property.length());
+                Class c = entity.getClass();
+                Method method = c.getMethod(methodName);
+                returnValue = method.invoke(entity);
+            } catch (Exception e) {
+                ValidInfo validInfo = new ValidInfo(false, "Unexpected error getting attribute value for column: " 
+                        + columnModel.getHeader());
                 return new FieldValueMapResult(validInfo, valueMap);
             }
             
-            ColumnValueResult columnValueResult = handler.handleOutput(entity);
-            if (!columnValueResult.getValidInfo().isValid()) {
-                return new FieldValueMapResult(columnValueResult.getValidInfo(), valueMap);
+            if (returnValue == null) {
+                returnValue = "";
             }
             
-            valueMap.put(spec.getHeader(), columnValueResult.getColumnValue());            
+            valueMap.put(columnModel.getHeader(), returnValue.toString());            
         }
         
         ValidInfo validInfo = new ValidInfo(isValid, validString);
@@ -793,8 +825,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                     rowValidInfo = parseRow(row);
                 } catch (CdbException ex) {
                     validInput = false;
-                    validationMessage = "Unexpected exception parsing spreadsheet row: "
-                            + rowNumber + " message: "
+                    validationMessage = "Exception encountered for row: "
+                            + rowNumber + ", message: "
                             + ex.getMessage();
                     summaryMessage
                             = " Press 'Cancel' to terminate the import process."
@@ -1008,7 +1040,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
         entity = (EntityType) handleCreateInfo.getEntity();
         if (entity == null) {
-            throw new CdbException("failed to create or retrieve specified item");
+            String msg = validString;
+            if (validString.equals("")) {
+                msg = "failed to create or retrieve specified item";
+            }
+            throw new CdbException(msg);
             
         } else {
             entity.setIsValidImport(isValid);
@@ -1082,7 +1118,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         createInfo = retrieveEntityInstance(rowDict);
         if (createInfo == null) {
             // indicates helper doesn't support delete mode
-            String msg = "Unexpected error, import helper not properly configured for delete operation.";
+            String msg = "Import helper not properly configured to retrieve items for delete operation.";
             throw new CdbException(msg);
         }
         
@@ -1098,6 +1134,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (!createValidInfo.isValid()) {
             return createInfo;
         }
+        
+        // set existing item id so it doesn't appear as a diff
+        entity.setImportExistingItemId((Integer) rowDict.get(KEY_EXISTING_ITEM_ID));
+        entity.setImportDeleteExistingItem((Boolean) rowDict.get(KEY_DELETE_EXISTING_ITEM));
         
         // capture item field values for display in validation table
         FieldValueMapResult result = getFieldValueMap(entity);
@@ -1150,7 +1190,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         createInfo = retrieveEntityInstance(rowDict);
         if (createInfo == null) {
             // indicates helper doesn't support update mode
-            String msg = "Unexpected error, import helper not properly configured for update operation.";
+            String msg = "Import helper does not support update operation.";
             throw new CdbException(msg);
         }
         
@@ -1158,7 +1198,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (entity == null) {
             // helper must return an instance for use in the validation table,
             // even if the specified item is not located
-            String msg = "Unexpected error, import helper not properly configured to retrieve items for update operation.";
+            String msg = "Import helper not properly configured to retrieve items for update operation.";
             throw new CdbException(msg);
         }
         
@@ -1166,6 +1206,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (!createValidInfo.isValid()) {
             return createInfo;
         }
+        
+        // set existing item id so it doesn't appear as a diff
+        entity.setImportExistingItemId((Integer) rowDict.get(KEY_EXISTING_ITEM_ID));
         
         // capture item field values for comparison later with updated field values
         FieldValueMapResult preUpdateValueMapResult = getFieldValueMap(entity);
@@ -1195,7 +1238,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
         if (isValid) {
 
-            // capture item field values for comparison later with original field values
+            // capture item field values for comparison with original field values
             FieldValueMapResult postUpdateValueMapResult = getFieldValueMap(entity);
             if (!postUpdateValueMapResult.getValidInfo().isValid()) {
                 isValid = false;
@@ -1216,30 +1259,28 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 entity.hasImportUpdates(true);
             }
 
-            // for compare mode, set unchanged values on entity
-            if (getImportMode() == ImportMode.COMPARE) {
-                String unchangedString = "";
-                boolean first = true;
-                for (String key : preUpdateMap.keySet()) {
-                    if (!fieldDiffMap.keySet().contains(key)) {
-                        if (!first) {
-                            unchangedString = unchangedString + "<br>";
-                        } else {
-                            first = false;
-                        }
-                        String value = preUpdateMap.get(key);
-                        unchangedString = unchangedString + key + ": ";
-                        unchangedString = unchangedString + "<span style=\"color:green\">";
-                        unchangedString = unchangedString + "'" + value + "'";
-                        unchangedString = unchangedString + "</span>";
+            // set unchanged values on entity
+            String unchangedString = "";
+            boolean first = true;
+            for (String key : preUpdateMap.keySet()) {
+                if (!fieldDiffMap.keySet().contains(key)) {
+                    if (!first) {
+                        unchangedString = unchangedString + "<br>";
+                    } else {
+                        first = false;
                     }
+                    String value = preUpdateMap.get(key);
+                    unchangedString = unchangedString + key + ": ";
+                    unchangedString = unchangedString + "<span style=\"color:green\">";
+                    unchangedString = unchangedString + "'" + value + "'";
+                    unchangedString = unchangedString + "</span>";
                 }
-                entity.setImportUnchanged(unchangedString);
             }
+            entity.setImportUnchanged(unchangedString);
 
             // set update diffs string on entity if there are diffs        
             String diffString = "";
-            boolean first = true;
+            first = true;
             for (String key : fieldDiffMap.keySet()) {
                 if (!first) {
                     diffString = diffString + "<br>";
@@ -1297,16 +1338,21 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         EntityType newEntity = null;
         createInfo = createEntityInstance(rowDict);
         newEntity = (EntityType) createInfo.getEntity();
+        if (!createInfo.getValidInfo().isValid()) {
+            return new CreateInfo(null, false, createInfo.getValidInfo().getValidString());
+        }
         if (newEntity == null) {
-            // helper returns null from createInstance to indicate that it won't create an item for this row
-            isValid = createInfo.getValidInfo().isValid();
-            validString = appendToString(validString, createInfo.getValidInfo().getValidString());
+            // helper must return an instance for use in the validation table,
+            // even if there is an error creating the entity
+            String msg = "Import helper not properly configured to create items for import operation.";
+            throw new CdbException(msg);
         }
             
         ValidInfo createValidInfo = createInfo.getValidInfo();
         if (!createValidInfo.isValid()) {
             validString = appendToString(validString, createValidInfo.getValidString());
             isValid = false;
+            
         }
 
         // invoke each input handler to update the entity with row dictionary values
@@ -1321,7 +1367,38 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             isValid = false;
             validString = appendToString(validString, uniqueValidInfo.getValidString());
         }
+        
+        // create string for attributes column using map of attribute names and values
+        if (useCreateAttributesColumn()) {
+            
+            // capture attribute field values in map
+            FieldValueMapResult attributeMapResult = getFieldValueMap(newEntity);
+            if (!attributeMapResult.getValidInfo().isValid()) {
+                isValid = false;
+                validString = appendToString(validString,
+                        "Attribute snapshot failed: "
+                        + attributeMapResult.getValidInfo().getValidString());
+            }
+            FieldValueMap attributeMap = attributeMapResult.getValueMap();
 
+            String attribString = "";
+            boolean first = true;
+            for (String key : attributeMap.keySet()) {
+                String attributeValue = attributeMap.get(key);
+                if ((attributeValue != null) && (!attributeValue.isEmpty())) {
+                    if (!first) {
+                        attribString = attribString + "<br>";
+                    } else {
+                        first = false;
+                    }
+                    attribString = attribString + key + ": ";
+                    attribString = attribString + "'" + attributeValue + "'";
+                }
+            }
+
+            newEntity.setImportDiffs(attribString);
+        }
+            
         return new CreateInfo(newEntity, isValid, validString);
     }
     
@@ -1447,6 +1524,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
      */
     public boolean supportsModeTransfer() {
         return false;
+    }
+    
+    /**
+     * Specifies whether to use a single column for attribute values in create mode,
+     * or one column per attribute if false. Subclasses override to customize.
+     */
+    public boolean useCreateAttributesColumn() {
+        return true;
     }
 
     /**
@@ -1682,7 +1767,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "CDB ID of existing item to update.", 
                 "getId",
                 ColumnSpec.BLANK_COLUMN_EXPORT_METHOD,
-                ColumnModeOptions.rUPDATErDELETErCOMPARE());
+                ColumnModeOptions.rdUPDATErdDELETErdCOMPARE());
     }
 
     public BooleanColumnSpec deleteExistingItemColumnSpec() {
@@ -1694,8 +1779,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 null,
                 ColumnModeOptions.rDELETE());
     }
+    
+    private List<ColumnSpec> getColumnSpecs() {
+        if (columnSpecs == null) {
+            columnSpecs = initColumnSpecs();
+        }
+        return columnSpecs;
+    }
 
-    protected abstract List<ColumnSpec> getColumnSpecs();
+    protected abstract List<ColumnSpec> initColumnSpecs();
     
     public abstract EntityControllerType getEntityController();
     

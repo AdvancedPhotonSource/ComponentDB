@@ -9,8 +9,8 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
     
     <p:dataTable id="#{itemConnectorEntityTypeName}ListDataTable"
-                 widgetVar="#{itemConnectorEntityTypeName}ListDataTableWidget">        
-                 value="#{itemConnectorList}"
+                 widgetVar="#{itemConnectorEntityTypeName}ListDataTableWidget"        
+                 value="#{itemObject.itemConnectorListSorted}"
                  sortMode="single"
                  stripedRows="true"
                  var="itemConnectorObject">

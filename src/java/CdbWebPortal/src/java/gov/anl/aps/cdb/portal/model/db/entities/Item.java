@@ -213,6 +213,18 @@ import org.primefaces.model.TreeNode;
             }
     ),
     @NamedStoredProcedureQuery(
+            name = "item.fetchItemsWithPropertyValue",
+            procedureName = "fetch_items_with_property_value",
+            resultClasses = Item.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "property_value_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                )
+            }
+    ),
+    @NamedStoredProcedureQuery(
             name = "item.fetchLocationItemForLocatableItem",
             procedureName = "fetch_location_item_for_locatable_item",
             resultClasses = Item.class,
@@ -502,7 +514,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     protected transient ItemMetadataPropertyInfo coreMetadataPropertyInfo = null;
     protected transient PropertyType coreMetadataPropertyType = null;
     protected transient PropertyValue coreMetadataPropertyValue = null;
-
+    
+    private transient List<ItemConnector> syncedConnectorList = null;
+    
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
     protected transient ItemElement currentEditItemElement = null;
     protected transient Boolean currentEditItemElementSaveButtonEnabled = false;
@@ -1259,6 +1273,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @JsonIgnore
     public List<ItemConnector> getItemConnectorListSorted() {
+        
+        if (itemConnectorList == null) {
+            return new ArrayList<>();
+        }
 
         // return sorted itemConnectorList
         Comparator<ItemConnector> comparator
@@ -1274,13 +1292,14 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setItemConnectorList(List<ItemConnector> itemConnectorList) {
         this.itemConnectorList = itemConnectorList;
     }
-
-    public ItemConnector getConnectorNamed(String connectorName) {
-        List<ItemConnector> connectorList = getItemConnectorList();
-        if (connectorList == null) {
+    
+    private ItemConnector findConnectorWithName(String connectorName, List<ItemConnector> itemConnectors) {
+        
+        if (itemConnectors == null) {
             return null;
         }
-        for (ItemConnector itemConnector : connectorList) {
+        
+        for (ItemConnector itemConnector : itemConnectors) {
             Connector connector = itemConnector.getConnector();
             if (connector != null) {
                 String name = connector.getName();
@@ -1289,6 +1308,25 @@ public class Item extends CdbDomainEntity implements Serializable {
                 }
             }
         }
+        
+        return null;
+    }
+    
+    @JsonIgnore
+    public ItemConnector getConnectorNamed(String connectorName) {
+        
+        // check this item's connector list for specified connector name
+        ItemConnector itemConnector = findConnectorWithName(connectorName, getItemConnectorList());
+        if (itemConnector != null) {
+            return itemConnector;
+        }
+        
+        // check the list of inherited connectors for specified name
+        ItemConnector inheritedConnector = findConnectorWithName(connectorName, getSyncedConnectorList());
+        if (inheritedConnector != null) {
+            return inheritedConnector;
+        }
+        
         return null;
     }
 
@@ -1820,6 +1858,102 @@ public class Item extends CdbDomainEntity implements Serializable {
         return maxSortOrder;
     }
 
+    @JsonIgnore
+    public List<ItemConnector> getSyncedConnectorList() {
+        if (syncedConnectorList == null) {
+            syncedConnectorList = syncUnusedInheritedItemConnectors();
+        }
+        return syncedConnectorList;
+    }
+    
+    /**
+     * Returns list of cloned inherited connectors that are not currently in use 
+     * for this item.
+     */
+    private List<ItemConnector> syncUnusedInheritedItemConnectors() {
+        
+        // get inherited connectors
+        List<ItemConnector> inheritedConnectors = getInheritedItemConnectors();
+        if (inheritedConnectors == null) {
+            return new ArrayList<>();
+        }
+
+        // get this item's connectors
+        List<ItemConnector> itemConnectors = getItemConnectorList();
+        if (itemConnectors == null) {
+            itemConnectors = new ArrayList<>();
+        }
+
+        // create list of connectors not in use for this item that can be used for new connections
+        List<ItemConnector> syncedConnectors = new ArrayList<>();
+        for (ItemConnector catalogConnector : inheritedConnectors) {
+            boolean connectorInUse = false;
+            for (ItemConnector itemConnector : itemConnectors) {
+                if (catalogConnector.getConnector().getName().equals(itemConnector.getConnector().getName())) {
+                    // connector already in use for item
+                    connectorInUse = true;
+                    break;
+                }
+            }
+            if (!connectorInUse) {
+                // connector not in use for item, so "sync" it
+                ItemConnector syncedConnector = cloneInheritedConnector(catalogConnector);
+                syncedConnectors.add(syncedConnector);
+            }
+        }
+        
+        return syncedConnectors;
+    }
+    
+    @JsonIgnore
+    private List<ItemConnector> getInheritedItemConnectors() {
+
+        Item assignedItem = getInheritedItemConnectorParent();
+        
+        if (assignedItem == null) {
+            return new ArrayList<>();
+        }
+
+        Item catalogItem = null;
+        if (assignedItem instanceof ItemDomainInventoryBase) {
+            catalogItem = ((ItemDomainInventoryBase) assignedItem).getCatalogItem();
+        } else if (assignedItem instanceof ItemDomainCatalogBase) {
+            catalogItem = assignedItem;
+        }
+
+        List<ItemConnector> result = null;
+        if (catalogItem != null) {
+            result = catalogItem.getItemConnectorList();
+        }
+        
+        if (result == null) {
+            result = new ArrayList<>();
+        }
+        
+        return result;
+    }
+
+    /**
+     * Get item to inherit connectors from, default implementation returns null.
+     * Subclasses override to customize, e.g., machine/cable design items return their
+     * assigned catalog/inventory item.
+     */
+    @JsonIgnore
+    protected Item getInheritedItemConnectorParent() {
+        return null;
+    }
+    
+    private ItemConnector cloneInheritedConnector(ItemConnector inheritedConnector) {
+        
+        ItemConnector clone = new ItemConnector();
+
+        Connector connector = inheritedConnector.getConnector();
+        clone.setConnector(connector);
+        clone.setItem(this);
+        
+       return clone;
+    }
+    
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
     @JsonIgnore
     public ItemElement getCurrentEditItemElement() {

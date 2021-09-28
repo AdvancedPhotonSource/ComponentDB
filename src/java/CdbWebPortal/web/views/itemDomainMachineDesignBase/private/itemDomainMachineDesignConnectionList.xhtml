@@ -16,20 +16,6 @@ See LICENSE file.
                       value="#{false}" />             
         </ui:define>
 
-        <ui:define name="additionalButtons">
-            <p:commandButton value="Map Connections"
-                             update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel"
-                             disabled="#{disabledEditContextMenuItemForSelection}"
-                             immediate="true"
-                             rendered="#{isEntityWriteable}"
-                             action="#{entityController.prepareCableMappingDialogForCurrent()}"
-                             oncomplete="showItemDomainMachineDesignCableMappingDialog()"/>   
-            <p:commandButton value="Add Connection"
-                             update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel"
-                             rendered="#{isEntityWriteable}"
-                             immediate="true"
-                             action='#{entityController.prepareWizardCable()}'/>
-        </ui:define>        
     </ui:decorate>
 
     <ui:include src="itemDomainMachineDesignConnectionListDataTable.xhtml"/>

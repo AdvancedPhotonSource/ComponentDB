@@ -832,9 +832,14 @@ public class LocatableItemController implements Serializable {
                 historyObjectList.add(historyObject);
             }
         }
+        
         List<ItemElementHistory> historyMemberList = new ArrayList();
-        historyMemberList.addAll(item.getHistoryMemberList());
-        historyMemberList.addAll(item.getHistoryMemberList2());
+        if (item.getHistoryMemberList() != null) {
+            historyMemberList.addAll(item.getHistoryMemberList());
+        }
+        if (item.getHistoryMemberList2() != null) {
+            historyMemberList.addAll(item.getHistoryMemberList2());
+        }
 
         for (ItemElementHistory itemElementHistory : historyMemberList) {
             LocationHistoryObject historyObject = new LocationHistoryObject(itemElementHistory);

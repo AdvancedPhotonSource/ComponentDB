@@ -4,7 +4,7 @@ from datetime import datetime
 from CdbApiFactory import CdbApiFactory
 from cdbApi import OpenApiException, ItemStatusBasicObject, NewLocationInformation, SimpleLocationInformation, \
     LogEntryEditInformation, PropertyValue, PropertyMetadata, ConciseItemOptions, NewMachinePlaceholderOptions, \
-    NewCatalogInformation, NewInventoryInformation, NewCatalogElementInformation, NewControlRelationshipInformation
+    NewCatalogInformation, NewInventoryInformation, NewCatalogElementInformation, NewControlRelationshipInformation, UpdateMachineAssignedItemInformation
 
 
 class MyTestCase(unittest.TestCase):
@@ -487,11 +487,19 @@ class MyTestCase(unittest.TestCase):
     def test_md_update_assigned_item(self):
         self.loginAsAdmin()
 
-        result = self.machineDesignApi.update_assigned_item(self.MACHINE_DESIGN_ID, self.INVENTORY_ITEM_ID)
+        updateInfo = UpdateMachineAssignedItemInformation(
+            md_item_id=self.MACHINE_DESIGN_ID,
+            assigned_item_id=self.INVENTORY_ITEM_ID
+        )
+        result = self.machineDesignApi.update_assigned_item(updateInfo)
         self.assertNotEqual(result, None)
 
         # revert back
-        result = self.machineDesignApi.update_assigned_item(self.MACHINE_DESIGN_ID, self.CATALOG_ITEM_ID)
+        updateInfo = UpdateMachineAssignedItemInformation(
+            md_item_id=self.MACHINE_DESIGN_ID,
+            assigned_item_id=self.CATALOG_ITEM_ID
+        )
+        result = self.machineDesignApi.update_assigned_item(updateInfo)
         self.assertNotEqual(result, None)
 
     def test_md_create_placeholder(self):

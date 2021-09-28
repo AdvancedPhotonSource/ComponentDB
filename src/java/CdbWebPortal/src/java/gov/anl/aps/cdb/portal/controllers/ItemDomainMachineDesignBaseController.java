@@ -46,7 +46,6 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
-import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -1475,40 +1474,6 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         return searchResultsTreeNode;
     }
 
-    private void syncMachineDesignConnectors(ItemDomainMachineDesign item) {
-        this.getControllerUtility().syncMachineDesignConnectors(item);
-    }
-
-    public void prepareCableMappingDialog() {
-        ItemDomainMachineDesign item = getItemFromSelectedItemInTreeTable();
-        // Refresh item from DB
-        item = findById(item.getId());
-
-        setCurrent(item);
-        prepareCableMappingDialogForCurrent();
-    }
-
-    public void prepareCableMappingDialogForCurrent() {
-        ItemDomainMachineDesign current = getCurrent();
-        MachineDesignConnectorCableMapperItem machineDesignConnectorCableMapperItem = new MachineDesignConnectorCableMapperItem(getMdConnectorListForCurrent());
-        current.setMdccmi(machineDesignConnectorCableMapperItem);
-    }
-
-    public void saveCableMappingDialog() {
-        update();
-    }
-
-    public MachineDesignConnectorCableMapperItem getMachineDesignConnectorCableMapperItem() {
-        ItemDomainMachineDesign current = getCurrentForCurrentData();
-        MachineDesignConnectorCableMapperItem mdccmi = current.getMdccmi();
-        return mdccmi;
-    }
-
-    public void resetMachineDesignConnectorCableMapperItem() {
-        ItemDomainMachineDesign current = getCurrent();
-        current.setMdccmi(null);
-    }
-
     public void prepareWizardCable() {
         updateCurrentUsingSelectedItemInTreeTable();
         setCurrentEditItemElement((ItemElement) selectedItemInListTreeTable.getData());
@@ -1560,12 +1525,12 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             //Generate connector list
             ItemDomainMachineDesign item = getCurrent();
             current.setMdConnectorList(getMdConnectorListForItem(item));
+            mdConnectorList = current.getMdConnectorList();
         }
         return mdConnectorList;
     }
 
     public List<MachineDesignConnectorListObject> getMdConnectorListForItem(ItemDomainMachineDesign item) {
-        syncMachineDesignConnectors(item);
         return MachineDesignConnectorListObject.createMachineDesignConnectorList(item);
     }
 
@@ -1873,20 +1838,22 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     public DataModel getTopLevelMachineDesignSelectionList() {
         ItemDomainMachineDesign current = getCurrent();
-        if (current == null) {
-            return null; 
-        }
-        DataModel topLevelMachineDesignSelectionList = current.getTopLevelMachineDesignSelectionList();
-        if (topLevelMachineDesignSelectionList == null) {
-            List<ItemDomainMachineDesign> itemsWithoutParents = getItemsWithoutParents();
 
-            removeTopLevelParentOfItemFromList(current, itemsWithoutParents);
-            removeEntityTypesFromList(itemsWithoutParents, !isCurrentViewIsTemplate());
+        if (current != null) {
+            DataModel topLevelMachineDesignSelectionList = current.getTopLevelMachineDesignSelectionList();
+            if (topLevelMachineDesignSelectionList == null) {
+                List<ItemDomainMachineDesign> itemsWithoutParents = getItemsWithoutParents();
 
-            topLevelMachineDesignSelectionList = new ListDataModel(itemsWithoutParents);
-            current.setTopLevelMachineDesignSelectionList(topLevelMachineDesignSelectionList);
+                removeTopLevelParentOfItemFromList(current, itemsWithoutParents);
+                removeEntityTypesFromList(itemsWithoutParents, !isCurrentViewIsTemplate());
+
+                topLevelMachineDesignSelectionList = new ListDataModel(itemsWithoutParents);
+                current.setTopLevelMachineDesignSelectionList(topLevelMachineDesignSelectionList);
+            }
+            return topLevelMachineDesignSelectionList;
+        } else {
+            return null;
         }
-        return topLevelMachineDesignSelectionList;
     }
 
     protected void removeTopLevelParentOfItemFromList(Item item, List<ItemDomainMachineDesign> topLevelItems) {

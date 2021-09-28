@@ -99,7 +99,8 @@ public abstract class SimpleInputHandler extends SingleColumnInputHandler {
                 method = entity.getClass().getMethod(getSetterMethod(), paramType);
                 method.invoke(entity, parsedValue);
             }
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException 
+                | IllegalArgumentException | InvocationTargetException | NullPointerException ex) {
             isValid = false;
             validString
                     = "Unable to invoke setter method: " + getSetterMethod()
