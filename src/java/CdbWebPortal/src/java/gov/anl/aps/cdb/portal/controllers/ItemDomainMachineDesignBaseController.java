@@ -799,11 +799,10 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     }
 
     public void prepareAssignInventoryMachineDesignListConfiguration() {
+        updateCurrentUsingSelectedItemInTreeTable();
         setCurrentEditItemElement((ItemElement) selectedItemInListTreeTable.getData());
         ItemElement currentEditItemElement = getCurrentEditItemElement();
-        setCatalogForElement(currentEditItemElement.getCatalogItem());
-
-        prepareUpdateInstalledInventoryItem();
+        setCatalogForElement(currentEditItemElement.getCatalogItem());        
 
         displayAssignInventoryItemListConfigurationPanel = true;
         displayListConfigurationView = true;
@@ -1809,12 +1808,6 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     }
 
-    public void prepareUpdateInstalledInventoryItem() {
-        ItemElement currentEditItemElement = getCurrentEditItemElement();
-
-        setCatalogForElement(currentEditItemElement.getCatalogItem());
-    }
-
     public DataModel getInstalledInventorySelectionForCurrentElement() {
         ItemDomainMachineDesign current = getCurrent();
         if (current == null) {
@@ -1845,6 +1838,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     public DataModel getTopLevelMachineDesignSelectionList() {
         ItemDomainMachineDesign current = getCurrent();
+
         if (current != null) {
             DataModel topLevelMachineDesignSelectionList = current.getTopLevelMachineDesignSelectionList();
             if (topLevelMachineDesignSelectionList == null) {
@@ -2376,6 +2370,10 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     @Override
     public boolean getEntityHasSortableElements() {
         return true;
+    }
+        
+    public boolean getMachineHasHousingColumn() {
+        return false;
     }
 
     @Override

@@ -10,7 +10,6 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignContr
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;

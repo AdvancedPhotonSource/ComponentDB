@@ -450,24 +450,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     @JsonIgnore
     public PropertyValue getControlInterfaceToParent() {
-        if (controlInterfaceToParent == null) {
-            String cotrolInterfacePropertyTypeName = SystemPropertyTypeNames.cotrolInterface.getValue();
-            ItemElementRelationship controlRelationship = getControlRelationshipToParent();
-            if (controlRelationship != null) {
-                List<PropertyValue> propertyValueList = controlRelationship.getPropertyValueList();
-                for (PropertyValue pv : propertyValueList) {
-                    PropertyType propertyType = pv.getPropertyType();
-                    String propertyTypeName = propertyType.getName();
-                    if (propertyTypeName.equals(cotrolInterfacePropertyTypeName)) {
-                        controlInterfaceToParent = pv;
-                        return controlInterfaceToParent;
-                    }
-                }
-            }
-
-            // Prevent reloading if not found.             
-            controlInterfaceToParent = new PropertyValue();
-        }
         return controlInterfaceToParent;
     }
 

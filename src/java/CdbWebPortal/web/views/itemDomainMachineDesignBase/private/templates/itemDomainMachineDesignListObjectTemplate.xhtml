@@ -43,7 +43,7 @@ See LICENSE file.
               value="#{itemTreeListObject}" /> 
 
     <ui:param name="topLevelItem"
-              value="#{itemElementListObject.name == null}" />
+              value="#{machineTreeNode.isTopLevel}" />
 
     <ui:param name="createdFromTemplate"
               value="#{itemListObject.createdFromTemplate}" /> 
@@ -242,7 +242,7 @@ See LICENSE file.
         <ui:param name="itemListObject"
                   value="#{mdTreeListObject}"/> 
         <ui:param name="rendredHousing"
-                  value="#{false}"/> 
+                  value="#{settingObject.displayHousing}"/> 
     </ui:include>
 
     <p:column headerText="Project"

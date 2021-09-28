@@ -25,7 +25,11 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -52,6 +56,30 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyValue.findByIsDynamic", query = "SELECT p FROM PropertyValue p WHERE p.isDynamic = :isDynamic"),
     @NamedQuery(name = "PropertyValue.findByDisplayValue", query = "SELECT p FROM PropertyValue p WHERE p.displayValue = :displayValue"),
     @NamedQuery(name = "PropertyValue.findByTargetValue", query = "SELECT p FROM PropertyValue p WHERE p.targetValue = :targetValue")})
+@NamedStoredProcedureQueries({
+@NamedStoredProcedureQuery(
+            name = "propertyValue.fetchRelationshipParentPropertyValues",
+            procedureName = "fetch_relationship_parent_property_values",
+            resultClasses = PropertyValue.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "item_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "parent_item_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "relationship_type_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                )
+            }
+    ),
+})
 public class PropertyValue extends PropertyValueBase implements Serializable {
 
     private static final long serialVersionUID = 1L;

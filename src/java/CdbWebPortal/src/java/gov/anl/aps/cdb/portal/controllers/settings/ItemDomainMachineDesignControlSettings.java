@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.controllers.settings;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignBaseController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
@@ -14,61 +13,46 @@ import java.util.Map;
  *
  * @author djarosz
  */
-public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMachineDesignBaseController> {
+public class ItemDomainMachineDesignControlSettings extends ItemDomainMachineDesignSettings {
 
-    private static final String DisplayAlternateNameSettingTypeKey = "ItemDomainMachineDesign.List.Display.AlternateName";
-    private static final String DisplayDesignDescriptionSettingTypeKey = "ItemDomainMachineDesign.List.Display.Description";
-    private static final String DisplayLocationSettingTypeKey = "ItemDomainMachineDesign.List.Display.Location";
-    private static final String DisplayLocationDetailsSettingTypeKey = "ItemDomainMachineDesign.List.Display.LocationDetails";
-    private static final String DisplayProjectSettingTypeKey = "ItemDomainMachineDesign.List.Display.ItemProject";
-    private static final String DisplayIdSettingTypeKey = "ItemDomainMachineDesign.List.Display.Id";
-    private static final String DisplayInstalledQrIdSettingTypeKey = "ItemDomainMachineDesign.List.Display.InstalledQrId";
-    private static final String DisplayQrIdSettingTypeKey = "ItemDomainMachineDesign.List.Display.QrId";
-    private static final String DisplayOwnerUserSettingTypeKey = "ItemDomainMachineDesign.List.Display.OwnerUser";
-    private static final String DisplayOwnerGroupSettingTypeKey = "ItemDomainMachineDesign.List.Display.OwnerGroup";
-    private static final String DisplayCreatedByUserSettingTypeKey = "ItemDomainMachineDesign.List.Display.CreatedByUser";
-    private static final String DisplayCreatedOnDateTimeSettingTypeKey = "ItemDomainMachineDesign.List.Display.CreatedOnDateTime";
-    private static final String DisplayLastModifiedByUserSettingTypeKey = "ItemDomainMachineDesign.List.Display.LastModifiedByUser";
-    private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "ItemDomainMachineDesign.List.Display.LastModifiedOnDateTime";
+    private static final String DisplayAlternateNameSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.AlternateName";
+    private static final String DisplayDesignDescriptionSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.Description";
+    private static final String DisplayLocationSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.Location";
+    private static final String DisplayLocationDetailsSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.LocationDetails";
+    private static final String DisplayHousingSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.Housing";
+    private static final String DisplayProjectSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.ItemProject";
+    private static final String DisplayIdSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.Id";
+    private static final String DisplayQrIdSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.QrId";
+    private static final String DisplayOwnerUserSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.OwnerUser";
+    private static final String DisplayOwnerGroupSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.OwnerGroup";
+    private static final String DisplayCreatedByUserSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.CreatedByUser";
+    private static final String DisplayCreatedOnDateTimeSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.CreatedOnDateTime";
+    private static final String DisplayLastModifiedByUserSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.LastModifiedByUser";
+    private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.LastModifiedOnDateTime";
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.NumberOfItemsPerPage";
     
-    private static final String DisplayPropertyTypeId1SettingTypeKey = "ItemDomainMachineDesign.List.Display.PropertyTypeId1";
-    private static final String DisplayPropertyTypeId2SettingTypeKey = "ItemDomainMachineDesign.List.Display.PropertyTypeId2";
-    private static final String DisplayPropertyTypeId3SettingTypeKey = "ItemDomainMachineDesign.List.Display.PropertyTypeId3";
-    private static final String DisplayPropertyTypeId4SettingTypeKey = "ItemDomainMachineDesign.List.Display.PropertyTypeId4";
-    private static final String DisplayPropertyTypeId5SettingTypeKey = "ItemDomainMachineDesign.List.Display.PropertyTypeId5";
+    private static final String DisplayPropertyTypeId1SettingTypeKey = "ItemDomainMachineDesignControl.List.Display.PropertyTypeId1";
+    private static final String DisplayPropertyTypeId2SettingTypeKey = "ItemDomainMachineDesignControl.List.Display.PropertyTypeId2";
+    private static final String DisplayPropertyTypeId3SettingTypeKey = "ItemDomainMachineDesignControl.List.Display.PropertyTypeId3";
+    private static final String DisplayPropertyTypeId4SettingTypeKey = "ItemDomainMachineDesignControl.List.Display.PropertyTypeId4";
+    private static final String DisplayPropertyTypeId5SettingTypeKey = "ItemDomainMachineDesignControl.List.Display.PropertyTypeId5";
 
-    protected Boolean displayAlternateName = null; 
-    protected Boolean displayItemElementsSimpleView = false;
 
-    protected Boolean displayLocation = null;
-    protected Boolean displayLocationDetails = null;    
-    protected Boolean displayHousing = false;
+    public ItemDomainMachineDesignControlSettings(ItemDomainMachineDesignBaseController parentController) {
+        super(parentController);        
+    }  
     
-    protected Boolean displayInstalledQrId = null; 
-
-    public ItemDomainMachineDesignSettings(ItemDomainMachineDesignBaseController parentController) {
-        super(parentController);
-    }
-
-    public Boolean getDisplayItemElementSimpleView() {
-        return displayItemElementsSimpleView;
-    }    
-
     @Override
     protected void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         super.updateSettingsFromSettingTypeDefaults(settingTypeMap);
-        if (isDerivedMachineSettingsWithOwnKeys()) {
-            return;
-        }
-        
         displayAlternateName = Boolean.parseBoolean(settingTypeMap.get(DisplayAlternateNameSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDesignDescriptionSettingTypeKey).getDefaultValue());
         displayItemProject = Boolean.parseBoolean(settingTypeMap.get(DisplayProjectSettingTypeKey).getDefaultValue());
         displayLocation = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationSettingTypeKey).getDefaultValue());
         displayLocationDetails = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationDetailsSettingTypeKey).getDefaultValue());
+        displayHousing = Boolean.parseBoolean(settingTypeMap.get(DisplayHousingSettingTypeKey).getDefaultValue()); 
 
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
-        displayInstalledQrId = Boolean.parseBoolean(settingTypeMap.get(DisplayInstalledQrIdSettingTypeKey).getDefaultValue()); 
         displayQrId = Boolean.parseBoolean(settingTypeMap.get(DisplayQrIdSettingTypeKey).getDefaultValue()); 
         displayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerUserSettingTypeKey).getDefaultValue());
         displayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerGroupSettingTypeKey).getDefaultValue());
@@ -77,35 +61,35 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
         displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
         displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
         
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        
         displayPropertyTypeId1 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId1SettingTypeKey).getDefaultValue());
         displayPropertyTypeId2 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId2SettingTypeKey).getDefaultValue());
         displayPropertyTypeId3 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId3SettingTypeKey).getDefaultValue());
         displayPropertyTypeId4 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId4SettingTypeKey).getDefaultValue());
         displayPropertyTypeId5 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId5SettingTypeKey).getDefaultValue());
-
     }
 
     @Override
     protected void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
         super.updateSettingsFromSessionSettingEntity(settingEntity);
-        if (isDerivedMachineSettingsWithOwnKeys()) {
-            return;
-        }
-        displayAlternateName = settingEntity.getSettingValueAsBoolean(DisplayAlternateNameSettingTypeKey, displayAlternateName); 
+        displayAlternateName = settingEntity.getSettingValueAsBoolean(DisplayAlternateNameSettingTypeKey, displayAlternateName);
         displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDesignDescriptionSettingTypeKey, displayDescription);
         displayItemProject = settingEntity.getSettingValueAsBoolean(DisplayProjectSettingTypeKey, displayItemProject);
         displayLocation = settingEntity.getSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
         displayLocationDetails = settingEntity.getSettingValueAsBoolean(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
+        displayHousing = settingEntity.getSettingValueAsBoolean(DisplayHousingSettingTypeKey, displayHousing);
 
         displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayInstalledQrId = settingEntity.getSettingValueAsBoolean(DisplayInstalledQrIdSettingTypeKey, displayInstalledQrId); 
-        displayQrId = settingEntity.getSettingValueAsBoolean(DisplayQrIdSettingTypeKey, displayQrId); 
+        displayQrId = settingEntity.getSettingValueAsBoolean(DisplayQrIdSettingTypeKey, displayQrId);
         displayOwnerUser = settingEntity.getSettingValueAsBoolean(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
         displayOwnerGroup = settingEntity.getSettingValueAsBoolean(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
         displayCreatedByUser = settingEntity.getSettingValueAsBoolean(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
         displayCreatedOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
         displayLastModifiedByUser = settingEntity.getSettingValueAsBoolean(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         displayLastModifiedOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+        
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         
         displayPropertyTypeId1 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         displayPropertyTypeId2 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
@@ -117,17 +101,14 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     @Override
     protected void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
         super.saveSettingsForSessionSettingEntity(settingEntity);
-        if (isDerivedMachineSettingsWithOwnKeys()) {
-            return;
-        }        
         settingEntity.setSettingValue(DisplayAlternateNameSettingTypeKey, displayAlternateName);
         settingEntity.setSettingValue(DisplayDesignDescriptionSettingTypeKey, displayDescription);
         settingEntity.setSettingValue(DisplayProjectSettingTypeKey, displayItemProject);
         settingEntity.setSettingValue(DisplayLocationSettingTypeKey, displayLocation);
         settingEntity.setSettingValue(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
+        settingEntity.setSettingValue(DisplayHousingSettingTypeKey, displayHousing);
 
         settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
-        settingEntity.setSettingValue(DisplayInstalledQrIdSettingTypeKey, displayInstalledQrId);
         settingEntity.setSettingValue(DisplayQrIdSettingTypeKey, displayQrId);
         settingEntity.setSettingValue(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
         settingEntity.setSettingValue(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
@@ -136,64 +117,22 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
         settingEntity.setSettingValue(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         settingEntity.setSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
         
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        
         settingEntity.setSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         settingEntity.setSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
         settingEntity.setSettingValue(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
         settingEntity.setSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
         settingEntity.setSettingValue(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
     }
+
+    @Override
+    public Boolean getDisplayRowExpansion() {
+        return true;
+    }
     
-    private boolean isDerivedMachineSettingsWithOwnKeys() {
-        if (this instanceof ItemDomainMachineDesignInventorySettings 
-                || this instanceof ItemDomainMachineDesignDeletedItemSettings
-                || this instanceof ItemDomainMachineDesignControlSettings) {
-            return true; 
-        }
-        return false; 
-    }
-        
-    @Override
-    public Boolean getDisplayLocation() {
-        return displayLocation;
-    }
-
-    @Override
-    public Boolean getDisplayLocationDetails() {
-        return displayLocationDetails;
-    } 
-
-    public Boolean getDisplayHousing() {
-        return displayHousing;
-    }
-
-    public void setDisplayHousing(Boolean displayHousing) {
-        this.displayHousing = displayHousing;
-    }
-
-    @Override
-    public Boolean getDisplayItemIdentifier1() {
-        return displayAlternateName;
-    } 
-
-    @Override
-    public void setDisplayItemIdentifier1(Boolean displayItemIdentifier1) {
-        this.displayAlternateName = displayItemIdentifier1; 
-    }
-
-    public void setDisplayLocation(Boolean displayLocation) {
-        this.displayLocation = displayLocation;
-    }
-
-    public void setDisplayLocationDetails(Boolean displayLocationDetails) {
-        this.displayLocationDetails = displayLocationDetails;
-    }
-
-    public Boolean getDisplayInstalledQrId() {
-        return displayInstalledQrId;
-    }
-
-    public void setDisplayInstalledQrId(Boolean displayInstalledQrId) {
-        this.displayInstalledQrId = displayInstalledQrId;
+    public Boolean getDisplayStatus() {
+        return true;
     }
 
 }

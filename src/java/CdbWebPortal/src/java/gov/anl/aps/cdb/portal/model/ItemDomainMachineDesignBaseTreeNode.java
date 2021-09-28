@@ -79,6 +79,11 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
     public ItemDomainMachineDesignBaseTreeNode(Object data) {
         super(data);
     }
+    
+    public boolean getIsTopLevel() {
+        ItemDomainMachineDesignBaseTreeNode parent = this.getParent();
+        return parent.topLevelItems != null;
+    }
 
     private void addTopLevelChildren(List<ItemDomainMachineDesign> topNodes) {
         for (ItemDomainMachineDesign item : topNodes) {
