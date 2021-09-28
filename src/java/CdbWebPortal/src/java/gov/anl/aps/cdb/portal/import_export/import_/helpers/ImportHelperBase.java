@@ -638,8 +638,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 String methodName = "get" + property.substring(0,1).toUpperCase() 
                         + property.substring(1, property.length());
                 Class c = entity.getClass();
-                Method method = c.getMethod(methodName, null);
-                returnValue = method.invoke(entity, null);
+                Method method = c.getMethod(methodName);
+                returnValue = method.invoke(entity);
             } catch (Exception e) {
                 ValidInfo validInfo = new ValidInfo(false, "Unexpected error getting attribute value for column: " 
                         + columnModel.getHeader());

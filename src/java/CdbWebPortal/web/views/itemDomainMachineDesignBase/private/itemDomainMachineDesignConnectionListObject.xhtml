@@ -41,21 +41,15 @@ See LICENSE file.
 
     <ui:param name="itemConnectorObject"
               value="#{mdConnectorListForCurrent.itemConnector}"/> 
-    <ui:param name="connectedToItem"
-              value="#{mdConnectorListForCurrent.connectedToMachineDesign}"/>
+    <ui:param name="connectedToItems"
+              value="#{mdConnectorListForCurrent.connectedToItemsString}"/>
     <ui:param name="connectedViaItem"
               value="#{mdConnectorListForCurrent.cableItem}"/>
 
     <ui:include src="../../itemConnector/private/itemConnectorListObject.xhtml" />
 
-    <p:column headerText="Connected to"
-              exportFunction="#{facesUtility.getToString(connectedToItem)}">
-        <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
-            <ui:param name="itemObject"
-                      value="#{connectedToItem}"/>
-            <ui:param name="viewName"
-                      value="connTo"/>
-        </ui:include>
+    <p:column headerText="Connected to">
+        #{connectedToItems}
     </p:column>
 
     <p:column headerText="Connected via"

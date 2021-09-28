@@ -163,6 +163,7 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
         this.propertyValueList = propertyValueList;
     }
 
+    @Override
     public void addPropertyValueToPropertyValueList(PropertyValue propertyValue) {
         if (propertyValueList == null) {
             propertyValueList = new ArrayList<>();

@@ -146,7 +146,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     return view();
                 }
 
-                refreshConnectionListForCurrent();
+                refreshConnectionListForCurrent(true);
 
                 SessionUtility.executeRemoteCommand(remoteCommandSuccess);
             }
@@ -635,7 +635,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         
         protected void updateItem(String remoteCommandSuccess) {
             String updateResult = update();
-            refreshConnectionListForCurrent();
+            refreshConnectionListForCurrent(true);
             SessionUtility.executeRemoteCommand(remoteCommandSuccess);
 
         }
@@ -1191,17 +1191,25 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
     
     public List<ItemConnector> getUnmappedConnectorsForCurrent(String cableEnd) {
+        
+        List<ItemConnector> result = new ArrayList<>();
         boolean filterCableEnd = (cableEnd != null);
-        List<ItemConnector> unmappedConnectors = new ArrayList<>();
-        if (getCurrent().getItemConnectorList() == null) {
-            return unmappedConnectors;
-        }
-        for (ItemConnector connector : getCurrent().getItemConnectorList()) {
-            if (!connector.isConnected()) {
-                if ((!filterCableEnd) 
-                        || ((connector.getConnector().getCableEndDesignation() != null) && (connector.getConnector().getCableEndDesignation().equals(cableEnd))))
-                unmappedConnectors.add(connector);
+        ItemDomainCableDesign current = getCurrent();
+        List<ItemConnector> unmappedConnectors = current.getSyncedConnectorList();
+        
+        // filter cable end if specified to do so
+        if (filterCableEnd) {
+            // return empty list if filtering but end not specified
+            if ((cableEnd == null) || (cableEnd.isEmpty())) {
+                return result;
             }
+            for (ItemConnector c : unmappedConnectors) {
+                if (c.getConnector().getCableEndDesignation().equals(cableEnd)) {
+                    result.add(c);
+                }
+            }
+        } else {
+            result.addAll(unmappedConnectors);
         }
         
         // sort by end, device name, device port name, cable connector name
@@ -1209,20 +1217,25 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                 = Comparator
                         .comparing((ItemConnector c) -> c.getConnectorCableEndDesignation())
                         .thenComparing(c -> c.getConnectorName().toLowerCase());
-        unmappedConnectors
-                = unmappedConnectors.stream()
-                        .sorted(comparator)
-                        .collect(Collectors.toList());
+        result = result.stream()
+                .sorted(comparator)
+                .collect(Collectors.toList());
 
-        return unmappedConnectors;
+        return result;
     }
 
     public List<CableDesignConnectionListObject> getConnectionListForItem(ItemDomainCableDesign item) {
-        this.getControllerUtility().syncConnectors(item);
         return CableDesignConnectionListObject.getConnectionList(item);
     }
     
     private void refreshConnectionListForCurrent() {
+        refreshConnectionListForCurrent(false);
+    }
+
+    private void refreshConnectionListForCurrent(boolean reload) {
+        if (reload) {
+            reloadCurrent();
+        }
         ItemDomainCableDesign item = getCurrent();
         connectionListForCurrent = getConnectionListForItem(item);
     }
@@ -1250,12 +1263,20 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         }
 
         getCurrent().deleteCableRelationship(cableRelationship);
+        
+        // remove connectors from itemConnectorList for cable and endpoint
+        ItemConnector cableConnector = cableRelationship.getSecondItemConnector();
+        if (cableConnector != null) {
+            getCurrent().getItemConnectorList().remove(cableConnector);
+        }
+        ItemConnector deviceConnector = cableRelationship.getFirstItemConnector();
+        if (deviceConnector != null) {
+            deviceConnector.getItem().getItemConnectorList().remove(deviceConnector);
+        }
 
         String updateResult = update();
-        refreshConnectionListForCurrent();
+        refreshConnectionListForCurrent(true);
         connectionToDelete = null;
-        
-//        SessionUtility.executeRemoteCommand(remoteCommandSuccess);
     }
 
     // <editor-fold defaultstate="collapsed" desc="import/export support">   

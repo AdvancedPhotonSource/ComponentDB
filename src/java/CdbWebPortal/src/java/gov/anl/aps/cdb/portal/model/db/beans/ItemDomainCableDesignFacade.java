@@ -50,7 +50,7 @@ public class ItemDomainCableDesignFacade extends ItemFacadeBase<ItemDomainCableD
         for (ItemElementRelationship ier : entity.getDeletedIerList()) {
             ItemElementRelationshipFacade.getInstance().remove(ier);
         }
-        entity.clearDeletedConnectorList();
+        entity.clearDeletedIerList();
         
         return result;
     }
