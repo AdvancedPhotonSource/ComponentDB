@@ -11,6 +11,8 @@ from enum import Enum, auto, unique
 import openpyxl
 from openpyxl import Workbook
 
+import pandas
+
 CONFIG_SECTION_DEFAULT = "DEFAULT"
 CONFIG_RES_DEFAULT_INPUT_DIR = "inputDir"
 CONFIG_RES_DEFAULT_OUTPUT_DIR = "outputDir"
@@ -20,6 +22,11 @@ CONFIG_RES_LOADER_INPUT_FILE = "inputFile"
 
 CONFIG_SECTION_TAGGER = "TAGGING_MODULE"
 CONFIG_RES_TAGGER_IGNORE_ERRORS = "ignoreErrors"
+
+CONFIG_SECTION_CALCULATOR = "CALCULATOR_MODULE"
+CONFIG_RES_CALCULATOR_PENETRATIONS_FILE = "penetrationsFile"
+CONFIG_SECTION_CALCULATOR_SUFFIX = "_CALCULATOR"
+CONFIG_RES_CALCULATOR_INPUT_FILE = "inputFile"
 
 CONFIG_SECTION_GENERATOR = "GENERATOR"
 CONFIG_RES_GENERATOR_OUTPUT_FILE = "outputFile"
@@ -154,6 +161,32 @@ field_info_map = {
 }
 
 
+class ExcelSheetInputModel(ABC):
+
+    def __init__(self, name):
+        self.sheet_name = name
+        self.sheet = None
+        self.workbook = None
+
+    def set_sheet_name(self, name):
+        self.sheet_name = name
+
+    def get_sheet_name(self):
+        return self.sheet_name
+
+    def set_sheet(self, sheet):
+        self.sheet = sheet
+
+    def set_workbook(self, workbook):
+        self.workbook = workbook
+
+    def get_workbook_filename(self):
+        return self.workbook.get_filename()
+
+    def initialize(self):
+        return True, ""
+
+
 class ExcelRowDictColumnInputModel:
 
     def __init__(self, key, required=False):
@@ -161,22 +194,11 @@ class ExcelRowDictColumnInputModel:
         self.required = required
 
 
-class ExcelRowDictSheetInputModel:
+class ExcelRowDictSheetInputModel(ExcelSheetInputModel):
 
-    def __init__(self, column_specs):
+    def __init__(self, name, column_specs):
+        super().__init__(name)
         self.column_specs = column_specs
-        self.sheet_name = None
-        self.sheet = None
-        self.workbook = None
-
-    def set_sheet_name(self, sheet_name):
-        self.sheet_name = sheet_name
-
-    def set_sheet(self, sheet):
-        self.sheet = sheet
-
-    def set_workbook(self, workbook):
-        self.workbook = workbook
 
     def validate_dimensions(self):
 
@@ -193,10 +215,16 @@ class ExcelRowDictSheetInputModel:
         else:
             return True, ""
 
+    def initialize(self):
+        sheet_init_valid, sheet_init_valid_info = self.validate_dimensions()
+        if not sheet_init_valid:
+            fatal_error(sheet_init_valid_info)
+        return super().initialize()
+
     def load_data(self):
 
         print()
-        print("Loader Progress ====================")
+        print("Loading file: %s sheet: %s ====================" % (self.get_workbook_filename(), self.sheet_name))
         print()
 
         records = []
@@ -244,12 +272,92 @@ class ExcelRowDictSheetInputModel:
         return load_valid, load_valid_info, records
 
 
+class ExcelDataFrameSheetInputModel(ExcelSheetInputModel):
+
+    def __init__(self, name):
+        super().__init__(name)
+        self.frame = None
+
+    def initialize(self):
+
+        (super_init_valid, super_valid_info) = super().initialize()
+        if not super_init_valid:
+            return False, "base class initialization failed: %s" % super_valid_info
+
+        (load_valid, load_valid_info) = self.load_data()
+        if not load_valid:
+            return False, "failed to load data for sheet, info: %s" % load_valid_info
+
+        return True, ""
+
+    def load_data(self):
+
+        print()
+        print("Loading file: %s sheet: %s ====================" % (self.get_workbook_filename(), self.sheet_name))
+        print()
+
+        is_valid = True
+        valid_info = ""
+
+        # iterate sheet rows
+        rows = self.sheet.rows
+        last_row_ind = self.sheet.max_row
+        print("loading %d rows" % (last_row_ind + 1))
+        row_count = 0
+        column_labels = []
+        row_labels = []
+        row_data = []
+        column_labels_next_row = True
+        for row in rows:
+            row_count = row_count + 1
+
+            # skip blank rows
+            blank = True
+            for cell in row:
+                if cell.value is not None:
+                    blank = False
+            if blank:
+                continue
+
+            # skip comment rows
+            cell = row[0]
+            if cell.value is not None:
+                if cell.value[0] == "#":
+                    continue
+
+            # first row after blanks and comments is column labels
+            if column_labels_next_row:
+                column_labels = [cell.value for cell in row[1:]]
+                print("column labels: %s" % str(column_labels))
+                column_labels_next_row = False
+                continue
+
+            # otherwise row contains row label in first cell and data value in subsequent cells
+            else:
+                # add row label to list
+                row_labels.append(row[0].value)
+                # add data values to list of data rows
+                row_data.append(row[1:])
+
+        # create pandas DataFrame with sheet contents
+        print("row labels: %s" % str(row_labels))
+        self.frame = pandas.DataFrame(row_data, columns=column_labels, index=row_labels)
+
+        return is_valid, valid_info
+
+    def get_data(self):
+        return self.frame
+
+
 class ExcelWorkbookInputModel:
 
     def __init__(self):
         self.filename = None
         self.sheets = None
         self.workbook = None
+
+    def get_filename(self):
+        return self.filename
 
     def initialize_for_read(self, filename, sheets):
 
@@ -267,12 +375,16 @@ class ExcelWorkbookInputModel:
         sheet_index = 0
         for sheet in self.sheets:
             sheet_name = sheet_names[sheet_index]
-            sheet.set_sheet_name(sheet_name)
+            if sheet.get_sheet_name() is None:
+                sheet.set_sheet_name(sheet_name)
+            else:
+                if sheet.get_sheet_name() != sheet_name:
+                    return False, "sheet name mismatch, expected: %s actual: %s" % (sheet.get_sheet_name(), sheet_name)
             sheet.set_sheet(self.workbook[sheet_name])
             sheet.set_workbook(self)
-            sheet_init_valid, sheet_init_valid_info = sheet.validate_dimensions()
+            (sheet_init_valid, sheet_init_info) = sheet.initialize()
             if not sheet_init_valid:
-                fatal_error(sheet_init_valid_info)
+                return False, "initialization failed for sheet: %s info: %s" % (sheet_name, sheet_init_info)
             sheet_index = sheet_index + 1
 
         return init_valid, init_valid_info
@@ -409,7 +521,7 @@ class CableInfoLoader:
             ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_END1_DESC, required=True),
             ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_END2_DESC, required=True),
         ]
-        self.sheet = ExcelRowDictSheetInputModel(specs)
+        self.sheet = ExcelRowDictSheetInputModel(name=None, column_specs=specs)
         self.workbook = ExcelWorkbookInputModel()
         (init_wb_valid, init_wb_valid_info) = self.workbook.initialize_for_read(file_input, [self.sheet])
 
@@ -432,12 +544,15 @@ class CableInfoModule(ABC):
     def __init__(self):
         pass
 
+    @abstractmethod
     def initialize(self, config):
         return True, ""
 
+    @abstractmethod
     def process_records(self, records):
         return True, ""
 
+    @abstractmethod
     def finalize(self):
         pass
 
@@ -445,6 +560,7 @@ class CableInfoModule(ABC):
 class TaggingModuleHandler(ABC):
 
     def __init__(self):
+        super().__init__()
         self.handled_record_count = 0
 
     @abstractmethod
@@ -694,6 +810,145 @@ class TaggingModule(CableInfoModule):
                 print(cable_type)
 
 
+class LengthCalculator:
+
+    def __init__(self, batch_id, penetrations_dataframe):
+        super().__init__()
+        self.batch_id = batch_id
+        self.config = None
+        self.sheet_names = None
+        self.workbook_data_dict = {}
+        self.penetrations_dataframe = penetrations_dataframe
+
+    def get_config_section(self):
+        if self.batch_id is None:
+            return ""
+        else:
+            return self.batch_id + CONFIG_SECTION_CALCULATOR_SUFFIX
+
+    def initialize(self, config):
+
+        is_valid = True
+        valid_info = ""
+        self.config = config
+
+        config_resource = CONFIG_RES_CALCULATOR_INPUT_FILE
+        config_section = self.get_config_section()
+        input_filename = get_config_resource(self.config, config_section, config_resource, True)
+        if input_filename is None:
+            is_valid = False
+            valid_info = "failed to get input file config resource: %s from section: %s" % (config_resource, config_section)
+        input_file = get_option_input_dir() + "/" + input_filename
+
+        # initialize and read workbook
+        self.sheet_names = ["METHOD", "PENETRATIONS", "LENGTH-TYPE", "BASE-LENGTHS", "FROM-LENGTH", "TO-LENGTH", "ROUTE"]
+        sheet_list = []
+        for sheet_name in self.sheet_names:
+            sheet = ExcelDataFrameSheetInputModel(sheet_name)
+            sheet_list.append(sheet)
+        workbook = ExcelWorkbookInputModel()
+        (init_wb_valid, init_wb_valid_info) = workbook.initialize_for_read(input_file, sheet_list)
+        if not init_wb_valid:
+            is_valid = False
+            valid_info = "failed to initialize workbook for %s calculator, details: %s" % (self.batch_id, init_wb_valid_info)
+
+        # create dict with workbook sheet data in pandas data frames
+        for sheet in sheet_list:
+            self.workbook_data_dict[sheet.get_sheet_name()] = sheet.get_data()
+
+        return is_valid, valid_info
+
+    def handle_record(self, record):
+
+        is_valid = True
+        valid_info = ""
+
+        print("TODO: handle_record(): %s" % str(record))
+
+        return is_valid, valid_info
+
+    def finalize(self):
+        pass
+
+
+class LengthCalculatorModule(CableInfoModule):
+
+    def __init__(self):
+        super().__init__()
+        self.config = None
+        self.calculator_dict = {}
+        self.penetrations_dataframe = None
+
+    def initialize(self, config):
+
+        print()
+        print("Calculator Module Initialization ====================")
+        print()
+
+        is_valid = True
+        valid_info = ""
+        self.config = config
+
+        # read penetrations file so it can be shared with all calculators in project
+        penetrations_config_resource = CONFIG_RES_CALCULATOR_PENETRATIONS_FILE
+        config_section = CONFIG_SECTION_CALCULATOR
+        penetrations_filename = get_config_resource(config, config_section, penetrations_config_resource, True)
+        if penetrations_filename is None:
+            is_valid = False
+            valid_info = "failed to get penetrations file config resource: %s from section: %s" % (penetrations_config_resource, config_section)
+        penetrations_file = get_option_input_dir() + "/" + penetrations_filename
+
+        # initialize and read workbook
+        sheet = ExcelDataFrameSheetInputModel(None)
+        workbook = ExcelWorkbookInputModel()
+        (init_wb_valid, init_wb_valid_info) = workbook.initialize_for_read(penetrations_file, [sheet])
+        if not init_wb_valid:
+            is_valid = False
+            valid_info = "failed to initialize calculator penetrations workbook, details: %s" % init_wb_valid_info
+
+        # create dict with workbook sheet data in pandas data frames
+        self.penetrations_dataframe = sheet.get_data()
+
+        # create and initialize calculators
+        calculator_names = [SUFFIX_UNIPOLAR_MAGNET_POWER]
+        for name in calculator_names:
+            calculator = LengthCalculator(name, self.penetrations_dataframe)
+            (init_valid, init_valid_info) = calculator.initialize(config)
+            if not init_valid:
+                is_valid = False
+                valid_info = init_valid_info
+                break
+            else:
+                self.calculator_dict[name] = calculator
+
+        return is_valid, valid_info
+
+    def process_records(self, records):
+
+        is_valid = True
+        valid_info = ""
+
+        for record in records:
+
+            if Field.ROUTING_BATCH_ID not in record:
+                return False, "record missing batch ID"
+            else:
+                batch_id = record[Field.ROUTING_BATCH_ID]
+
+            if batch_id not in self.calculator_dict:
+                return False, "no calculator for batch id: %s" % batch_id
+
+            calculator = self.calculator_dict[batch_id]
+            (handle_valid, handle_valid_info) = calculator.handle_record(record)
+            if not handle_valid:
+                return False, "calculator: %s failed to handle record: %s" % (batch_id, str(record))
+
+        return is_valid, valid_info
+
+    def finalize(self):
+        pass
+
+
 class PullListGenerator:
 
     def __init__(self, output_dir, config):
@@ -785,6 +1040,20 @@ def get_config_resource_bool(config, section, key, is_required):
         return True
     else:
         return False
+    
+    
+option_input_dir = None
+option_output_dir = None
+
+
+def get_option_input_dir():
+    global option_input_dir
+    return option_input_dir
+
+
+def get_option_output_dir():
+    global option_output_dir
+    return option_output_dir
 
 
 def main():
@@ -824,11 +1093,13 @@ def main():
     print()
 
     # process inputDir option
+    global option_input_dir
     option_input_dir = get_config_resource(config, CONFIG_SECTION_DEFAULT, CONFIG_RES_DEFAULT_INPUT_DIR, True)
     if not os.path.isdir(option_input_dir):
         fatal_error("'[%s] inputDir' directory: %s does not exist, exiting" % ('DEFAULT', option_input_dir))
 
     # process outputDir option
+    global option_output_dir
     option_output_dir = get_config_resource(config, CONFIG_SECTION_DEFAULT, CONFIG_RES_DEFAULT_OUTPUT_DIR, True)
     if not os.path.isdir(option_output_dir):
         fatal_error("'[%s] outputDir' directory: %s does not exist, exiting" % ('DEFAULT', option_output_dir))
@@ -871,7 +1142,7 @@ def main():
     #
     # Invoke each CableModule for each cable record.
     #
-    module_list = [TaggingModule()]
+    module_list = [TaggingModule(), LengthCalculatorModule()]
     for module in module_list:
         (module_init_valid, module_init_valid_info) = module.initialize(config)
         if not module_init_valid:
