@@ -50,6 +50,11 @@ fi
 
 # Look for deployment file in etc directory, and use it to override
 # default entries
+deployConfigFile=$CDB_INSTALL_DIR/etc/${CDB_DB_NAME}.deploy.`hostname -s`.conf
+if [ ! -f $deployConfigFile ]; then
+    deployConfigFile=$CDB_INSTALL_DIR/etc/${CDB_DB_NAME}.deploy.conf
+fi
+
 deployConfigFile=$CDB_INSTALL_DIR/etc/${CDB_DB_NAME}.deploy.conf
 if [ -f $deployConfigFile ]; then
     echo "Using deployment config file: $deployConfigFile"
