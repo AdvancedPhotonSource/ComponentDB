@@ -55,7 +55,6 @@ if [ ! -f $deployConfigFile ]; then
     deployConfigFile=$CDB_INSTALL_DIR/etc/${CDB_DB_NAME}.deploy.conf
 fi
 
-deployConfigFile=$CDB_INSTALL_DIR/etc/${CDB_DB_NAME}.deploy.conf
 if [ -f $deployConfigFile ]; then
     echo "Using deployment config file: $deployConfigFile"
     . $deployConfigFile
