@@ -946,6 +946,24 @@ h2 {
     table-layout: auto !important;
 }
 
+.ui-datatable .ui-datatable-data > tr > td {    
+    border-width: 1px !important;
+    padding: 5px !important;
+}
+
+.ui-treetable .ui-treetable-data > tr > td {
+    border-width: 1px !important;
+    padding: 2px !important;
+}
+
+.ui-datatable-tablewrapper {
+    overflow: visible; 
+}
+
+.ui-treetable-resizable {
+    overflow: visible; 
+}
+
 .ui-datatable td {
     overflow: visible !important; 
 }
