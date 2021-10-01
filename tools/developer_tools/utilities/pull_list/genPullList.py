@@ -43,6 +43,15 @@ SUFFIX_BIPOLAR_MAGNET_POWER = "BPOW"
 SUFFIX_MAGNET_THERMOCOUPLE = "MAGTC"
 SUFFIX_KLIXON = "KLIX"
 
+CALCULATOR_SHEET_METHOD = "METHOD"
+CALCULATOR_SHEET_PENETRATIONS = "PENETRATIONS"
+CALCULATOR_SHEET_LENGTH_TYPE = "LENGTH-TYPE"
+CALCULATOR_SHEET_BASE_LENGTHS = "BASE-LENGTHS"
+CALCULATOR_SHEET_FROM_LENGTH = "FROM-LENGTH"
+CALCULATOR_SHEET_TO_LENGTH = "TO-LENGTH"
+CALCULATOR_SHEET_ROUTE = "ROUTE"
+
+
 @unique
 class Field(Enum):
     ROW_VALID = auto()
@@ -79,6 +88,13 @@ class Field(Enum):
     ROUTING_CABLE_ID = auto()
     ROUTING_CAD_LENGTH = auto()
     ROUTING_ROUTED_LENGTH = auto()
+    ROUTING_SECTOR = auto()
+    ROUTING_SECTION = auto()
+    ROUTING_MAGNET_TYPE = auto()
+    ROUTING_MAGNET_NUMBER = auto()
+    ROUTING_TRIM = auto()
+    ROUTING_TC_NUMBER = auto()
+    ROUTING_KLIX_NUMBER = auto()
 
 
 LABEL_ROW_VALID = "row valid"
@@ -111,8 +127,6 @@ LABEL_DEST_LOCATION = "dest location"
 LABEL_DEST_DRAWING = "dest drawing"
 LABEL_DEST_END_LENGTH = "dest end length"
 LABEL_DEST_NOTES = "dest notes"
-LABEL_ROUTING_BATCH_ID = "routing batch id"
-LABEL_ROUTING_CABLE_ID = "routing cable id"
 LABEL_ROUTING_CAD_LENGTH = "CAD length"
 LABEL_ROUTING_ROUTED_LENGTH = "routed length"
 
@@ -257,7 +271,7 @@ class ExcelRowDictSheetInputModel(ExcelSheetInputModel):
                     value = ""
                 if required and value == "":
                     row_valid = False
-                    row_valid_info = row_valid_info + "Row: %d missing value for required column %s. " % (row_ind, spec.key)
+                    row_valid_info = row_valid_info + "Row: %d missing value for required column %s. " % (row_count, key)
                 record[key] = cell.value
             record[Field.ROW_VALID] = row_valid
             record[Field.ROW_VALID_INFO] = row_valid_info
@@ -337,7 +351,7 @@ class ExcelDataFrameSheetInputModel(ExcelSheetInputModel):
                 # add row label to list
                 row_labels.append(row[0].value)
                 # add data values to list of data rows
-                row_data.append(row[1:])
+                row_data.append(cell.value for cell in row[1:])
 
         # create pandas DataFrame with sheet contents
         print("row labels: %s" % str(row_labels))
@@ -586,13 +600,19 @@ class MagnetPowerCableHandler(TaggingModuleHandler, ABC):
 
     def match_regex(self, to_device):
         # match regex
+        tagging_dict = {}
         regex_match = MAGNET_REGEX.match(to_device)
         if regex_match:
             sector, section, magnet_type, magnet_number, trim = regex_match.groups()
             cable_id = 'S' + sector + section + '-' + magnet_type + magnet_number + trim + '-' + self.get_batch_id()
-            return True, self.get_batch_id(), cable_id
+            tagging_dict[Field.ROUTING_SECTOR] = sector
+            tagging_dict[Field.ROUTING_SECTION] = section
+            tagging_dict[Field.ROUTING_MAGNET_TYPE] = magnet_type
+            tagging_dict[Field.ROUTING_MAGNET_NUMBER] = magnet_number
+            tagging_dict[Field.ROUTING_TRIM] = trim
+            return True, self.get_batch_id(), cable_id, tagging_dict
         else:
-            return False, None, None
+            return False, None, None, tagging_dict
 
 
 class UnipolarMagnetPowerCableHandler(MagnetPowerCableHandler):
@@ -611,7 +631,7 @@ class UnipolarMagnetPowerCableHandler(MagnetPowerCableHandler):
 
         # check cable type
         if cable_type not in self.cable_types:
-            return False, None, None
+            return False, None, None, {}
         else:
             return self.match_regex(to_device)
 
@@ -631,7 +651,7 @@ class BipolarMagnetPowerCableHandler(MagnetPowerCableHandler):
 
         # check cable type
         if cable_type != BIPOLAR_MAGNET_POWER_CABLE_TYPE:
-            return False, None, None
+            return False, None, None, {}
         else:
             return self.match_regex(to_device)
 
@@ -648,13 +668,20 @@ class MagnetThermocoupleCableHandler(TaggingModuleHandler):
 
         to_device = record.get(Field.CDB_CABLE_END2_DEVICE, None)
 
+        tagging_dict = {}
         regex_match = MAGNET_TC_REGEX.match(to_device)
         if regex_match:
             sector, section, magnet_type, magnet_number, trim, tc_number = regex_match.groups()
             cable_id = 'S' + sector + section + '-' + magnet_type + magnet_number + trim + '_TC' + tc_number + '-' + self.get_batch_id()
-            return True, self.get_batch_id(), cable_id
+            tagging_dict[Field.ROUTING_SECTOR] = sector
+            tagging_dict[Field.ROUTING_SECTION] = section
+            tagging_dict[Field.ROUTING_MAGNET_TYPE] = magnet_type
+            tagging_dict[Field.ROUTING_MAGNET_NUMBER] = magnet_number
+            tagging_dict[Field.ROUTING_TRIM] = trim
+            tagging_dict[Field.ROUTING_TC_NUMBER] = tc_number
+            return True, self.get_batch_id(), cable_id, tagging_dict
         else:
-            return False, None, None
+            return False, None, None, tagging_dict
 
 
 class KlixonCableHandler(TaggingModuleHandler):
@@ -669,13 +696,20 @@ class KlixonCableHandler(TaggingModuleHandler):
 
         to_device = record.get(Field.CDB_CABLE_END2_DEVICE, None)
 
+        tagging_dict = {}
         regex_match = MAGNET_KLIXON_REGEX.match(to_device)
         if regex_match:
             sector, section, magnet_type, magnet_number, trim, klix_number = regex_match.groups()
             cable_id = 'S' + sector + section + '-' + magnet_type + magnet_number + trim + '_TS' + klix_number + '-' + self.get_batch_id()
-            return True, self.get_batch_id(), cable_id
+            tagging_dict[Field.ROUTING_SECTOR] = sector
+            tagging_dict[Field.ROUTING_SECTION] = section
+            tagging_dict[Field.ROUTING_MAGNET_TYPE] = magnet_type
+            tagging_dict[Field.ROUTING_MAGNET_NUMBER] = magnet_number
+            tagging_dict[Field.ROUTING_TRIM] = trim
+            tagging_dict[Field.ROUTING_KLIX_NUMBER] = klix_number
+            return True, self.get_batch_id(), cable_id, tagging_dict
         else:
-            return False, None, None
+            return False, None, None, tagging_dict
 
 
 class TaggingModule(CableInfoModule):
@@ -736,7 +770,7 @@ class TaggingModule(CableInfoModule):
 
                 for handler in self.handlers:
                     handler_name = type(handler).__name__
-                    (handled_record, batch_id, cable_id) = handler.handle(record)
+                    (handled_record, batch_id, cable_id, tagging_dict) = handler.handle(record)
 
                     if handled_record:
 
@@ -753,6 +787,7 @@ class TaggingModule(CableInfoModule):
                             handler.increment_handled_record_count()
                             record[Field.ROUTING_BATCH_ID] = batch_id
                             record[Field.ROUTING_CABLE_ID] = cable_id
+                            record.update(tagging_dict)
                             if handler_name not in self.sample_data_dict:
                                 self.sample_data_dict[handler_name] = (batch_id, cable_id)
                         else:
@@ -841,7 +876,7 @@ class LengthCalculator:
         input_file = get_option_input_dir() + "/" + input_filename
 
         # initialize and read workbook
-        self.sheet_names = ["METHOD", "PENETRATIONS", "LENGTH-TYPE", "BASE-LENGTHS", "FROM-LENGTH", "TO-LENGTH", "ROUTE"]
+        self.sheet_names = [CALCULATOR_SHEET_METHOD, CALCULATOR_SHEET_PENETRATIONS, CALCULATOR_SHEET_LENGTH_TYPE, CALCULATOR_SHEET_BASE_LENGTHS, CALCULATOR_SHEET_FROM_LENGTH, CALCULATOR_SHEET_TO_LENGTH, CALCULATOR_SHEET_ROUTE]
         sheet_list = []
         for sheet_name in self.sheet_names:
             sheet = ExcelDataFrameSheetInputModel(sheet_name)
@@ -863,7 +898,77 @@ class LengthCalculator:
         is_valid = True
         valid_info = ""
 
-        print("TODO: handle_record(): %s" % str(record))
+        # get tagging field values for lookups
+        
+        if Field.ROUTING_SECTOR not in record or record[Field.ROUTING_SECTOR] == "":
+            is_valid = False
+            valid_info = "record is missing sector number"
+            # return failure code or just mark record invalid?  for now, return failure code
+            return is_valid, valid_info
+        else:
+            sector_id = "S" + record[Field.ROUTING_SECTOR]
+        
+        if Field.ROUTING_SECTION not in record or record[Field.ROUTING_SECTION] == "":
+            is_valid = False
+            valid_info = "record is missing section"
+            return is_valid, valid_info
+        else:
+            section_id = record[Field.ROUTING_SECTION]
+            
+        if Field.ROUTING_MAGNET_TYPE not in record or record[Field.ROUTING_MAGNET_TYPE] == "":
+            is_valid = False
+            valid_info = "record is missing magnet type"
+            return is_valid, valid_info
+        else:
+            magnet_type = record[Field.ROUTING_MAGNET_TYPE]
+
+        if Field.ROUTING_MAGNET_NUMBER not in record or record[Field.ROUTING_MAGNET_NUMBER] == "":
+            is_valid = False
+            valid_info = "record is missing magnet number"
+            return is_valid, valid_info
+        else:
+            magnet_number = record[Field.ROUTING_MAGNET_NUMBER]
+
+        device_type_id = section_id + magnet_type + magnet_number
+
+        # determine calculation method
+        method_sheet = self.workbook_data_dict[CALCULATOR_SHEET_METHOD]
+        calculation_method = method_sheet[device_type_id][sector_id]
+
+        if calculation_method == "A":
+
+            # get creo length
+            length_type_sheet = self.workbook_data_dict[CALCULATOR_SHEET_LENGTH_TYPE]
+            length_type_value = length_type_sheet[device_type_id][sector_id]
+            base_lengths_sheet = self.workbook_data_dict[CALCULATOR_SHEET_BASE_LENGTHS]
+            creo_length_value = int(base_lengths_sheet[device_type_id][length_type_value])
+
+            # get penetration length
+            penetrations_sheet = self.workbook_data_dict[CALCULATOR_SHEET_PENETRATIONS]
+            penetration_name_value = penetrations_sheet[device_type_id][sector_id]
+            penetration_length_value = 0
+            if penetration_name_value != "NONE":
+                penetration_tokens = penetration_name_value.split('-')
+                penetration_sector = penetration_tokens[0]
+                penetration_column = penetration_tokens[1]
+                penetrations_length_sheet = self.penetrations_dataframe
+                penetration_length_value = int(penetrations_length_sheet[penetration_column][penetration_sector])
+
+            # get end lengths
+            from_length_sheet = self.workbook_data_dict[CALCULATOR_SHEET_FROM_LENGTH]
+            from_end_length_value = int(from_length_sheet[device_type_id][sector_id])
+            to_length_sheet = self.workbook_data_dict[CALCULATOR_SHEET_TO_LENGTH]
+            to_end_length_value = int(to_length_sheet[device_type_id][sector_id])
+
+            calculated_length_value = creo_length_value + penetration_length_value + from_end_length_value + to_end_length_value
+
+            # set calculated length in record
+            record[Field.ROUTING_ROUTED_LENGTH] = calculated_length_value
+
+        else:
+            is_valid = False
+            valid_info = "calculation method not implemented: %s" % calculation_method
+            return is_valid, valid_info
 
         return is_valid, valid_info
 
@@ -942,6 +1047,8 @@ class LengthCalculatorModule(CableInfoModule):
             (handle_valid, handle_valid_info) = calculator.handle_record(record)
             if not handle_valid:
                 return False, "calculator: %s failed to handle record: %s" % (batch_id, str(record))
+
+            print(record[Field.ROUTING_ROUTED_LENGTH])
 
         return is_valid, valid_info
 
