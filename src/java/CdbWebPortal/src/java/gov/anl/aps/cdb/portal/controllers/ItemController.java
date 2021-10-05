@@ -2183,6 +2183,10 @@ public abstract class ItemController<
 
             if (getCurrent() == null) {
                 loadCurrentFromFlash();
+                ItemDomainEntity current = getCurrent();
+                if (current != null) {
+                    reloadCurrent();                    
+                }
             }
 
             if (getCurrent() == null) {
