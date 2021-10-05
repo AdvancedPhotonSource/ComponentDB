@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import sys
+import warnings
 from abc import ABC, abstractmethod
 from enum import Enum, auto, unique
 
@@ -353,6 +354,17 @@ class ExcelDataFrameSheetInputModel(ExcelSheetInputModel):
                 # add data values to list of data rows
                 row_data.append(cell.value for cell in row[1:])
 
+        # check that row and column labels don't include blanks
+        for label in column_labels:
+            if label is None or label == "":
+                is_valid = False
+                valid_info = "blank value in list of column labels"
+
+        for label in row_labels:
+            if label is None or label == "":
+                is_valid = False
+                valid_info = "blank value in list of row labels"
+
         # create pandas DataFrame with sheet contents
         print("row labels: %s" % str(row_labels))
         self.frame = pandas.DataFrame(row_data, columns=column_labels, index=row_labels)
@@ -382,7 +394,9 @@ class ExcelWorkbookInputModel:
         init_valid_info = ""
 
         # create  openpyxl workbook
-        self.workbook = openpyxl.load_workbook(self.filename, read_only=True, data_only=True)
+        with warnings.catch_warnings(record=True):
+            warnings.simplefilter("always")
+            self.workbook = openpyxl.load_workbook(self.filename, read_only=True, data_only=True)
 
         # process sheets
         sheet_names = self.workbook.sheetnames
@@ -934,33 +948,62 @@ class LengthCalculator:
         # determine calculation method
         method_sheet = self.workbook_data_dict[CALCULATOR_SHEET_METHOD]
         calculation_method = method_sheet[device_type_id][sector_id]
+        if pandas.isnull(calculation_method) or calculation_method == "":
+            is_valid = False
+            valid_info = "missing value in sheet: %s for device id: %s sector id: %s" % (CALCULATOR_SHEET_METHOD, device_type_id, sector_id)
+            return is_valid, valid_info
 
         if calculation_method == "A":
 
             # get creo length
             length_type_sheet = self.workbook_data_dict[CALCULATOR_SHEET_LENGTH_TYPE]
             length_type_value = length_type_sheet[device_type_id][sector_id]
+            if pandas.isnull(length_type_value) or length_type_value == "":
+                is_valid = False
+                valid_info = "missing value in sheet: %s for device id: %s sector id: %s" % (CALCULATOR_SHEET_LENGTH_TYPE, device_type_id, sector_id)
+                return is_valid, valid_info
             base_lengths_sheet = self.workbook_data_dict[CALCULATOR_SHEET_BASE_LENGTHS]
-            creo_length_value = int(base_lengths_sheet[device_type_id][length_type_value])
+            creo_length_value = base_lengths_sheet[device_type_id][length_type_value]
+            if pandas.isnull(creo_length_value) or creo_length_value == "":
+                is_valid = False
+                valid_info = "missing value in sheet: %s for device id: %s length type: %s" % (CALCULATOR_SHEET_BASE_LENGTHS, device_type_id, length_type_value)
+                return is_valid, valid_info
 
             # get penetration length
             penetrations_sheet = self.workbook_data_dict[CALCULATOR_SHEET_PENETRATIONS]
             penetration_name_value = penetrations_sheet[device_type_id][sector_id]
+            if pandas.isnull(penetration_name_value) or penetration_name_value == "":
+                is_valid = False
+                valid_info = "missing value in sheet: %s for device id: %s sector id: %s" % (CALCULATOR_SHEET_PENETRATIONS, device_type_id, sector_id)
+                return is_valid, valid_info
             penetration_length_value = 0
             if penetration_name_value != "NONE":
                 penetration_tokens = penetration_name_value.split('-')
                 penetration_sector = penetration_tokens[0]
                 penetration_column = penetration_tokens[1]
                 penetrations_length_sheet = self.penetrations_dataframe
-                penetration_length_value = int(penetrations_length_sheet[penetration_column][penetration_sector])
+                penetration_length_value = penetrations_length_sheet[penetration_column][penetration_sector]
+                if pandas.isnull(penetration_length_value) or penetration_length_value == "":
+                    is_valid = False
+                    valid_info = "missing value in penetration lengths file for column: %s sector: %s" % (penetration_column, penetration_sector)
+                    return is_valid, valid_info
 
             # get end lengths
             from_length_sheet = self.workbook_data_dict[CALCULATOR_SHEET_FROM_LENGTH]
-            from_end_length_value = int(from_length_sheet[device_type_id][sector_id])
+            from_end_length_value = from_length_sheet[device_type_id][sector_id]
+            if pandas.isnull(from_end_length_value) or from_end_length_value == "":
+                is_valid = False
+                valid_info = "missing value in sheet: %s for device id: %s sector id: %s" % (CALCULATOR_SHEET_FROM_LENGTH, device_type_id, sector_id)
+                return is_valid, valid_info
             to_length_sheet = self.workbook_data_dict[CALCULATOR_SHEET_TO_LENGTH]
-            to_end_length_value = int(to_length_sheet[device_type_id][sector_id])
+            to_end_length_value = to_length_sheet[device_type_id][sector_id]
+            if pandas.isnull(to_end_length_value) or to_end_length_value == "":
+                is_valid = False
+                valid_info = "missing value in sheet: %s for device id: %s sector id: %s" % (CALCULATOR_SHEET_TO_LENGTH, device_type_id, sector_id)
+                return is_valid, valid_info
 
-            calculated_length_value = creo_length_value + penetration_length_value + from_end_length_value + to_end_length_value
+            # calculate length
+            calculated_length_value = int(creo_length_value) + int(penetration_length_value) + int(from_end_length_value) + int(to_end_length_value)
 
             # set calculated length in record
             record[Field.ROUTING_ROUTED_LENGTH] = calculated_length_value
@@ -1046,7 +1089,7 @@ class LengthCalculatorModule(CableInfoModule):
             calculator = self.calculator_dict[batch_id]
             (handle_valid, handle_valid_info) = calculator.handle_record(record)
             if not handle_valid:
-                return False, "calculator: %s failed to handle record: %s" % (batch_id, str(record))
+                return False, "calculator: %s failed to handle cable: %s reason: %s" % (batch_id, record[Field.CDB_CABLE_NAME], handle_valid_info)
 
             print(record[Field.ROUTING_ROUTED_LENGTH])
 
