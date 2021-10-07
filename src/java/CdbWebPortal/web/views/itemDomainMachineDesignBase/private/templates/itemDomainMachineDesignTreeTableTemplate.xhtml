@@ -18,6 +18,8 @@ See LICENSE file.
                  rendered="#{rendered}"
                  styleClass="machineDesignListTreeTable"
                  scrollable="#{scrollable}"
+                 resizableColumns="true"
+                 liveResize="true"
                  sortBy="#{itemElementTreeListObject.sortOrder}"
                  scrollHeight="#{scrollHeight}"
                  value="#{valueModel}"
@@ -26,7 +28,7 @@ See LICENSE file.
                  selection="#{selectionModel}"
                  var="itemElementTreeListObject"
                  nodeVar="machineTreeNode">
-
+        
         <ui:insert name="treeTableEvents" />
 
         <ui:param name="hideOptionalColumns"
