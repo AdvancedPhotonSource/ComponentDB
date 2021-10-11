@@ -82,7 +82,6 @@ prependPathIfDirExists() {
 }
 
 prependPathIfDirExists $CDB_GLASSFISH_DIR/bin
-prependPathIfDirExists $CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin
 prependPathIfDirExists $CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH/bin
 prependPathIfDirExists $CDB_SUPPORT_DIR/ant/bin
 prependPathIfDirExists $CDB_SUPPORT_DIR/netbeans/currentNetbeans/bin
@@ -90,6 +89,14 @@ prependPathIfDirExists $CDB_ROOT_DIR/bin
 prependPathIfDirExists $CDB_SUPPORT_DIR/anaconda/$CDB_HOST_ARCH/bin
 prependPathIfDirExists $CDB_SUPPORT_DIR/netbeans/currentNetbeans/java/maven/bin
 prependPathIfDirExists $CDB_ROOT_DIR/tools/developer_tools/portal_testing/PythonSeleniumTest/support_bin
+
+mysqlPath=$CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH
+if [ -d $mysqlPath ]; then
+    cd $mysqlPath
+    pythonDir=`pwd`
+    export PATH=`pwd`/bin:$PATH
+    export LD_LIBRARY_PATH=`pwd`/lib:$LD_LIBRARY_PATH    
+fi
 
 # Check if we have  local python
 if [ -z $CDB_PYTHON_DIR ]; then

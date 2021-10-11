@@ -30,7 +30,7 @@ class DbManager:
     DB_CONNECTION_LOGGING_FLAG = False
 
     CONFIG_SECTION_NAME = 'DbManager'
-    CONFIG_OPTION_NAME_LIST = [ 'dbSchema', 'dbUser', 'dbPasswordFile' ]
+    CONFIG_OPTION_NAME_LIST = [ 'dbSchema', 'dbUser', 'dbPasswordFile', 'dbHost', 'dbPort' ]
 
     # Singleton.
     __lock = threading.RLock()
