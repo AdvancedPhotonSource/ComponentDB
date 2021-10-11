@@ -54,7 +54,7 @@ BEGIN
 	WHERE ier.relationship_type_id = relationship_type_id AND vitem.name LIKE name_pattern AND vitem.domain_id = domain_id);
 END //
 
-DROP PROCEDURE IF EXISTS fetch_location_item_for_item;//
+DROP PROCEDURE IF EXISTS fetch_location_item_for_locatable_item;//
 CREATE PROCEDURE `fetch_location_item_for_locatable_item` (IN locatable_item_id int) 
 BEGIN
     SET @query = 'SELECT loc_item.* ';
