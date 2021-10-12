@@ -60,8 +60,7 @@ import openpyxl
 import xlsxwriter
 
 from CdbApiFactory import CdbApiFactory
-from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomainCableDesignIdListRequest, \
-    ItemDomanMachineDesignIdListRequest, SourceIdListRequest
+from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomainCableDesignIdListRequest, ItemDomainMachineDesignIdListRequest, SourceIdListRequest
 
 # constants
 
@@ -629,7 +628,7 @@ class EndpointHandler(InputHandler):
         self.description = description
 
     def call_api(self, api, item_names_batch, rack_names_batch):
-        request_obj = ItemDomanMachineDesignIdListRequest(item_names=item_names_batch,
+        request_obj = ItemDomainMachineDesignIdListRequest(item_names=item_names_batch,
                                                           rack_names=rack_names_batch,
                                                           root_name=self.hierarchy_name)
         id_list = api.getMachineDesignItemApi().get_hierarchy_id_list(
@@ -1343,6 +1342,7 @@ class CableTypeHelper(PreImportHelper):
         cable_type_named_range = self.named_range
 
         if len(output_objects) + len(self.existing_cable_types) < name_manager.num_values_for_name(cable_type_named_range):
+
             return False, "named range: %s includes cable types not included in start/end range of script" % cable_type_named_range
 
         return True, ""
