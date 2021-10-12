@@ -1684,6 +1684,14 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         return isItemDeleted;
     }
+    
+    public boolean isItemControl() {
+        return isItemControl(this); 
+    }
+    
+    public static boolean isItemControl(Item item) {
+        return isItemEntityType(item, EntityTypeName.control.getValue());
+    }
 
     public static boolean isItemDeleted(Item item) {
         return isItemEntityType(item, EntityTypeName.deleted.getValue());
