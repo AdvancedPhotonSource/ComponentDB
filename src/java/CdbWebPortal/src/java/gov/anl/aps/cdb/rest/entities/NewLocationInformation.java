@@ -15,6 +15,7 @@ public class NewLocationInformation {
     private Integer locationQrId;
     private String locationType;
     private String locationDescription; 
+    private Float sortOrder;
 
     public NewLocationInformation() {
     }
@@ -57,6 +58,14 @@ public class NewLocationInformation {
 
     public void setLocationDescription(String locationDescription) {
         this.locationDescription = locationDescription;
+    }
+
+    public Float getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Float sortOrder) {
+        this.sortOrder = sortOrder;
     }
           
 }
