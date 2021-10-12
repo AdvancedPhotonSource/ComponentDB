@@ -188,5 +188,17 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
     @Override
     protected EntityTypeName getRelationshipMachineEntityType() {
         return EntityTypeName.control;
-    }   
+    }
+
+    @Override
+    public boolean getEntityDisplayDeletedItems() {
+        return true; 
+    }
+
+    @Override
+    public String deletedItemsList() {
+        String deletedItemsList = super.deletedItemsList();
+        return "/views/itemDomainMachineDesign/" + deletedItemsList; 
+    }
+
 }
