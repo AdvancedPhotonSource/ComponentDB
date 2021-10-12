@@ -10,72 +10,7 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html">  
 
-    <p:dialog id="moveToTrashDialog"
-              header="Move '#{entityController.moveToTrashDisplayName}' to trash"
-              modal="true"
-              widgetVar="moveToTrashDialogWidget"
-              styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
-        <p:panel id="moveToTrashDialogPanel">
-            <p:panelGrid>
-                <p:row>
-                    <p:column>
-                        <div style="white-space: pre-wrap">
-                            <h:outputText id="moveToTrashDialogMessage"
-                                          value="#{entityController.moveToTrashMessage}" />
-                        </div>
-                    </p:column>
-                </p:row>
-                <p:row>
-                    <p:column>
-                        <p:treeTable id="moveToTrashDialogTree"
-                                     value="#{entityController.moveToTrashNode}" 
-                                     var="node"
-                                     styleClass="machineDesignListTreeTable"
-                                     rowStyleClass="#{node.moveToTrashRowStyle}"
-                                     rendered="#{entityController.moveToTrashNode != null}"
-                                     scrollable="true" 
-                                     scrollHeight="150">
-                            
-                            <p:column headerText="Name"
-                                      styleClass="leftAlignedText"
-                                      style="white-space: normal !important; word-break: keep-all !important;">
-                                <h:outputText value="#{node.name}"/>
-                            </p:column>
-                            
-                            <p:column headerText="Error Info"
-                                      styleClass="leftAlignedText"
-                                      style="white-space: normal !important; word-break: keep-all !important;"
-                                      rendered="#{!entityController.moveToTrashAllowed}">
-                                <h:outputText value="#{node.moveToTrashErrorMsg}"/>
-                            </p:column>
-
-                            <p:column headerText="Warning Info"
-                                      styleClass="leftAlignedText"
-                                      style="white-space: normal !important; word-break: keep-all !important;"
-                                      rendered="#{entityController.moveToTrashHasWarnings}">
-                                <h:outputText value="#{node.moveToTrashWarningMsg}"/>
-                            </p:column>
-
-                        </p:treeTable>
-                    </p:column>
-                </p:row>
-                <p:row>
-                    <p:column>
-                        <p:commandButton id="moveToTrashDialogYesButton"
-                                         value="Yes" 
-                                         disabled="#{!entityController.moveToTrashAllowed}"
-                                         actionListener="#{entityController.moveToTrash}"
-                                         onclick="PF('loadingDialog').show()"                         
-                                         update="@form"
-                                         oncomplete="PF('loadingDialog').hide();
-                                         PF('moveToTrashDialogWidget').hide()"/>
-                        <p:commandButton value="No" 
-                                         onclick="PF('moveToTrashDialogWidget').hide();"/>
-                    </p:column>
-                </p:row>
-            </p:panelGrid>
-        </p:panel>
-    </p:dialog>    
+    <ui:include src="itemDomainMachineDesignDualColumnListViewTreeContextMenuMoveToTrashDialog.xhtml" /> 
 
     <p:confirmDialog header="Detach machine element from hierarchy?" severity="alert"
                      widgetVar="detachMachineDesignWidget"
