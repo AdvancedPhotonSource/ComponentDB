@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class ImportHelperMachineAssignTemplate extends ImportHelperBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
 
-    private static final String KEY_MACHINE_ITEM = "Machine Item";
+    private static final String LABEL_MACHINE_ITEM = "Machine Item";
     
     private MachineImportHelperCommon machineImportHelperCommon = null;
     
@@ -54,14 +54,16 @@ public class ImportHelperMachineAssignTemplate extends ImportHelperBase<ItemDoma
     }
     
     @Override
-    protected List getColumnSpecs() {
+    protected List initColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
 
-        specs.add(MachineImportHelperCommon.existingMachineItemColumnSpec(ColumnModeOptions.rUPDATErCOMPARE(), 
+        specs.add(MachineImportHelperCommon.existingMachineItemColumnSpec(
+                ColumnModeOptions.rUPDATErCOMPARE(), 
                 getMachineImportHelperCommon().getRootItem(), 
-                KEY_MACHINE_ITEM, 
+                LABEL_MACHINE_ITEM, 
                 "getName"));
+        
         specs.add(MachineImportHelperCommon.templateInvocationColumnSpec(
                 ColumnModeOptions.rUPDATErCOMPARE()));
 

@@ -9,6 +9,8 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <p:dataTable value="#{entityController.itemsCreatedFromCurrentTemplateItem}"
+                 sortMode="single"
+                 stripedRows="true"
                  var="itemListObject">
         <ui:include src="itemListObject.xhtml" />
     </p:dataTable>

@@ -22,10 +22,12 @@ See LICENSE file.
     <ui:param name="displayEntityTypeName" value="#{entityController.displayEntityTypeName}"/>
 
     <ui:param name="itemListTreeTableValue" value="#{itemListTreeTableValue != null ? itemListTreeTableValue : entityController.itemsWithNoParentsRootNode}" />    
+    <!-- PF10 tree pre-render solution --> 
+    <ui:param name="itemListActualTreeTableValue" value="#{listTreeTableRendered ? itemListTreeTableValue : null}" />    
 
     <p:treeTable id="#{entityTypeName}ListTreeTable#{viewName}"
                  widgetVar="#{entityTypeName}ListTreeTable#{viewName}Widget"
-                 value="#{itemListTreeTableValue}"
+                 value="#{itemListActualTreeTableValue}"
                  var="itemListObject" 
                  resizableColumns="true"
                  liveResize="true"

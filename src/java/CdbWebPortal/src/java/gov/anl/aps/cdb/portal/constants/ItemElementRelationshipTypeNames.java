@@ -5,18 +5,34 @@
 package gov.anl.aps.cdb.portal.constants;
 
 public enum ItemElementRelationshipTypeNames {
-        itemLocation("Location"),
-        itemCableConnection("Cable Connection"),
-        maarc("MAARC Connection"),
-        template("Created From Template");
+    itemLocation("Location", ItemElementRelationshipTypeNames.LOCATION_ID),
+    itemCableConnection("Cable Connection", ItemElementRelationshipTypeNames.CABLE_CONNECTION),
+    maarc("MAARC Connection", ItemElementRelationshipTypeNames.MAARC_CONNECTION_ID),
+    template("Created From Template", ItemElementRelationshipTypeNames.TEMPLATE_ID),
+    control("Controlled By", ItemElementRelationshipTypeNames.CONTROLLED_BY_ID),
+    power("Powered By", ItemElementRelationshipTypeNames.POWERED_BY_ID);
 
-        private String value;
+    public final static int LOCATION_ID = 1;
+    public final static int MAARC_CONNECTION_ID = 2;
+    public final static int TEMPLATE_ID = 3; 
+    public final static int CABLE_CONNECTION = 4;
+    public final static int CONTROLLED_BY_ID = 5;
+    public final static int POWERED_BY_ID = 6; 
 
-        private ItemElementRelationshipTypeNames(String value) {
-            this.value = value;
-        }
+    private String value;
+    private int dbId;
 
-        public String getValue() {
-            return value;
-        }
-    };
+    private ItemElementRelationshipTypeNames(String value, int id) {
+        this.value = value;
+        this.dbId = id;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public int getDbId() {
+        return dbId;
+    }
+    
+};

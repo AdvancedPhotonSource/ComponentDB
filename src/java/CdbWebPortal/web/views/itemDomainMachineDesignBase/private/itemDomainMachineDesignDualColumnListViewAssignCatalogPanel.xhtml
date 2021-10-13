@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui">   
+
+
+    <p:panel header="Assign Catalog to Machine Element"
+             id="assignCatalogListConfigurationPanel"
+             rendered="#{entityController.displayAssignCatalogItemListConfigurationPanel}">
+
+        <ui:include src="../../item/private/itemSelectDataTable.xhtml">
+            <ui:param name="updateTarget" value="assignCatalogListConfigurationPanel" />
+            <ui:param name="overrideSelectionValue" value="#{true}" /> 
+            <ui:param name="selectionValue" value="#{entityController.catalogForElement}" />            
+            <ui:param name="entityController" value="#{itemDomainCatalogController}" />     
+            <ui:param name="viewName" value="assignCatalogSelection" />
+        </ui:include>
+        
+        <p:commandButton value="Save"
+                         id="assignCatalogToMachineDesignSave"
+                         icon="fa fa-save"
+                         action="#{entityController.completeAssignCatalogListConfiguration()}"/> 
+        <ui:include src="itemDomainMachineDesignDualColumnListViewCancelButton.xhtml" />
+
+    </p:panel>
+
+
+</ui:composition>
+
+

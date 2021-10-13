@@ -28,11 +28,11 @@ See LICENSE file.
         
         <f:facet name="footer">
             <p:commandButton value="Save"
-                             icon="ui-icon-disk"
+                             icon="fa fa-save"
                              action="#{itemElementController.updateWithoutRedirect()}"
                              update="@form"/>
             <p:commandButton value="Cancel"
-                             icon="ui-icon-close"
+                             icon="fa fa-close"
                              update="itemElementEditContainedItemDialog #{itemElementController.entityTypeName}EditListDataTable"
                              action="#{itemElementController.revertContainedItemForCurrent()}"
                              oncomplete="PF('itemElementEditContainedItemDialogWidget').hide()"

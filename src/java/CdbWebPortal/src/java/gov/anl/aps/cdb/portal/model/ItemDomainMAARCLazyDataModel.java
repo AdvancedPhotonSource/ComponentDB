@@ -28,6 +28,6 @@ public class ItemDomainMAARCLazyDataModel extends ItemLazyDataModel<ItemDomainMA
 
     @Override
     protected ItemDomainMaarcQueryBuilder getQueryBuilder(Map filterMap, String sortField, SortOrder sortOrder) {
-        return new ItemDomainMaarcQueryBuilder(itemDomain, filterMap, sortField, sortOrder); 
+        return new ItemDomainMaarcQueryBuilder(itemDomain.getId(), filterMap, sortField, sortOrder); 
     }
 }

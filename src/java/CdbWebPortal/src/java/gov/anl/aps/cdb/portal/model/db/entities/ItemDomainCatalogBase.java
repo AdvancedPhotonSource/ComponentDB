@@ -23,6 +23,9 @@ public abstract class ItemDomainCatalogBase<InventoryItem extends Item> extends 
 
     @JsonIgnore
     public String getSourceString() {
+        if ((sourceString == null) && (getId() != null)) {
+            return getExportManufacturerName();
+        }
         return sourceString;
     }
 

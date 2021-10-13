@@ -43,6 +43,22 @@ public class ItemDomainMachineDesignFacade extends ItemFacadeBase<ItemDomainMach
         ); 
     }
     
+    public List<ItemDomainMachineDesign> getTopLevelMachineDesignControl() {
+        return findByDomainAndEntityTypeAndTopLevelExcludeEntityType(
+                ItemDomainName.machineDesign.getValue(),
+                EntityTypeName.control.getValue(),
+                EntityTypeName.deleted.getValue()
+        ); 
+    }
+    
+    public List<ItemDomainMachineDesign> getTopLevelMachineDesignPower() {
+        return findByDomainAndEntityTypeAndTopLevelExcludeEntityType(
+                ItemDomainName.machineDesign.getValue(),
+                EntityTypeName.power.getValue(),
+                EntityTypeName.deleted.getValue()
+        ); 
+    }
+    
     public List<ItemDomainMachineDesign> getTopLevelMachineDesignInventory() {        
         return findByDomainAndEntityTypeAndTopLevelOrderByDerivedFromItemExcludeEntityType(
                 ItemDomainName.machineDesign.getValue(),

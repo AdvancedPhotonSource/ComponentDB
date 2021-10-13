@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author darek
  */
-public class ItemDomainMachineDesignInventoryControllerUtility extends ItemDomainMachineDesignControllerUtility implements IItemStatusControllerUtility {
+public class ItemDomainMachineDesignInventoryControllerUtility extends ItemDomainMachineDesignBaseControllerUtility implements IItemStatusControllerUtility {
     
     private static final Logger logger = LogManager.getLogger(ItemDomainMachineDesignInventoryControllerUtility.class.getName());
         

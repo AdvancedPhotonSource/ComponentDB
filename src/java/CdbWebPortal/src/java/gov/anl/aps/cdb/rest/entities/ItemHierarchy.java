@@ -64,7 +64,8 @@ public class ItemHierarchy {
     }
 
     public static ItemHierarchy createSingleNodeHierarchyFromTreeNode(TreeNode node) {
-        TreeNode parentNode = node.getChildren().get(0);
+        List<TreeNode> children = node.getChildren();
+        TreeNode parentNode = children.get(0);
         ItemHierarchy singleNodeHierarchy = null;
         ItemHierarchy parentHierarchy = null;
 
@@ -80,7 +81,8 @@ public class ItemHierarchy {
                 parentHierarchy = child;
             }
             if (parentNode.getChildren().size() > 0) {
-                parentNode = parentNode.getChildren().get(0);
+                List<TreeNode> children1 = parentNode.getChildren();
+                parentNode = children1.get(0);
             } else {
                 parentNode = null;
             }

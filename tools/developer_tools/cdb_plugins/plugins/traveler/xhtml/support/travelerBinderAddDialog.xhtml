@@ -40,6 +40,8 @@ See LICENSE file.
                              value="#{travelerDomainInstanceController.availableTemplates}"
                              selection="#{travelerDomainInstanceController.newBinderTemplateSelection}"
                              rowKey="#{travelerTemplateObject.id}"
+                             sortMode="single"
+                             stripedRows="true"
                              var="travelerTemplateObject">
                     <p:ajax event="rowSelect"
                             onstart="updateTravelerBinderTemplateSelectionListDataTable()"/>
@@ -78,7 +80,7 @@ See LICENSE file.
 
             </p:panelGrid>
         </p:outputPanel>       
-        
+
         <p:remoteCommand name="updateTravelerBinderTemplateSelectionListDataTable"
                          onstart="PF('loadingDialog').show()"
                          oncomplete="PF('loadingDialog').hide()"
@@ -94,7 +96,7 @@ See LICENSE file.
                              icon="fa fa-close"
                              onclick="PF('travelerBinderAddDialogWidget').hide()"/>                             
         </f:facet>
-        
+
         <p:remoteCommand name="successTravelerInstanceAddBinder"
                          oncomplete="PF('travelerBinderAddDialogWidget').hide();"
                          update="@form"/>        

@@ -14,7 +14,7 @@ See LICENSE file.
             <p:submenu label="Browse"
                        id="browseByDropdownButton"
                        icon="fa fa-search"
-                       styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') 
+                       styleClass="wideSubMenu #{(fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') 
                                      or fn:startsWith(view.viewId, '/views/itemDomainInventory/browse')) ? 'activeSubMenuParentItem' : ''} ">
                 <p:menuitem value="Browse By Function" 
                             id="browseByFunctionButton"
@@ -49,7 +49,7 @@ See LICENSE file.
                             url="#{request.contextPath}/views/itemDomainCableCatalog/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableCatalog/list') ? 'activeMenuItem' : ''} "/>
             </p:submenu>
-            
+
             <p:submenu label="Inventory"
                        icon="ui-icon-inventory"
                        id="inventoryDropdownButton"
@@ -71,36 +71,49 @@ See LICENSE file.
                             url="#{request.contextPath}/views/itemDomainMachineDesignInventory/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesignInventory/list') ? 'activeMenuItem' : ''} "/>                                
             </p:submenu>
-            
+
             <p:submenu label="Design"
                        id="designMenubarDropdownButton"
                        icon="ui-icon-design"
                        styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/list') 
-                                     or fn:startsWith(view.viewId, '/views/itemDomainCableDesign/list')) ? 'activeSubMenuParentItem' : ''} ">
+                                     or fn:startsWith(view.viewId, '/views/itemDomainCableDesign/list')
+                                     or fn:startsWith(view.viewId, '/views/itemDomainMachineDesignPower/list')
+                                     or fn:startsWith(view.viewId, '/views/itemDomainMachineDesignControl/list')) ? 'activeSubMenuParentItem' : ''} ">
                 <p:menuitem value="Machine"
                             id="machineDesignMenubarButton"
                             icon="ui-icon-machine-design"
                             url="#{request.contextPath}/views/itemDomainMachineDesign/list"
-                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/list') ? 'activeMenuItem' : ''} "/>
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/list') ? 'activeMenuItem' : ''} "/>                
                 <p:menuitem value="Cable"
                             id="cableDesignMenubarButton"
                             icon="ui-icon-cable-design"
                             url="#{request.contextPath}/views/itemDomainCableDesign/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableDesign/list') ? 'activeMenuItem' : ''} "/>
+                <p:menuitem value="Control"
+                            id="machineControlMenubarButton"
+                            icon="fa fa-code"
+                            url="#{request.contextPath}/views/itemDomainMachineDesignControl/list"
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesignControl/list') ? 'activeMenuItem' : ''} "/>
+                <p:menuitem value="Power"
+                            id="machinePowerMenubarButton"
+                            icon="fa fa-bolt"
+                            rendered="#{false}"
+                            url="#{request.contextPath}/views/itemDomainMachineDesignPower/list"
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesignPower/list') ? 'activeMenuItem' : ''} "/>
             </p:submenu>
-            
+
             <p:menuitem value="MAARC" 
                         icon="ui-icon-maarc"
                         id="maarcMenubarButton" url="#{request.contextPath}/views/itemDomainMAARC/list" 
                         rendered="#{resources.EnabledMAARCDomainFunctionality}"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMAARC/') ? 'activeMenuItem' : ''} "/>
-            
-            
+
+
             <f:facet name="options">
-                <p:panelGrid columns="2" styleClass="plainPanelGrid">                         
-                    <p:column>                        
+                <p:menubar styleClass="menuBarSupportingItems">    
+                    <p:menuitem styleClass="noButtonMenuItem">
                         <p:inputText id="menuBarSearchInput" placeholder="Search"
-                                     autocomplete="off"
+                                     autocomplete="off"                                 
                                      styleClass="expandingInputText entityDataText menuBarInputText" 
                                      value="#{searchController.inputBoxSearchString}" 
                                      title="Search String"/>
@@ -109,18 +122,16 @@ See LICENSE file.
                                          style="display: none" 
                                          update="@form" 
                                          action="#{searchController.performInputBoxSearch()}"/>
-                    </p:column>
-                    
-                    <p:menubar styleClass="menuBarSupportingItems">                        
-                        <ui:include src="portalViewSupplementalMenubar.xhtml"/>                       
-                        <p:menuitem value="Settings"
-                                    action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit')}" 
-                                    rendered="#{loginController.loggedIn}" icon="fa fa-cogs"/>
-                        <p:menuitem value="Login" id="loginButton" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" icon="fa fa-sign-in"/>
-                        <p:menuitem value="Logout" id="logoutButton" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="fa fa-sign-out"/>
-                        <p:menuitem value="About" url="#{request.contextPath}/views/about.xhtml" icon="fa fa-question"/>
-                    </p:menubar>                    
-                </p:panelGrid>
+                    </p:menuitem>
+                  
+                    <ui:include src="portalViewSupplementalMenubar.xhtml"/>                       
+                    <p:menuitem value="Settings"
+                                action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit')}" 
+                                rendered="#{loginController.loggedIn}" icon="fa fa-cogs"/>
+                    <p:menuitem value="Login" id="loginButton" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" icon="fa fa-sign-in"/>
+                    <p:menuitem value="Logout" id="logoutButton" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="fa fa-sign-out"/>
+                    <p:menuitem value="About" url="#{request.contextPath}/views/about.xhtml" icon="fa fa-question"/>
+                </p:menubar>
             </f:facet>
         </p:menubar>
         <p:tooltip for="maarcMenubarButton" value="Measurement and Analysis Archive" />

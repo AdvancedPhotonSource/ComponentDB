@@ -22,6 +22,8 @@ See LICENSE file.
             <p:dataTable value="#{parentItemElement.itemElementHistoryList}"
                          var="itemElementHistory"
                          paginator="true"
+                         sortMode="single"
+                         stripedRows="true"
                          rows="10">
                 <p:column headerText="Parent Location">
                     <ui:param name="parentItem"

@@ -207,15 +207,18 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     }
 
     public boolean isDisplayRowExpansionElementsList(ItemElement itemElement) {
+        if (itemElement == null) {
+            return false; 
+        }
         if (itemElement.getContainedItem() != null) {
             return !itemElement.getContainedItem().getItemElementDisplayList().isEmpty();
         }
         return false;
     }
 
-    public TreeNode getItemElementListTreeTableRootNode(ItemElement parent) {
-
+    public TreeNode getItemElementListTreeTableRootNode(ItemElement parent) {        
         if (parent.getChildItemElementListTreeTableRootNode() == null) {
+            logger.debug("Generating item element tree table."); 
             try {
                 if (parent.getContainedItem() != null) {
                     parent.setChildItemElementListTreeTableRootNode(ItemElementUtility.createItemElementRoot(parent.getContainedItem()));

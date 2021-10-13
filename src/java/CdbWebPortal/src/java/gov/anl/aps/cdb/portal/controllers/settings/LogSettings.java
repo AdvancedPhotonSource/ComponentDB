@@ -103,11 +103,11 @@ public class LogSettings extends CdbEntitySettingsBase<LogController>{
         if (dataTable == null) {
             return;
         }
-        Map<String, FilterMeta> filters = dataTable.getFilterBy();
-        filterByEnteredByUser = (String) filters.get("enteredByUser").getFilterField();
-        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime").getFilterField();
-        filterByText = (String) filters.get("text").getFilterField();
-        filterByTopic = (String) filters.get("topic").getFilterField();
+        Map<String, FilterMeta> filters = dataTable.getFilterByAsMap();
+        filterByEnteredByUser = (String) filters.get("enteredByUser").getField();
+        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime").getField();
+        filterByText = (String) filters.get("text").getField();
+        filterByTopic = (String) filters.get("topic").getField();
     }
     
     @Override

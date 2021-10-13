@@ -6,7 +6,9 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemConnectorControllerUtility;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -229,6 +231,19 @@ public class ItemConnector extends CdbEntity implements Serializable {
         return "gov.anl.aps.cdb.portal.model.db.entities.ItemConnector[ id=" + id + " ]";
     }
     
+    @Override
+    public ItemConnectorControllerUtility getControllerUtility() {
+        return new ItemConnectorControllerUtility(); 
+    }
+    
+    @Override
+    public void addPropertyValueToPropertyValueList(PropertyValue propertyValue) {
+        if (propertyValueList == null) {
+            propertyValueList = new ArrayList<>();
+        }
+        propertyValueList.add(0, propertyValue);
+    }
+
     public boolean isConnected() {
         List<ItemElementRelationship> relationshipList = getItemElementRelationshipList();
         if ((relationshipList != null) && (!relationshipList.isEmpty())) {

@@ -17,6 +17,8 @@ See LICENSE file.
                  value="#{entityObject.logList}"
                  filteredValue="#{logController.filteredObjectList}"
                  rows="#{logSettingObject.displayNumberOfItemsPerPage}"
+                 sortMode="single"
+                 stripedRows="true"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
                  editable="true"
@@ -29,7 +31,7 @@ See LICENSE file.
             <div class="actionLink">
                 <p:commandLink id="#{entityTypeName}LogUploadAttachmentButton" 
                                oncomplete="PF('logAttachmentUploadDialogWidget').show()" 
-                               styleClass="ui-icon ui-icon-circle-arrow-n"
+                               styleClass="fa fa-link-icon fa-upload"
                                update="@form">
                     <f:setPropertyActionListener value="#{logObject}" target="#{logAttachmentUploadBean.logEntry}"/>
                     <p:tooltip for="#{entityTypeName}LogUploadAttachmentButton" value="Upload #{entityTypeName} log attachment."/>
@@ -37,7 +39,7 @@ See LICENSE file.
                 <p:commandLink id="#{entityTypeName}LogDestroyButton" 
                                action="#{entityController.deleteLog(logObject)}" 
                                actionListener="#{logController.destroy(logObject)}"
-                               styleClass="ui-icon ui-icon-trash" title="Delete" 
+                               styleClass="fa fa-link-icon fa-trash" title="Delete" 
                                update="#{entityTypeName}LogEditListDataTable">
                     <p:tooltip for="#{entityTypeName}LogDestroyButton" value="Delete #{entityTypeName} log entry."/>
                 </p:commandLink>

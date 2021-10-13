@@ -4,7 +4,7 @@ from datetime import datetime
 from CdbApiFactory import CdbApiFactory
 from cdbApi import OpenApiException, ItemStatusBasicObject, NewLocationInformation, SimpleLocationInformation, \
     LogEntryEditInformation, PropertyValue, PropertyMetadata, ConciseItemOptions, NewMachinePlaceholderOptions, \
-    NewCatalogInformation, NewInventoryInformation, NewCatalogElementInformation, UpdateMachineAssignedItemInformation
+    NewCatalogInformation, NewInventoryInformation, NewCatalogElementInformation, NewControlRelationshipInformation, UpdateMachineAssignedItemInformation
 
 
 class MyTestCase(unittest.TestCase):
@@ -12,6 +12,7 @@ class MyTestCase(unittest.TestCase):
     TEST_USER_PASSWORD = 'cdb'
     ADMIN_USERNAME = 'cdb'
     ADMIN_PASSWORD = 'cdb'
+    PROJECT_ID = 1
     CATALOG_ITEM_ID = 2
     CATALOG_ITEM_ID_2 = 18
     INVENTORY_ITEM_ID = 56
@@ -24,6 +25,10 @@ class MyTestCase(unittest.TestCase):
     MACHINE_DESIGN_ID = 93
     MACHINE_DESIGN_PARENT_ID = 94
     MACHINE_DESIGN_CHILD_ID = 95
+    INVALID_CONTROL_INTERFACE = "Some other interface"
+    MD_CONTROL_NAME_TOP_LEVEL = "Top Control Node"
+    MD_CONTROL_NAME_TOP_LEVEL_2 = "Another Control Node"
+    MD_CONTROL_NAME = "ioctest"
     TEST_PROPERTY_TYPE_NAME = "Test Property"
     LOCATION_QRID_TESTUSER_PERMISSIONS = 101111101
     TEST_NEW_CATALOG_ITEM_NAME = "new catalog from test"
@@ -525,6 +530,80 @@ class MyTestCase(unittest.TestCase):
 
         self.assertEqual(self.verify_contained_item(hierarchy, self.MACHINE_DESIGN_CHILD_ID), True,
                          msg='The move item command failed to move machine to new parent.')
+
+    def test_md_control_api(self):
+        self.loginAsAdmin()
+
+        top_level_placeholder_opts = NewMachinePlaceholderOptions(name=self.MD_CONTROL_NAME_TOP_LEVEL,
+                                                                  project_id=self.PROJECT_ID)
+        top_level_control_node = self.machineDesignApi.create_control_element(top_level_placeholder_opts)
+        self.assertNotEqual(top_level_control_node, None, msg='No result given from create top level control element')
+
+        top_level_2_placeholder_opts = NewMachinePlaceholderOptions(name=self.MD_CONTROL_NAME_TOP_LEVEL_2,
+                                                                  project_id=self.PROJECT_ID)
+        another_top_level_control_node = self.machineDesignApi.create_control_element(top_level_2_placeholder_opts)
+        self.assertNotEqual(another_top_level_control_node, None,
+                            msg='No result given from create second top level control element')
+
+        next_level_placeholder_opts = NewMachinePlaceholderOptions(name=self.MD_CONTROL_NAME)
+        control_node = self.machineDesignApi.create_placeholder(top_level_control_node.id, next_level_placeholder_opts)
+        self.assertNotEqual(control_node, None, msg='No result given from create next level control element')
+
+        property_type = self.propertyTypeApi.get_control_interface_to_parent_property_type()
+        self.assertNotEqual(property_type, None, msg='Failed to fetch control interface property type.')
+        first_allowed_value = property_type.sorted_allowed_property_value_list[0]
+        valid_control_interface = first_allowed_value.value
+
+        # Try to create a control relationship between control elements.
+        between_control_element_relationship_opts = NewControlRelationshipInformation(
+            controlling_machine_id=control_node.id,
+            controlled_machine_id=another_top_level_control_node.id,
+            control_interface_to_parent=valid_control_interface
+        )
+        failed = False
+        try:
+            self.machineDesignApi.create_control_relationship(between_control_element_relationship_opts)
+        except OpenApiException as ex:
+            failed = True
+
+        self.assertEqual(failed, True,
+                         msg='No exception, control element controlled by control element.')
+
+        machine_control_relationship_opts = NewControlRelationshipInformation(
+            controlled_machine_id=self.MACHINE_DESIGN_PARENT_ID,
+            controlling_machine_id=self.MACHINE_DESIGN_CHILD_ID,
+            control_interface_to_parent=valid_control_interface)
+
+        # try create machine relationship before hierarchy
+        failed = False
+        try:
+            self.machineDesignApi.create_control_relationship(machine_control_relationship_opts)
+        except OpenApiException as ex:
+            failed = True
+
+        self.assertEqual(failed, True,
+                         msg='No exception, Machine controlling machine without connection to control hierarchy.')
+
+        control_relationship_opts = NewControlRelationshipInformation(controlled_machine_id=self.MACHINE_DESIGN_CHILD_ID,
+                                                                      controlling_machine_id=control_node.id,
+                                                                      control_interface_to_parent=valid_control_interface)
+        control_result = self.machineDesignApi.create_control_relationship(control_relationship_opts)
+        self.assertNotEqual(control_result, None, msg='No result given from creation of initial controlled machine.')
+
+        control_result = self.machineDesignApi.create_control_relationship(machine_control_relationship_opts)
+        self.assertNotEqual(control_result, None, msg='No result given from creation of machine controlled by machine.')
+
+        # try invalid type
+        invalid_type_relationship_opts = NewControlRelationshipInformation(controlled_machine_id=self.MACHINE_DESIGN_ID,
+                                                                           controlling_machine_id=self.MACHINE_DESIGN_PARENT_ID,
+                                                                           control_interface_to_parent=self.INVALID_CONTROL_INTERFACE)
+        failed = False
+        try:
+            self.machineDesignApi.create_control_relationship(invalid_type_relationship_opts)
+        except OpenApiException as ex:
+            failed = True
+
+        self.assertEqual(failed, True, msg='Invalid control interface was entered without exception.')  
 
     def test_user_route(self):
         users = self.userApi.get_all1()

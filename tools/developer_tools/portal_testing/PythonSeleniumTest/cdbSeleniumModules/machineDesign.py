@@ -49,12 +49,8 @@ class MachineDesign(CdbSeleniumModuleBase):
 		projectFilter = self._wait_for_xpath('//*[@id="addComponentForm:itemProjectSelectCB_panel"]/div[1]/div[2]/input')
 		projectFilter.send_keys(project)
 
-		selectAllProjectsXpath = '//*[@id="addComponentForm:itemProjectSelectCB_panel"]/div[1]/div[1]'
-		selectAllProjects = self._find_by_xpath(selectAllProjectsXpath)
-		action = ActionChains(self.driver)
-		action.move_to_element(selectAllProjects)
-		action.move_by_offset(0, 30)
-		action.click().perform()
+		selectAllProjectsXpath = '//*[@id="addComponentForm:itemProjectSelectCB_panel"]/div[1]/div[1]/div[2]'
+		self._click_on_xpath(selectAllProjectsXpath)
 
 		self._click_on_id('addComponentForm:itemProjectSelectCB')
 

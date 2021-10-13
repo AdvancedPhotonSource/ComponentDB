@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                template="../../../item/private/templates/itemViewPanelGridTemplate.xhtml">
+
+    <ui:param name="locationObjectSrc"
+              value="#{entityController.currentViewIsTemplate 
+                       ? '../../common/private/commonEmptyPage.xhtml' 
+                       : '../../locatableItem/private/locatableItemViewPanelGridObject.xhtml'}" />
+
+    <ui:define name="itemEntityTypeValue">
+        <ui:include src="../../../item/private/templateDefaults/itemFieldViewValues/itemEntityType.xhtml">
+            <!--Prevent future possible inplace edit for entity type.-->
+            <ui:param name="isEntityWriteable" value="#{false}" />
+        </ui:include>
+    </ui:define>
+
+    <ui:define name="additionalQRIDPanelGridContent">
+        <h:outputLabel for="assignedQrId" 
+                       value="Installed QR Id"
+                       rendered="#{!entityController.currentViewIsTemplate}"
+                       styleClass="entityDataEmphasizedLabel"/>
+        <h:outputText value="#{itemObject.assignedItem.qrIdDisplay}" 
+                      title="QR Id" styleClass="entityDataEmphasizedText" 
+                      rendered="#{!entityController.currentViewIsTemplate}" />
+    </ui:define>
+
+    <ui:define name="additionalItemInformation">
+        <ui:include src="../#{locationObjectSrc}" >
+            <ui:param name="locataionMenuModelActionName" 
+                      value="getMachineDesignLocationMenuModel" /> 
+            <ui:param name="locataionMenuModelObjectParam"
+                      value="#{entityController.getCurrentHierarchyItemElementForItem(itemObject)}" /> 
+        </ui:include>
+
+        <h:outputText value="Assigned Item" />
+        <ui:include src="../itemDomainMachineDesignAssignedItemFragment.xhtml">
+            <ui:param name="assignedItem"
+                      value="#{itemObject.assignedItem}"/>
+        </ui:include>
+
+        <ui:insert name="additionalMdItemInformation" />
+    </ui:define>
+
+</ui:composition>
+
+

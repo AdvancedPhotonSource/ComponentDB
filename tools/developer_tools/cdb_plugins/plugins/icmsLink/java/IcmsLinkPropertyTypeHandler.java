@@ -46,7 +46,11 @@ public class IcmsLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
         try { 
             byte[] stampedPDFByteArray = icmsWatermarkUtility.generateICMSPDFDocument(propertyValue.getValue());
             InputStream inputStream = new ByteArrayInputStream(stampedPDFByteArray); 
-            return new DefaultStreamedContent(inputStream, MIME_CONENT_TYPE, propertyValue.getValue() + ".pdf"); 
+            DefaultStreamedContent.Builder builder = DefaultStreamedContent.builder();
+            builder.stream(() -> inputStream);
+            builder.contentType(MIME_CONENT_TYPE); 
+            builder.name(propertyValue.getValue() + ".pdf"); 
+            return builder.build(); 
         } catch (CdbException ex) {
             logger.error("ERROR: " + ex.getMessage());
             SessionUtility.addErrorMessage("Error", ex.getMessage());

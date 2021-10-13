@@ -61,8 +61,8 @@ See LICENSE file.
                 <ui:include src="../../item/private/itemSelectDataTable.xhtml">
                     <ui:param name="viewName" value="travelerInstanceMoveDialog"/>
                     <ui:param name="updateTarget" value="#{updateAddNewAssemblyItemDialogIds}" />
-                    <ui:param name="selectionValue" value="#{newItemElement.containedItem}" />
-                    <ui:param name="selectionTarget" value="#{newItemElement.containedItem}" />                    
+                    <ui:param name="overrideSelectionValue" value="#{true}" /> 
+                    <ui:param name="selectionValue" value="#{newItemElement.containedItem}" />                    
                     <ui:param name="additionalSelectionMadeRemoteCommands" value="addNewAssemblyItemSelected();" /> 
                 </ui:include>
 
@@ -137,10 +137,10 @@ See LICENSE file.
                                  oncomplete="PF('loadingDialog').hide()"
                                  disabled="#{!currentItemController.currentEditItemElementSaveButtonEnabled}" 
                                  action="#{currentItemController.validateCreateSingleItemElementSimpleDialog('onSuccessDialogAddItemElementValidation()', 'Error Adding Assembly Item')}"                                 
-                                 icon="ui-icon-plus"/>
+                                 icon="fa fa-plus"/>
 
                 <p:commandButton value="Close" 
-                                 icon="ui-icon-arrowreturnthick-1-w"
+                                 icon="fa fa-close"
                                  oncomplete="PF('addNewAssemblyItemDialogWidget').hide()"
                                  action="#{entityController.cancelCreateSingleItemElementSimpleDialog()}"
                                  />

@@ -551,7 +551,11 @@ public class PdmLinkDrawingBean implements Serializable {
         pdmLinkImage = null;
 
         if (imageByteArray != null) {
-            pdmLinkImage = new DefaultStreamedContent(new ByteArrayInputStream(imageByteArray), "image/jpg");
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(imageByteArray);
+            DefaultStreamedContent.Builder builder = DefaultStreamedContent.builder();
+            builder.stream(() -> inputStream);
+            builder.contentType("image/jpg"); 
+            pdmLinkImage = builder.build(); 
         }
     }
 
