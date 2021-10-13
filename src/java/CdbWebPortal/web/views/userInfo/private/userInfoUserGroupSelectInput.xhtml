@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">   
+
+    <h:outputLabel for="userGroupsColumn" value="Groups" styleClass="entityDataLabel"/>
+    <p:column rendered="#{isFieldWriteable}"
+              id="userGroupsColumn">
+        <p:selectCheckboxMenu id="userGroups"                                  
+                              label="#{userInfoObject.userGroupListString}"
+                              value="#{userInfoObject.userGroupList}" 
+                              onHide="updateUserGroups()"
+                              converter="userGroupConverter"
+                              filter="true" filterMatchMode="contains" >
+            <f:selectItems var="userGroup" value="#{userGroupController.availableItems}" itemLabel="#{userGroup.name}" itemValue="#{userGroup}"/>
+        </p:selectCheckboxMenu>
+        <p:remoteCommand name="updateUserGroups"
+                         action="#{userInfoController.updateUserGroupListStringForCurrent()}"
+                         update="userGroups" />
+    </p:column>
+    <h:outputText id="userGroupsOutput" value="#{userInfoController.userGroupListString}" rendered="#{!isFieldWriteable}" title="Group" styleClass="entityDataText"/>
+    <p:message for="userGroupsColumn"/>
+    <p:tooltip for="userGroupsColumn" value="User group specification is optional. More than one group may be selected."/>
+    
+</ui:composition>
+
+
