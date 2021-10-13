@@ -1161,6 +1161,7 @@ public class ItemRoute extends ItemBaseRoute {
 
         Integer parentLocationId = newLocationInformation.getParentLocationId();
         if (parentLocationId != null) {
+            Float sortOrder = newLocationInformation.getSortOrder();
             Item parentItem = locControllerUtility.findById(parentLocationId);
             if (parentItem == null) {
                 throw new InvalidArgument("Could not find item with parent location item id: " + parentLocationId);
@@ -1173,6 +1174,7 @@ public class ItemRoute extends ItemBaseRoute {
 
             ItemElement ie = locControllerUtility.createItemElement(parentLocation, currentUser);
             ie.setContainedItem(newLocationItem);
+            ie.setSortOrder(sortOrder);
 
             newLocationItem.setItemElementMemberList(new ArrayList<>());
             newLocationItem.getItemElementMemberList().add(ie); 
