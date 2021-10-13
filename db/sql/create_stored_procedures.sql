@@ -54,7 +54,7 @@ BEGIN
 	WHERE ier.relationship_type_id = relationship_type_id AND vitem.name LIKE name_pattern AND vitem.domain_id = domain_id);
 END //
 
-DROP PROCEDURE IF EXISTS fetch_location_item_for_item;//
+DROP PROCEDURE IF EXISTS fetch_location_item_for_locatable_item;//
 CREATE PROCEDURE `fetch_location_item_for_locatable_item` (IN locatable_item_id int) 
 BEGIN
     SET @query = 'SELECT loc_item.* ';
@@ -158,9 +158,9 @@ END//
 drop procedure if exists is_item_attributes_unique//
 create procedure `is_item_attributes_unique` 
 (IN item_domain_id INT, 
-IN item_name VARCHAR(64), 
-IN new_item_identifier1 VARCHAR(32), 
-IN new_item_identifier2 VARCHAR(32), 
+IN item_name VARCHAR(128), 
+IN new_item_identifier1 VARCHAR(128), 
+IN new_item_identifier2 VARCHAR(128), 
 IN new_derived_from_item_id INT,
 IN existing_item_id INT,
 OUT unique_result BOOLEAN)
@@ -199,8 +199,8 @@ END//
 DROP procedure IF EXISTS is_item_attributes_valid//
 CREATE procedure is_item_attributes_valid
 	(IN domain_id INT,
-	IN item_identifier1 VARCHAR(32),
-	IN item_identifier2 VARCHAR(32),
+	IN item_identifier1 VARCHAR(128),
+	IN item_identifier2 VARCHAR(128),
 	OUT error_message VARCHAR(128),
 	OUT item_identifier1_label varchar(32),
 	OUT item_identifier2_label varchar(32)
@@ -238,9 +238,9 @@ END//
 DROP FUNCTION IF EXISTS check_item//
 CREATE FUNCTION check_item
 	(domain_id INT, 
-	item_name VARCHAR(64), 
-	item_identifier1 VARCHAR(32), 
-	item_identifier2 VARCHAR(32), 
+	item_name VARCHAR(128), 
+	item_identifier1 VARCHAR(128), 
+	item_identifier2 VARCHAR(128), 
 	derived_from_item_id INT,
 	existing_item_id INT)
 RETURNS BOOLEAN
