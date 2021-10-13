@@ -12,8 +12,6 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCatalogSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCatalogConnectors;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCatalogFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
@@ -66,6 +64,11 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
         return new ItemDomainCatalogSettings(this);
     }
 
+    @Override
+    public String getDisplayItemConnectorName() {
+        return "port";
+    }
+    
     public List<ItemDomainInventory> getInventorySparesList() {
         ItemDomainCatalog current = getCurrent();
         List<ItemDomainInventory> inventorySparesList = current.getInventorySparesList();
