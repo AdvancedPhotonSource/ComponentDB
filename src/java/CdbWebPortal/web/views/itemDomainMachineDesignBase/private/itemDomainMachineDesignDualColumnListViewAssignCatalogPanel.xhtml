@@ -15,9 +15,10 @@ See LICENSE file.
 
         <ui:include src="../../item/private/itemSelectDataTable.xhtml">
             <ui:param name="updateTarget" value="assignCatalogListConfigurationPanel" />
-            <ui:param name="overrideSelectionDataModel" value="#{true}" /> 
+            <ui:param name="overrideSelectionValue" value="#{true}" /> 
             <ui:param name="selectionValue" value="#{entityController.catalogForElement}" />            
-            <ui:param name="entityController" value="#{itemDomainCatalogController}" />                                            
+            <ui:param name="entityController" value="#{itemDomainCatalogController}" />     
+            <ui:param name="viewName" value="assignCatalogSelection" />
         </ui:include>
         
         <p:commandButton value="Save"

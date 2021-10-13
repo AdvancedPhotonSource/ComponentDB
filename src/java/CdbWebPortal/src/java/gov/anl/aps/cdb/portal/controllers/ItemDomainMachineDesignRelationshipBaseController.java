@@ -34,7 +34,7 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
 
     private ItemDomainMachineDesignRelationshipTreeNode removeMachineDesignRootTreeNode;
 
-    protected abstract EntityTypeName getRelationshipMachineEntityType();  
+    protected abstract EntityTypeName getRelationshipMachineEntityType();
 
     public List<ItemDomainMachineDesign> getMachineElementsRelatedToCurrent() {
         ItemDomainMachineDesign current = getCurrent();
@@ -42,10 +42,10 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
         if (current != null) {
             machineElementsRelatedToCurrent = current.getMachineElementsRelatedToThis();
 
-            if (machineElementsRelatedToCurrent == null) {                
+            if (machineElementsRelatedToCurrent == null) {
                 ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();
                 int relationshipId = relationshipTypeName.getDbId();
-                machineElementsRelatedToCurrent = itemDomainMachineDesignFacade.fetchRelationshipChildrenItems(current.getId(), relationshipId);                 
+                machineElementsRelatedToCurrent = itemDomainMachineDesignFacade.fetchRelationshipChildrenItems(current.getId(), relationshipId);
 
                 current.setMachineElementsRelatedToThis(machineElementsRelatedToCurrent);
             }
@@ -154,7 +154,7 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
         updateCurrentUsingSelectedItemInTreeTable();
 
         try {
-            performApplyRelationship(); 
+            performApplyRelationship();
         } catch (InvalidArgument ex) {
             LOGGER.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getMessage());
@@ -195,25 +195,25 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
         if (matchEntityType) {
             loadViewModeUrlParameter();
         }
-    } 
+    }
 
     @Override
-    public void processPreRenderList() {        
+    public void processPreRenderList() {
         super.processPreRenderList();
-        
+
         String paramValue = SessionUtility.getRequestParameterValue("id");
-        
+
         if (paramValue != null) {
             Integer idParam = Integer.parseInt(paramValue);
             ItemDomainMachineDesign result = itemDomainMachineDesignFacade.find(idParam);
-            
+
             if (result != null) {
                 ItemDomainMachineDesignRelationshipTreeNode machineDesignTreeRootTreeNode = getMachineDesignTreeRootTreeNode();
                 expandToSpecificMachineDesignItemByRelationship(getRelationshipTypeName(), machineDesignTreeRootTreeNode, result);
             }
         }
     }
-    
+
     public String showInHousingHierarchyForSelectedTreeNode() {
         updateCurrentUsingSelectedItemInTreeTable();
 
@@ -241,10 +241,10 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
 
         return rootTreeNode;
     }
-    
+
     @Override
     public ItemDomainMachineDesignRelationshipTreeNode createMachineTreeNodeInstance() {
-        return new ItemDomainMachineDesignRelationshipTreeNode(); 
+        return new ItemDomainMachineDesignRelationshipTreeNode();
     }
 
     public void machineRelatedByCurrentItemSelected(NodeSelectEvent nodeSelection) {
@@ -299,6 +299,26 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
     @Override
     public boolean isCurrentViewIsStandard() {
         // Disable favorites + drag & drop
+        return false;
+    }
+
+    @Override
+    public boolean getMachineHasHousingColumn() {
+        return true;
+    }
+
+    @Override
+    public boolean getEntityDisplayTemplates() {
+        return false;
+    }
+
+    @Override
+    public boolean getEntityDisplayDeletedItems() {
+        return false;
+    }
+
+    @Override
+    public boolean getEntityDisplayImportButton() {
         return false; 
     }
 

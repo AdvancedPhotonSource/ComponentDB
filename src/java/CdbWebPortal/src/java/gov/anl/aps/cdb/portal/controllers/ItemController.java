@@ -2183,6 +2183,10 @@ public abstract class ItemController<
 
             if (getCurrent() == null) {
                 loadCurrentFromFlash();
+                ItemDomainEntity current = getCurrent();
+                if (current != null) {
+                    reloadCurrent();                    
+                }
             }
 
             if (getCurrent() == null) {
@@ -2312,6 +2316,9 @@ public abstract class ItemController<
     }
 
     public List<Item> getItemsCreatedFromTemplateItem(Item templateItem) {
+        if (templateItem == null) {
+            return null; 
+        }
         return templateItem.getItemsCreatedFromThisTemplateItem();
     }
 

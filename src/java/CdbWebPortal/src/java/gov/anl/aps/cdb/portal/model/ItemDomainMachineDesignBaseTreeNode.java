@@ -17,6 +17,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.comparator.ItemSelfElementSortOrderComparator;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,8 +70,10 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
         this.domain = domain;
         config.setDesignFacade(facade);
         this.topLevelItems = items;
+        // Make sure the sort order is correct for top level nodes 
+        this.topLevelItems.sort(new ItemSelfElementSortOrderComparator()); 
 
-        addTopLevelChildren(items);
+        addTopLevelChildren(this.topLevelItems);
 
         this.setExpanded(true);
         childrenLoaded = true;
@@ -78,6 +81,11 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
 
     public ItemDomainMachineDesignBaseTreeNode(Object data) {
         super(data);
+    }
+    
+    public boolean getIsTopLevel() {
+        ItemDomainMachineDesignBaseTreeNode parent = this.getParent();
+        return parent.topLevelItems != null;
     }
 
     private void addTopLevelChildren(List<ItemDomainMachineDesign> topNodes) {

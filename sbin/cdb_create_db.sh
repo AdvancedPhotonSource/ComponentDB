@@ -128,6 +128,8 @@ if [ ! -z "$CDB_DB_ADMIN_PASSWORD" ]; then
     mysqlCmd="$mysqlCmd -p$CDB_DB_ADMIN_PASSWORD"
 fi
 
+mysqlUserCmd="mysql $CDB_DB_NAME --port=$CDB_DB_PORT --host=$CDB_DB_HOST -u $CDB_DB_USER -p$CDB_DB_PASSWORD"
+
 execute() {
     msg="$@"
     if [ ! -z "$CDB_DB_ADMIN_PASSWORD" ]; then
@@ -158,7 +160,9 @@ execute "$mysqlCmd < $sqlFile"
 mysqlCmd="$mysqlCmd -D $CDB_DB_NAME <"
 execute $mysqlCmd create_cdb_tables.sql
 execute $mysqlCmd create_views.sql
-execute $mysqlCmd create_stored_procedures.sql
+
+mysqlUserCmd="$mysqlUserCmd -D $CDB_DB_NAME <"
+execute $mysqlUserCmd create_stored_procedures.sql
 
 # create db password file
 if [ ! -d $CDB_ETC_DIR ]; then

@@ -40,6 +40,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.comparator.ItemElementSortOrderComparator;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -48,7 +49,6 @@ import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -799,11 +799,10 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     }
 
     public void prepareAssignInventoryMachineDesignListConfiguration() {
+        updateCurrentUsingSelectedItemInTreeTable();
         setCurrentEditItemElement((ItemElement) selectedItemInListTreeTable.getData());
         ItemElement currentEditItemElement = getCurrentEditItemElement();
-        setCatalogForElement(currentEditItemElement.getCatalogItem());
-
-        prepareUpdateInstalledInventoryItem();
+        setCatalogForElement(currentEditItemElement.getCatalogItem());        
 
         displayAssignInventoryItemListConfigurationPanel = true;
         displayListConfigurationView = true;
@@ -1110,30 +1109,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             mockTopLevelMachineDesign.getFullItemElementList().add(mockItemElement);
         }
 
-        mockTopLevelMachineDesign.getFullItemElementList().sort(new Comparator<ItemElement>() {
-            @Override
-            public int compare(ItemElement o1, ItemElement o2) {
-                Float sortOrder = o1.getSortOrder();
-                Float sortOrder1 = o2.getSortOrder();
-
-                if (ObjectUtility.equals(sortOrder, sortOrder1)) {
-                    return 0;
-                }
-
-                if (sortOrder == null && sortOrder1 != null) {
-                    return -1;
-                }
-
-                if (sortOrder != null && sortOrder1 == null) {
-                    return 1;
-                }
-
-                if (sortOrder > sortOrder1) {
-                    return 1;
-                }
-                return -1;
-            }
-        });
+        mockTopLevelMachineDesign.getFullItemElementList().sort(new ItemElementSortOrderComparator());
 
         setCurrent(mockTopLevelMachineDesign);
 
@@ -1809,12 +1785,6 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     }
 
-    public void prepareUpdateInstalledInventoryItem() {
-        ItemElement currentEditItemElement = getCurrentEditItemElement();
-
-        setCatalogForElement(currentEditItemElement.getCatalogItem());
-    }
-
     public DataModel getInstalledInventorySelectionForCurrentElement() {
         ItemDomainMachineDesign current = getCurrent();
         if (current == null) {
@@ -1845,6 +1815,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     public DataModel getTopLevelMachineDesignSelectionList() {
         ItemDomainMachineDesign current = getCurrent();
+
         if (current != null) {
             DataModel topLevelMachineDesignSelectionList = current.getTopLevelMachineDesignSelectionList();
             if (topLevelMachineDesignSelectionList == null) {
@@ -2376,6 +2347,10 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     @Override
     public boolean getEntityHasSortableElements() {
         return true;
+    }
+        
+    public boolean getMachineHasHousingColumn() {
+        return false;
     }
 
     @Override
