@@ -427,8 +427,8 @@ public class UserInfo extends SettingEntity implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return "gov.anl.aps.cdb.portal.model.db.entities.UserInfo[ id=" + id + " ]";
+    public String toString() {                
+        return lastName + ", " + firstName + " (" + username + ")"; 
     }
 
     @Override

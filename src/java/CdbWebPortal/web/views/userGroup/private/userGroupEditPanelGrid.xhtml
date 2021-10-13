@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../../simpleEntity/private/templates/simpleEntityEditPanelGridTemplate.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">      
+        
+    <ui:define name="additionalSimpleEntityInformation">        
+        <h:outputLabel for="users"                        
+                       value="Users" 
+                       styleClass="entityDataLabel"/>
+        
+        <p:column>
+            <p:selectCheckboxMenu id="users"                                  
+                                  label="#{simpleEntityObject.userInfoListString}"
+                                  value="#{simpleEntityObject.userInfoList}" 
+                                  onHide="updateUsers()"                                  
+                                  filter="true" filterMatchMode="contains" >
+                <f:selectItems value="#{userInfoController.availableItems}" /> 
+
+            </p:selectCheckboxMenu>
+            <p:remoteCommand name="updateUsers"
+                             update="users" />
+        </p:column>
+
+    </ui:define>
+</ui:composition>
+
+
