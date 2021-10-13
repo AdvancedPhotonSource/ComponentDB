@@ -5,11 +5,14 @@ import logging
 import os
 import re
 import sys
+import warnings
 from abc import ABC, abstractmethod
 from enum import Enum, auto, unique
 
 import openpyxl
 from openpyxl import Workbook
+
+import pandas
 
 CONFIG_SECTION_DEFAULT = "DEFAULT"
 CONFIG_RES_DEFAULT_INPUT_DIR = "inputDir"
@@ -20,6 +23,11 @@ CONFIG_RES_LOADER_INPUT_FILE = "inputFile"
 
 CONFIG_SECTION_TAGGER = "TAGGING_MODULE"
 CONFIG_RES_TAGGER_IGNORE_ERRORS = "ignoreErrors"
+
+CONFIG_SECTION_CALCULATOR = "CALCULATOR_MODULE"
+CONFIG_RES_CALCULATOR_PENETRATIONS_FILE = "penetrationsFile"
+CONFIG_SECTION_CALCULATOR_SUFFIX = "_CALCULATOR"
+CONFIG_RES_CALCULATOR_INPUT_FILE = "inputFile"
 
 CONFIG_SECTION_GENERATOR = "GENERATOR"
 CONFIG_RES_GENERATOR_OUTPUT_FILE = "outputFile"
@@ -35,6 +43,15 @@ SUFFIX_UNIPOLAR_MAGNET_POWER = "UPOW"
 SUFFIX_BIPOLAR_MAGNET_POWER = "BPOW"
 SUFFIX_MAGNET_THERMOCOUPLE = "MAGTC"
 SUFFIX_KLIXON = "KLIX"
+
+CALCULATOR_SHEET_METHOD = "METHOD"
+CALCULATOR_SHEET_PENETRATIONS = "PENETRATIONS"
+CALCULATOR_SHEET_LENGTH_TYPE = "LENGTH-TYPE"
+CALCULATOR_SHEET_BASE_LENGTHS = "BASE-LENGTHS"
+CALCULATOR_SHEET_FROM_LENGTH = "FROM-LENGTH"
+CALCULATOR_SHEET_TO_LENGTH = "TO-LENGTH"
+CALCULATOR_SHEET_ROUTE = "ROUTE"
+
 
 @unique
 class Field(Enum):
@@ -72,6 +89,13 @@ class Field(Enum):
     ROUTING_CABLE_ID = auto()
     ROUTING_CAD_LENGTH = auto()
     ROUTING_ROUTED_LENGTH = auto()
+    ROUTING_SECTOR = auto()
+    ROUTING_SECTION = auto()
+    ROUTING_MAGNET_TYPE = auto()
+    ROUTING_MAGNET_NUMBER = auto()
+    ROUTING_TRIM = auto()
+    ROUTING_TC_NUMBER = auto()
+    ROUTING_KLIX_NUMBER = auto()
 
 
 LABEL_ROW_VALID = "row valid"
@@ -104,8 +128,6 @@ LABEL_DEST_LOCATION = "dest location"
 LABEL_DEST_DRAWING = "dest drawing"
 LABEL_DEST_END_LENGTH = "dest end length"
 LABEL_DEST_NOTES = "dest notes"
-LABEL_ROUTING_BATCH_ID = "routing batch id"
-LABEL_ROUTING_CABLE_ID = "routing cable id"
 LABEL_ROUTING_CAD_LENGTH = "CAD length"
 LABEL_ROUTING_ROUTED_LENGTH = "routed length"
 
@@ -154,6 +176,32 @@ field_info_map = {
 }
 
 
+class ExcelSheetInputModel(ABC):
+
+    def __init__(self, name):
+        self.sheet_name = name
+        self.sheet = None
+        self.workbook = None
+
+    def set_sheet_name(self, name):
+        self.sheet_name = name
+
+    def get_sheet_name(self):
+        return self.sheet_name
+
+    def set_sheet(self, sheet):
+        self.sheet = sheet
+
+    def set_workbook(self, workbook):
+        self.workbook = workbook
+
+    def get_workbook_filename(self):
+        return self.workbook.get_filename()
+
+    def initialize(self):
+        return True, ""
+
+
 class ExcelRowDictColumnInputModel:
 
     def __init__(self, key, required=False):
@@ -161,22 +209,11 @@ class ExcelRowDictColumnInputModel:
         self.required = required
 
 
-class ExcelRowDictSheetInputModel:
+class ExcelRowDictSheetInputModel(ExcelSheetInputModel):
 
-    def __init__(self, column_specs):
+    def __init__(self, name, column_specs):
+        super().__init__(name)
         self.column_specs = column_specs
-        self.sheet_name = None
-        self.sheet = None
-        self.workbook = None
-
-    def set_sheet_name(self, sheet_name):
-        self.sheet_name = sheet_name
-
-    def set_sheet(self, sheet):
-        self.sheet = sheet
-
-    def set_workbook(self, workbook):
-        self.workbook = workbook
 
     def validate_dimensions(self):
 
@@ -193,10 +230,16 @@ class ExcelRowDictSheetInputModel:
         else:
             return True, ""
 
+    def initialize(self):
+        sheet_init_valid, sheet_init_valid_info = self.validate_dimensions()
+        if not sheet_init_valid:
+            fatal_error(sheet_init_valid_info)
+        return super().initialize()
+
     def load_data(self):
 
         print()
-        print("Loader Progress ====================")
+        print("Loading file: %s sheet: %s ====================" % (self.get_workbook_filename(), self.sheet_name))
         print()
 
         records = []
@@ -229,7 +272,7 @@ class ExcelRowDictSheetInputModel:
                     value = ""
                 if required and value == "":
                     row_valid = False
-                    row_valid_info = row_valid_info + "Row: %d missing value for required column %s. " % (row_ind, spec.key)
+                    row_valid_info = row_valid_info + "Row: %d missing value for required column %s. " % (row_count, key)
                 record[key] = cell.value
             record[Field.ROW_VALID] = row_valid
             record[Field.ROW_VALID_INFO] = row_valid_info
@@ -244,12 +287,103 @@ class ExcelRowDictSheetInputModel:
         return load_valid, load_valid_info, records
 
 
+class ExcelDataFrameSheetInputModel(ExcelSheetInputModel):
+
+    def __init__(self, name):
+        super().__init__(name)
+        self.frame = None
+
+    def initialize(self):
+
+        (super_init_valid, super_valid_info) = super().initialize()
+        if not super_init_valid:
+            return False, "base class initialization failed: %s" % super_valid_info
+
+        (load_valid, load_valid_info) = self.load_data()
+        if not load_valid:
+            return False, "failed to load data for sheet, info: %s" % load_valid_info
+
+        return True, ""
+
+    def load_data(self):
+
+        print()
+        print("Loading file: %s sheet: %s ====================" % (self.get_workbook_filename(), self.sheet_name))
+        print()
+
+        is_valid = True
+        valid_info = ""
+
+        # iterate sheet rows
+        rows = self.sheet.rows
+        last_row_ind = self.sheet.max_row
+        print("loading %d rows" % (last_row_ind + 1))
+        row_count = 0
+        column_labels = []
+        row_labels = []
+        row_data = []
+        column_labels_next_row = True
+        for row in rows:
+            row_count = row_count + 1
+
+            # skip blank rows
+            blank = True
+            for cell in row:
+                if cell.value is not None:
+                    blank = False
+            if blank:
+                continue
+
+            # skip comment rows
+            cell = row[0]
+            if cell.value is not None:
+                if cell.value[0] == "#":
+                    continue
+
+            # first row after blanks and comments is column labels
+            if column_labels_next_row:
+                column_labels = [cell.value for cell in row[1:]]
+                print("column labels: %s" % str(column_labels))
+                column_labels_next_row = False
+                continue
+
+            # otherwise row contains row label in first cell and data value in subsequent cells
+            else:
+                # add row label to list
+                row_labels.append(row[0].value)
+                # add data values to list of data rows
+                row_data.append(cell.value for cell in row[1:])
+
+        # check that row and column labels don't include blanks
+        for label in column_labels:
+            if label is None or label == "":
+                is_valid = False
+                valid_info = "blank value in list of column labels"
+
+        for label in row_labels:
+            if label is None or label == "":
+                is_valid = False
+                valid_info = "blank value in list of row labels"
+
+        # create pandas DataFrame with sheet contents
+        print("row labels: %s" % str(row_labels))
+        self.frame = pandas.DataFrame(row_data, columns=column_labels, index=row_labels)
+
+        return is_valid, valid_info
+
+    def get_data(self):
+        return self.frame
+
+
 class ExcelWorkbookInputModel:
 
     def __init__(self):
         self.filename = None
         self.sheets = None
         self.workbook = None
+
+    def get_filename(self):
+        return self.filename
 
     def initialize_for_read(self, filename, sheets):
 
@@ -260,19 +394,25 @@ class ExcelWorkbookInputModel:
         init_valid_info = ""
 
         # create  openpyxl workbook
-        self.workbook = openpyxl.load_workbook(self.filename, read_only=True, data_only=True)
+        with warnings.catch_warnings(record=True):
+            warnings.simplefilter("always")
+            self.workbook = openpyxl.load_workbook(self.filename, read_only=True, data_only=True)
 
         # process sheets
         sheet_names = self.workbook.sheetnames
         sheet_index = 0
         for sheet in self.sheets:
             sheet_name = sheet_names[sheet_index]
-            sheet.set_sheet_name(sheet_name)
+            if sheet.get_sheet_name() is None:
+                sheet.set_sheet_name(sheet_name)
+            else:
+                if sheet.get_sheet_name() != sheet_name:
+                    return False, "sheet name mismatch, expected: %s actual: %s" % (sheet.get_sheet_name(), sheet_name)
             sheet.set_sheet(self.workbook[sheet_name])
             sheet.set_workbook(self)
-            sheet_init_valid, sheet_init_valid_info = sheet.validate_dimensions()
+            (sheet_init_valid, sheet_init_info) = sheet.initialize()
             if not sheet_init_valid:
-                fatal_error(sheet_init_valid_info)
+                return False, "initialization failed for sheet: %s info: %s" % (sheet_name, sheet_init_info)
             sheet_index = sheet_index + 1
 
         return init_valid, init_valid_info
@@ -409,7 +549,7 @@ class CableInfoLoader:
             ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_END1_DESC, required=True),
             ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_END2_DESC, required=True),
         ]
-        self.sheet = ExcelRowDictSheetInputModel(specs)
+        self.sheet = ExcelRowDictSheetInputModel(name=None, column_specs=specs)
         self.workbook = ExcelWorkbookInputModel()
         (init_wb_valid, init_wb_valid_info) = self.workbook.initialize_for_read(file_input, [self.sheet])
 
@@ -432,12 +572,15 @@ class CableInfoModule(ABC):
     def __init__(self):
         pass
 
+    @abstractmethod
     def initialize(self, config):
         return True, ""
 
+    @abstractmethod
     def process_records(self, records):
         return True, ""
 
+    @abstractmethod
     def finalize(self):
         pass
 
@@ -445,6 +588,7 @@ class CableInfoModule(ABC):
 class TaggingModuleHandler(ABC):
 
     def __init__(self):
+        super().__init__()
         self.handled_record_count = 0
 
     @abstractmethod
@@ -470,13 +614,19 @@ class MagnetPowerCableHandler(TaggingModuleHandler, ABC):
 
     def match_regex(self, to_device):
         # match regex
+        tagging_dict = {}
         regex_match = MAGNET_REGEX.match(to_device)
         if regex_match:
             sector, section, magnet_type, magnet_number, trim = regex_match.groups()
             cable_id = 'S' + sector + section + '-' + magnet_type + magnet_number + trim + '-' + self.get_batch_id()
-            return True, self.get_batch_id(), cable_id
+            tagging_dict[Field.ROUTING_SECTOR] = sector
+            tagging_dict[Field.ROUTING_SECTION] = section
+            tagging_dict[Field.ROUTING_MAGNET_TYPE] = magnet_type
+            tagging_dict[Field.ROUTING_MAGNET_NUMBER] = magnet_number
+            tagging_dict[Field.ROUTING_TRIM] = trim
+            return True, self.get_batch_id(), cable_id, tagging_dict
         else:
-            return False, None, None
+            return False, None, None, tagging_dict
 
 
 class UnipolarMagnetPowerCableHandler(MagnetPowerCableHandler):
@@ -495,7 +645,7 @@ class UnipolarMagnetPowerCableHandler(MagnetPowerCableHandler):
 
         # check cable type
         if cable_type not in self.cable_types:
-            return False, None, None
+            return False, None, None, {}
         else:
             return self.match_regex(to_device)
 
@@ -515,7 +665,7 @@ class BipolarMagnetPowerCableHandler(MagnetPowerCableHandler):
 
         # check cable type
         if cable_type != BIPOLAR_MAGNET_POWER_CABLE_TYPE:
-            return False, None, None
+            return False, None, None, {}
         else:
             return self.match_regex(to_device)
 
@@ -532,13 +682,20 @@ class MagnetThermocoupleCableHandler(TaggingModuleHandler):
 
         to_device = record.get(Field.CDB_CABLE_END2_DEVICE, None)
 
+        tagging_dict = {}
         regex_match = MAGNET_TC_REGEX.match(to_device)
         if regex_match:
             sector, section, magnet_type, magnet_number, trim, tc_number = regex_match.groups()
             cable_id = 'S' + sector + section + '-' + magnet_type + magnet_number + trim + '_TC' + tc_number + '-' + self.get_batch_id()
-            return True, self.get_batch_id(), cable_id
+            tagging_dict[Field.ROUTING_SECTOR] = sector
+            tagging_dict[Field.ROUTING_SECTION] = section
+            tagging_dict[Field.ROUTING_MAGNET_TYPE] = magnet_type
+            tagging_dict[Field.ROUTING_MAGNET_NUMBER] = magnet_number
+            tagging_dict[Field.ROUTING_TRIM] = trim
+            tagging_dict[Field.ROUTING_TC_NUMBER] = tc_number
+            return True, self.get_batch_id(), cable_id, tagging_dict
         else:
-            return False, None, None
+            return False, None, None, tagging_dict
 
 
 class KlixonCableHandler(TaggingModuleHandler):
@@ -553,13 +710,20 @@ class KlixonCableHandler(TaggingModuleHandler):
 
         to_device = record.get(Field.CDB_CABLE_END2_DEVICE, None)
 
+        tagging_dict = {}
         regex_match = MAGNET_KLIXON_REGEX.match(to_device)
         if regex_match:
             sector, section, magnet_type, magnet_number, trim, klix_number = regex_match.groups()
             cable_id = 'S' + sector + section + '-' + magnet_type + magnet_number + trim + '_TS' + klix_number + '-' + self.get_batch_id()
-            return True, self.get_batch_id(), cable_id
+            tagging_dict[Field.ROUTING_SECTOR] = sector
+            tagging_dict[Field.ROUTING_SECTION] = section
+            tagging_dict[Field.ROUTING_MAGNET_TYPE] = magnet_type
+            tagging_dict[Field.ROUTING_MAGNET_NUMBER] = magnet_number
+            tagging_dict[Field.ROUTING_TRIM] = trim
+            tagging_dict[Field.ROUTING_KLIX_NUMBER] = klix_number
+            return True, self.get_batch_id(), cable_id, tagging_dict
         else:
-            return False, None, None
+            return False, None, None, tagging_dict
 
 
 class TaggingModule(CableInfoModule):
@@ -620,7 +784,7 @@ class TaggingModule(CableInfoModule):
 
                 for handler in self.handlers:
                     handler_name = type(handler).__name__
-                    (handled_record, batch_id, cable_id) = handler.handle(record)
+                    (handled_record, batch_id, cable_id, tagging_dict) = handler.handle(record)
 
                     if handled_record:
 
@@ -637,6 +801,7 @@ class TaggingModule(CableInfoModule):
                             handler.increment_handled_record_count()
                             record[Field.ROUTING_BATCH_ID] = batch_id
                             record[Field.ROUTING_CABLE_ID] = cable_id
+                            record.update(tagging_dict)
                             if handler_name not in self.sample_data_dict:
                                 self.sample_data_dict[handler_name] = (batch_id, cable_id)
                         else:
@@ -692,6 +857,246 @@ class TaggingModule(CableInfoModule):
             print()
             for cable_type in self.unhandled_cable_types:
                 print(cable_type)
+
+
+class LengthCalculator:
+
+    def __init__(self, batch_id, penetrations_dataframe):
+        super().__init__()
+        self.batch_id = batch_id
+        self.config = None
+        self.sheet_names = None
+        self.workbook_data_dict = {}
+        self.penetrations_dataframe = penetrations_dataframe
+
+    def get_config_section(self):
+        if self.batch_id is None:
+            return ""
+        else:
+            return self.batch_id + CONFIG_SECTION_CALCULATOR_SUFFIX
+
+    def initialize(self, config):
+
+        is_valid = True
+        valid_info = ""
+        self.config = config
+
+        config_resource = CONFIG_RES_CALCULATOR_INPUT_FILE
+        config_section = self.get_config_section()
+        input_filename = get_config_resource(self.config, config_section, config_resource, True)
+        if input_filename is None:
+            is_valid = False
+            valid_info = "failed to get input file config resource: %s from section: %s" % (config_resource, config_section)
+        input_file = get_option_input_dir() + "/" + input_filename
+
+        # initialize and read workbook
+        self.sheet_names = [CALCULATOR_SHEET_METHOD, CALCULATOR_SHEET_PENETRATIONS, CALCULATOR_SHEET_LENGTH_TYPE, CALCULATOR_SHEET_BASE_LENGTHS, CALCULATOR_SHEET_FROM_LENGTH, CALCULATOR_SHEET_TO_LENGTH, CALCULATOR_SHEET_ROUTE]
+        sheet_list = []
+        for sheet_name in self.sheet_names:
+            sheet = ExcelDataFrameSheetInputModel(sheet_name)
+            sheet_list.append(sheet)
+        workbook = ExcelWorkbookInputModel()
+        (init_wb_valid, init_wb_valid_info) = workbook.initialize_for_read(input_file, sheet_list)
+        if not init_wb_valid:
+            is_valid = False
+            valid_info = "failed to initialize workbook for %s calculator, details: %s" % (self.batch_id, init_wb_valid_info)
+
+        # create dict with workbook sheet data in pandas data frames
+        for sheet in sheet_list:
+            self.workbook_data_dict[sheet.get_sheet_name()] = sheet.get_data()
+
+        return is_valid, valid_info
+
+    def handle_record(self, record):
+
+        is_valid = True
+        valid_info = ""
+
+        # get tagging field values for lookups
+        
+        if Field.ROUTING_SECTOR not in record or record[Field.ROUTING_SECTOR] == "":
+            is_valid = False
+            valid_info = "record is missing sector number"
+            # return failure code or just mark record invalid?  for now, return failure code
+            return is_valid, valid_info
+        else:
+            sector_id = "S" + record[Field.ROUTING_SECTOR]
+        
+        if Field.ROUTING_SECTION not in record or record[Field.ROUTING_SECTION] == "":
+            is_valid = False
+            valid_info = "record is missing section"
+            return is_valid, valid_info
+        else:
+            section_id = record[Field.ROUTING_SECTION]
+            
+        if Field.ROUTING_MAGNET_TYPE not in record or record[Field.ROUTING_MAGNET_TYPE] == "":
+            is_valid = False
+            valid_info = "record is missing magnet type"
+            return is_valid, valid_info
+        else:
+            magnet_type = record[Field.ROUTING_MAGNET_TYPE]
+
+        if Field.ROUTING_MAGNET_NUMBER not in record or record[Field.ROUTING_MAGNET_NUMBER] == "":
+            is_valid = False
+            valid_info = "record is missing magnet number"
+            return is_valid, valid_info
+        else:
+            magnet_number = record[Field.ROUTING_MAGNET_NUMBER]
+
+        device_type_id = section_id + magnet_type + magnet_number
+
+        # determine calculation method
+        method_sheet = self.workbook_data_dict[CALCULATOR_SHEET_METHOD]
+        calculation_method = method_sheet[device_type_id][sector_id]
+        if pandas.isnull(calculation_method) or calculation_method == "":
+            is_valid = False
+            valid_info = "missing value in sheet: %s for device id: %s sector id: %s" % (CALCULATOR_SHEET_METHOD, device_type_id, sector_id)
+            return is_valid, valid_info
+
+        if calculation_method == "A":
+
+            # get creo length
+            length_type_sheet = self.workbook_data_dict[CALCULATOR_SHEET_LENGTH_TYPE]
+            length_type_value = length_type_sheet[device_type_id][sector_id]
+            if pandas.isnull(length_type_value) or length_type_value == "":
+                is_valid = False
+                valid_info = "missing value in sheet: %s for device id: %s sector id: %s" % (CALCULATOR_SHEET_LENGTH_TYPE, device_type_id, sector_id)
+                return is_valid, valid_info
+            base_lengths_sheet = self.workbook_data_dict[CALCULATOR_SHEET_BASE_LENGTHS]
+            creo_length_value = base_lengths_sheet[device_type_id][length_type_value]
+            if pandas.isnull(creo_length_value) or creo_length_value == "":
+                is_valid = False
+                valid_info = "missing value in sheet: %s for device id: %s length type: %s" % (CALCULATOR_SHEET_BASE_LENGTHS, device_type_id, length_type_value)
+                return is_valid, valid_info
+
+            # get penetration length
+            penetrations_sheet = self.workbook_data_dict[CALCULATOR_SHEET_PENETRATIONS]
+            penetration_name_value = penetrations_sheet[device_type_id][sector_id]
+            if pandas.isnull(penetration_name_value) or penetration_name_value == "":
+                is_valid = False
+                valid_info = "missing value in sheet: %s for device id: %s sector id: %s" % (CALCULATOR_SHEET_PENETRATIONS, device_type_id, sector_id)
+                return is_valid, valid_info
+            penetration_length_value = 0
+            if penetration_name_value != "NONE":
+                penetration_tokens = penetration_name_value.split('-')
+                penetration_sector = penetration_tokens[0]
+                penetration_column = penetration_tokens[1]
+                penetrations_length_sheet = self.penetrations_dataframe
+                penetration_length_value = penetrations_length_sheet[penetration_column][penetration_sector]
+                if pandas.isnull(penetration_length_value) or penetration_length_value == "":
+                    is_valid = False
+                    valid_info = "missing value in penetration lengths file for column: %s sector: %s" % (penetration_column, penetration_sector)
+                    return is_valid, valid_info
+
+            # get end lengths
+            from_length_sheet = self.workbook_data_dict[CALCULATOR_SHEET_FROM_LENGTH]
+            from_end_length_value = from_length_sheet[device_type_id][sector_id]
+            if pandas.isnull(from_end_length_value) or from_end_length_value == "":
+                is_valid = False
+                valid_info = "missing value in sheet: %s for device id: %s sector id: %s" % (CALCULATOR_SHEET_FROM_LENGTH, device_type_id, sector_id)
+                return is_valid, valid_info
+            to_length_sheet = self.workbook_data_dict[CALCULATOR_SHEET_TO_LENGTH]
+            to_end_length_value = to_length_sheet[device_type_id][sector_id]
+            if pandas.isnull(to_end_length_value) or to_end_length_value == "":
+                is_valid = False
+                valid_info = "missing value in sheet: %s for device id: %s sector id: %s" % (CALCULATOR_SHEET_TO_LENGTH, device_type_id, sector_id)
+                return is_valid, valid_info
+
+            # calculate length
+            calculated_length_value = int(creo_length_value) + int(penetration_length_value) + int(from_end_length_value) + int(to_end_length_value)
+
+            # set calculated length in record
+            record[Field.ROUTING_ROUTED_LENGTH] = calculated_length_value
+
+        else:
+            is_valid = False
+            valid_info = "calculation method not implemented: %s" % calculation_method
+            return is_valid, valid_info
+
+        return is_valid, valid_info
+
+    def finalize(self):
+        pass
+
+
+class LengthCalculatorModule(CableInfoModule):
+
+    def __init__(self):
+        super().__init__()
+        self.config = None
+        self.calculator_dict = {}
+        self.penetrations_dataframe = None
+
+    def initialize(self, config):
+
+        print()
+        print("Calculator Module Initialization ====================")
+        print()
+
+        is_valid = True
+        valid_info = ""
+        self.config = config
+
+        # read penetrations file so it can be shared with all calculators in project
+        penetrations_config_resource = CONFIG_RES_CALCULATOR_PENETRATIONS_FILE
+        config_section = CONFIG_SECTION_CALCULATOR
+        penetrations_filename = get_config_resource(config, config_section, penetrations_config_resource, True)
+        if penetrations_filename is None:
+            is_valid = False
+            valid_info = "failed to get penetrations file config resource: %s from section: %s" % (penetrations_config_resource, config_section)
+        penetrations_file = get_option_input_dir() + "/" + penetrations_filename
+
+        # initialize and read workbook
+        sheet = ExcelDataFrameSheetInputModel(None)
+        workbook = ExcelWorkbookInputModel()
+        (init_wb_valid, init_wb_valid_info) = workbook.initialize_for_read(penetrations_file, [sheet])
+        if not init_wb_valid:
+            is_valid = False
+            valid_info = "failed to initialize calculator penetrations workbook, details: %s" % init_wb_valid_info
+
+        # create dict with workbook sheet data in pandas data frames
+        self.penetrations_dataframe = sheet.get_data()
+
+        # create and initialize calculators
+        calculator_names = [SUFFIX_UNIPOLAR_MAGNET_POWER]
+        for name in calculator_names:
+            calculator = LengthCalculator(name, self.penetrations_dataframe)
+            (init_valid, init_valid_info) = calculator.initialize(config)
+            if not init_valid:
+                is_valid = False
+                valid_info = init_valid_info
+                break
+            else:
+                self.calculator_dict[name] = calculator
+
+        return is_valid, valid_info
+
+    def process_records(self, records):
+
+        is_valid = True
+        valid_info = ""
+
+        for record in records:
+
+            if Field.ROUTING_BATCH_ID not in record:
+                return False, "record missing batch ID"
+            else:
+                batch_id = record[Field.ROUTING_BATCH_ID]
+
+            if batch_id not in self.calculator_dict:
+                return False, "no calculator for batch id: %s" % batch_id
+
+            calculator = self.calculator_dict[batch_id]
+            (handle_valid, handle_valid_info) = calculator.handle_record(record)
+            if not handle_valid:
+                return False, "calculator: %s failed to handle cable: %s reason: %s" % (batch_id, record[Field.CDB_CABLE_NAME], handle_valid_info)
+
+            print(record[Field.ROUTING_ROUTED_LENGTH])
+
+        return is_valid, valid_info
+
+    def finalize(self):
+        pass
 
 
 class PullListGenerator:
@@ -785,6 +1190,20 @@ def get_config_resource_bool(config, section, key, is_required):
         return True
     else:
         return False
+    
+    
+option_input_dir = None
+option_output_dir = None
+
+
+def get_option_input_dir():
+    global option_input_dir
+    return option_input_dir
+
+
+def get_option_output_dir():
+    global option_output_dir
+    return option_output_dir
 
 
 def main():
@@ -824,11 +1243,13 @@ def main():
     print()
 
     # process inputDir option
+    global option_input_dir
     option_input_dir = get_config_resource(config, CONFIG_SECTION_DEFAULT, CONFIG_RES_DEFAULT_INPUT_DIR, True)
     if not os.path.isdir(option_input_dir):
         fatal_error("'[%s] inputDir' directory: %s does not exist, exiting" % ('DEFAULT', option_input_dir))
 
     # process outputDir option
+    global option_output_dir
     option_output_dir = get_config_resource(config, CONFIG_SECTION_DEFAULT, CONFIG_RES_DEFAULT_OUTPUT_DIR, True)
     if not os.path.isdir(option_output_dir):
         fatal_error("'[%s] outputDir' directory: %s does not exist, exiting" % ('DEFAULT', option_output_dir))
@@ -871,7 +1292,7 @@ def main():
     #
     # Invoke each CableModule for each cable record.
     #
-    module_list = [TaggingModule()]
+    module_list = [TaggingModule(), LengthCalculatorModule()]
     for module in module_list:
         (module_init_valid, module_init_valid_info) = module.initialize(config)
         if not module_init_valid:
