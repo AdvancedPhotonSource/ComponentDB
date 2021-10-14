@@ -76,7 +76,6 @@ public class ItemConnector extends CdbEntity implements Serializable {
     
     private transient String importConnectorName = null;
     private transient String importConnectorDescription = null;
-    private transient Boolean importConnectorGenderIsMale = null;
     private transient ConnectorType importConnectorType = null;
         
     public ItemConnector() {
@@ -275,15 +274,6 @@ public class ItemConnector extends CdbEntity implements Serializable {
     }
 
     @JsonIgnore
-    public Boolean getImportConnectorGenderIsMale() {
-        return importConnectorGenderIsMale;
-    }
-
-    public void setImportConnectorGenderIsMale(Boolean importConnectorGenderIsMale) {
-        this.importConnectorGenderIsMale = importConnectorGenderIsMale;
-    }
-
-    @JsonIgnore
     public ConnectorType getImportConnectorType() {
         return importConnectorType;
     }
@@ -304,7 +294,6 @@ public class ItemConnector extends CdbEntity implements Serializable {
     public void setImportConnectorDetails(
             String connectorName,
             String connectorDesc,
-            Boolean isMale,
             ConnectorType connectorType) {
         
         Connector conn = new Connector();
@@ -312,10 +301,6 @@ public class ItemConnector extends CdbEntity implements Serializable {
         conn.setName(connectorName);
         if (connectorDesc != null) {
             conn.setDescription(connectorDesc);
-        }
-        
-        if (isMale != null) {
-            conn.setIsMale(isMale);
         }
         
         if (connectorType != null) {

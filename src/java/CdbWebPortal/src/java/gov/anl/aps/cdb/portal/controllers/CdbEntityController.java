@@ -969,25 +969,32 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         resetSelectDataModel();
     }
 
-    public void createList(List<EntityType> entities) throws CdbException, RuntimeException {
-        createList(entities, false);
-    }
-
-    public void createList(List<EntityType> entities, boolean silent) throws CdbException, RuntimeException {
+    public void createList(List<EntityType> entities, boolean silent, String typeName) 
+            throws CdbException, RuntimeException {
+        
+        if (typeName == null) {
+            typeName = getDisplayEntityTypeName();
+        }
+        
+        String pluralEnding = "";
+        if (entities.size() > 1) {
+            pluralEnding = "s";
+        }
+        
         try {
             performListCreateOperations(entities);
             if (!silent) {
-                SessionUtility.addInfoMessage("Success", "Created " + entities.size() + " " + getDisplayEntityTypeName() + " instances.");
+                SessionUtility.addInfoMessage("Success", "Created " + entities.size() + " " + typeName + pluralEnding + ".");
             }
         } catch (CdbException ex) {
             if (!silent) {
-                SessionUtility.addErrorMessage("Error", "Could not create list of " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+                SessionUtility.addErrorMessage("Error", "Could not create list of " + typeName + ": " + ex.getMessage());
             }
             throw ex;
         } catch (RuntimeException ex) {
             if (!silent) {
                 Throwable t = ExceptionUtils.getRootCause(ex);
-                SessionUtility.addErrorMessage("Error", "Could not create list of " + getDisplayEntityTypeName() + ": " + t.getMessage());
+                SessionUtility.addErrorMessage("Error", "Could not create list of " + typeName + ": " + t.getMessage());
             }
             throw ex;
         }

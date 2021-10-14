@@ -30,18 +30,6 @@ See LICENSE file.
     </p:column>
 
     <p:column>
-        <p:outputLabel>Gender</p:outputLabel>
-    </p:column>   
-    <p:column>
-        <p:selectOneButton value="#{currentItemConnector.connector.isMale}"
-                           disabled="#{disabled}">
-            <p:ajax oncomplete="#{onChangeConnector}" />
-            <f:selectItem itemValue="false" itemLabel="Female"/>
-            <f:selectItem itemValue="true" itemLabel="Male"/>
-        </p:selectOneButton>
-    </p:column>
-    
-    <p:column>
         <p:outputLabel rendered="#{entityController.entityDisplayConnectorCableEndDesignation}">
             Cable End Designation
         </p:outputLabel>

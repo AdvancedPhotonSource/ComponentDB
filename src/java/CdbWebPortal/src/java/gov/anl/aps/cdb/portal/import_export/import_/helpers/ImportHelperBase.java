@@ -871,7 +871,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
 
         if (validInput) {
-            String summaryDetails = itemCount + " items ";
+            String pluralEnding = "";
+            if (itemCount > 1) {
+                pluralEnding = "s";
+            }
+            String summaryDetails = itemCount + " item" + pluralEnding + " ";
             
             String customSummaryDetails = getCustomSummaryDetails();
             if (!customSummaryDetails.isEmpty()) {
@@ -1441,6 +1445,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return new ValidInfo(true, "");
     }
     
+    /**
+     * Returns type name to use for successful create message.  Subclasses override to customize.
+     * @return 
+     */
+    protected String getCreateMessageTypeName() {
+        return getEntityController().getDisplayEntityTypeName().toLowerCase() + " item";
+    }
+    
     public ImportInfo importData() {
 
         EntityControllerType controller = this.getEntityController();
@@ -1449,7 +1461,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         String modeString = "";
         try {
             if (getImportMode() == ImportMode.CREATE) {
-                controller.createList(rows);
+                controller.createList(rows, false, getCreateMessageTypeName());
                 modeString = "created";
                 ValidInfo result = postCreate();
                 message = appendToString(message, result.getValidString());
@@ -1467,8 +1479,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             return new ImportInfo(false, "Import failed. " + ex.getClass().getName());
         }
         
+        String pluralEnding = "";
+        if (rows.size() > 1) {
+            pluralEnding = "s";
+        }
+        
         if (getImportMode() != ImportMode.COMPARE) {
-            message = "Operation succeeded, " + modeString + " " + rows.size() + " instances";
+            message = "Operation succeeded, " + modeString + " " + rows.size() + " instance" + pluralEnding + ".";
         } else {
             message = "Comparison complete.";
         }
