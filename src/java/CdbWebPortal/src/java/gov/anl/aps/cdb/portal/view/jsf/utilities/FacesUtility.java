@@ -124,7 +124,7 @@ public class FacesUtility {
     }
 
     public void displayGrowlInfoMessage(String summary, String message) {
-        SessionUtility.addInfoMessage(summary, message);
+        SessionUtility.addInfoMessage(summary, message, true);
     }
 
     /**
