@@ -352,7 +352,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
             rawFilterResults = designFacade.findByDataTableFilterQueryBuilder(queryBuilder);
 
-            SessionUtility.addInfoMessage("Hang tight, Loading hierarchy results", "Found " + rawFilterResults.size() + " Results.");
+            SessionUtility.addInfoMessage("Hang tight, Loading hierarchy results", "Found " + rawFilterResults.size() + " Results.", true);
         }
         SessionUtility.executeRemoteCommand(onComplete);
     }
@@ -376,9 +376,9 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
             if (displayedNodes[0] > 600) {
                 clearFilterResults();
-                SessionUtility.addErrorMessage("Too many results", "Too many results to display. Please provide a more specific search criteria.");
+                SessionUtility.addErrorMessage("Too many results", "Too many results to display. Please provide a more specific search criteria.", true);
             } else {
-                SessionUtility.addInfoMessage("Done", "Showing " + relevantResults + " relevant results.");
+                SessionUtility.addInfoMessage("Done", "Showing " + relevantResults + " relevant results.", true);
             }
         }
     }
