@@ -73,7 +73,7 @@ public class PropertyValueImageUploadBean implements Serializable {
             try {
                 InputStream input = localUploadedFile.getInputStream();
                 uploadImage(propertyValue, fileName, input);
-                SessionUtility.addInfoMessage("Success", "Uploaded file " + fileName + ".");
+                SessionUtility.addInfoMessage("Success", "Uploaded file " + fileName + ".", true);
             } catch (IOException ex) {
                 logger.error(ex);
                 SessionUtility.addErrorMessage("Error", ex.toString());
