@@ -12,7 +12,6 @@ import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.controllers.ItemTypeController;
 import gov.anl.aps.cdb.portal.controllers.UserGroupController;
 import gov.anl.aps.cdb.portal.controllers.UserInfoController;
-import gov.anl.aps.cdb.portal.import_export.export.objects.ColumnValueResult;
 import gov.anl.aps.cdb.portal.import_export.export.objects.ExportColumnData;
 import gov.anl.aps.cdb.portal.import_export.export.objects.FieldValueDifference;
 import gov.anl.aps.cdb.portal.import_export.export.objects.FieldValueDifferenceMap;
@@ -74,7 +73,6 @@ import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.file.UploadedFile;
-import org.primefaces.util.SerializableSupplier;
 
 /**
  *

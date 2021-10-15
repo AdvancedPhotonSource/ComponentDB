@@ -4,13 +4,13 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
-import gov.anl.aps.cdb.portal.controllers.SourceController;
+import gov.anl.aps.cdb.portal.controllers.ConnectorTypeController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
-import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.Source;
+import gov.anl.aps.cdb.portal.model.db.beans.ConnectorTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,11 +19,11 @@ import java.util.Map;
  *
  * @author craig
  */
-public class ImportHelperSource extends ImportHelperBase<Source, SourceController> {
+public class ImportHelperConnectorType extends ImportHelperBase<ConnectorType, ConnectorTypeController> {
 
     private static final String KEY_NAME = "name";
     
-    private SourceFacade sourceFacade;
+    private ConnectorTypeFacade connectorTypeFacade;
     
     @Override
     protected List<ColumnSpec> initColumnSpecs() {
@@ -37,7 +37,7 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
                 "Name", 
                 KEY_NAME, 
                 "setName", 
-                "Name of vendor/manufacturer", 
+                "Name of connector type, includes gender if appropriate", 
                 "getName", 
                 ColumnModeOptions.rdCREATErUPDATE(), 
                 64));
@@ -46,26 +46,8 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
                 "Description", 
                 "description", 
                 "setDescription", 
-                "Description of vendor/manufacturer", 
+                "Description of connectorType", 
                 "getDescription", 
-                ColumnModeOptions.oCREATEoUPDATE(), 
-                256));
-        
-        specs.add(new StringColumnSpec(
-                "Contact Info", 
-                "contactInfo", 
-                "setContactInfo", 
-                "Contact name and phone number etc", 
-                "getContactInfo", 
-                ColumnModeOptions.oCREATEoUPDATE(), 
-                64));
-        
-        specs.add(new StringColumnSpec(
-                "URL", 
-                "url", 
-                "setUrl", 
-                "URL for vendor/manufacturer", 
-                "getUrl", 
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -73,15 +55,15 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     } 
    
     @Override
-    public SourceController getEntityController() {
-        return SourceController.getInstance();
+    public ConnectorTypeController getEntityController() {
+        return ConnectorTypeController.getInstance();
     }
     
-    private SourceFacade getSourceFacade() {
-        if (sourceFacade == null) {
-            sourceFacade = sourceFacade.getInstance();
+    private ConnectorTypeFacade getConnectorTypeFacade() {
+        if (connectorTypeFacade == null) {
+            connectorTypeFacade = connectorTypeFacade.getInstance();
         }
-        return sourceFacade;
+        return connectorTypeFacade;
     }
 
     /**
@@ -99,23 +81,18 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     }
 
     @Override
-    public boolean supportsModeTransfer() {
-        return true;
-    }
-
-    @Override
     public String getFilenameBase() {
-        return "Source";
+        return "ConnectorType";
     }
     
     @Override
-    protected Source newInvalidUpdateInstance() {
-        return new Source();
+    protected ConnectorType newInvalidUpdateInstance() {
+        return new ConnectorType();
     }
 
     @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
-        Source entity = getEntityController().createEntityInstance();
+        ConnectorType entity = getEntityController().createEntityInstance();
         return new CreateInfo(entity, true, "");
     }  
     
