@@ -45,7 +45,7 @@ public class ConnectorController extends CdbEntityController<ConnectorController
         return new ConnectorControllerUtility();
     }
 
-    @FacesConverter(value = "connectorConverter", forClass = Connector.class)
+    @FacesConverter(value = "connectorConverter")
     public static class ConnectorControllerConverter implements Converter {
 
         @Override

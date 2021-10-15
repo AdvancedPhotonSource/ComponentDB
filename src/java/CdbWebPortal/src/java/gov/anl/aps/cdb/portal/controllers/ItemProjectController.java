@@ -119,7 +119,7 @@ public class ItemProjectController extends CdbEntityController<ItemProjectContro
     /**
      * Converter class for component project objects.
      */
-    @FacesConverter(value = "itemProjectConverter", forClass = ItemProject.class)
+    @FacesConverter(value = "itemProjectConverter")
     public static class ItemProjectControllerConverter implements Converter {
 
         @Override

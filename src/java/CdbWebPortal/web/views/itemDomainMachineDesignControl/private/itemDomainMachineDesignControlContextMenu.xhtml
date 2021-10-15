@@ -21,6 +21,8 @@ See LICENSE file.
                 <ui:param name="addRelatedItemLabel"
                           value="Add ioc"/> 
             </ui:include>
+            
+            <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/moveToTrashMachineDesignContextMenuItem.xhtml" />
         </p:contextMenu>
 
         <p:contextMenu style="width: 250px;"
@@ -77,6 +79,9 @@ See LICENSE file.
             <ui:param name="relationshipName"
                       value="control" /> 
         </ui:include>
+        
+        <!-- todo split move to trash into own file --> 
+        <ui:include src="../../itemDomainMachineDesignBase/private/itemDomainMachineDesignDualColumnListViewTreeContextMenuMoveToTrashDialog.xhtml"/> 
         
         <ui:include src="itemDomainMachineDesignControlUpdateInterfaceToParentDialog.xhtml" />
     </ui:define>

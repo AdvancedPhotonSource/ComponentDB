@@ -50,7 +50,7 @@ public class LogLevelController extends CdbEntityController<LogLevelControllerUt
     }
 
 
-    @FacesConverter(value = "logLevelConverter", forClass = LogLevel.class)
+    @FacesConverter(value = "logLevelConverter")
     public static class LogLevelControllerConverter implements Converter {
 
         @Override

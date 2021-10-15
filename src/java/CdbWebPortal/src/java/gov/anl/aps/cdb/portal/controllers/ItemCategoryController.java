@@ -74,7 +74,7 @@ public class ItemCategoryController extends ItemTypeCategoryController<ItemCateg
     /**
      * Converter class for component category objects.
      */
-    @FacesConverter(value = "itemCategoryConverter", forClass = ItemCategory.class)
+    @FacesConverter(value = "itemCategoryConverter")
     public static class ItemCategoryControllerConverter implements Converter {
 
         @Override

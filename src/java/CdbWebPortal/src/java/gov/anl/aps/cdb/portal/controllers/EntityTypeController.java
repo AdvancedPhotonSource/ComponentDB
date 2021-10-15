@@ -56,7 +56,7 @@ public class EntityTypeController extends CdbEntityController<EntityTypeControll
         return new EntityTypeControllerUtility();
     }
 
-    @FacesConverter(value = "entityTypeConverter", forClass = EntityType.class)
+    @FacesConverter(value = "entityTypeConverter")
     public static class EntityTypeControllerConverter implements Converter {
 
         @Override
