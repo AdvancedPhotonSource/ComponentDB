@@ -27,7 +27,7 @@ public class ViewScopedCompanionController implements Serializable {
         for (String key : currentMap.keySet()) {
             Object get = currentMap.get(key);
             if (get != null) {
-                SessionUtility.setFlashValue(key, get);
+                SessionUtility.setFlashValueIfSafe(key, get);
             }
         }
     }
