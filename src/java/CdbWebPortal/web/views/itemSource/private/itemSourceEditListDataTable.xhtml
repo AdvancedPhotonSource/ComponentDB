@@ -17,6 +17,8 @@ See LICENSE file.
                  widgetVar="itemSourceEditListDataTableWidget"
                  var="itemSourceObject" 
                  value="#{itemObject.itemSourceList}" 
+                 sortMode="single"
+                 stripedRows="true"
                  rows="#{itemSourceSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
@@ -73,7 +75,7 @@ See LICENSE file.
                 <p:commandLink action="#{itemSourceController.destroy(itemSourceObject)}"
                                id="itemSourceEditListDataTableDestroyRecord"
                                actionListener="#{entityController.deleteSource(itemSourceObject)}" 
-                               styleClass="ui-icon ui-icon-trash" title="Delete" 
+                               styleClass="fa fa-link-icon fa-trash" title="Delete" 
                                update="itemSourceEditListDataTable"
                                immediate="true"/>
             </div>

@@ -10,6 +10,8 @@ INSERT INTO `allowed_entity_type_domain` VALUES
 (5,6),
 (6,5),
 (6,7),
-(6,8);
+(6,8),
+(6,9),
+(6,10);
 /*!40000 ALTER TABLE `allowed_entity_type_domain` ENABLE KEYS */;
 UNLOCK TABLES;

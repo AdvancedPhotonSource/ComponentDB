@@ -126,12 +126,12 @@ public class PropertyValueHistorySettings extends CdbEntitySettingsBase<Property
         if (dataTable == null) {
             return;
         }
-        Map<String, FilterMeta> filters = dataTable.getFilterBy();
-        filterByEnteredByUser = (String) filters.get("enteredByUser").getFilterField();
-        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime").getFilterField();
-        filterByTag = (String) filters.get("tag").getFilterField();
-        filterByUnits = (String) filters.get("units").getFilterField();
-        filterByValue = (String) filters.get("value").getFilterField();
+        Map<String, FilterMeta> filters = dataTable.getFilterByAsMap();
+        filterByEnteredByUser = (String) filters.get("enteredByUser").getField();
+        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime").getField();
+        filterByTag = (String) filters.get("tag").getField();
+        filterByUnits = (String) filters.get("units").getField();
+        filterByValue = (String) filters.get("value").getField();
     }
 
     public Boolean getDisplayEffectiveFromDateTime() {

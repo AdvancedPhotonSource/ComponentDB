@@ -60,8 +60,7 @@ import openpyxl
 import xlsxwriter
 
 from CdbApiFactory import CdbApiFactory
-from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomainCableDesignIdListRequest, \
-    ItemDomanMachineDesignIdListRequest, SourceIdListRequest
+from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomainCableDesignIdListRequest, ItemDomainMachineDesignIdListRequest, SourceIdListRequest
 
 # constants
 
@@ -460,6 +459,11 @@ class ConnectedMenuManager:
             return len(self.name_dict[range_name])
         return 0
 
+    def values_for_name(self, range_name):
+        if range_name in self.name_dict:
+            return self.name_dict[range_name]
+        return []
+
 
 class InputHandler(ABC):
 
@@ -629,11 +633,11 @@ class EndpointHandler(InputHandler):
         self.description = description
 
     def call_api(self, api, item_names_batch, rack_names_batch):
-        request_obj = ItemDomanMachineDesignIdListRequest(item_names=item_names_batch,
+        request_obj = ItemDomainMachineDesignIdListRequest(item_names=item_names_batch,
                                                           rack_names=rack_names_batch,
                                                           root_name=self.hierarchy_name)
         id_list = api.getMachineDesignItemApi().get_hierarchy_id_list(
-            item_doman_machine_design_id_list_request=request_obj)
+            item_domain_machine_design_id_list_request=request_obj)
         return id_list
 
     def initialize(self, api, sheet, first_row, last_row):
@@ -1335,7 +1339,6 @@ class CableTypeHelper(PreImportHelper):
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
         return CableTypeOutputObject(helper=self, input_dict=input_dict)
 
-    # Provides hook for subclasses to override to validate the input before generating the output spreadsheet.
     def input_is_valid(self, output_objects):
 
         global name_manager
@@ -1343,7 +1346,14 @@ class CableTypeHelper(PreImportHelper):
         cable_type_named_range = self.named_range
 
         if len(output_objects) + len(self.existing_cable_types) < name_manager.num_values_for_name(cable_type_named_range):
-            return False, "named range: %s includes cable types not included in start/end range of script" % cable_type_named_range
+            missing_cable_types = []
+            utilized_cable_types = []
+            utilized_cable_types.extend(output_object.get_name() for output_object in output_objects)
+            utilized_cable_types.extend(self.existing_cable_types)
+            for cable_type in name_manager.values_for_name(cable_type_named_range):
+                if cable_type not in utilized_cable_types:
+                    missing_cable_types.append(cable_type)
+            return False, "named range: %s includes cable types (%s) not included in start/end range of script" % (cable_type_named_range, missing_cable_types)
 
         return True, ""
 

@@ -27,8 +27,8 @@ public class ItemDomainCableDesignQueryBuilder extends ItemQueryBuilder {
     private static final String END1 = "End1";
     private static final String END2 = "End2";
 
-    public ItemDomainCableDesignQueryBuilder(Domain domain, Map filterMap, String sortField, SortOrder sortOrder) {
-        super(domain, filterMap, sortField, sortOrder);
+    public ItemDomainCableDesignQueryBuilder(Integer domainId, Map filterMap, String sortField, SortOrder sortOrder) {
+        super(domainId, filterMap, sortField, sortOrder);
     }
 
     private void addCableRelationshipDeviceWhere(String field, String itemName) {

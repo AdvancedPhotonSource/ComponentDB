@@ -118,6 +118,9 @@ public class LocatableItemController implements Serializable {
     }
 
     public TreeNode getHousingRelationshipTree(LocatableItem locatableItem) {
+        if (locatableItem == null) {
+            return null; 
+        }
         if (locatableItem.getHousingTree() == null) {
             setItemLocationInfo(locatableItem);
         }
@@ -125,6 +128,9 @@ public class LocatableItemController implements Serializable {
     }
 
     public TreeNode getLocationRelationshipTree(LocatableItem locatableItem) {
+        if (locatableItem == null) {
+            return null; 
+        }
         if (locatableItem.getLocationTree() == null) {
             setItemLocationInfo(locatableItem);
         }
@@ -361,7 +367,7 @@ public class LocatableItemController implements Serializable {
 
     private ItemElementRelationship findItemLocationRelationship(LocatableItem item) {
         // Support items that have not yet been saved to db.
-        if (item.getSelfElement().getId() != null) {
+        if (item.getSelfElement() != null && item.getSelfElement().getId() != null) {
             try {
                 return itemElementRelationshipFacade
                         .findItemElementRelationshipByNameAndItemElementId(ItemElementRelationshipTypeNames.itemLocation.getValue(),
@@ -438,6 +444,10 @@ public class LocatableItemController implements Serializable {
     }
 
     public TreeNode getHousingTreeForLocationHistoryObject(LocationHistoryObject locationHistoryObject) {
+        if (locationHistoryObject == null) {
+            return null; 
+        }
+        
         TreeNode housingTree = locationHistoryObject.getHousingTree();
         if (housingTree == null) {
             Item parentItem = locationHistoryObject.getParentItem();
@@ -456,6 +466,9 @@ public class LocatableItemController implements Serializable {
     }
 
     public TreeNode getLocationTreeForLocationHistoryObject(LocationHistoryObject locationHistoryObject) {
+        if (locationHistoryObject == null) {
+            return null; 
+        }
         TreeNode locationTree = locationHistoryObject.getLocationTree();
         if (locationTree == null) {
             Item locationItem = locationHistoryObject.getLocationItem();
@@ -518,7 +531,8 @@ public class LocatableItemController implements Serializable {
         // Allow for quick view full location. 
         ItemUtility.setExpandedSelectedOnAllChildren(root, true, false);
         if (root.getChildCount() > 0) {
-            root.getChildren().get(0).setExpanded(false);
+            List<TreeNode> children = root.getChildren();
+            children.get(0).setExpanded(false);
         }
     }
 
@@ -818,9 +832,14 @@ public class LocatableItemController implements Serializable {
                 historyObjectList.add(historyObject);
             }
         }
+        
         List<ItemElementHistory> historyMemberList = new ArrayList();
-        historyMemberList.addAll(item.getHistoryMemberList());
-        historyMemberList.addAll(item.getHistoryMemberList2());
+        if (item.getHistoryMemberList() != null) {
+            historyMemberList.addAll(item.getHistoryMemberList());
+        }
+        if (item.getHistoryMemberList2() != null) {
+            historyMemberList.addAll(item.getHistoryMemberList2());
+        }
 
         for (ItemElementHistory itemElementHistory : historyMemberList) {
             LocationHistoryObject historyObject = new LocationHistoryObject(itemElementHistory);

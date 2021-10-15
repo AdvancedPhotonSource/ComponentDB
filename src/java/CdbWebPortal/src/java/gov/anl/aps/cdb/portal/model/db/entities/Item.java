@@ -120,6 +120,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevel",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY"),
+    @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevelExcludeEntityType",
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and (i.id not in (SELECT DISTINCT(i.id) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :excludeEntityTypeName)) and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevelOrderByDerivedFromItem",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY ORDER BY i.derivedFromItem.id DESC"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevelExcludeEntityTypeOrderByDerivedFromItem",
@@ -231,6 +233,67 @@ import org.primefaces.model.TreeNode;
                         name = "locatable_item_id",
                         mode = ParameterMode.IN,
                         type = Integer.class
+                )
+            }
+    ),
+    @NamedStoredProcedureQuery(
+            name = "item.fetchRelationshipChildrenItems",
+            procedureName = "fetch_relationship_children_items",
+            resultClasses = Item.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "item_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "relationship_type_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                )
+            }
+    ),
+    @NamedStoredProcedureQuery(
+            name = "item.fetchRelationshipParentItems",
+            procedureName = "fetch_relationship_parent_items",
+            resultClasses = Item.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "item_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "relationship_type_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                )
+            }
+    ),
+    @NamedStoredProcedureQuery(
+            name = "item.fetchNameFilterForRelationshipHierarchy",
+            procedureName = "fetch_name_filter_for_relationship_hierarchy",
+            resultClasses = Item.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "domain_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "entity_type_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "relationship_type_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "name_pattern",
+                        mode = ParameterMode.IN,
+                        type = String.class
                 )
             }
     ),
@@ -451,7 +514,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     protected transient ItemMetadataPropertyInfo coreMetadataPropertyInfo = null;
     protected transient PropertyType coreMetadataPropertyType = null;
     protected transient PropertyValue coreMetadataPropertyValue = null;
-
+    
+    private transient List<ItemConnector> syncedConnectorList = null;
+    
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
     protected transient ItemElement currentEditItemElement = null;
     protected transient Boolean currentEditItemElementSaveButtonEnabled = false;
@@ -532,10 +597,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @Override
     public CdbEntityControllerUtility getControllerUtility() {
-        return getItemControllerUtility(); 
+        return getItemControllerUtility();
     }
-    
-    @JsonIgnore     
+
+    @JsonIgnore
     public ItemControllerUtility getItemControllerUtility() {
         return null;
     }
@@ -764,6 +829,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @Override
     public List<Log> getLogList() {
+        // Useful for mock machines 
+        if (getSelfElement() == null) {
+            return null;
+        }
         return getSelfElement().getLogList();
     }
 
@@ -1035,6 +1104,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public List<ItemElement> getItemElementDisplayList() {
         if (itemElementDisplayList == null) {
+            if (fullItemElementList == null) {
+                itemElementDisplayList = new ArrayList<>();
+                return itemElementDisplayList;
+            }
             itemElementDisplayList = new ArrayList<>(fullItemElementList);
 
             for (ItemElement itemElement : itemElementDisplayList) {
@@ -1201,6 +1274,10 @@ public class Item extends CdbDomainEntity implements Serializable {
     @JsonIgnore
     public List<ItemConnector> getItemConnectorListSorted() {
         
+        if (itemConnectorList == null) {
+            return new ArrayList<>();
+        }
+
         // return sorted itemConnectorList
         Comparator<ItemConnector> comparator
                 = Comparator
@@ -1209,19 +1286,20 @@ public class Item extends CdbDomainEntity implements Serializable {
         return itemConnectorList
                 .stream()
                 .sorted(comparator)
-                .collect(Collectors.toList());        
+                .collect(Collectors.toList());
     }
 
     public void setItemConnectorList(List<ItemConnector> itemConnectorList) {
         this.itemConnectorList = itemConnectorList;
     }
-
-    public ItemConnector getConnectorNamed(String connectorName) {
-        List<ItemConnector> connectorList = getItemConnectorList();
-        if (connectorList == null) {
+    
+    private ItemConnector findConnectorWithName(String connectorName, List<ItemConnector> itemConnectors) {
+        
+        if (itemConnectors == null) {
             return null;
         }
-        for (ItemConnector itemConnector : connectorList) {
+        
+        for (ItemConnector itemConnector : itemConnectors) {
             Connector connector = itemConnector.getConnector();
             if (connector != null) {
                 String name = connector.getName();
@@ -1230,6 +1308,25 @@ public class Item extends CdbDomainEntity implements Serializable {
                 }
             }
         }
+        
+        return null;
+    }
+    
+    @JsonIgnore
+    public ItemConnector getConnectorNamed(String connectorName) {
+        
+        // check this item's connector list for specified connector name
+        ItemConnector itemConnector = findConnectorWithName(connectorName, getItemConnectorList());
+        if (itemConnector != null) {
+            return itemConnector;
+        }
+        
+        // check the list of inherited connectors for specified name
+        ItemConnector inheritedConnector = findConnectorWithName(connectorName, getSyncedConnectorList());
+        if (inheritedConnector != null) {
+            return inheritedConnector;
+        }
+        
         return null;
     }
 
@@ -1280,6 +1377,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public ItemElement getSelfElement() {
+        if (this.fullItemElementList == null) {
+            return null;
+        }
         if (selfItemElement == null) {
             for (ItemElement ie : this.fullItemElementList) {
                 if (ie.getName() == null && ie.getDerivedFromItemElement() == null) {
@@ -1319,6 +1419,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     @Override
     @JsonIgnore
     public List<PropertyValue> getPropertyValueList() {
+        if (this.getSelfElement() == null) {
+            return null;
+        }
         return this.getSelfElement().getPropertyValueList();
     }
 
@@ -1755,6 +1858,102 @@ public class Item extends CdbDomainEntity implements Serializable {
         return maxSortOrder;
     }
 
+    @JsonIgnore
+    public List<ItemConnector> getSyncedConnectorList() {
+        if (syncedConnectorList == null) {
+            syncedConnectorList = syncUnusedInheritedItemConnectors();
+        }
+        return syncedConnectorList;
+    }
+    
+    /**
+     * Returns list of cloned inherited connectors that are not currently in use 
+     * for this item.
+     */
+    private List<ItemConnector> syncUnusedInheritedItemConnectors() {
+        
+        // get inherited connectors
+        List<ItemConnector> inheritedConnectors = getInheritedItemConnectors();
+        if (inheritedConnectors == null) {
+            return new ArrayList<>();
+        }
+
+        // get this item's connectors
+        List<ItemConnector> itemConnectors = getItemConnectorList();
+        if (itemConnectors == null) {
+            itemConnectors = new ArrayList<>();
+        }
+
+        // create list of connectors not in use for this item that can be used for new connections
+        List<ItemConnector> syncedConnectors = new ArrayList<>();
+        for (ItemConnector catalogConnector : inheritedConnectors) {
+            boolean connectorInUse = false;
+            for (ItemConnector itemConnector : itemConnectors) {
+                if (catalogConnector.getConnector().getName().equals(itemConnector.getConnector().getName())) {
+                    // connector already in use for item
+                    connectorInUse = true;
+                    break;
+                }
+            }
+            if (!connectorInUse) {
+                // connector not in use for item, so "sync" it
+                ItemConnector syncedConnector = cloneInheritedConnector(catalogConnector);
+                syncedConnectors.add(syncedConnector);
+            }
+        }
+        
+        return syncedConnectors;
+    }
+    
+    @JsonIgnore
+    private List<ItemConnector> getInheritedItemConnectors() {
+
+        Item assignedItem = getInheritedItemConnectorParent();
+        
+        if (assignedItem == null) {
+            return new ArrayList<>();
+        }
+
+        Item catalogItem = null;
+        if (assignedItem instanceof ItemDomainInventoryBase) {
+            catalogItem = ((ItemDomainInventoryBase) assignedItem).getCatalogItem();
+        } else if (assignedItem instanceof ItemDomainCatalogBase) {
+            catalogItem = assignedItem;
+        }
+
+        List<ItemConnector> result = null;
+        if (catalogItem != null) {
+            result = catalogItem.getItemConnectorList();
+        }
+        
+        if (result == null) {
+            result = new ArrayList<>();
+        }
+        
+        return result;
+    }
+
+    /**
+     * Get item to inherit connectors from, default implementation returns null.
+     * Subclasses override to customize, e.g., machine/cable design items return their
+     * assigned catalog/inventory item.
+     */
+    @JsonIgnore
+    protected Item getInheritedItemConnectorParent() {
+        return null;
+    }
+    
+    private ItemConnector cloneInheritedConnector(ItemConnector inheritedConnector) {
+        
+        ItemConnector clone = new ItemConnector();
+
+        Connector connector = inheritedConnector.getConnector();
+        clone.setConnector(connector);
+        clone.setItem(this);
+        
+       return clone;
+    }
+    
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
     @JsonIgnore
     public ItemElement getCurrentEditItemElement() {

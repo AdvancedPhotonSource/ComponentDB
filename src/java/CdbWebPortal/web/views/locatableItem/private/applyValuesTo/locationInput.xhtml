@@ -13,6 +13,8 @@ See LICENSE file.
                  styleClass="leftAlignedText">
         <h:outputText value='Location' />
         <ui:include src="../locatableItemLocationSelectTreeSelection.xhtml">
+            <ui:param name="locatableItemLocationSelectTreeRendered"
+                      value="#{true}" />
             <ui:param name="useDefaultLocationSelectionValue"
                       value="#{false}"/> 
             <ui:param name="locationSelectionValue"

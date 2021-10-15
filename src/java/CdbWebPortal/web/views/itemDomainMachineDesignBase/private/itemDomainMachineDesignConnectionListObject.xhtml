@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">   
+
+    <p:columnGroup type="header">
+        <p:row>
+            <p:column colspan="3" headerText="Item Connector"/>
+            <p:column colspan="2" headerText="Cable Connection"/>
+        </p:row>
+        <p:row>
+            <p:column headerText="Name"/>
+            <p:column headerText="Type">
+                <f:facet name="header">
+                    <h:outputText styleClass="ui-icon ui-icon-connector" />
+                    Type
+                </f:facet>
+            </p:column>
+            <p:column headerText="Gender"/>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText styleClass="ui-icon ui-icon-machine-design" />
+                    Connected to
+                </f:facet>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText styleClass="ui-icon ui-icon-cable-design" />
+                    Connected via
+                </f:facet>
+            </p:column>
+        </p:row>
+    </p:columnGroup>
+
+    <ui:param name="itemConnectorObject"
+              value="#{mdConnectorListForCurrent.itemConnector}"/> 
+    <ui:param name="connectedToItems"
+              value="#{mdConnectorListForCurrent.connectedToItemsString}"/>
+    <ui:param name="connectedViaItem"
+              value="#{mdConnectorListForCurrent.cableItem}"/>
+
+    <ui:include src="../../itemConnector/private/itemConnectorListObject.xhtml" />
+
+    <p:column headerText="Connected to">
+        #{connectedToItems}
+    </p:column>
+
+    <p:column headerText="Connected via"
+              exportFunction="#{facesUtility.getToString(connectedViaItem)}"> 
+        <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+            <ui:param name="itemObject"
+                      value="#{connectedViaItem}"/>
+            <ui:param name="viewName"
+                      value="connVia"/>
+        </ui:include>                    
+    </p:column>
+
+</ui:composition>
+
+

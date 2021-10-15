@@ -14,26 +14,26 @@ See LICENSE file.
     <div class="actionLink">
         <p:commandLink id="#{entityTypeName}ListTreeTableViewLink" 
                        action="#{entityController.prepareView(entityObject)}" 
-                       styleClass="ui-icon ui-icon-info" 
+                       styleClass="fa fa-link-icon fa-info" 
                        title="View">
             <p:tooltip for="#{entityTypeName}ListTreeTableViewLink" value="View #{entityController.displayEntityTypeName} #{entityObject.name} details."/>
         </p:commandLink>
         <p:commandLink id="#{entityTypeName}ListTreeTableEditLink" 
                        action="#{entityController.prepareEdit(entityObject)}" 
                        rendered="#{isEntityWriteable}" 
-                       styleClass="ui-icon ui-icon-pencil" 
+                       styleClass="fa fa-link-icon fa-pencil" 
                        title="Edit">
             <p:tooltip for="#{entityTypeName}ListTreeTableEditLink" value="Edit #{entityController.displayEntityTypeName} #{entityObject.name}."/>            
         </p:commandLink>
         <p:commandLink id="#{entityTypeName}ListTreeTableCloneLink" 
                        action="#{entityController.prepareClone(entityObject)}" 
                        rendered="#{isEntityCloneable}" 
-                       styleClass="ui-icon ui-icon-copy" 
+                       styleClass="fa fa-link-icon fa-copy" 
                        title="Clone">
         </p:commandLink>
         <p:tooltip for="#{entityTypeName}ListTreeTableCloneLink" value="Clone #{entityController.displayEntityTypeName} #{entityObject.name}."/>            
 
-        <p:commandLink id="#{entityTypeName}ListTreeTableDeleteLink" oncomplete="PF('#{entityTypeName}DestroyDialogWidget').show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+        <p:commandLink id="#{entityTypeName}ListTreeTableDeleteLink" oncomplete="PF('#{entityTypeName}DestroyDialogWidget').show()" rendered="#{isEntityWriteable}" styleClass="fa fa-link-icon fa-trash" title="Delete" update="@form">
             <f:setPropertyActionListener target="#{entityController.current}" value="#{entityObject}"/>
             <p:tooltip for="#{entityTypeName}ListTreeTableDeleteLink" value="Delete #{entityController.displayEntityTypeName} #{entityObject.name}."/>
         </p:commandLink>

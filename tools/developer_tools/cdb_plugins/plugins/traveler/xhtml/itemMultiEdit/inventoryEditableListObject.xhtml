@@ -22,7 +22,7 @@ See LICENSE file.
             <p:commandLink styleClass="fa fa-link-icon fa-cogs"
                            onstart="PF('loadingDialog').show()"
                            oncomplete="PF('loadingDialog').hide();
-                                       PF('travelerInstanceMultiEditApplyToAllDialogWidget').show()"
+                           PF('travelerInstanceMultiEditApplyToAllDialogWidget').show()"
                            action="#{travelerDomainInstanceController.prepareMultiEditAppplyInstanceToAllItems()}"
                            update="@form:travelerInstanceMultiEditApplyToAllDialog"
                            title="Apply traveler instnace values to all items."/> 
@@ -41,11 +41,13 @@ See LICENSE file.
                        onclick="PF('loadingDialog').show()"
                        action="#{travelerDomainInstanceController.prepareAddTravelerInstanceOnMultiEdit(itemObject)}"
                        oncomplete="PF('loadingDialog').hide();
-                                   PF('travelerInstanceAddDialogWidget').show();"/>
+                       PF('travelerInstanceAddDialogWidget').show();"/>
 
         <p:overlayPanel id="travelerInstanceListing"
                         widgetVar="travelerInstanceListing#{itemObject.viewUUID}Widget">
             <p:dataTable value="#{travelerDomainInstanceController.getInstancesForMultiEditItem(itemObject)}"
+                         sortMode="single"
+                         stripedRows="true"
                          var="travelerObject">
                 <ui:include src="../support/travelerInstanceListObject.xhtml" />
             </p:dataTable>                            

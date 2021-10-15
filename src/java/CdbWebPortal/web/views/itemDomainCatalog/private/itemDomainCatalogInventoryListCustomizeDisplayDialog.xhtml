@@ -40,7 +40,7 @@ See LICENSE file.
             <p:selectBooleanCheckbox id="componentInstanceDisplayStatus" value="#{itemDomainInventorySettingObject.displayStatus}"/>  
             <h:outputLabel for="componentInstanceDisplayStatus" value="Display Status" styleClass="dialogDataLabel"/>
 
-            <p:inputText id="componentInstanceDisplayNumberOfItemsPerPage" value="#{itemDomainInventorySettingObject.displayNumberOfItemsPerPage}" style="width:20px"/>
+            <p:inputText id="componentInstanceDisplayNumberOfItemsPerPage" value="#{itemDomainInventorySettingObject.displayNumberOfItemsPerPage}" styleClass="numItemsPerPageInput"/>
             <h:outputLabel for="componentInstanceDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
             <p:selectBooleanCheckbox id="componentInstanceDisplayCreatedByUser" value="#{itemDomainInventorySettingObject.displayCreatedByUser}"/>  
@@ -63,28 +63,5 @@ See LICENSE file.
 
         </p:panelGrid>
     </ui:define>
-
-
-    <p:dialog id="componentInstanceListCustomizeDisplayDialog" 
-              widgetVar="componentInstanceListCustomizeDisplayDialogWidget" 
-              header="Customize Display" 
-              styleClass="dialog">
-
-
-        <f:facet name="footer" class="dialog">
-            <p:commandButton value="Done" alt="Done" 
-                             action="#{itemDomainInventoryController.customizeListDisplay()}"
-                             update="#{childEntityTypeName}ListDataTable"
-                             oncomplete="PF('componentComponentInstanceListCustomizeDisplayDialogWidget').hide()" 
-                             icon="ui-icon-arrowreturnthick-1-w"/>
-            <p:commandButton value="Save" alt="Save"
-                             action="#{userInfoController.saveSettingListForSessionUser()}"
-                             actionListener="#{itemDomainInventoryController.saveListSettingsForSessionUserActionListener}"
-                             oncomplete="PF('componentComponentInstanceListCustomizeDisplayDialogWidget').hide()" 
-                             update="#{childEntityTypeName}ListDataTable"
-                             rendered="#{loginController.loggedIn}"
-                             icon="ui-icon-check"/>
-        </f:facet>
-    </p:dialog>
 
 </ui:composition>

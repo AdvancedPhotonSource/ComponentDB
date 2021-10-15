@@ -31,7 +31,7 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperCableInventory.class.getName());
     
     @Override
-    protected List<ColumnSpec> getColumnSpecs() {
+    protected List<ColumnSpec> initColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         

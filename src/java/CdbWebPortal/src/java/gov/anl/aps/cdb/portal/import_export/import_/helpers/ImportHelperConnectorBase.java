@@ -33,7 +33,7 @@ public abstract class ImportHelperConnectorBase extends ImportHelperBase<ItemCon
     private static final String KEY_TYPE = "importConnectorTypeString";
 
     @Override
-    protected List<ColumnSpec> getColumnSpecs() {
+    protected List<ColumnSpec> initColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         

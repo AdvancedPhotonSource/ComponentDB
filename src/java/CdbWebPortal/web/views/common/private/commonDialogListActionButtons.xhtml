@@ -15,7 +15,7 @@ See LICENSE file.
     <div class="actionButtonLeft">
         <p:commandButton id="#{entityTypeName}ListDoneButton" 
                          onclick="PF('#{entityTypeName}ListDialogWidget').hide()" 
-                         alt="Done" icon="ui-icon-arrowreturnthick-1-w"
+                         alt="Done" icon="fa fa-close"
                          styleClass="actionButtonLeft">
             <p:tooltip for="#{entityTypeName}ListDoneButton" value="Close component instance location history dialog."/>
         </p:commandButton>
@@ -28,7 +28,7 @@ See LICENSE file.
                     
         <p:commandButton id="#{entityTypeName}CustomizeDisplayButton" 
                          oncomplete="PF('#{entityTypeName}ListDialogWidget').hide(); PF('#{entityTypeName}ListCustomizeDisplayDialogWidget').show()" 
-                         alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
+                         alt="Customize List" styleClass="actionButtonRight" update="@form" icon="fa fa-wrench">
             <p:tooltip for="#{entityTypeName}CustomizeDisplayButton" value="Customize list view."/>
         </p:commandButton>
         <p:commandButton id="#{entityTypeName}ResetFiltersButton" 
@@ -38,7 +38,7 @@ See LICENSE file.
                          oncomplete="PF('loadingDialog').hide();
                                      PF('#{entityTypeName}ListDialogWidget').show()"
                          update="#{entityTypeName}ListDialog" 
-                         alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight">
+                         alt="Clear Filters" icon="fa fa-refresh" styleClass="actionButtonRight">
             <p:tooltip for="#{entityTypeName}ResetFiltersButton" value="Reset filters."/>
         </p:commandButton>
 

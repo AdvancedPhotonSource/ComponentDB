@@ -17,7 +17,7 @@ See LICENSE file.
         <div class="dialog">
             <ui:param name="derivedSettingObject" value="#{itemDerivedController.settingObject}" />
             <p:panelGrid columns="2">
-                <p:inputText id="derivedItemDisplayNumberOfItemsPerPage" value="#{derivedSettingObject.displayNumberOfItemsPerPage}" style="width:20px"/>
+                <p:inputText id="derivedItemDisplayNumberOfItemsPerPage" value="#{derivedSettingObject.displayNumberOfItemsPerPage}" styleClass="numItemsPerPageInput"/>
                 <h:outputLabel for="derivedItemDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
                 <p:selectBooleanCheckbox id="derivedItemDisplayCreatedByUser" value="#{derivedSettingObject.displayCreatedByUser}"/>  
@@ -60,14 +60,14 @@ See LICENSE file.
                                  action="#{derivedController.customizeListDisplay()}"
                                  update="#{childEntityTypeName}ListDataTable"
                                  oncomplete="PF('componentComponentInstanceListCustomizeDisplayDialogWidget').hide()" 
-                                 icon="ui-icon-arrowreturnthick-1-w"/>
+                                 icon="fa fa-close"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userInfoController.saveSettingListForSessionUser()}"
                                  actionListener="#{derivedController.saveListSettingsForSessionUserActionListener}"
                                  oncomplete="PF('#{childEntityTypeName}ListCustomizeDisplayDialogWidget').hide()" 
                                  update="#{childEntityTypeName}ListDataTable"
                                  rendered="#{loginController.loggedIn}"
-                                 icon="ui-icon-check"/>
+                                 icon="fa fa-save"/>
             </f:facet>
         </div>
     </p:dialog>

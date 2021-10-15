@@ -74,7 +74,7 @@ See LICENSE file.
                                  id="#{entityTypeName}SaveItemSourceButton"                                 
                                  update="#{entityTypeName}ItemSourceAddDialogPanelGrid"
                                  onsuccess="verifyDataEnteredAddItemSource()"
-                                 icon="ui-icon-disk"/>
+                                 icon="fa fa-save"/>
                 
                 <p:remoteCommand name="verifyDataEnteredAddItemSource"
                                  immediate="true"
@@ -87,7 +87,7 @@ See LICENSE file.
                                  
 
                 <p:commandButton value="Close" 
-                                 icon="ui-icon-arrowreturnthick-1-w"
+                                 icon="fa fa-close"
                                  oncomplete="PF('#{entityTypeName}ItemSourceAddDialogWidget').hide()"                                 
                                  immediate="true"
                                  action="#{entityController.removeCurrentEditItemSource()}"

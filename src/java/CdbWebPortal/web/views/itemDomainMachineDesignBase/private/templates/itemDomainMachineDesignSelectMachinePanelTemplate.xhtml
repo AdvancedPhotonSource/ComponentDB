@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                
+                xmlns:p="http://primefaces.org/ui">
+    
+    <ui:insert name="selectMachinePanelParams">
+        <!--
+        Define the following ui:params
+        - renderMachineDesignSelectPanel
+        - selectMachinePanelHeader - Text to be shown on header of panel 
+        - valueModel - TreeNode representing the items to be selected
+        - selectModel - TreeNode that can be set to selection.
+        - viewId - appended text to the id of panel.       
+        - machineSelectListener - listener to catch the select event from tree table. 
+        - machineSelectSavefunction - what happens when user clicks save.
+        -->
+    </ui:insert>
+
+    <p:panel header="#{selectMachinePanelHeader}"
+             id="selectMachinePanel#{viewId}"
+             rendered="#{renderMachineDesignSelectPanel}">       
+
+        <ui:decorate template="itemDomainMachineDesignTreeTableTemplate.xhtml">            
+            <ui:param name="rendered"
+                      value="#{true}"/>
+            
+            <ui:param name="scrollable"
+                      value="#{true}"/>
+            <ui:define name="treeTableEvents">
+                <p:ajax event="select" listener="#{entityController[machineSelectListener]}"
+                        onstart="PF('loadingDialog').show()"
+                        oncomplete="onCompleteSelectMachine()"/>                            
+            </ui:define>
+        </ui:decorate>
+        
+        <ui:insert name="additionalRelationshipInfoPrompt" /> 
+
+        <p:remoteCommand name="onCompleteSelectMachine"                             
+                         update="machineDesignDualListViewOutputPanel"                             
+                         oncomplete="PF('loadingDialog').hide()"/>           
+
+        <p:commandButton value="Save"
+                         icon="fa fa-save"       
+                         action="#{entityController[machineSelectSavefunction]}"
+                         update="@form"
+                         onclick="PF('loadingDialog').show()"
+                         oncomplete="PF('loadingDialog').hide()"/> 
+        <ui:include src="../../../itemDomainMachineDesignBase/private/itemDomainMachineDesignDualColumnListViewCancelButton.xhtml" />
+    </p:panel>
+
+</ui:composition>
+
+

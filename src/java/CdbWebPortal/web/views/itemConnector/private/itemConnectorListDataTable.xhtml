@@ -9,16 +9,18 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
     
     <p:dataTable id="#{itemConnectorEntityTypeName}ListDataTable"
+                 widgetVar="#{itemConnectorEntityTypeName}ListDataTableWidget"        
                  value="#{itemObject.itemConnectorListSorted}"
-                 var="itemConnectorObject"
-                 widgetVar="#{itemConnectorEntityTypeName}ListDataTableWidget">        
+                 sortMode="single"
+                 stripedRows="true"
+                 var="itemConnectorObject">
 
         <ui:include src="itemConnectorListObject.xhtml" />
 
         <p:column headerText="Actions" exportable="false">
             <p:commandLink id="#{entityTypeName}ItemConnectorDeleteActionButton"
-                           styleClass="ui-icon ui-icon-trash"
-                           onstart="PF('confirmDeleteItemConnector#{itemConnectorObject.viewUUID}Widget').show()"
+                           styleClass="fa fa-link-icon fa-trash"
+                           onclick="PF('confirmDeleteItemConnector#{itemConnectorObject.viewUUID}Widget').show()"
                            rendered="#{isEntityWriteable}"
                            title="Delete Item Connector">
                 <p:tooltip for="#{entityTypeName}ItemConnectorDeleteActionButton" value="Delete Item Connector."/>

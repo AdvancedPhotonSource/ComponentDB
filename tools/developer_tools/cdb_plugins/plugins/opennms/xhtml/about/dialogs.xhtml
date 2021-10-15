@@ -7,16 +7,18 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
-    
+
     <p:dialog id="opennmsServiceStatus"
-        widgetVar="opennmsServiceStatusWidget" 
-        styleClass="viewTransparentBackgroundDialog"
-        dynamic="true"
-        resizable="false"
-        modal="true"
-        header="Linked Services Status">
-                  
+              widgetVar="opennmsServiceStatusWidget" 
+              styleClass="viewTransparentBackgroundDialog"
+              dynamic="true"
+              resizable="false"
+              modal="true"
+              header="Linked Services Status">
+
         <p:dataTable value="#{openNMSBean.serviceStatusList}"
+                     stripedRows="true"
+                     sortMode="single"
                      var="serviceStatus">
             <p:column headerText="Service">
                 #{serviceStatus.serviceName}
@@ -25,7 +27,7 @@ See LICENSE file.
                 #{serviceStatus.status}                
             </p:column>
         </p:dataTable>
-        
+
     </p:dialog>
 
 </ui:composition>

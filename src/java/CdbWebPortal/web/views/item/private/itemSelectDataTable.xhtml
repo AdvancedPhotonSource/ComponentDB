@@ -11,15 +11,17 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">        
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">        
     
-    <ui:param name="selectionController" value="#{selectionController != null ? selectionController : entityController.selectionController}" />
+    <ui:param name="selectionController" value="#{selectionController != null ? selectionController : entityController.selectionController}" />    
     
     <!-- Specify overrideSelectionDataModel=True and selectDataModel ui:param name="selectionValue" -->
     <ui:param name="overrideSelectionDataModel" value="#{overrideSelectionDataModel != null ? overrideSelectionDataModel : false}" /> 
     <ui:param name="_selectDataModel" value="#{overrideSelectionDataModel ? selectDataModel : selectionController.selectDataModel}" />
             
-    <ui:param name="selectionValue" value="#{selectionValue != null ? selectionValue : selectionController.selectedObject}" />    
+    <ui:param name="overrideSelectionValue" value="#{overrideSelectionValue != null ? overrideSelectionValue : false}" />       
+    <ui:param name="_selectionValue" value="#{overrideSelectionValue == true ? selectionValue : selectionController.selectedObject}" /> 
     <ui:param name="updateTarget" value="#{updateTarget != null ? updateTarget : '@form'}" />
 
     <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
@@ -47,7 +49,7 @@ See LICENSE file.
                  var="itemListObject" 
                  value="#{_selectDataModel}" 
                  rowKey="#{itemListObject.id}"
-                 selection="#{selectionValue}"
+                 selection="#{_selectionValue}"
                  resizableColumns="true"              
                  liveResize="true"                 
                  filteredValue="#{_filteredValue}"
@@ -55,6 +57,8 @@ See LICENSE file.
                  paginator="true"
                  paginatorAlwaysVisible="true"
                  rows="#{resources.SelectDataTableNumberOfRows}"
+                 sortMode="single"
+                 stripedRows="true"
                  emptyMessage="No available items found.">
 
         <p:ajax event="rowSelect"
@@ -87,7 +91,7 @@ See LICENSE file.
                      immediate="#{immediateUpdate}"
                      oncomplete="PF('loadingDialog').hide();">
         <f:setPropertyActionListener rendered="#{selectionTarget != null}"
-                                     value="#{selectionValue}" 
+                                     value="#{_selectionValue}" 
                                      target="#{selectionTarget}" />
     </p:remoteCommand>
 

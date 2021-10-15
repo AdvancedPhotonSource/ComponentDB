@@ -291,16 +291,16 @@ public class ItemDomainCatalogSettings extends ItemSettings<ItemDomainCatalogCon
             return;
         }
 
-        Map<String, FilterMeta> filters = dataTable.getFilterBy();
-        filterByType = (String) filters.get("componentType").getFilterField();
-        filterByCategory = (String) filters.get("componentTypeCategory").getFilterField();
-        filterByModelNumber = (String) filters.get("modelNumber").getFilterField();
+        Map<String, FilterMeta> filters = dataTable.getFilterByAsMap();
+        filterByType = (String) filters.get("componentType").getField();
+        filterByCategory = (String) filters.get("componentTypeCategory").getField();
+        filterByModelNumber = (String) filters.get("modelNumber").getField();
 
-        filterByPropertyValue1 = (String) filters.get("propertyValue1").getFilterField();
-        filterByPropertyValue2 = (String) filters.get("propertyValue2").getFilterField();
-        filterByPropertyValue3 = (String) filters.get("propertyValue3").getFilterField();
-        filterByPropertyValue4 = (String) filters.get("propertyValue4").getFilterField();
-        filterByPropertyValue5 = (String) filters.get("propertyValue5").getFilterField();
+        filterByPropertyValue1 = (String) filters.get("propertyValue1").getField();
+        filterByPropertyValue2 = (String) filters.get("propertyValue2").getField();
+        filterByPropertyValue3 = (String) filters.get("propertyValue3").getField();
+        filterByPropertyValue4 = (String) filters.get("propertyValue4").getField();
+        filterByPropertyValue5 = (String) filters.get("propertyValue5").getField();
     }
     
     @Override

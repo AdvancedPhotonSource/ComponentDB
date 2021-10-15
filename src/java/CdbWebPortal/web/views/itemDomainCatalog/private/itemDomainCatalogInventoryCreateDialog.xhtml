@@ -26,13 +26,13 @@ See LICENSE file.
         <f:facet name="footer" class="dialog">
             <p:commandButton  action="#{itemDomainInventoryController.createSaveFromDialog('addInventoryItemSuccess()')}"
                               id="addInventoryItemDialogWidgetSaveButton"
-                              value="Save" alt="Save" icon="ui-icon-check"/>
+                              value="Save" alt="Save" icon="fa fa-save"/>
 
             <p:commandButton action="#{itemDomainInventoryController.createCancelFromDialog()}" 
                              immediate="true" 
                              value="Cancel" alt="Cancel" 
                              update="@form"
-                             icon="ui-icon-cancel" />
+                             icon="fa fa-close" />
 
             <p:remoteCommand name="addInventoryItemSuccess"                             
                              actionListener="#{itemDomainCatalogController.completeSucessfulDerivedFromItemCreation()}"

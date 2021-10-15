@@ -58,6 +58,10 @@ a:link:hover, a:visited:hover  {
     margin-bottom: 15px;
 }
 
+#topCenter {
+    padding-top: 10px;
+}
+
 #top {
     position: relative;
     color: white;
@@ -80,7 +84,7 @@ a:link:hover, a:visited:hover  {
     padding-right: 15px; 
     padding-bottom: 15px;
     margin: 0px 0px 0px 0px;
-    height: 70px;
+    height: 110px;
 }
 
 #menu {
@@ -438,6 +442,10 @@ tr:hover .actionLink {
     float: left
 }
 
+.numItemsPerPageInput {
+    width: 27px;
+}
+
 .htmlPreserve {
     white-space: pre;
 }
@@ -645,8 +653,8 @@ h2 {
 }
 
 .transparent-tree {
-    background: none;
-    border: none;
+    background: none !important;
+    border: none !important;
 }
 
 .ui-panel {
@@ -658,12 +666,18 @@ h2 {
     border: none;    
 }
 
+.noButtonMenuItem {
+    padding: 0px !important; 
+    background: 0; 
+}
+
 .mainMenuBar .ui-menu {
-    border: 0; 
+    border: 0px;
 }
 
 .mainMenuBar .ui-menu, .mainMenuBar, .mainMenuBar .ui-menu .ui-menu-child {
     background: #6da5d8 !important;    
+    padding: 0px !important;
 }
 
 .mainMenuBar .ui-menu .ui-menu-child {
@@ -672,34 +686,30 @@ h2 {
 }
 
 .mainMenuBar .ui-menu .ui-menu-child .ui-menuitem {
-    padding-bottom: 5px
+    padding-bottom: 5px;
+    padding-right: 5px;   
 }
 
-.mainMenuBar .ui-menu .ui-menuitem .ui-menuitem-link {    
-    background: #acd6f2;
-    background-image: -webkit-linear-gradient(top, #acd6f2, #d9f1ff);
-    background-image: -moz-linear-gradient(top, #acd6f2, #d9f1ff);
-    background-image: -ms-linear-gradient(top, #acd6f2, #d9f1ff);
-    background-image: -o-linear-gradient(top, #acd6f2, #d9f1ff);
-    background-image: linear-gradient(to bottom, #acd6f2, #d9f1ff);
+.mainMenuBar .ui-menuitem > ul > li:nth-child(1) {
+    padding-top: 5px !important;    
 }
 
-.mainMenuBar .activeSubMenuParentItem .ui-submenu-link {
-    background: #76bff0 !important;
-    background-image: -webkit-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: -moz-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: -ms-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: -o-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: linear-gradient(to bottom, #76bff0, #8ed2fa) !important;
+.wideSubMenu ul {
+    width: 200px !important; 
 }
 
+.mainMenuBar .ui-menu .ui-menuitem .noButtonMenuItem {
+    padding: 0px !important;
+} 
+
+.mainMenuBar .ui-menu .ui-menuitem .ui-menuitem-link {
+    background-color: rgba(255, 255, 255, 0.4);
+    
+}
+
+.mainMenuBar .activeSubMenuParentItem .ui-submenu-link, 
 .mainMenuBar .activeMenuItem {
-    background: #76bff0 !important;
-    background-image: -webkit-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: -moz-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: -ms-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: -o-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: linear-gradient(to bottom, #76bff0, #8ed2fa) !important;
+   background-color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .mainMenuBar .ui-menu .ui-menuitem .ui-menuitem-link:hover {    
@@ -726,6 +736,8 @@ h2 {
 .ui-icon {
     display: inline-block;
     opacity: 0.75;
+    width: 16px;
+    height: 16px;
 }
 
 .ui-icon:hover {
@@ -822,13 +834,18 @@ h2 {
     }
 }
 
-.ui-icon-machine-design-template {    
+.ui-icon-machine-design-template, .ui-icon-machine-design-template-white  {    
     background-image: url(../../resources/images/aps-icon-template.svg) !important;
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
+    fill: currentColor; 
     animation: transition-ui-icon-machine-design 0.25s;    
     filter: grayscale(100%) brightness(500%) brightness(10%);
+}
+
+.ui-icon-machine-design-template-white {        
+    filter: grayscale(100%) brightness(500%) brightness(100%);
 }
 
 @keyframes transition-ui-icon-machine-design-template {
@@ -929,6 +946,32 @@ h2 {
     table-layout: auto !important;
 }
 
+.ui-datatable .ui-datatable-data > tr > td {    
+    border-width: 1px !important;
+    padding: 5px !important;
+}
+
+.ui-treetable .ui-treetable-data > tr > td {
+    border-width: 1px !important;
+    padding: 2px !important;
+}
+
+.ui-datatable-tablewrapper {
+    overflow: visible; 
+}
+
+.ui-treetable-resizable {
+    overflow: visible; 
+}
+
+.ui-datatable td {
+    overflow: visible !important; 
+}
+
+.ui-datatable .ui-paginator.ui-paginator-bottom, .ui-datatable .ui-paginator.ui-paginator-top {
+    background: rgba(255,255,255,0.45) !important;
+}
+
 .invalidTableData {
     color: red !important;
 }
@@ -942,9 +985,10 @@ h2 {
 }
 
 .ui-panelgrid .ui-panelgrid-cell {
-    background: transparent;
-    border-style: none;
+    background: transparent !important;
+    border-style: none !important;
     font-weight: bold;
+    padding: 0.4rem !important; 
 }
 
 .ui-datatable .ui-sortable-column {
@@ -1012,6 +1056,10 @@ h2 {
 
 .viewTransparentBackground {
     background-color: rgba(230, 245, 255, 0.85);
+}
+
+.viewTransparentBackground .ui-tooltip-text {
+    background: 0 !important; 
 }
 
 .viewTransparentBackground .ui-panelgrid tr td, 
@@ -1116,16 +1164,17 @@ h2 {
     width: 100%;
 }
 
-.contentSeperatorBorder {
-    border-right: 2px dashed !important;
-}
-
 .clckableLabel {
     text-decoration: underline; 
 }
 
 .clckableLabel:hover {
     color: #EEE;
+}
+
+#loadingDialog {
+    padding: 0.2rem;
+    padding-top: 1.75rem;
 }
 
 .viewTransparentBackgroundDialog  {
@@ -1148,6 +1197,8 @@ h2 {
 .viewTransparentBackgroundDialog .ui-panelgrid>tbody>td,
 .viewTransparentBackgroundDialog .ui-accordion .ui-accordion-content,
 .viewTransparentBackgroundDialog .ui-dialog-footer,
+.viewTransparentBackgroundDialog .ui-dialog-titlebar,
+.viewTransparentBackgroundDialog .ui-dialog-content,
 .viewTransparentBackgroundDialog .ui-panel,
 .viewTransparentBackgroundDialog .ui-scrollpanel {
     background: transparent !important;
@@ -1243,12 +1294,13 @@ h2 {
 
 .expandingInputText.ui-state-focus {
     width: 250px;
+    height: 30px;
 }
 
 .expandingInputText {
     width: 60px;
-    transition-duration: 0.5s;
-    transition-property: width; 
+    transition-duration: 0.5s !important;
+    transition-property: width, height !important;     
 }
 
 .menuBarInputText {
@@ -1282,20 +1334,8 @@ h2 {
     padding: 0;
 }
 
-.locationTieredMenuPickerContainer .activeLocationMenuItem .ui-state-hover,
-.locationTieredMenuPickerContainer .ui-state-hover {
-    border:1px solid #7096ab;
-    background:#85b2cb linear-gradient(top,rgba(255,255,255,0.6),rgba(255,255,255,0));
-    background:#85b2cb -webkit-gradient(linear,left top,left bottom,from(rgba(255,255,255,0.6)),to(rgba(255,255,255,0)));
-    background:#85b2cb -moz-linear-gradient(top,rgba(255,255,255,0.6),rgba(255,255,255,0));
-    font-weight:bold;
-    color:#313131;
-    -moz-box-shadow:0 0 5px #85b2cb;
-    -webkit-box-shadow:0 0 8px #85b2cb;
-    box-shadow:0 0 8px #85b2cb
-}
-
-.locationTieredMenuPickerContainer .activeLocationMenuItem {
+.activeLocationMenuItem,
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-highlight {
     background: #c2d1f0; 
 }
 
@@ -1320,6 +1360,7 @@ h2 {
     color: #4f4f4f !important; 
     text-decoration: none; 
     font-weight: unset !important;
+    font-family: FontAwesome !important;
 }
 
 .fa-icon-warning {
@@ -1362,6 +1403,15 @@ h2 {
 
 .noPaddingPanel .ui-panel-content {
     padding: 0; 
+}
+
+.ui-panel .ui-panel-content {
+    background: transparent !important; 
+    border: 0px !important;
+}
+
+.ui-panel .ui-panel-titlebar {
+    background-color: rgba(255,255,255,0.75) !important;
 }
 
 .draggableTreeTableDataCell {

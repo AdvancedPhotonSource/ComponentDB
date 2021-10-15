@@ -140,14 +140,14 @@ public class ItemSourceSettings extends CdbEntitySettingsBase<ItemSourceControll
             return;
         }
 
-        Map<String, FilterMeta> filters = dataTable.getFilterBy();
-        filterByCost = (String) filters.get("cost").getFilterField();
-        filterByContactInfo = (String) filters.get("contactInfo").getFilterField();
-        filterByIsManufacturer = (String) filters.get("isManufacturer").getFilterField();
-        filterByIsVendor = (String) filters.get("isVendor").getFilterField();
-        filterByPartNumber = (String) filters.get("partNumber").getFilterField();
-        filterBySourceName = (String) filters.get("source.name").getFilterField();
-        filterByUrl = (String) filters.get("url").getFilterField();
+        Map<String, FilterMeta> filters = dataTable.getFilterByAsMap();
+        filterByCost = (String) filters.get("cost").getField();
+        filterByContactInfo = (String) filters.get("contactInfo").getField();
+        filterByIsManufacturer = (String) filters.get("isManufacturer").getField();
+        filterByIsVendor = (String) filters.get("isVendor").getField();
+        filterByPartNumber = (String) filters.get("partNumber").getField();
+        filterBySourceName = (String) filters.get("source.name").getField();
+        filterByUrl = (String) filters.get("url").getField();
     }
     
     public Boolean getDisplayCost() {

@@ -24,6 +24,7 @@ INSERT INTO `allowed_property_value` VALUES
 (21,11,'Acceptance In Progress',NULL,NULL,4.00),
 (22,11,'Failed',NULL,NULL,12.00),
 (23,11,'Planned',NULL,NULL,1.10),
-(24,11,'Unknown',NULL,NULL,1.00);
+(24,11,'Unknown',NULL,NULL,1.00),
+(25,14,'Direct Connection',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `allowed_property_value` ENABLE KEYS */;
 UNLOCK TABLES;
