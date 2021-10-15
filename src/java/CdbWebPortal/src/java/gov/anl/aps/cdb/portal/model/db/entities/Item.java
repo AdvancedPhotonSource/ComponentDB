@@ -70,7 +70,7 @@ import org.primefaces.model.TreeNode;
 @Entity
 @Table(name = "item")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "domain_id", discriminatorType = DiscriminatorType.INTEGER)
+@DiscriminatorColumn(name = "domain_id")
 @NamedQueries({
     @NamedQuery(name = "Item.findAll",
             query = "SELECT i FROM Item i"),
