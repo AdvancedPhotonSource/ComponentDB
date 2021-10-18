@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.controllers.LoginController;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
@@ -114,6 +115,9 @@ public class UserInfo extends SettingEntity implements Serializable {
     private transient String userGroupListString = null; 
     private transient String passwordEntry = null;   
     
+    private transient Boolean importSetPassword = null;
+    private transient String importPassword = null;
+    
     public UserInfo() {
     }
 
@@ -201,16 +205,38 @@ public class UserInfo extends SettingEntity implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+    
+    @JsonIgnore
+    public Boolean getImportSetPassword() {
+        return importSetPassword;
+    }
+    
+    public void setImportSetPassword(Boolean b) {
+        importSetPassword = b;
+    }
+    
+    @JsonIgnore
+    public String getImportPassword() {
+        return importPassword;
+    }
+    
+    public void setImportPassword(String password) {
+        importPassword = password;
+    }
 
     @JsonIgnore
     public String getUserGroupListString() {
+        if (userGroupListString == null) {            
+            String userGroupString = CdbEntityController.displayEntityList(getUserGroupList());
+            userGroupListString = userGroupString;
+        }
         return userGroupListString;
     }
 
     public void setUserGroupListString(String userGroupListString) {
         this.userGroupListString = userGroupListString;
     }
-
+    
     @XmlTransient
     @JsonIgnore
     public List<ListTbl> getListList() {
@@ -227,6 +253,7 @@ public class UserInfo extends SettingEntity implements Serializable {
 
     public void setUserGroupList(List<UserGroup> userGroupList) {
         this.usersGroupList = userGroupList;
+        userGroupListString = null; // erase cached string rep of list
     }
 
     @XmlTransient
@@ -409,20 +436,44 @@ public class UserInfo extends SettingEntity implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        if (id != null) {
+            hash += id.hashCode();
+        } else if (getUsername() != null) {
+            hash += getUsername().hashCode();
+        }
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        
         if (!(object instanceof UserInfo)) {
             return false;
         }
+        
         UserInfo other = (UserInfo) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        
+        // special case for new items uses name
+        if ((this.id == null) && (other.id == null)) {
+            
+            if ((this.getUsername() == null) && (other.getUsername() == null)) {
+                // both names null
+                return true;
+            } else if (((this.getUsername() == null) && other.getUsername() != null) 
+                    || (this.getUsername() != null && !this.getUsername().equals(other.getUsername()))) {
+                // names are not equal
+                return false;
+            } else {
+                // names are equal
+                return true;
+            }
+            
+        // check for existing items uses id
+        } else if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            // at least one of the items exists and ids are not equal
             return false;
         }
+        
         return true;
     }
 
