@@ -190,12 +190,12 @@ public class PropertyValueImageUploadBean implements Serializable {
      * @throws InterruptedException
      * @throws gov.anl.aps.cdb.common.exceptions.CdbException
      */
-    public void done() throws InterruptedException, CdbException {
+    public String done() throws InterruptedException, CdbException {
         while (true) {
             if (uploadHashList.isEmpty()) {
                 if (cdbEntityController != null) {
                     cdbEntityController.update();
-                    return;
+                    return SessionUtility.getRedirectToCurrentViewWithHandlerTransfer(); 
                 } else {
                     throw new CdbException("Controller not set to update the gallery.");
                 }
