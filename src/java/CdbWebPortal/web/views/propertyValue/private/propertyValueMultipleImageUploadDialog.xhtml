@@ -16,37 +16,36 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog"
               modal="true"
               resizable="false"
-              closable="false">        
+              closable="true">        
 
-            <p:panelGrid columns="2" rendered="#{propertyValueImageUploadBean.showPropertyTypeSelectOneMenu()}">
-                <h:outputLabel value="Image Property Type: " />
-                <p:column>
-                    <p:selectOneMenu id="propertyValueImageUploadSelectOne"
-                                     value="#{propertyValueImageUploadBean.selectedPropertyType}" onchange="updatePropertyValueImageUploadSelectOne();">
-                        <f:selectItems value="#{propertyValueImageUploadBean.imageHandlerPropertyTypes}" var="propertyTypeObject"
-                                       itemValue="#{propertyTypeObject}" />
-                    </p:selectOneMenu>
-                    <p:remoteCommand name="updatePropertyValueImageUploadSelectOne"
-                                     update="propertyValueImageUploadSelectOne" />
-                </p:column>
-            </p:panelGrid>
-                
-            <p:fileUpload listener="#{propertyValueImageUploadBean.handleFileUpload}"
-                          multiple="true"
-                          allowTypes="/(\.|\/)([gG][iI][fF]|[jJ][pP][eE]?[gG]|[pP][nN][gG]|[pP][dD][fF])$/"/>
+        <p:panelGrid columns="2" rendered="#{propertyValueImageUploadBean.showPropertyTypeSelectOneMenu()}">
+            <h:outputLabel value="Image Property Type: " />
+            <p:column>
+                <p:selectOneMenu id="propertyValueImageUploadSelectOne"
+                                 value="#{propertyValueImageUploadBean.selectedPropertyType}" onchange="updatePropertyValueImageUploadSelectOne();">
+                    <f:selectItems value="#{propertyValueImageUploadBean.imageHandlerPropertyTypes}" var="propertyTypeObject"
+                                   itemValue="#{propertyTypeObject}" />
+                </p:selectOneMenu>
+                <p:remoteCommand name="updatePropertyValueImageUploadSelectOne"
+                                 update="propertyValueImageUploadSelectOne" />
+            </p:column>
+        </p:panelGrid>
 
-            <f:facet name="footer" class="dialog">
-                <p:commandButton id="#{entityTypeName}PropertyValueImageUploadSubmitButton"
-                                 widgetVar="#{entityTypeName}PropertyValueImageUploadSubmitButtonWidget"
-                                 value="Done" alt="Done" 
-                                 action="#{propertyValueImageUploadBean.done()}"
-                                 oncomplete="PF('propertyValueImageUploadDialogWidget').hide()" 
-                                 update="@form"
-                                 ajax="false"
-                                 icon="fa fa-check">
-                    <p:tooltip for="#{entityTypeName}PropertyValueImageUploadSubmitButton" value="Save uploaded images."/>
-                </p:commandButton>
-            </f:facet>
+        <p:fileUpload listener="#{propertyValueImageUploadBean.handleFileUpload}"
+                      widgetVar="propertyValueMultipleImageFileUploadWidget"
+                      multiple="true"
+                      sizeLimit="4000000"
+                      previewWidth="150"
+                      fileLimit="5"
+                      sequential="true"
+                      fileLimitMessage="Maximum number of files exceeded. 5 files can be uploaded at one time."
+                      oncomplete="if (!PF('propertyValueMultipleImageFileUploadWidget').files.length) propertyValueMultipleImageUploadComplete();"
+                      allowTypes="/(\.|\/)([gG][iI][fF]|[jJ][pP][eE]?[gG]|[pP][nN][gG]|[pP][dD][fF])$/"/>
+
+        <p:remoteCommand name="propertyValueMultipleImageUploadComplete"                                 
+                         action="#{propertyValueImageUploadBean.done()}"
+                         oncomplete="PF('propertyValueMultipleImageUploadDialogWidget').hide()" 
+                         update="@form"/>
 
     </p:dialog>
 

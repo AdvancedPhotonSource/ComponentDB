@@ -249,19 +249,15 @@ public class LoginController implements Serializable {
     }
 
     public String reloadPage() {
-        String landingPage = SessionUtility.getCurrentViewIdWithCurrentHandlerTransfer();
+        String landingPage = SessionUtility.getRedirectToCurrentViewWithHandlerTransfer();
         if (landingPage.contains("login")) {
             landingPage = SessionUtility.popViewFromStack();
             if (landingPage == null) {
                 landingPage = "/index";
-            }
+            } 
+            
+            landingPage = SessionUtility.addRedirectToViewId(landingPage); 
         }
-        if (landingPage.contains("?")) {
-            landingPage += "&";
-        } else {
-            landingPage += "?";
-        }
-        landingPage += "faces-redirect=true";
 
         logger.debug("Landing page: " + landingPage);
         return landingPage;

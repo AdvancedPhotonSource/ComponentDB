@@ -128,7 +128,7 @@ public abstract class SettingEntity extends CdbEntity implements Serializable {
             return defaultValue;
         }
         String value = entitySetting.getValue();
-        if (value.equals("")) {
+        if (value != null && value.equals("")) {
             value = null; 
         }
         return value;

@@ -154,17 +154,21 @@ public class SessionUtility {
 
     public static String getRedirectToCurrentView() {
         String currentView = getCurrentViewId();
-        if (currentView.contains("?")) {
-            currentView += "&";
-        } else {
-            currentView += "?";
-        }
-        currentView += "faces-redirect=true";
-
-        return currentView;
+        return addRedirectToViewId(currentView); 
     }
     
-    public static String getCurrentViewIdWithCurrentHandlerTransfer() {
+    public static String addRedirectToViewId(String viewId) {
+        if (viewId.contains("?")) {
+            viewId += "&";
+        } else {
+            viewId += "?";
+        }
+        viewId += "faces-redirect=true";
+
+        return viewId;
+    }
+    
+    public static String getRedirectToCurrentViewWithHandlerTransfer() {
         FacesContext context = FacesContext.getCurrentInstance();
         String viewId = context.getViewRoot().getViewId();
         ViewHandler handler = context.getApplication().getViewHandler();
@@ -174,7 +178,7 @@ public class SessionUtility {
         setSessionKey(SAFE_TRANSFER_CURRENT_KEY, true);
         context.setViewRoot(root);
         
-        return viewId; 
+        return addRedirectToViewId(viewId); 
     }
 
     public static String getCurrentViewId() {
