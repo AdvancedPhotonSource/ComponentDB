@@ -170,20 +170,48 @@ public class ItemType extends ItemTypeCategoryEntity implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        if (id != null) {
+            hash += id.hashCode();
+        } else if (getName() != null) {
+            hash += getName().hashCode();
+        }
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        
         if (!(object instanceof ItemType)) {
             return false;
         }
+        
         ItemType other = (ItemType) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        
+        // use domain and name to distinguish new items
+        if ((this.id == null) && (other.id == null)) {
+            
+            if ((this.getDomain() != null) && (!this.getDomain().equals(other.getDomain()))) {
+                // domains are different
+                return false;
+            }
+            
+            if ((this.getName() == null) && (other.getName() == null)) {
+                // both names null
+                return true;
+            } else if (((this.getName() == null) && other.getName() != null) || (this.getName() != null && !this.getName().equals(other.getName()))) {
+                // names are not equal
+                return false;
+            } else {
+                // names are equal
+                return true;
+            }
+            
+        // check for existing items uses id
+        } else if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            // at least one of the items exists and ids are not equal
             return false;
         }
+        
         return true;
     }
 
