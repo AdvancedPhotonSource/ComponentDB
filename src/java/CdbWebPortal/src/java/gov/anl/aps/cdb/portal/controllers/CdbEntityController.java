@@ -1748,6 +1748,9 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
             entityList = lazyDataModel.getFilteredEntities();
         } else {
             entityList = getFilteredEntities();
+            if ((entityList == null) || (entityList.size() == 0)) {
+                entityList = getAllObjectList();
+            }
         }
         
         if (entityList == null) {

@@ -4,16 +4,11 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
-import gov.anl.aps.cdb.portal.controllers.DomainController;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
-import gov.anl.aps.cdb.portal.controllers.ItemTypeController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefListColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
-import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,17 +25,8 @@ public class ImportHelperItemCategory extends ImportHelperBase<ItemCategory, Ite
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(
-                "Domain",
-                "domain",
-                "setDomain",
-                "Id or name of CDB domain (name must be preceded by # character).",
-                "getDomain", 
-                null,
-                ColumnModeOptions.rCREATErUPDATE(),
-                DomainController.getInstance(),
-                Domain.class,
-                ""));
+        specs.add(existingItemIdColumnSpec());
+        specs.add(deleteExistingItemColumnSpec());
         
         specs.add(new StringColumnSpec(
                 "Name", 
@@ -60,9 +46,26 @@ public class ImportHelperItemCategory extends ImportHelperBase<ItemCategory, Ite
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
+        specs.add(domainItemTypeListColumnSpec(ColumnModeOptions.oCREATEoUPDATE()));
+
         return specs;
     } 
    
+    @Override
+    public boolean supportsModeUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsModeDelete() {
+        return true;
+    }
+    
+    @Override
+    public boolean supportsModeTransfer() {
+        return true;
+    }
+
     @Override
     public ItemCategoryController getEntityController() {
         return ItemCategoryController.getInstance();

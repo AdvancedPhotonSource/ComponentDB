@@ -73,6 +73,11 @@ public class ImportHelperItemType extends ImportHelperBase<ItemType, ItemTypeCon
     public boolean supportsModeDelete() {
         return true;
     }
+    
+    @Override
+    public boolean supportsModeTransfer() {
+        return true;
+    }
 
     @Override
     public ItemTypeController getEntityController() {

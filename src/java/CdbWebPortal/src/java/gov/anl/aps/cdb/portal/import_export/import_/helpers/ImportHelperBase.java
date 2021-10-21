@@ -33,6 +33,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.DomainItemTypeListColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefListColumnSpec;
@@ -1793,6 +1794,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "Specify TRUE to delete existing item in delete mode.",
                 null,
                 ColumnModeOptions.rDELETE());
+    }
+    
+    public DomainItemTypeListColumnSpec domainItemTypeListColumnSpec(List<ColumnModeOptions> options) {        
+        return new DomainItemTypeListColumnSpec(options);
     }
     
     private List<ColumnSpec> getColumnSpecs() {

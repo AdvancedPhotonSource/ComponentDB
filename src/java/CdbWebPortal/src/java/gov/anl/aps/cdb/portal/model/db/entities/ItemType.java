@@ -172,8 +172,9 @@ public class ItemType extends ItemTypeCategoryEntity implements Serializable {
         int hash = 0;
         if (id != null) {
             hash += id.hashCode();
-        } else if (getName() != null) {
+        } else {
             hash += getName().hashCode();
+            hash += getDomain().hashCode();
         }
         return hash;
     }
