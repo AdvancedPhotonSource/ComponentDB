@@ -49,13 +49,10 @@ See LICENSE file.
         <p:message for="description"/>        
         <p:tooltip for="description" value="User description is optional."/>
 
-        <h:outputLabel for="userGroups" value="Groups" styleClass="entityDataLabel"/>
-        <p:selectManyMenu id="userGroups" value="#{userInfoObject.userGroupList}" converter="userGroupConverter" styleClass="entityDataSelectMany">
-            <f:selectItem itemLabel="Select" noSelectionOption="true"/>
-            <f:selectItems var="userGroup" value="#{userGroupController.availableItems}" itemLabel="#{userGroup.name}" itemValue="#{userGroup}"/>
-        </p:selectManyMenu>
-        <p:message for="userGroups"/>
-        <p:tooltip for="userGroups" value="User group specification is optional. More than one group may be selected."/>
+        <ui:include src="userInfoUserGroupSelectInput.xhtml">
+            <ui:param name="isFieldWriteable"
+                      value="#{true}"/> 
+        </ui:include>
 
     </p:panelGrid>
 

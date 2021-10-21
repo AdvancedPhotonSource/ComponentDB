@@ -35,31 +35,48 @@ public class SessionUtility {
     public static final String LAST_USERNAME_KEY = "lastUsername";
     public static final String VIEW_STACK_KEY = "viewStack";
     public static final String LAST_SESSION_ERROR_KEY = "lastSessionError";
-    public static final String ROLE_KEY = "role";
+    public static final String ROLE_KEY = "role";    
+    private static final String SAFE_TRANSFER_CURRENT_KEY = "safeTransferCurrent"; 
     private static final String MODULE_NAME_LOOKUP = "java:module/ModuleName";
     private static final String JAVA_LOOKUP_START = "java:global/";
-    private static String FACADE_LOOKUP_STRING_START = null;
+    private static String FACADE_LOOKUP_STRING_START = null;    
 
     private static final Logger logger = LogManager.getLogger(SessionUtility.class.getName());
 
     public SessionUtility() {
     }
-
+    
     public static void addErrorMessage(String summary, String detail) {
-        addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail));
+        addErrorMessage(summary, detail, false);
+    }
+
+    public static void addErrorMessage(String summary, String detail, boolean isAjax) {
+        addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail), isAjax);
     }
 
     public static void addWarningMessage(String summary, String detail) {
-        addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_WARN, summary, detail));
+        addWarningMessage(summary, detail, false);
     }
-
+    
+    public static void addWarningMessage(String summary, String detail, boolean isAjax) {
+        addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_WARN, summary, detail), isAjax);
+    }
+    
     public static void addInfoMessage(String summary, String detail) {
-        addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail));
+        addInfoMessage(summary, detail, false);
     }
 
-    private static void addMessage(String clientId, FacesMessage message) {
+    public static void addInfoMessage(String summary, String detail, boolean isAjax) {
+        addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail), isAjax);
+    }
+
+    private static void addMessage(String clientId, FacesMessage message, boolean isAjax) {
         FacesContext context = FacesContext.getCurrentInstance();
-        context.getExternalContext().getFlash().setKeepMessages(true);
+        
+        if (!isAjax) {
+            context.getExternalContext().getFlash().setKeepMessages(true);
+        }
+        
         context.addMessage(clientId, message);
         PrimeFaces.current().ajax().update(clientId);
     }
@@ -69,6 +86,14 @@ public class SessionUtility {
         ExternalContext externalContext = currentInstance.getExternalContext();
         Flash flash = externalContext.getFlash();
         return flash;
+    }
+    
+    public static void setFlashValueIfSafe(String key, Object value) {
+        Boolean sessionKey = (Boolean) getSessionKey(SAFE_TRANSFER_CURRENT_KEY);
+        if (sessionKey != null && sessionKey) {
+            setFlashValue(key, value);
+            setSessionKey(SAFE_TRANSFER_CURRENT_KEY, false);
+        }
     }
     
     public static void setFlashValue(String key, Object value) {
@@ -87,16 +112,25 @@ public class SessionUtility {
     }
 
     public static void setUser(UserInfo user) {
-        Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
-        sessionMap.remove(USER_KEY);
-        sessionMap.put(USER_KEY, user);
+        setSessionKey(USER_KEY, user);
     }
 
     public static UserInfo getUser() {
-        Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
-        Object user = sessionMap.get(USER_KEY);
+        Object user = getSessionKey(USER_KEY);
         
         return (UserInfo) user;
+    }
+    
+    private static void setSessionKey(String key, Object value) {
+        Map<String, Object> sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        sessionMap.remove(key);
+        sessionMap.put(key, value); 
+    }
+    
+    private static Object getSessionKey(String key) {
+        Map<String, Object> sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        return sessionMap.get(key);
+
     }
 
     public static void pushViewOnStack(String viewId) {
@@ -120,25 +154,31 @@ public class SessionUtility {
 
     public static String getRedirectToCurrentView() {
         String currentView = getCurrentViewId();
-        if (currentView.contains("?")) {
-            currentView += "&";
-        } else {
-            currentView += "?";
-        }
-        currentView += "faces-redirect=true";
-
-        return currentView;
+        return addRedirectToViewId(currentView); 
     }
     
-    public static String getCurrentViewIdWithCurrentHandlerTransfer() {
+    public static String addRedirectToViewId(String viewId) {
+        if (viewId.contains("?")) {
+            viewId += "&";
+        } else {
+            viewId += "?";
+        }
+        viewId += "faces-redirect=true";
+
+        return viewId;
+    }
+    
+    public static String getRedirectToCurrentViewWithHandlerTransfer() {
         FacesContext context = FacesContext.getCurrentInstance();
         String viewId = context.getViewRoot().getViewId();
         ViewHandler handler = context.getApplication().getViewHandler();
         UIViewRoot root = handler.createView(context, viewId);
         root.setViewId(viewId);
-        context.setViewRoot(root);     
         
-        return viewId; 
+        setSessionKey(SAFE_TRANSFER_CURRENT_KEY, true);
+        context.setViewRoot(root);
+        
+        return addRedirectToViewId(viewId); 
     }
 
     public static String getCurrentViewId() {

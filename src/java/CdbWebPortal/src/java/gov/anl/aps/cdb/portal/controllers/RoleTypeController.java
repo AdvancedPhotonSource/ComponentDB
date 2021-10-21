@@ -44,7 +44,7 @@ public class RoleTypeController extends CdbEntityController<RoleTypeControllerUt
         return new RoleTypeControllerUtility(); 
     }
 
-    @FacesConverter(value = "roleTypeConverter" ,forClass = RoleType.class)
+    @FacesConverter(value = "roleTypeConverter")
     public static class RoleTypeControllerConverter implements Converter {
 
         @Override

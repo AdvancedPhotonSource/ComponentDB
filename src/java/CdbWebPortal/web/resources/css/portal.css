@@ -42,11 +42,8 @@ a:link:hover, a:visited:hover  {
     color: black;
 }
 
-.ui-galleria-panel > img {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+body .ui-galleria .ui-galleria-thumbnail-container {
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .fullyHideablePanel.ui-hidden-container {
@@ -624,10 +621,6 @@ h1 {
     border-style: solid;
 }
 
-.propertyValueImageGalleria {
-    text-align: center;
-}
-
 h2 {
     font-size:  20px;
     font-weight: bold;
@@ -905,11 +898,6 @@ h2 {
     background-image: url(../../resources/images/design-element.ico) !important;
     background-repeat: no-repeat;
     background-position: center;
-}
-
-.ui-galleria-panel element.style {
-    width: 500px;
-    height: 313px;
 }
 
 .autocomplete input {

@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -55,8 +56,11 @@ public class UserGroup extends SettingEntity implements Serializable {
     @Size(min = 1, max = 64)
     private String name;
     @Size(max = 256)
-    private String description;
-    @ManyToMany(mappedBy = "usersGroupList")
+    private String description;        
+    @JoinTable(name = "user_user_group", joinColumns = {
+        @JoinColumn(name = "user_group_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "user_id", referencedColumnName = "id")})
+    @ManyToMany
     @OrderBy("lastName ASC")
     private List<UserInfo> userInfoList;
     @JoinTable(name = "user_group_list", joinColumns = {
@@ -69,7 +73,7 @@ public class UserGroup extends SettingEntity implements Serializable {
     @OneToMany(mappedBy = "ownerUserGroup")
     private List<EntityInfo> entityInfoList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userGroup")
-    private List<UserGroupSetting> userGroupSettingList;   
+    private List<UserGroupSetting> userGroupSettingList;           
 
     public UserGroup() {
     }
@@ -115,6 +119,14 @@ public class UserGroup extends SettingEntity implements Serializable {
 
     public void setUserInfoList(List<UserInfo> userInfoList) {
         this.userInfoList = userInfoList;
+    }
+    
+    @JsonIgnore
+    public String getUserInfoListString() {                
+        if (userInfoList == null || userInfoList.isEmpty()) {
+            return "No users assigned"; 
+        } 
+        return CollectionUtility.displayItemListWithoutOutsideDelimiters(userInfoList, ",");
     }
 
     @XmlTransient

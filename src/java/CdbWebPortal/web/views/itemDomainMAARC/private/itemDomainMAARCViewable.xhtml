@@ -31,14 +31,24 @@ See LICENSE file.
         <ui:param name="renderedStudyViewableFileGallery"
                   value="#{false}" />                                                           
 
-        <p:outputPanel id="studyViewableFileGallery">
+        <p:outputPanel id="studyViewableFileGallery"
+                       deferred="true">
             <p:galleria value="#{itemDomainMAARCController.previewsForAllElements}"
                         var="imageUUID"
                         rendered="#{!itemDomainMAARCController.loadGallery}"
-                        panelHeight="450"
-                        panelWidth="450">
+                        numVisible="5"
+                        circular="true"
+                        showThumbnails="true"                 
+                        autoPlay="true"
+                        transitionInterval="7000"                    
+                        style="max-width: 500px;">
                 <p:graphicImage value="#{itemDomainMAARCController.getScaledPreviewPath(imageUUID)}"
+                                style="width: 100%; display: block;"                                
                                 onclick="downloadPreview([{name: 'imageUUID', value: '#{imageUUID}'}])"/>
+                <f:facet name="thumbnail">
+                    <p:graphicImage value="#{itemDomainMAARCController.getScaledPreviewPath(imageUUID)}"                                    
+                                    style="width: 50px; display: block;" />
+                </f:facet>
             </p:galleria>
         </p:outputPanel>        
     </p:panel>

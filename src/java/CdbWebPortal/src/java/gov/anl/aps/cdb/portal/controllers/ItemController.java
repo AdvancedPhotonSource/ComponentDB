@@ -2498,7 +2498,7 @@ public abstract class ItemController<
         return false;
     }
 
-    @FacesConverter(value = "itemConverter", forClass = Item.class)
+    @FacesConverter(value = "itemConverter")
     public static class ItemControllerConverter implements Converter {
 
         @Override

@@ -55,7 +55,7 @@ public class DomainController extends CdbEntityController<DomainControllerUtilit
         return (DomainController) SessionUtility.findBean(DomainController.CONTROLLER_NAMED);
     }
 
-    @FacesConverter(value = "domainConverter", forClass = Domain.class)
+    @FacesConverter(value = "domainConverter")
     public static class DomainControllerConverter implements Converter {
 
         @Override

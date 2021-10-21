@@ -4,7 +4,7 @@
  */
 
 
-const VERIFY_VIEW_MAX_ATTEMPTS = 25;
+const VERIFY_VIEW_MAX_ATTEMPTS = 6;
 
 var sessionTimeout = false;
 
@@ -59,11 +59,11 @@ function startPageVerify(includeTabCheck = true) {
                     verifyView();
                 }
             }
-        }, 2500);
+        }, 10000);
     }
 
     verifyView();
-    if (includeTabCheck) {        
+    if (includeTabCheck) {
         verifyViewOpenPageIdHiddenText();
     }
 }

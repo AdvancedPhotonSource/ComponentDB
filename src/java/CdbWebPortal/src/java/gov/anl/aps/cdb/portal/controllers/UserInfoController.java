@@ -79,6 +79,12 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
     @Override
     public List<UserInfo> getAvailableItems() {
         return super.getAvailableItems();
+    }   
+
+    @Override
+    public void processCreateRequestParams() {
+        super.processCreateRequestParams();
+        updateUserGroupListStringForCurrent();
     }
 
     @Override
@@ -101,6 +107,7 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
         userInfo.setUserSettingList(userSettingList);
         String passwordEntry = userInfo.getPasswordEntry();
         passwordEntry = null;
+        updateUserGroupListStringForItem(userInfo);
         return super.prepareEdit(userInfo);
     } 
 
@@ -188,13 +195,25 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
             Iterator<UserInfo> userInfoIterator = userInfoDataModel.iterator();
             while (userInfoIterator.hasNext()) {
                 UserInfo userInfo = userInfoIterator.next();
-                String userGroupString = CdbEntityController.displayEntityList(userInfo.getUserGroupList());
-                userInfo.setUserGroupListString(userGroupString);
+                updateUserGroupListStringForItem(userInfo);
             }
             loadedDataModelHashCode = userInfoDataModel.hashCode();
         }
 
         return userInfoDataModel;
+    }
+    
+    public void updateUserGroupListStringForCurrent() {
+        UserInfo current = getCurrent();
+        updateUserGroupListStringForItem(current);
+    }
+    
+    private void updateUserGroupListStringForItem(UserInfo userInfo) {        
+        String userGroupString = CdbEntityController.displayEntityList(userInfo.getUserGroupList());
+        if (userGroupString.isEmpty()) {
+            userGroupString = "No groups assigned"; 
+        }
+        userInfo.setUserGroupListString(userGroupString);
     }
     
     @Override
@@ -215,7 +234,7 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
     /**
      * Converter class for user info objects.
      */
-    @FacesConverter(value = "userInfoConverter", forClass = UserInfo.class)
+    @FacesConverter(value = "userInfoConverter")
     public static class UserInfoControllerConverter implements Converter {
 
         @Override

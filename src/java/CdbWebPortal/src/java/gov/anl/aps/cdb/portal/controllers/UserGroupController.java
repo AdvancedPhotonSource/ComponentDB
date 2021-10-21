@@ -71,7 +71,7 @@ public class UserGroupController extends CdbEntityController<UserGroupController
     /**
      * Converter class for user group objects.
      */
-    @FacesConverter(value = "userGroupConverter", forClass = UserGroup.class)
+    @FacesConverter(value = "userGroupConverter")
     public static class UserGroupControllerConverter implements Converter {
 
         @Override
