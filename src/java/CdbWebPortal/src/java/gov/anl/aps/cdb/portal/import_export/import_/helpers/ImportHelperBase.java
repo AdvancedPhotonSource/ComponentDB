@@ -12,7 +12,6 @@ import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.controllers.ItemTypeController;
 import gov.anl.aps.cdb.portal.controllers.UserGroupController;
 import gov.anl.aps.cdb.portal.controllers.UserInfoController;
-import gov.anl.aps.cdb.portal.import_export.export.objects.ColumnValueResult;
 import gov.anl.aps.cdb.portal.import_export.export.objects.ExportColumnData;
 import gov.anl.aps.cdb.portal.import_export.export.objects.FieldValueDifference;
 import gov.anl.aps.cdb.portal.import_export.export.objects.FieldValueDifferenceMap;
@@ -34,6 +33,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.DomainItemTypeListColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefListColumnSpec;
@@ -74,7 +74,6 @@ import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.file.UploadedFile;
-import org.primefaces.util.SerializableSupplier;
 
 /**
  *
@@ -871,7 +870,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
 
         if (validInput) {
-            String summaryDetails = itemCount + " items ";
+            String pluralEnding = "";
+            if (itemCount > 1) {
+                pluralEnding = "s";
+            }
+            String summaryDetails = itemCount + " item" + pluralEnding + " ";
             
             String customSummaryDetails = getCustomSummaryDetails();
             if (!customSummaryDetails.isEmpty()) {
@@ -1441,6 +1444,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return new ValidInfo(true, "");
     }
     
+    /**
+     * Returns type name to use for successful create message.  Subclasses override to customize.
+     * @return 
+     */
+    protected String getCreateMessageTypeName() {
+        return getEntityController().getDisplayEntityTypeName().toLowerCase() + " item";
+    }
+    
     public ImportInfo importData() {
 
         EntityControllerType controller = this.getEntityController();
@@ -1449,7 +1460,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         String modeString = "";
         try {
             if (getImportMode() == ImportMode.CREATE) {
-                controller.createList(rows);
+                controller.createList(rows, false, getCreateMessageTypeName());
                 modeString = "created";
                 ValidInfo result = postCreate();
                 message = appendToString(message, result.getValidString());
@@ -1467,8 +1478,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             return new ImportInfo(false, "Import failed. " + ex.getClass().getName());
         }
         
+        String pluralEnding = "";
+        if (rows.size() > 1) {
+            pluralEnding = "s";
+        }
+        
         if (getImportMode() != ImportMode.COMPARE) {
-            message = "Operation succeeded, " + modeString + " " + rows.size() + " instances";
+            message = "Operation succeeded, " + modeString + " " + rows.size() + " instance" + pluralEnding + ".";
         } else {
             message = "Comparison complete.";
         }
@@ -1778,6 +1794,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "Specify TRUE to delete existing item in delete mode.",
                 null,
                 ColumnModeOptions.rDELETE());
+    }
+    
+    public DomainItemTypeListColumnSpec domainItemTypeListColumnSpec(List<ColumnModeOptions> options) {        
+        return new DomainItemTypeListColumnSpec(options);
     }
     
     private List<ColumnSpec> getColumnSpecs() {

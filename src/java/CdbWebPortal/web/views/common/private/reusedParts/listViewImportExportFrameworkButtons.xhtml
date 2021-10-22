@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+        
+        <ui:param name="importEntityActionFunctionName" 
+                  value="#{importEntityActionFunctionName != null 
+                       ? importEntityActionFunctionName 
+                       : 'prepareImport'}" /> 
+
+        <ui:param name="exportEntityActionFunctionName" 
+                  value="#{exportEntityActionFunctionName != null 
+                       ? exportEntityActionFunctionName 
+                       : 'prepareExport'}" /> 
+
+        <p:commandButton value="Import"
+                         icon="fa fa-plus"
+                         action="#{entityController[importEntityActionFunctionName]}"
+                         rendered="#{loginController.loggedInForImport
+                                     and entityController.entityDisplayImportButton}"
+                         onclick="PF('loadingDialog').show();"
+                         oncomplete="PF('loadingDialog').hide();"/> 
+        
+        <p:commandButton value="Export"
+                         icon="fa fa-file-excel-o"
+                         action="#{entityController[exportEntityActionFunctionName]}"
+                         rendered="#{entityController.entityDisplayExportButton}"
+                         onstart="PF('loadingDialog').show();"
+                         oncomplete="PF('loadingDialog').hide();"/> 
+
+</ui:composition>

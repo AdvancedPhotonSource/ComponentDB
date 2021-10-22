@@ -180,20 +180,43 @@ public class UserGroup extends SettingEntity implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        if (id != null) {
+            hash += id.hashCode();
+        } else if (getName() != null) {
+            hash += getName().hashCode();
+        }
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        
         if (!(object instanceof UserGroup)) {
             return false;
         }
+        
         UserGroup other = (UserGroup) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        
+        // special case for new items uses name
+        if ((this.id == null) && (other.id == null)) {
+            
+            if ((this.getName() == null) && (other.getName() == null)) {
+                // both names null
+                return true;
+            } else if (((this.getName() == null) && other.getName() != null) || (this.getName() != null && !this.getName().equals(other.getName()))) {
+                // names are not equal
+                return false;
+            } else {
+                // names are equal
+                return true;
+            }
+            
+        // check for existing items uses id
+        } else if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            // at least one of the items exists and ids are not equal
             return false;
         }
+        
         return true;
     }
 

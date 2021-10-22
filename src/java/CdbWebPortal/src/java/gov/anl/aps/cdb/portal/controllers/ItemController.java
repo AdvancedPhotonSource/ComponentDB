@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
+import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
@@ -308,6 +309,23 @@ public abstract class ItemController<
     @Override
     public final String getEntityEntityCategoryName() {
         return getItemItemCategoryTitle();
+    }
+    
+    /**
+     * Returns name to use for ItemConnectors in UI.  Subclasses override to customize.
+     * @return 
+     */
+    public String getDisplayItemConnectorName() {
+        return "connector";
+    }
+    
+    public String getDisplayItemConnectorLabel() {
+        return StringUtility.capitalize(getDisplayItemConnectorName());
+    }
+    
+    public String getDisplayItemConnectorsLabel() {
+        String labelString = StringUtility.capitalize(getDisplayItemConnectorName());
+        return labelString + "s";
     }
 
     public List<ItemDomainEntity> getItemListWithProject(ItemProject itemProject) {

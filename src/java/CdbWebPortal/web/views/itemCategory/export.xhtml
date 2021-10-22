@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../templates/contentViewTemplate.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
+        <f:viewAction action="#{logController.processPreRender()}"/>
+    </f:metadata>
+
+    <ui:param name="entityController" value="#{itemCategoryController}"/>    
+
+    <ui:define name="middleCenter">
+
+        <h:form id="exportItemCategoryForm">
+
+            <div class="pageTitle">
+                <h1>Export Item Categories</h1>
+            </div>
+
+            <ui:include src="../item/private/exportWizard/exportWizard.xhtml">
+                <ui:param name="entityController" value="#{entityController}" />
+            </ui:include>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>
