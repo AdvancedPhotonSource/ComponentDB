@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.settings.DomainSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.DomainControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import javax.ejb.EJB;
@@ -18,10 +19,12 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
-@Named("domainController")
+@Named(DomainController.CONTROLLER_NAMED)
 @SessionScoped
 public class DomainController extends CdbEntityController<DomainControllerUtility, Domain, DomainFacade, DomainSettings> implements Serializable {
 
+    public static final String CONTROLLER_NAMED = "domainController";
+    
     @EJB
     DomainFacade domainFacade; 
     
@@ -48,6 +51,10 @@ public class DomainController extends CdbEntityController<DomainControllerUtilit
         return new DomainControllerUtility();
     }
     
+    public static DomainController getInstance() {
+        return (DomainController) SessionUtility.findBean(DomainController.CONTROLLER_NAMED);
+    }
+
     @FacesConverter(value = "domainConverter")
     public static class DomainControllerConverter implements Converter {
 

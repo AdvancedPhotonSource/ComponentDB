@@ -27,4 +27,10 @@ public class ImportHelperCatalogConnectors extends ImportHelperConnectorBase {
     protected ItemDomainCatalogController getItemControllerInstance() {
         return ItemDomainCatalogController.getInstance();
     }
+
+    @Override
+    protected String getCreateMessageTypeName() {
+        return "catalog item port";
+    }
+
 }

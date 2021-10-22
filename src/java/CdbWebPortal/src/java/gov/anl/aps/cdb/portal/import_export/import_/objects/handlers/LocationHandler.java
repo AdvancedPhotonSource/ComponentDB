@@ -58,7 +58,7 @@ public class LocationHandler extends RefInputHandler {
                         CdbEntity entity = null;
                         String name = parsedValue.substring(1);
                         try {
-                            entity = mgr.getObjectWithName(name);
+                            entity = mgr.getObjectWithName(name, getDomainNameFilter());
                         } catch (CdbException ex) {
                             isValid = false;
                             validString = "Exception looking up by name: "

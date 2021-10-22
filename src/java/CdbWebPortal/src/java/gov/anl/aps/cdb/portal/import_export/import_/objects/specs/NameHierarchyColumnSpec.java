@@ -126,6 +126,7 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
         return inputHandler;
     }
 
+    @Override
     public OutputHandler getOutputHandler(ExportMode exportMode) {
         if (exportMode == ExportMode.EXPORT) {
             return new BlankColumnOutputHandler(getHeader(), getDescription());

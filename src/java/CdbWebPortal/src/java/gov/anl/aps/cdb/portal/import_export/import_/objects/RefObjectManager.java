@@ -17,7 +17,6 @@ import java.util.Map;
 public class RefObjectManager {
     
     private CdbEntityController controller;
-    private String domainNameFilter = null;
     private Map<Object, CdbEntity> objectIdMap = new HashMap<>();
     
     public RefObjectManager(
@@ -25,7 +24,6 @@ public class RefObjectManager {
             String domainNameFilter) {
         
         this.controller = controller;
-        this.domainNameFilter = domainNameFilter;
     }
 
     public CdbEntity getObjectWithId(String idString) throws CdbException {
@@ -69,7 +67,7 @@ public class RefObjectManager {
         return result;
     }
     
-    public CdbEntity getObjectWithName(String nameString) throws CdbException {
+    public CdbEntity getObjectWithName(String nameString, String domainNameFilter) throws CdbException {
         
         CdbEntity objValue = null;
                 

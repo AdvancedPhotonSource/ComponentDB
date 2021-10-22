@@ -26,4 +26,10 @@ public class ImportHelperCableCatalogConnectors extends ImportHelperConnectorBas
     protected ItemDomainCableCatalogController getItemControllerInstance() {
         return ItemDomainCableCatalogController.getInstance();
     }
+    
+    @Override
+    protected String getCreateMessageTypeName() {
+        return "cable catalog item connector";
+    }
+
 }

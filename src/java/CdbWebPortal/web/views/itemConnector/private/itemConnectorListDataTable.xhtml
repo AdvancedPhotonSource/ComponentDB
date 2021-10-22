@@ -22,12 +22,12 @@ See LICENSE file.
                            styleClass="fa fa-link-icon fa-trash"
                            onclick="PF('confirmDeleteItemConnector#{itemConnectorObject.viewUUID}Widget').show()"
                            rendered="#{isEntityWriteable}"
-                           title="Delete Item Connector">
-                <p:tooltip for="#{entityTypeName}ItemConnectorDeleteActionButton" value="Delete Item Connector."/>
+                           title="Delete #{entityController.displayItemConnectorLabel}">
+                <p:tooltip for="#{entityTypeName}ItemConnectorDeleteActionButton" value="Delete #{entityController.displayItemConnectorLabel}."/>
             </p:commandLink>
 
-            <p:confirmDialog message="Would you like to remove the item connector #{itemConnectorObject.connector.name}?"
-                             header="Confirm Item Connector Delete" 
+            <p:confirmDialog message="Would you like to remove the #{entityController.displayItemConnectorName} #{itemConnectorObject.connector.name}?"
+                             header="Confirm #{entityController.displayItemConnectorLabel} Delete" 
                              severity="alert"
                              styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert"
                              widgetVar="confirmDeleteItemConnector#{itemConnectorObject.viewUUID}Widget">

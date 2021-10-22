@@ -111,6 +111,14 @@ public class RefInputHandler extends SimpleInputHandler {
         this.allowPaths = allowPaths;
     }
     
+    public void setDomainNameFilter(String filter) {
+        domainNameFilter = filter;
+    }
+    
+    public String getDomainNameFilter() {
+        return domainNameFilter;
+    }
+    
     protected RefObjectManager getObjectManager() {
         return getObjectManager(controller, domainNameFilter);
     }
@@ -142,7 +150,7 @@ public class RefInputHandler extends SimpleInputHandler {
         String msg = "";
 
         try {
-            objValue = getObjectManager().getObjectWithName(nameString.trim());
+            objValue = getObjectManager().getObjectWithName(nameString.trim(), getDomainNameFilter());
         } catch (CdbException ex) {
             msg = "Exception searching for object: "
                     + nameString + " reason: " + ex.getMessage();
@@ -286,7 +294,7 @@ public class RefInputHandler extends SimpleInputHandler {
                             CdbEntity objValue = null;
                             String msg = "";
                             try {
-                                objValue =  getObjectManager().getObjectWithName(nameToken.trim());
+                                objValue =  getObjectManager().getObjectWithName(nameToken.trim(), getDomainNameFilter());
                             } catch (CdbException ex) {
                                 msg = "exception searching for object with name: "
                                         + nameToken + " reason: " + ex.getMessage();
