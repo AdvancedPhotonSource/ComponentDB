@@ -1295,7 +1295,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                 "Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
 
         formatInfo.add(new ImportExportFormatInfo(
-                "Add Connections to Existing Cables Format", 
+                "Cable Design Connections Format", 
                 ImportHelperCableDesignConnections.class));
         
         String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";
@@ -1314,6 +1314,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         
         formatInfo.add(new ImportExportFormatInfo("Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
+        formatInfo.add(new ImportExportFormatInfo("Cable Design Connections Format", ImportHelperCableDesignConnections.class));
         formatInfo.add(new ImportExportFormatInfo("Cable Design Pull List Extract Format", ImportHelperCableDesignPullList.class));
         
         String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";

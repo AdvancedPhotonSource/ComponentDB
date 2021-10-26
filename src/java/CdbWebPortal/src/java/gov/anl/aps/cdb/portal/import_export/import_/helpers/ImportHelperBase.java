@@ -1341,9 +1341,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         EntityType newEntity = null;
         createInfo = createEntityInstance(rowDict);
         newEntity = (EntityType) createInfo.getEntity();
-        if (!createInfo.getValidInfo().isValid()) {
-            return new CreateInfo(null, false, createInfo.getValidInfo().getValidString());
-        }
+// this code doesn't seem to belong here, we are checking later if the new instance is invalid
+// returning here causes an exception downstream, so that only an error message is displayed for the failed row
+// instead of showing the validation table for all rows
+//        if (!createInfo.getValidInfo().isValid()) {
+//            return new CreateInfo(null, false, createInfo.getValidInfo().getValidString());
+//        }
         if (newEntity == null) {
             // helper must return an instance for use in the validation table,
             // even if there is an error creating the entity

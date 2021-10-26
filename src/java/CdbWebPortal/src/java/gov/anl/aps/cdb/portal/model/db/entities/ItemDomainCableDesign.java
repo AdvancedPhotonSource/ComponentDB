@@ -536,6 +536,28 @@ public class ItemDomainCableDesign extends Item {
         return new ValidInfo(isValid, validString);
     }
     
+    public List<ItemElementRelationship> getCableRelationshipList() {
+        ItemElement selfElement = this.getSelfElement();
+        List<ItemElementRelationship> ierList = selfElement.getItemElementRelationshipList1();
+        if (ierList != null) {
+            RelationshipType cableIerType = getCableConnectionRelationshipType();
+            if (cableIerType != null) {
+                Comparator<ItemElementRelationship> comparator
+                        = Comparator
+                                .comparing((ItemElementRelationship o) -> o.getCableEndDesignation())
+                                .thenComparing(o -> o.getCableEndPrimarySortValue())
+                                .thenComparing(o -> o.getFirstItemElement().getParentItem().getName().toLowerCase());
+                List<ItemElementRelationship> sortedIerList
+                        = ierList.stream()
+                                .filter(ier -> (ier.getRelationshipType().getName().equals(cableIerType.getName())))
+                                .sorted(comparator)
+                                .collect(Collectors.toList());
+                return sortedIerList;
+            }
+        }
+        return new ArrayList<>();
+    }
+    
     public List<Item> getDevicesForCableEnd(String cableEnd) {
         
         List<Item> deviceList = new ArrayList<>();

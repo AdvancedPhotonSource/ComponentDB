@@ -110,8 +110,8 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     public static String VALUE_LABEL_DETAIL_CABLE_CONN = "DET";
     private static String PRIMARY_CABLE_CONN_INDICATOR = "*";
     
-    private transient Item importFirstItem;
-    private transient Item importSecondItem;
+    private transient Item importFirstItem = null;
+    private transient Item importSecondItem = null;
     private transient String importFirstItemConnectorName;
     private transient String importSecondItemConnectorName;
 
@@ -187,6 +187,14 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     public void setFirstItemElement(ItemElement firstItemElement) {
         this.firstItemElement = firstItemElement;
     }
+    
+    public Item getFirstItem() {
+        if (firstItemElement != null) {
+            return firstItemElement.getParentItem();
+        } else {
+            return null;
+        }
+    }
 
     public ItemConnector getFirstItemConnector() {
         return firstItemConnector;
@@ -194,6 +202,14 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
 
     public void setFirstItemConnector(ItemConnector firstItemConnector) {
         this.firstItemConnector = firstItemConnector;
+    }
+    
+    public String getFirstItemConnectorName() {
+        if (firstItemConnector != null) {
+            return firstItemConnector.getConnectorName();
+        } else {
+            return null;
+        }
     }
 
     public Float getFirstSortOrder() {
@@ -212,12 +228,28 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
         this.secondItemElement = secondItemElement;
     }
 
+    public Item getSecondItem() {
+        if (secondItemElement != null) {
+            return secondItemElement.getParentItem();
+        } else {
+            return null;
+        }
+    }
+
     public ItemConnector getSecondItemConnector() {
         return secondItemConnector;
     }
 
     public void setSecondItemConnector(ItemConnector secondItemConnector) {
         this.secondItemConnector = secondItemConnector;
+    }
+
+    public String getSecondItemConnectorName() {
+        if (secondItemConnector != null) {
+            return secondItemConnector.getConnectorName();
+        } else {
+            return null;
+        }
     }
 
     public Float getSecondSortOrder() {

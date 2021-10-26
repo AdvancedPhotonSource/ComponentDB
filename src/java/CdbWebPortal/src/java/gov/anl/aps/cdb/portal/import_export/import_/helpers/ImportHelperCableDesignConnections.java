@@ -64,13 +64,16 @@ public class ImportHelperCableDesignConnections
 
         List<ColumnSpec> specs = new ArrayList<>();
 
+        specs.add(existingItemIdColumnSpec());
+        specs.add(deleteExistingItemColumnSpec());
+        
         specs.add(new IdOrNameRefColumnSpec(
                 LABEL_CABLE_ITEM,
                 KEY_CABLE_ITEM,
                 "setImportSecondItem",
                 "Numeric ID or name of CDB cable design item. Name must be unique and prefixed with '#'.",
-                "getImportSecondItem",
-                null,
+                "getSecondItem",
+                "getSecondItem",
                 ColumnModeOptions.rCREATE(),
                 ItemDomainCableDesignController.getInstance(),
                 Item.class,
@@ -81,7 +84,7 @@ public class ImportHelperCableDesignConnections
                 KEY_CABLE_END,
                 "setCableEndDesignation",
                 "Specifies end of cable for connection, legal values are 1 and 2.",
-                "setCableEndDesignation",
+                "getCableEndDesignation",
                 ColumnModeOptions.rCREATE(),
                 0));
 
@@ -90,8 +93,8 @@ public class ImportHelperCableDesignConnections
                 KEY_MACHINE_ITEM,
                 "setImportFirstItem",
                 "Numeric ID or name of CDB machine item. Name must be unique and prefixed with '#'.",
-                "getImportFirstItem",
-                null,
+                "getFirstItem",
+                "getFirstItem",
                 ColumnModeOptions.rCREATE(),
                 ItemDomainMachineDesignController.getInstance(),
                 Item.class,
@@ -102,7 +105,7 @@ public class ImportHelperCableDesignConnections
                 KEY_PORT_NAME,
                 "setImportFirstItemConnectorName",
                 "Name of connector for port on machine item.",
-                "getImportFirstItemConnectorName",
+                "getFirstItemConnectorName",
                 ColumnModeOptions.oCREATE(),
                 0));
 
@@ -111,7 +114,7 @@ public class ImportHelperCableDesignConnections
                 KEY_CONNECTOR_NAME,
                 "setImportSecondItemConnectorName",
                 "Name of cable connector for connection.",
-                "getImportSecondItemConnectorName",
+                "getSecondItemConnectorName",
                 ColumnModeOptions.oCREATE(),
                 0));
 
@@ -129,6 +132,21 @@ public class ImportHelperCableDesignConnections
         return "Cable Design Connections";
     }
     
+    @Override
+    public boolean supportsModeUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsModeDelete() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsModeTransfer() {
+        return true;
+    }
+
     @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
         
@@ -201,5 +219,15 @@ public class ImportHelperCableDesignConnections
         }
         
         return new CreateInfo(connectionRelationship, isValid, validStr);
+    }
+    
+    @Override
+    protected List<ItemElementRelationship> generateExportEntityList_() {
+        List<ItemElementRelationship> entityList = new ArrayList<>();
+        List<ItemDomainCableDesign> cableList = ItemDomainCableDesignController.getInstance().getExportEntityList();
+        for (ItemDomainCableDesign cable : cableList) {
+            entityList.addAll(cable.getCableRelationshipList());
+        }
+        return entityList;
     }
 }
