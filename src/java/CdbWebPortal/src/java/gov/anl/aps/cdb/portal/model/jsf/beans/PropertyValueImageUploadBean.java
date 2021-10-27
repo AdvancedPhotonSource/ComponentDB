@@ -105,6 +105,7 @@ public class PropertyValueImageUploadBean implements Serializable {
         logger.debug("Saved file: " + originalFile.toPath());
         GalleryUtility.storeImagePreviews(originalFile);
         propertyValue.setValue(baseName);
+        propertyValue.setDisplayValue(fileName);
         logger.debug("Uploaded file name: " + fileName);        
     }
     

@@ -46,5 +46,21 @@ public class DocumentPropertyTypeHandler extends AbstractPropertyTypeHandler {
             targetLink = StorageUtility.getApplicationPropertyValueDocumentPath(targetLink);
             propertyValueHistory.setTargetValue(targetLink);
         }
+    } 
+
+    @Override
+    public void setDisplayValue(PropertyValue propertyValue) {
+        String displayValue = propertyValue.getDisplayValue();
+        if (displayValue == null || displayValue.isBlank()) {
+            super.setDisplayValue(propertyValue);
+        }
+    }
+
+    @Override
+    public void setDisplayValue(PropertyValueHistory propertyValueHistory) {
+        String displayValue = propertyValueHistory.getDisplayValue();
+        if (displayValue == null || displayValue.isBlank()) {
+            super.setDisplayValue(propertyValueHistory); 
+        }
     }
 }

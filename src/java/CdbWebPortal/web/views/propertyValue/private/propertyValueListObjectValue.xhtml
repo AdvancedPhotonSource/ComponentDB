@@ -34,16 +34,16 @@ See LICENSE file.
                                  update="@form">
                     <p:tooltip for="makeImagePrimaryButton" value="Make image primary"/>
                 </p:commandButton>
-                <h:outputLink value="#{propertyValueController.getOriginalImageApplicationPath(propertyValueObject)}" 
-                              target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}">
+                <h:outputLink value="#{propertyValueController.getAPIDownloadPath(propertyValueObject)}" 
+                              target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.displayValue}">
                     <ui:param name="viewableValue" value="#{propertyValueController.isPropertyValueViewable(propertyValueObject)}" />
 
                     <p:outputPanel rendered="#{viewableValue}">
                         <p:graphicImage styleClass="domainEntityPropertyValueThumbnail" value="#{propertyValueController.getThumbnailImagePath(propertyValueObject)}" 
-                                        alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}" />               
+                                        alt="#{propertyValueObject.displayValue}" title="#{propertyValueObject.displayValue}" />               
                     </p:outputPanel>
                     <p:outputPanel rendered="#{!viewableValue}">
-                        <h:outputText value="#{propertyValueObject.value}" />
+                        <h:outputText value="#{propertyValueObject.displayValue}" />
                     </p:outputPanel>
                 </h:outputLink>            
             </p:outputPanel>

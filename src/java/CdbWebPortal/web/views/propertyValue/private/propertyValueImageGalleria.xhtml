@@ -46,7 +46,7 @@ See LICENSE file.
         <p:graphicImage value="#{propertyValueController.getScaledImagePath(propertyValueObject)}" 
                         alt="#{propertyValueObject.description}" 
                         title="#{propertyValueObject.value}"
-                        onclick="window.open('#{propertyValueController.getOriginalImageApplicationPath(propertyValueObject)}')"/>
+                        onclick="window.open('#{propertyValueController.getAPIDownloadPath(propertyValueObject)}')"/>
         
     </p:galleria>
     

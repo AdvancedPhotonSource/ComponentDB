@@ -229,6 +229,11 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
         }
         return false; 
     }
+    
+    public static String getAPIDownloadPath(PropertyValue propertyValue) {
+        Integer id = propertyValue.getId();
+        return StorageUtility.getApiDownloadByPropertyValueIdPath(id);
+    }
 
     public static String getOriginalImageApplicationPath(PropertyValue propertyValue) {
         return getOriginalImageApplicationPathByValue(propertyValue.getValue());
