@@ -92,6 +92,7 @@ public class PropertyValueDocumentUploadBean implements Serializable {
         GalleryUtility.storeImagePreviews(originalFile, uploadedExtension);
 
         propertyValue.setValue(originalFile.getName());
+        propertyValue.setDisplayValue(filename);
 
     }
 

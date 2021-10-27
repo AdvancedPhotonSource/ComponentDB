@@ -17,10 +17,12 @@ public class StorageUtility {
     public static final Integer SCALED_IMAGE_SIZE = ConfigurationUtility.getPortalPropertyAsInteger(CdbProperty.SCALED_IMAGE_SIZE_PROPERTY_NAME);
     public static final Integer THUMBNAIL_IMAGE_SIZE = ConfigurationUtility.getPortalPropertyAsInteger(CdbProperty.THUMBNAIL_IMAGE_PROPERTY_NAME);
 
+    
     private static final String PropertyValueImagesDirectory = "/propertyValue/images";
     private static final String PropertyValueDocumentsDirectory = "/propertyValue/documents";
     private static final String LogAttachmentsDirectory = "/log/attachments";
     private static final String MAARCPreviewsDirectory = "/propertyValue/maarc";
+    private static final String API_DOWNLOAD_GET_PATH = "/api/Downloads/PropertyValue/";
 
     public static String getFullFilePath(String rootPath, String fileName) {
         if (fileName != null) {
@@ -143,6 +145,11 @@ public class StorageUtility {
         }
 
         return "/resources/images/" + dataType + "-gallery.png" + type;
+    }
+    
+    public static String getApiDownloadByPropertyValueIdPath(Integer propertyValueId) {
+        String contextRoot = SessionUtility.getContextRoot();
+        return contextRoot + API_DOWNLOAD_GET_PATH + propertyValueId;
     }
 
     public static String getApplicationPropertyValueImagePath(String imageName) {
