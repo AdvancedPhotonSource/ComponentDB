@@ -179,6 +179,12 @@ public class ItemDomainExportWizard implements Serializable {
     }
     
     public String onFlowProcess(FlowEvent event) {
+        String result = onFlowProcessHandler(event);
+        SessionUtility.executeRemoteCommand("PF('loadingDialog').hide();");
+        return result;
+    }
+    
+    public String onFlowProcessHandler(FlowEvent event) {
 
         String nextStep = event.getNewStep();
         String currStep = event.getOldStep();
@@ -396,19 +402,16 @@ public class ItemDomainExportWizard implements Serializable {
 
         } else if (tab.endsWith(TAB_CONFIRMATION)) {
             if (!hasError) {
-                disableButtonPrev = false;
                 disableButtonCancel = false;
                 disableButtonFinish = true;
                 disableButtonNext = false;
             } else {
-                disableButtonPrev = false;
                 disableButtonCancel = false;
                 disableButtonFinish = true;
                 disableButtonNext = true;
             }
 
         } else if (tab.endsWith(TAB_DOWNLOAD_FILE)) {
-            disableButtonPrev = true;
             disableButtonCancel = true;
             disableButtonFinish = false;
             disableButtonNext = true;

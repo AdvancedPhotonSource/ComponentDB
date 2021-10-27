@@ -26,7 +26,7 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     private SourceFacade sourceFacade;
     
     @Override
-    protected List<ColumnSpec> getColumnSpecs() {
+    protected List<ColumnSpec> initColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         
@@ -39,7 +39,7 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
                 "setName", 
                 "Name of vendor/manufacturer", 
                 "getName", 
-                ColumnModeOptions.rCREATErUPDATE(), 
+                ColumnModeOptions.rdCREATErUPDATE(), 
                 64));
         
         specs.add(new StringColumnSpec(
@@ -119,43 +119,4 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
         return new CreateInfo(entity, true, "");
     }  
     
-//    @Override
-//    protected CreateInfo retrieveEntityInstance(Map<String, Object> rowMap) {
-//        
-//        boolean isValid = true;
-//        String validString = "";
-//
-//        // create item in case we don't find one by name or id, need to return an instance
-//        Source invalidInstance = new Source();
-//        Source item;
-//        
-//        // retrieve by id if specified
-//        Integer itemId = (Integer) rowMap.get(KEY_EXISTING_ITEM_ID);
-//        if (itemId != null) {
-//            item = getEntityController().findById(itemId);
-//            if (item == null) {
-//                item = invalidInstance;
-//                isValid = false;
-//                validString = "Unable to retrieve existing item with id: " + itemId;
-//            }
-//        } else {
-//            // retrieve by name
-//            String itemName = (String) rowMap.get(KEY_NAME);
-//            if (itemName != null) {
-//                item = getSourceFacade().findByName(itemName);
-//                if (item == null) {
-//                    // no item found with specified name
-//                    item = invalidInstance;
-//                    isValid = false;
-//                    validString = "No source object found with specified name: " + itemName;
-//                }
-//            } else {
-//                item = invalidInstance;
-//                isValid = false;
-//                validString = "Must specify existing item id or name to update Source item.";
-//            }
-//        }
-//               
-//        return new CreateInfo(item, isValid, validString);
-//    }  
 }

@@ -16,6 +16,7 @@ See LICENSE file.
         <ui:param name="childEntityController" value="#{itemConnectorController}"/>
         <ui:param name="childEntityTypeName" value="#{itemConnectorEntityTypeName}"/>
         <ui:param name="onCompleteAddButtonCommand" value="prepare#{entityTypeName}ConnectorAdd()" />
+        <ui:param name="tooltipName" value="#{entityController.displayItemConnectorLabel}"/>
     </ui:include>
 
     <ui:include src="itemConnectorListDataTable.xhtml" />

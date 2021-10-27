@@ -30,7 +30,7 @@ public class ImportHelperInventory
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperInventory.class.getName());
     
     @Override
-    protected List<ColumnSpec> getColumnSpecs() {
+    protected List<ColumnSpec> initColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         

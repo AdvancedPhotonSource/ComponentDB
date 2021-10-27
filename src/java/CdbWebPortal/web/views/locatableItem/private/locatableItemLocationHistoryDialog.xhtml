@@ -19,6 +19,8 @@ See LICENSE file.
               dynamic="true">
         <p:dataTable value="#{locatableItemController.getLocationHistoryObjectList(itemObject)}"
                      var="itemElementLocationRelationshipHistoryObject"
+                     sortMode="single"
+                     stripedRows="true"
                      draggableColumns="true"
                      rows="15">
             <p:column headerText="Housing">
@@ -49,7 +51,7 @@ See LICENSE file.
         <f:facet name="footer">
             <p:commandButton value="Done"                              
                              oncomplete="PF('itemDomainInventoryLocationHistoryDialogWidget').hide();"                             
-                             icon="ui-icon-arrowreturn-1-w"/>
+                             icon="fa fa-close"/>
         </f:facet>
 
 

@@ -28,11 +28,12 @@ See LICENSE file.
             </p:column>
 
             <p:commandButton id="locationSelectButton#{viewName}" 
+                             onclick="PF('loadingDialog').show()"
                              action="#{itemDomainLocationController.resetListDataModelAndSetSelectionLocatinTreeNodeByItem(itemObject.locationItem)}"
                              alt="Select Location"
                              oncomplete="showLocationItemSelectionDialog()"
                              immediate="true"
-                             icon="ui-icon-search">
+                             icon="fa fa-search">
                 <p:tooltip for="locationSelectButton#{viewName}" value="Search for location."/>
             </p:commandButton>                               
         </p:panelGrid>

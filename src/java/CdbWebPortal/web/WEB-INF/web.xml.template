@@ -9,10 +9,6 @@ See LICENSE file.
         <param-value>CDB_PROJECT_STAGE</param-value>
     </context-param>
     <context-param>
-        <param-name>primefaces.FONT_AWESOME</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <context-param>
         <param-name>javax.faces.FACELETS_BUFFER_SIZE</param-name>
         <param-value>65536</param-value>
     </context-param>

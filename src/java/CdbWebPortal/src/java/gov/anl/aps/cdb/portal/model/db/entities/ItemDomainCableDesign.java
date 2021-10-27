@@ -9,8 +9,8 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.RelationshipTypeControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import java.util.ArrayList;
@@ -108,10 +108,12 @@ public class ItemDomainCableDesign extends Item {
     } 
 
     @Override
+    @JsonIgnore
     public ItemDomainCableDesignControllerUtility getItemControllerUtility() {
         return new ItemDomainCableDesignControllerUtility();
     }
     
+    @JsonIgnore
     public List<ItemConnector> getDeletedConnectorList() {
         if (deletedConnectorList == null) {
             deletedConnectorList = new ArrayList<>();
@@ -125,6 +127,7 @@ public class ItemDomainCableDesign extends Item {
         }
     }
     
+    @JsonIgnore
     public List<ItemElementRelationship> getDeletedIerList() {
         if (deletedIerList == null) {
             deletedIerList = new ArrayList<>();
@@ -142,6 +145,11 @@ public class ItemDomainCableDesign extends Item {
         EntityInfo entityInfo = this.getEntityInfo();
         UserInfo ownerUser = entityInfo.getOwnerUser();
         return getCableConnectionRelationshipType(ownerUser);
+    }
+
+    @Override
+    protected Item getInheritedItemConnectorParent() {
+        return getCatalogItem();
     }
 
     private RelationshipType getCableConnectionRelationshipType(UserInfo userInfo) {
@@ -212,6 +220,74 @@ public class ItemDomainCableDesign extends Item {
         ierList.add(ier);
     }
     
+    public CreateInfo addConnectionRelationshipImport(
+            Item machineItem,
+            String machineItemPortName,
+            String cableConnectorName,
+            String cableEnd,
+            boolean isPrimary) {
+        
+        boolean isValid = true;
+        String validStr = "";
+        ItemElementRelationship connectionRelationship = null;
+        
+        // machine item, cable end are required
+        if ((machineItem == null) || 
+                (cableEnd == null) || 
+                (cableEnd.isEmpty())) {
+            isValid = false;
+            validStr = "Machine item and cable end must be specified.";
+            
+        } else {
+            
+            // cable end must be valid value
+            if (!isValidCableEndDesignation(cableEnd)) {
+                isValid = false;
+                validStr = "Invalid cable end designation: " + cableEnd;
+                
+            } else {
+                
+                ItemConnector machineItemPort = null;
+                ItemConnector cableConnector = null;
+                
+                // validate and retrieve port
+                if (machineItemPortName != null) {
+                    machineItemPort = machineItem.getConnectorNamed(machineItemPortName);
+                    if (machineItemPort == null) {
+                        isValid = false;
+                        validStr = "Invalid machine item port name: " + machineItemPortName + ".";
+                    } else if (machineItemPort.isConnected()) {
+                        isValid = false;
+                        validStr = "Specified machine item port is in use: " + machineItemPortName + ".";
+                    }
+                }
+                
+                if (cableConnectorName != null) {
+                    // validate and retrieve connector
+                    cableConnector = getConnectorNamed(cableConnectorName);
+                    if (cableConnector == null) {
+                        isValid = false;
+                        validStr = validStr + " Invalid cable connector name: " + cableConnectorName + ".";
+                    } else if (!cableConnector.getConnector().getCableEndDesignation().equals(cableEnd)) {
+                        isValid = false;
+                        validStr = validStr + " Invalid cable end for connector name: " + cableConnectorName + ".";
+                    } else if (cableConnector.isConnected()) {
+                        isValid = false;
+                        validStr = validStr + " Specified cable connector is in use: " + cableConnectorName + ".";                        
+                    }
+                }
+                
+                if (isValid) {
+                        // call addCableRelationship
+                        connectionRelationship = addCableRelationship(
+                                machineItem, machineItemPort, cableConnector, cableEnd, isPrimary);
+                }
+            }
+        }
+        
+        return new CreateInfo(connectionRelationship, isValid, validStr);
+    }
+    
     public ItemElementRelationship addCableRelationship(
             Item endpoint,
             ItemConnector endpointConnector,
@@ -260,9 +336,25 @@ public class ItemDomainCableDesign extends Item {
                 && (!newItemElement.getId().equals(origItemElement.getId()))) {
             origItemElement.getItemElementRelationshipList().remove(cableRelationship);
         }
-        
         cableRelationship.setFirstItemElement(newItemElement);
+
+        
+        // delete original connector if updating to new one
+        ItemConnector origEndpointConnector = cableRelationship.getFirstItemConnector();
+        if ((origEndpointConnector != null) 
+                && ((endpointConnector == null) || (!endpointConnector.getId().equals(origEndpointConnector.getId())))) {
+            this.getDeletedConnectorList().add(origEndpointConnector);
+            itemEndpoint.getItemConnectorList().remove(origEndpointConnector);
+        }
         cableRelationship.setFirstItemConnector(endpointConnector);
+        
+        // delete original connector if updating to new one
+        ItemConnector origCableConnector = cableRelationship.getSecondItemConnector();
+        if ((((origCableConnector != null) && (origCableConnector.getId() != null)))
+                && ((cableConnector == null) || (cableConnector.getId() == null) || (!cableConnector.getId().equals(origCableConnector.getId())))) {
+            this.getDeletedConnectorList().add(origCableConnector);
+            this.getItemConnectorList().remove(origCableConnector);
+        }
         cableRelationship.setSecondItemConnector(cableConnector);
         
         // don't update cable end for primary cable connection
@@ -376,8 +468,6 @@ public class ItemDomainCableDesign extends Item {
                     if (origEndpointConnector != null) {
                         getDeletedConnectorList().add(origEndpointConnector);
                     }
-                    ItemDomainMachineDesignControllerUtility mdUtility = new ItemDomainMachineDesignControllerUtility();
-                    mdUtility.syncMachineDesignConnectors(itemEndpoint);
                     endpointConnector = itemEndpoint.getConnectorNamed(endpointConnectorName);
                     if (endpointConnector == null) {
                         isValid = false;
@@ -407,7 +497,6 @@ public class ItemDomainCableDesign extends Item {
                     if (origCableConnector != null) {
                         getDeletedConnectorList().add(origCableConnector);
                     }
-                    getItemControllerUtility().syncConnectors(this);
                     cableConnector = this.getConnectorNamed(cableConnectorName);
                     if (cableConnector == null) {
                         isValid = false;

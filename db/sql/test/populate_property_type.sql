@@ -12,6 +12,7 @@ INSERT INTO `property_type` VALUES
 (10,'cable_inventory_internal_property_type','Cable Inventory Metadata',NULL,NULL,NULL,NULL,NULL,0,0,1,1,NULL),
 (11,'Cable Instance Status',NULL,NULL,NULL,NULL,'Planned',NULL,0,0,1,1,NULL),
 (12,'cable_design_internal_property_type','Cable Design Metadata',NULL,NULL,NULL,NULL,NULL,0,0,1,1,NULL),
-(13,'Test Property','','',1,NULL,'','',0,0,0,1,NULL);
+(13,'Test Property','','',1,NULL,'','',0,0,0,1,NULL),
+(14,'Control Interface','Describes the interface to parent in the control hierarchy.',NULL,NULL,NULL,NULL,NULL,0,0,1,1,1);
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;

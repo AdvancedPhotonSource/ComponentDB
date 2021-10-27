@@ -138,11 +138,11 @@ public class PropertyTypeSettings extends CdbEntitySettingsBase<PropertyTypeCont
         if (dataTable == null) {
             return;
         }
-        Map<String, FilterMeta> filters = dataTable.getFilterBy();
-        filterByCategory = (String) filters.get("propertyTypeCategory.name").getFilterField();
-        filterByDefaultUnits = (String) filters.get("defaultUnits").getFilterField();
-        filterByDefaultValue = (String) filters.get("defaultValue").getFilterField();
-        filterByHandler = (String) filters.get("handlerName").getFilterField();
+        Map<String, FilterMeta> filters = dataTable.getFilterByAsMap();
+        filterByCategory = (String) filters.get("propertyTypeCategory.name").getField();
+        filterByDefaultUnits = (String) filters.get("defaultUnits").getField();
+        filterByDefaultValue = (String) filters.get("defaultValue").getField();
+        filterByHandler = (String) filters.get("handlerName").getField();
     }
     
     public Boolean getDisplayCategory() {

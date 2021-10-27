@@ -257,8 +257,11 @@ public class GalleryUtility {
         logger.debug("Excel file converted to PDF successfully");
 
         InputStream inputStream = new ByteArrayInputStream(output.toByteArray());
+        
+        DefaultStreamedContent.Builder builder = DefaultStreamedContent.builder();                
+        builder.stream(() -> inputStream); 
 
-        return new DefaultStreamedContent(inputStream);
+        return builder.build(); 
     }
 
     private static void fillInDataForSheet(Iterator<Row> rowIterator, Document document) throws DocumentException {

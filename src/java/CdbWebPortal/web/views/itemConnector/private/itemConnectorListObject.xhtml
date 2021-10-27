@@ -27,14 +27,6 @@ See LICENSE file.
         #{itemConnectorObject.connector.connectorType}
     </p:column>
     
-    <ui:param name="portGender"
-              value="#{itemConnectorController.getConnectorGender(itemConnectorObject)}" /> 
-
-    <p:column headerText="Port Gender"
-              exportFunction="#{facesUtility.getToString(portGender)}">
-        #{portGender}
-    </p:column>
-
 </ui:composition>
 
 

@@ -64,6 +64,11 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
         return new ItemDomainCatalogSettings(this);
     }
 
+    @Override
+    public String getDisplayItemConnectorName() {
+        return "port";
+    }
+    
     public List<ItemDomainInventory> getInventorySparesList() {
         ItemDomainCatalog current = getCurrent();
         List<ItemDomainInventory> inventorySparesList = current.getInventorySparesList();

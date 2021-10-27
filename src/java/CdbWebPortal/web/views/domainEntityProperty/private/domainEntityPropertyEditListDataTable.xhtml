@@ -21,6 +21,8 @@ See LICENSE file.
                  rows="#{propertyValueSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
+                 sortMode="single"
+                 stripedRows="true"
                  editable="true"
                  emptyMessage="No #{entityTypeDisplayName} properties found."
                  rowStyleClass="#{propertyValueObject.id != null ? '' : 'newItemInRow'}">
@@ -36,7 +38,7 @@ See LICENSE file.
 
                 <p:commandLink id="propertyValueHistoryListViewButton" 
                                oncomplete="PF('propertyValueHistoryListDialogWidget').show()" 
-                               styleClass="ui-icon ui-icon-history" title="View history."
+                               styleClass="fa fa-link-icon fa-history" title="View history."
                                update="@form">
                     <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValue}" 
                                                  value="#{propertyValueObject}"/>
@@ -46,14 +48,14 @@ See LICENSE file.
                 <p:commandLink id="propertyValueActionButton" 
                                rendered="#{displayEditActionButton}" 
                                oncomplete="#{editActionOncomplete}" 
-                               styleClass="ui-icon #{editActionIcon}"
+                               styleClass="fa fa-link-icon #{editActionIcon}"
                                update="@form">
                     <f:setPropertyActionListener value="#{propertyValueObject}" target="#{propertyValueController.current}"/>                    
                 </p:commandLink>
 
                 <p:commandLink id="propertyValueDeleteButton" action="#{entityController.deleteProperty(propertyValueObject)}" 
                                actionListener="#{propertyValueController.destroy(propertyValueObject)}"
-                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+                               styleClass="fa fa-link-icon fa-trash" title="Delete" update="@form">
                     <p:tooltip for="propertyValueDeleteButton" value="Delete property value."/>
                 </p:commandLink>
             </div>

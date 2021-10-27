@@ -80,7 +80,7 @@ See LICENSE file.
                                        styleClass="entityDataLabel"/>
                     </row>
                     <row>
-                        <ui:decorate template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+                        <ui:decorate template="../../itemDomainMachineDesignBase/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
                             <ui:param name="viewId" value="connectionDialogTree" />
                             <ui:param name="hideOptionalColumns" value="#{false}" />
                             <ui:param name="valueModel" value="#{itemDomainCableDesignController.dialogConnection.mdTree}" />
@@ -119,20 +119,20 @@ See LICENSE file.
 
             <f:facet name="footer" class="dialog">
 
-                <p:outputPanel id="dialogConnectionButtonPanel">
-                    <p:commandButton  action="#{entityController.dialogConnection.save('saveEndpointSuccess()')}"
-                                      id="connectionDialogSaveButton"
-                                      value="Save" 
-                                      alt="Save" 
-                                      update="@form"
-                                      disabled="#{entityController.dialogConnection.disableButtonSave}"
-                                      icon="ui-icon-check"/>
+            <p:outputPanel id="dialogConnectionButtonPanel">
+                <p:commandButton  action="#{entityController.dialogConnection.save('saveEndpointSuccess()')}"
+                                  id="connectionDialogSaveButton"
+                                  value="Save" 
+                                  alt="Save" 
+                                  update="@form"
+                                  disabled="#{entityController.dialogConnection.disableButtonSave}"
+                                  icon="fa fa-save"/>
 
-                    <p:commandButton action="#{entityController.dialogConnection.cancel()}" 
-                                     immediate="true" 
-                                     value="Cancel" alt="Cancel" 
-                                     update="dialogConnection"
-                                     icon="ui-icon-cancel" />
+                <p:commandButton action="#{entityController.dialogConnection.cancel()}" 
+                                 immediate="true" 
+                                 value="Cancel" alt="Cancel" 
+                                 update="dialogConnection"
+                                 icon="fa fa-close" />
 
                     <p:remoteCommand name="saveEndpointSuccess"                             
                                      actionListener="#{entityController.dialogConnection.actionListenerSaveSuccess}"

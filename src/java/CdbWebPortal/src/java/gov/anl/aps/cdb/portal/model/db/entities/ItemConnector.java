@@ -6,7 +6,9 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemConnectorControllerUtility;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -74,7 +76,6 @@ public class ItemConnector extends CdbEntity implements Serializable {
     
     private transient String importConnectorName = null;
     private transient String importConnectorDescription = null;
-    private transient Boolean importConnectorGenderIsMale = null;
     private transient ConnectorType importConnectorType = null;
         
     public ItemConnector() {
@@ -229,6 +230,19 @@ public class ItemConnector extends CdbEntity implements Serializable {
         return "gov.anl.aps.cdb.portal.model.db.entities.ItemConnector[ id=" + id + " ]";
     }
     
+    @Override
+    public ItemConnectorControllerUtility getControllerUtility() {
+        return new ItemConnectorControllerUtility(); 
+    }
+    
+    @Override
+    public void addPropertyValueToPropertyValueList(PropertyValue propertyValue) {
+        if (propertyValueList == null) {
+            propertyValueList = new ArrayList<>();
+        }
+        propertyValueList.add(0, propertyValue);
+    }
+
     public boolean isConnected() {
         List<ItemElementRelationship> relationshipList = getItemElementRelationshipList();
         if ((relationshipList != null) && (!relationshipList.isEmpty())) {
@@ -260,15 +274,6 @@ public class ItemConnector extends CdbEntity implements Serializable {
     }
 
     @JsonIgnore
-    public Boolean getImportConnectorGenderIsMale() {
-        return importConnectorGenderIsMale;
-    }
-
-    public void setImportConnectorGenderIsMale(Boolean importConnectorGenderIsMale) {
-        this.importConnectorGenderIsMale = importConnectorGenderIsMale;
-    }
-
-    @JsonIgnore
     public ConnectorType getImportConnectorType() {
         return importConnectorType;
     }
@@ -289,7 +294,6 @@ public class ItemConnector extends CdbEntity implements Serializable {
     public void setImportConnectorDetails(
             String connectorName,
             String connectorDesc,
-            Boolean isMale,
             ConnectorType connectorType) {
         
         Connector conn = new Connector();
@@ -297,10 +301,6 @@ public class ItemConnector extends CdbEntity implements Serializable {
         conn.setName(connectorName);
         if (connectorDesc != null) {
             conn.setDescription(connectorDesc);
-        }
-        
-        if (isMale != null) {
-            conn.setIsMale(isMale);
         }
         
         if (connectorType != null) {

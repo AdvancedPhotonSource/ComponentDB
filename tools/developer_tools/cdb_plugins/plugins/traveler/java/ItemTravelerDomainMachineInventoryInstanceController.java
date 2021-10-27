@@ -5,7 +5,7 @@
 package gov.anl.aps.cdb.portal.plugins.support.traveler;
 
 import gov.anl.aps.cdb.portal.controllers.ItemController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignBaseController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import java.io.Serializable;
 import javax.enterprise.context.SessionScoped;
@@ -25,7 +25,7 @@ public class ItemTravelerDomainMachineInventoryInstanceController extends ItemTr
   
     private static final Logger logger = LogManager.getLogger(ItemTravelerDomainMachineInventoryInstanceController.class.getName());
     
-    private ItemDomainMachineDesignController itemDomainMachineDesignController = null;
+    private ItemDomainMachineDesignBaseController itemDomainMachineDesignController = null;
 
     @Override
     protected ItemController getItemController() {

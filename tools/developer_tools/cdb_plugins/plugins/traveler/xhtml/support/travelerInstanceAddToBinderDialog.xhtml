@@ -27,6 +27,8 @@ See LICENSE file.
                          var="binderObject"
                          selectionMode="single"
                          rowKey="#{binderObject}"
+                         sortMode="single"
+                         stripedRows="true"
                          selection="#{travelerDomainInstanceController.selectedBinder}"> 
 
                 <p:ajax event="rowSelect" process="addTravelerToBinderSelectionDataTable" />
@@ -40,12 +42,12 @@ See LICENSE file.
 
             </p:dataTable>
         </p:outputPanel>
-        
+
         <f:facet name="footer">
             <p:commandButton value="Add to Binder"
                              icon="fa fa-floppy-o"
                              action="#{travelerDomainInstanceController.addTravelerToBinder('successAddTravelerToBinder()')}"/>
-            
+
             <p:remoteCommand name="successAddTravelerToBinder"
                              onstart="PF('loadingDialog').show()"
                              update="@form"

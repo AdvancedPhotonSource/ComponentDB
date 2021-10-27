@@ -166,7 +166,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      *
      * @return created entity instance
      */
-    protected EntityType createEntityInstance() {
+    public EntityType createEntityInstance() {
         UserInfo user = SessionUtility.getUser();
         return getControllerUtility().createEntityInstance(user); 
     }
@@ -548,7 +548,11 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      */
     public EntityType getSelected() {
         if (getCurrent() == null) {
-            setCurrent(createEntityInstance());
+            UserInfo user = SessionUtility.getUser();
+            // Only when logged in.. 
+            if (user != null) {                
+                setCurrent(createEntityInstance());
+            }
         }
         return getCurrent();
     }
@@ -812,7 +816,9 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      * @return URL to create page in the entity folder
      */
     public String prepareCreate() {
-        setCurrentFlash(createEntityInstance());
+        EntityType entity = createEntityInstance();
+        setCurrent(entity);
+        setCurrentFlash(entity);
         return "create?faces-redirect=true";
     }
 
@@ -963,25 +969,32 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         resetSelectDataModel();
     }
 
-    public void createList(List<EntityType> entities) throws CdbException, RuntimeException {
-        createList(entities, false);
-    }
-
-    public void createList(List<EntityType> entities, boolean silent) throws CdbException, RuntimeException {
+    public void createList(List<EntityType> entities, boolean silent, String typeName) 
+            throws CdbException, RuntimeException {
+        
+        if (typeName == null) {
+            typeName = getDisplayEntityTypeName();
+        }
+        
+        String pluralEnding = "";
+        if (entities.size() > 1) {
+            pluralEnding = "s";
+        }
+        
         try {
             performListCreateOperations(entities);
             if (!silent) {
-                SessionUtility.addInfoMessage("Success", "Created " + entities.size() + " " + getDisplayEntityTypeName() + " instances.");
+                SessionUtility.addInfoMessage("Success", "Created " + entities.size() + " " + typeName + pluralEnding + ".");
             }
         } catch (CdbException ex) {
             if (!silent) {
-                SessionUtility.addErrorMessage("Error", "Could not create list of " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+                SessionUtility.addErrorMessage("Error", "Could not create list of " + typeName + ": " + ex.getMessage());
             }
             throw ex;
         } catch (RuntimeException ex) {
             if (!silent) {
                 Throwable t = ExceptionUtils.getRootCause(ex);
-                SessionUtility.addErrorMessage("Error", "Could not create list of " + getDisplayEntityTypeName() + ": " + t.getMessage());
+                SessionUtility.addErrorMessage("Error", "Could not create list of " + typeName + ": " + t.getMessage());
             }
             throw ex;
         }
@@ -1504,7 +1517,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
 
     public void clearSelectFiltersAndResetSelectDataModel() {
         if (selectDataTable != null) {
-            selectDataTable.getFilterBy().clear();
+            selectDataTable.getFilterByAsMap().clear();
         }
         settingObject.clearSelectFilters();
         resetSelectDataModel();
@@ -1735,6 +1748,9 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
             entityList = lazyDataModel.getFilteredEntities();
         } else {
             entityList = getFilteredEntities();
+            if ((entityList == null) || (entityList.size() == 0)) {
+                entityList = getAllObjectList();
+            }
         }
         
         if (entityList == null) {

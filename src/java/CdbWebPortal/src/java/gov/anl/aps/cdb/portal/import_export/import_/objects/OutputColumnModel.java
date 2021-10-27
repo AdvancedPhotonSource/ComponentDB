@@ -14,6 +14,7 @@ public class OutputColumnModel implements Serializable {
 
     private String header = null;
     private String domainProperty = null;
+    private boolean displayed = false;
 
     public OutputColumnModel(
             String header, String domainProperty) {
@@ -22,12 +23,23 @@ public class OutputColumnModel implements Serializable {
         this.domainProperty = domainProperty; // must have getter method
     }
 
+    public OutputColumnModel(
+            String header, String domainProperty, boolean displayed) {
+
+        this(header, domainProperty);
+        this.displayed = displayed;
+    }
+
     public String getHeader() {
         return header;
     }
 
     public String getDomainProperty() {
         return domainProperty;
+    }
+    
+    public boolean isDisplayed() {
+        return displayed;
     }
 
 }    

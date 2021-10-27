@@ -28,6 +28,8 @@ See LICENSE file.
 
         <p:outputPanel id="travelerTemplateTravelerListDialogPanel">            
             <p:dataTable id="travelerTemplateTravelerListDialogDataTable"
+                         sortMode="single"
+                         stripedRows="true"
                          widgetVar="travelerTemplateTravelerListDialogDataTableWidget"
                          value="#{travelersCreatedFromTemplate}"
                          selection="#{travelerDomainTemplateController.selectedTravelersCreatedFromTemplate}"
@@ -73,7 +75,7 @@ See LICENSE file.
                                  onstart="PF('loadingDialog').show()"
                                  action="#{travelerDomainTemplateController.toggleArchivedPanel()}"                                 
                                  oncomplete="onShowtravelerTemplateTravelerListDialog()" /> 
-                
+
                 <p:commandButton id="travelerTemplateTravelerListDialogArchiveModeToggle"
                                  value="Current Mode: #{travelerDomainTemplateController.archiveMode}" 
                                  action="#{travelerDomainTemplateController.toggleShowArchived()}" 

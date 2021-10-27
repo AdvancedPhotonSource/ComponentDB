@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers.settings;
 
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignBaseController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
@@ -13,7 +14,7 @@ import java.util.Map;
  *
  * @author djarosz
  */
-public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMachineDesignController> {
+public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMachineDesignBaseController> {
 
     private static final String DisplayAlternateNameSettingTypeKey = "ItemDomainMachineDesign.List.Display.AlternateName";
     private static final String DisplayDesignDescriptionSettingTypeKey = "ItemDomainMachineDesign.List.Display.Description";
@@ -40,11 +41,12 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     protected Boolean displayItemElementsSimpleView = false;
 
     protected Boolean displayLocation = null;
-    protected Boolean displayLocationDetails = null;
+    protected Boolean displayLocationDetails = null;    
+    protected Boolean displayHousing = false;
     
     protected Boolean displayInstalledQrId = null; 
 
-    public ItemDomainMachineDesignSettings(ItemDomainMachineDesignController parentController) {
+    public ItemDomainMachineDesignSettings(ItemDomainMachineDesignBaseController parentController) {
         super(parentController);
     }
 
@@ -55,8 +57,7 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     @Override
     protected void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         super.updateSettingsFromSettingTypeDefaults(settingTypeMap);
-        if (this instanceof ItemDomainMachineDesignInventorySettings ||
-                this instanceof ItemDomainMachineDesignDeletedItemSettings) {
+        if (isDerivedMachineSettingsWithOwnKeys()) {
             return;
         }
         
@@ -87,8 +88,7 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     @Override
     protected void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
         super.updateSettingsFromSessionSettingEntity(settingEntity);
-        if (this instanceof ItemDomainMachineDesignInventorySettings ||
-                this instanceof ItemDomainMachineDesignDeletedItemSettings) {
+        if (isDerivedMachineSettingsWithOwnKeys()) {
             return;
         }
         displayAlternateName = settingEntity.getSettingValueAsBoolean(DisplayAlternateNameSettingTypeKey, displayAlternateName); 
@@ -117,10 +117,9 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     @Override
     protected void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
         super.saveSettingsForSessionSettingEntity(settingEntity);
-        if (this instanceof ItemDomainMachineDesignInventorySettings ||
-                this instanceof ItemDomainMachineDesignDeletedItemSettings) {
+        if (isDerivedMachineSettingsWithOwnKeys()) {
             return;
-        }
+        }        
         settingEntity.setSettingValue(DisplayAlternateNameSettingTypeKey, displayAlternateName);
         settingEntity.setSettingValue(DisplayDesignDescriptionSettingTypeKey, displayDescription);
         settingEntity.setSettingValue(DisplayProjectSettingTypeKey, displayItemProject);
@@ -143,6 +142,15 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
         settingEntity.setSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
         settingEntity.setSettingValue(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
     }
+    
+    private boolean isDerivedMachineSettingsWithOwnKeys() {
+        if (this instanceof ItemDomainMachineDesignInventorySettings 
+                || this instanceof ItemDomainMachineDesignDeletedItemSettings
+                || this instanceof ItemDomainMachineDesignControlSettings) {
+            return true; 
+        }
+        return false; 
+    }
         
     @Override
     public Boolean getDisplayLocation() {
@@ -153,6 +161,14 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     public Boolean getDisplayLocationDetails() {
         return displayLocationDetails;
     } 
+
+    public Boolean getDisplayHousing() {
+        return displayHousing;
+    }
+
+    public void setDisplayHousing(Boolean displayHousing) {
+        this.displayHousing = displayHousing;
+    }
 
     @Override
     public Boolean getDisplayItemIdentifier1() {

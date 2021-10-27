@@ -6,11 +6,15 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.UserGroupSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.UserGroupControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperUserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.beans.UserGroupFacade;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.inject.Named;
@@ -67,7 +71,7 @@ public class UserGroupController extends CdbEntityController<UserGroupController
     /**
      * Converter class for user group objects.
      */
-    @FacesConverter(value = "userGroupConverter", forClass = UserGroup.class)
+    @FacesConverter(value = "userGroupConverter")
     public static class UserGroupControllerConverter implements Converter {
 
         @Override
@@ -111,4 +115,40 @@ public class UserGroupController extends CdbEntityController<UserGroupController
 
     }
 
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected DomainImportExportInfo initializeDomainImportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        
+        formatInfo.add(new ImportExportFormatInfo(
+                "Basic User Group Create/Update/Delete Format", ImportHelperUserGroup.class));
+        
+        String completionUrl = "/views/userGroup/list?faces-redirect=true";
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+    
+    @Override
+    public boolean getEntityDisplayExportButton() {
+        return true;
+    }
+    
+    @Override
+    protected DomainImportExportInfo initializeDomainExportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        
+        formatInfo.add(new ImportExportFormatInfo(
+                "Basic User Group Create/Update/Delete Format", ImportHelperUserGroup.class));
+        
+        String completionUrl = "/views/userGroup/list?faces-redirect=true";
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+    
 }

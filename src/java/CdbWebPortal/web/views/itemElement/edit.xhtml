@@ -35,15 +35,15 @@ See LICENSE file.
                 <ui:param name="entityController" value="#{itemElementController}"/>
                 <div class="actionButton">
                     <p:commandButton id="itemElementEditViewButton" action="#{itemElementController.view()}" 
-                                     value="View" alt="View" icon="ui-icon-info" update="@form">
+                                     value="View" alt="View" icon="fa fa-info" update="@form">
                         <p:tooltip for="itemElementEditViewButton" value="View item element."/>
                     </p:commandButton>
                     <p:commandButton id="itemElementEditSaveButton" action="#{itemElementController.update()}" 
-                                     value="Save" alt="Save" icon="ui-icon-check" update="@form">
+                                     value="Save" alt="Save" icon="fa fa-save" update="@form">
                         <p:tooltip for="itemElementEditSaveButton" value="Save item element."/>
                     </p:commandButton>
                     <p:commandButton id="itemElementEditDoneButton" action="#{itemElementController.prepareViewToItem(itemElementObject)}" immediate="true" 
-                                     value="Return" alt="Return" icon="ui-icon-arrowreturnthick-1-w">
+                                     value="Return" alt="Return" icon="fa fa-arrow-circle-o-left">
                         <p:tooltip for="itemElementEditDoneButton" value="Return to item details page."/>                    
                     </p:commandButton>
                 </div>

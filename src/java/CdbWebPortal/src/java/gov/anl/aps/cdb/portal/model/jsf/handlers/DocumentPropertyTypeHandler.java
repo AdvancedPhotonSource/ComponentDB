@@ -27,7 +27,7 @@ public class DocumentPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
     @Override
     public String getEditActionIcon() {
-        return "ui-icon-circle-arrow-n";
+        return "fa-upload";
     }
 
     @Override

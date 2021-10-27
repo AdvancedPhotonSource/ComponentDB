@@ -54,7 +54,7 @@ See LICENSE file.
                 <p:commandButton id="itemElementRearrangeDialogSaveAndRefreshButton"
                                  value="Save &amp; Refresh" alt="Save and refresh page"
                                  disabled="#{!itemElementController.getItemElementPendingChanges()}"
-                                 icon="ui-icon-disk"
+                                 icon="fa fa-save"
                                  immediate="true"
                                  action="#{itemElementController.saveItemElementPendingChanges()}"
                                  oncomplete="PF('itemElementRearrangeListDialogWidget').hide();"
@@ -63,7 +63,7 @@ See LICENSE file.
                 <p:commandButton id="itemElementRearrangeDialogCloseButton"
                                  value="Close" alt="close dialog"
                                  disabled="#{itemElementController.getItemElementPendingChanges()}"
-                                 icon="ui-icon-close"
+                                 icon="fa fa-close"
                                  oncomplete="PF('itemElementRearrangeListDialogWidget').hide();"
                                  />
             </f:facet>     

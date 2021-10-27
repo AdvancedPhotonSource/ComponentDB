@@ -18,33 +18,36 @@ See LICENSE file.
     <p:dataTable id="travelerInstanceListDataTable"
                  value="#{travelerDomainInstanceController.activeTravelersForCurrent}"
                  var="travelerObject"
+                 sortMode="single"
+                 stripedRows="true"
+                 rowKey="#{travelerObject.id}"
                  rowExpandMode="single">
-        
+
         <p:ajax event="rowToggle"
                 listener="#{travelerDomainInstanceController.loadTravelerListForBinder(travelerObject)}"
                 onstart="PF('loadingDialog').show()"
                 oncomplete="PF('loadingDialog').hide()"/>
-        
+
         <p:column>
             <p:rowToggler rendered="#{travelerObject.binder}"/>
         </p:column>
-        
+
         <ui:include src="travelerInstanceListObject.xhtml" />
-        
+
         <ui:include src="travelerInstanceListActionObject.xhtml" />
-        
+
         <p:rowExpansion styleClass="domainEntityRowExpansion"
                         rendered="#{travelerObject.binder}">
             <ui:param name="binderObject"
                       value="#{travelerObject}" /> 
             <ui:param name="binderTravelerList"
                       value="#{binderObject.travelerList}" />
-            
+
             <p:outputPanel rendered="#{binderTravelerList != null}">
                 <h3>
                     Binder Contents 
                 </h3>
-                
+
                 <p:commandButton value="Add"
                                  icon="fa fa-plus"
                                  rendered="#{isEntityWriteable}"
@@ -52,13 +55,15 @@ See LICENSE file.
                                  action="#{travelerDomainInstanceController.prepareShowAddNewTravelerToBinderDialog()}"
                                  onstart="PF('loadingDialog').show()"
                                  oncomplete="PF('loadingDialog').hide();
-                                             PF('travelerBinderCreateToBinderDialogWidget').show()">
+                                 PF('travelerBinderCreateToBinderDialogWidget').show()">
                     <f:setPropertyActionListener target="#{travelerDomainInstanceController.selectedBinder}"
                                                  value="#{binderObject}" />                                                  
                 </p:commandButton>
                 <p:dataTable id="travelerInstanceListDataTable"
-                     value="#{binderTravelerList}"
-                     var="binderTravelerObject">
+                             sortMode="single"
+                             stripedRows="true"
+                             value="#{binderTravelerList}"
+                             var="binderTravelerObject">
                     <ui:include src="travelerInstanceListObject.xhtml">
                         <ui:param name="travelerObject"
                                   value="#{binderTravelerObject}" />
@@ -73,7 +78,7 @@ See LICENSE file.
                 </p:dataTable>
             </p:outputPanel>
         </p:rowExpansion>
-    
+
     </p:dataTable>   
 
 </ui:composition>

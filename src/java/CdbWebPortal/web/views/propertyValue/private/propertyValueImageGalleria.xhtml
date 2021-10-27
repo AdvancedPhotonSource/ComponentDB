@@ -8,10 +8,10 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"    
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
-    
+
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
     <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
-    
+
     <div class="actionButton">
         <p:commandButton id="#{entityTypeName}PropertyAddImagesCommandButton" 
                          value="Add"
@@ -20,39 +20,45 @@ See LICENSE file.
                          rendered="#{isEntityWriteable}">
             <f:setPropertyActionListener target="#{propertyValueImageUploadBean.cdbEntityController}"
                                          value="#{entityController}" />
-             <p:tooltip for="#{entityTypeName}PropertyAddImagesCommandButton" value="Add Images to #{entityTypeName}."/>
+            <p:tooltip for="#{entityTypeName}PropertyAddImagesCommandButton" value="Add Images to #{entityTypeName}."/>
         </p:commandButton>
-        
+
         <p:commandButton id="#{entityTypeName}ImageGalleriaCustomizeDisplayButton"
                          oncomplete="PF('propertyValueGalleriaListCustomizeDisplayDialogWidget').show()" 
                          alt="Customize Edit List" styleClass="actionButtonRight" 
                          update="propertyValueGalleriaListCustomizeDisplayDialog" icon="fa fa-wrench">
             <p:tooltip for="#{entityTypeName}ImageGalleriaCustomizeDisplayButton" value="Customize view."/>
         </p:commandButton>
-        
+
         <p:commandButton id="#{childEntityTypeName}EditListNoOp" style="visibility:hidden" value="NoOp"/>
         <p:defaultCommand target="#{childEntityTypeName}EditListNoOp"/>
     </div>
 
-    <p:galleria id="#{entityTypeName}PropertyImageGalleria"
-                value="#{entityController.imageList}" var="propertyValueObject" 
-                showCaption="false"
-                panelHeight="450" panelWidth="450"
-                effect="slide"
-                transitionInterval="7000"
-                rendered="#{entityController.displayImages}"
-                styleClass="propertyValueImageGalleria">
-        
-        <p:graphicImage value="#{propertyValueController.getScaledImagePath(propertyValueObject)}" 
-                        alt="#{propertyValueObject.description}" 
-                        title="#{propertyValueObject.value}"
-                        onclick="window.open('#{propertyValueController.getAPIDownloadPath(propertyValueObject)}')"/>
-        
-    </p:galleria>
-    
+    <p:outputPanel deferred="true">
+        <p:galleria value="#{entityController.imageList}" 
+                    var="propertyValueObject"
+                    numVisible="5"
+                    circular="true"
+                    showThumbnails="true"                 
+                    autoPlay="true"
+                    transitionInterval="7000"                    
+                    style="max-width: 500px;">
+            <p:graphicImage value="#{propertyValueController.getScaledImagePath(propertyValueObject)}" 
+                            alt="#{propertyValueObject.description}" 
+                            style="width: 100%; display: block;"
+                            title="#{propertyValueObject.value}"
+                            onclick="window.open('#{propertyValueController.getAPIDownloadPath(propertyValueObject)}')"/>
+            <f:facet name="thumbnail">
+                <p:graphicImage value="#{propertyValueController.getScaledImagePath(propertyValueObject)}" 
+                                alt="#{propertyValueObject.description}"                             
+                                style="width: 50px; display: block;" />
+            </f:facet>
+        </p:galleria>
+    </p:outputPanel>
+
     <ui:include src="propertyValueMultipleImageUploadDialog.xhtml" />
     <ui:include src="propertyValueImageGalleriaCustomizeDisplayDialog.xhtml" />
-    
+
 </ui:composition>
 
 

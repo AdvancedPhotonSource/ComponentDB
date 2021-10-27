@@ -20,6 +20,10 @@ See LICENSE file.
         <ui:include src="../../../common/private/commonListActionButtons.xhtml"/>
     </ui:define>
     
+    <ui:define name="additonalListButtons" >
+        <ui:include src="../../../common/private/reusedParts/listViewImportExportFrameworkButtons.xhtml"/>
+    </ui:define>
+        
     <ui:define name="destoryDialog">
         <ui:include src="../simpleEntityDestroyDialog.xhtml" />
     </ui:define>
@@ -36,7 +40,7 @@ See LICENSE file.
                 rendered="#{entityReturnPath != null}"
                 value="Return" 
                 alt="Return" 
-                icon="ui-icon-arrowreturnthick-1-w">
+                icon="fa fa-close">
                 <p:tooltip for="#{entityTypeName}CategoryDoneButton" value="Return to list."/>
             </p:button>
         </div>

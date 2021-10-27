@@ -8,13 +8,17 @@ See LICENSE file.
 import time
 
 from selenium import webdriver
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
+from selenium.webdriver import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
 from cdbSeleniumModules.cdbSeleniumModuleDecorators import add_stale_protection
 
+GROWL_MESSAGE_CONTAINER = '//*[@id="messages_container"]/div/div'
+GROWL_MESSAGE_CONTAINER_2 = '//*[@id="messages_container"]/div[2]/div'
+GROWL_MESSAGE_CLOSE_BUTTON = GROWL_MESSAGE_CONTAINER + '/div[1]'
 
 class CdbSeleniumModuleBase:
 
@@ -25,9 +29,37 @@ class CdbSeleniumModuleBase:
 
 		assert isinstance(self.driver, webdriver.Chrome)
 
+	def _clear_notifications(self):
+		growl_container = 0
+		while growl_container is not None:
+			time.sleep(0.5)
+			try:
+				growl_container = self._find_by_xpath(GROWL_MESSAGE_CONTAINER)
+			except NoSuchElementException:
+				growl_container = None
+			try:
+				next_growl = self._find_by_xpath(GROWL_MESSAGE_CONTAINER_2)
+			except NoSuchElementException:
+				next_growl = None
+
+			if growl_container is not None:
+				growl_close = self._find_by_xpath(GROWL_MESSAGE_CLOSE_BUTTON)
+				action = ActionChains(self.driver)
+				action.move_to_element(growl_container)
+				action.perform()
+				time.sleep(.1)
+				growl_close.click()
+				time.sleep(0.5)
+
+				growl_container = next_growl
+
 	def _navigate_to_dropdown(self, dropdownId, buttonId, urlPartContains):
-		self._wait_for_id_and_click(dropdownId)
-		time.sleep(0.1)
+		dropdownElement = self._find_by_id(dropdownId)
+		action = ActionChains(self.driver)
+		action.move_to_element(dropdownElement)
+		action.perform()
+
+		time.sleep(0.5)
 		self._wait_for_id_and_click(buttonId)
 
 		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(

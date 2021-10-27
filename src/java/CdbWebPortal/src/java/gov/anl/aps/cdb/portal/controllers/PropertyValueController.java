@@ -27,6 +27,7 @@ import java.io.InputStream;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.function.Supplier;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -120,9 +121,10 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
             try {
                 PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
                 StreamedContent fileDownloadActionCommand = propertyTypeHandler.fileDownloadActionCommand(propertyValue);
-                String fileName = fileDownloadActionCommand.getName();
-                InputStream stream = fileDownloadActionCommand.getStream();
-                            
+                String fileName = fileDownloadActionCommand.getName();              
+                Supplier<InputStream> streamSupplier = fileDownloadActionCommand.getStream();
+                InputStream stream = streamSupplier.get();
+                
                 return GalleryUtility.convertExcelToPDF(stream, fileName);
             } catch (ExternalServiceError ex) {
                 logger.error(ex);

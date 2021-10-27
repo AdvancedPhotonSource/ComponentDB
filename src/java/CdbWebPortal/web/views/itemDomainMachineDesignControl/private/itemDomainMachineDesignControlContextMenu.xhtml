@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../itemDomainMachineDesignBase/private/templates/itemDomainMachineDesignDualColumnListViewTreeContextMenuTemplate.xhtml">
+
+    <ui:define name="contextMenuContents" >
+
+        <p:contextMenu style="width: 250px;"
+                       for="itemMachineDesignListDataTable"
+                       nodeType="MachineDesign"
+                       id="machineDesignDualViewMachineDesignControlContextMenu"
+                       widgetVar="machineDesignDualViewMachineDesignControlContextMenuWidget">           
+            
+            <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/contextMenu/itemDomainMachineDesignRelationshipSpecifyRelatedItemMenuItem.xhtml">
+                <ui:param name="addRelatedItemLabel"
+                          value="Add ioc"/> 
+            </ui:include>
+            
+            <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/moveToTrashMachineDesignContextMenuItem.xhtml" />
+        </p:contextMenu>
+
+        <p:contextMenu style="width: 250px;"
+                       for="itemMachineDesignListDataTable"
+                       nodeType="MachineDesignMember"
+                       id="machineDesignDualViewMachineDesignControlMemberContextMenu"
+                       widgetVar="machineDesignDualViewMachineDesignControlMemberContextMenuWidget"
+                       event="select contextmenu">
+            <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/contextMenu/itemDomainMachineDesignRelationshipSimpleAddMenuItem.xhtml"/> 
+
+            <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/contextMenu/itemDomainMachineDesignRelationshipSpecifyRelatedItemMenuItem.xhtml">
+                <ui:param name="addRelatedItemLabel"
+                          value="Specify controlled node"/> 
+            </ui:include>
+
+            <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
+        </p:contextMenu>
+
+        <p:contextMenu style="width: 250px;"
+                       for="itemMachineDesignListDataTable"
+                       nodeType="machineDesignRelationshipNode"
+                       id="machineDesignDualViewMachineDesignControlRelationshipContextMenu"
+                       widgetVar="machineDesignDualViewMachineDesignControlRelationshipContextMenuWidget"
+                       event="select contextmenu">
+            <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/contextMenu/itemDomainMachineDesignRelationshipSpecifyRelatedItemMenuItem.xhtml">
+                <ui:param name="addRelatedItemLabel"
+                          value="Specify controlled node"/> 
+            </ui:include>
+            
+            <p:menuitem value="Update interface to parent" 
+                icon="fa fa-link"
+                update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel emphasizedContentBelowTitleOutputPanel"
+                disabled="#{disabledEditContextMenuItemForSelection}"                
+                onclick="PF('loadingDialog').show()"                
+                oncomplete="PF('loadingDialog').hide();
+                            PF('updateInterfaceToParentDialogWidget').show();"                        
+                action='#{entityController.prepareUpdateInterfaceToParent()}'/>
+
+            <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/contextMenu/itemDomainMachineDesignRelationshipRemoveRelatedItemMenuItem.xhtml">
+                <ui:param name="removeRelatedItemLabel"
+                          value="Remove control relationship"/> 
+            </ui:include>
+            
+            <p:menuitem value="Show in housing hierarchy" 
+                    icon="fa fa-code" 
+                    action="#{entityController.showInHousingHierarchyForSelectedTreeNode()}"/> 
+
+            <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
+        </p:contextMenu>                
+    </ui:define>
+
+    <ui:define name="contextMenuSupport">
+        <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/itemDomainMachineDesignRelationshipDestroyRelationshipDialog.xhtml">
+            <ui:param name="relationshipName"
+                      value="control" /> 
+        </ui:include>
+        
+        <!-- todo split move to trash into own file --> 
+        <ui:include src="../../itemDomainMachineDesignBase/private/itemDomainMachineDesignDualColumnListViewTreeContextMenuMoveToTrashDialog.xhtml"/> 
+        
+        <ui:include src="itemDomainMachineDesignControlUpdateInterfaceToParentDialog.xhtml" />
+    </ui:define>
+
+</ui:composition>
+
+

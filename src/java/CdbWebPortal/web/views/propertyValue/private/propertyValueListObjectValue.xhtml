@@ -25,9 +25,12 @@ See LICENSE file.
             <h:outputText value="#{propertyValueObject.value}"
                           rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}"/>
 
-            <p:outputPanel rendered="#{propertyValueController.displayImageValue(propertyValueObject) or propertyValueController.displayDocumentValue(propertyValueObject)}">
+            <p:outputPanel rendered="#{propertyValueController.displayImageValue(propertyValueObject) or propertyValueController.displayDocumentValue(propertyValueObject)}"
+                           styleClass="inlineFlexOutputPanel">
                 <p:commandButton rendered="#{showMakeImagePrimaryButton and propertyValueController.displayImageValue(propertyValueObject)}" 
                                  id="makeImagePrimaryButton" 
+                                 onclick="PF('loadingDialog').show()"
+                                 oncomplete="PF('loadingDialog').hide()"
                                  style="display: inline-block; float: left; padding-right: 5px;"
                                  icon="#{currentItemController.getPrimaryImageButtonIcon(itemObject, propertyValueObject)}"
                                  action="#{currentItemController.markImagePrimary(propertyValueObject)}"
@@ -83,7 +86,7 @@ See LICENSE file.
             </p:commandLink>
 
             <ui:fragment rendered="#{propertyValueController.displayBooleanValue(propertyValueObject)}">         
-                <h:outputText value="" styleClass="ui-icon ui-icon-check" 
+                <h:outputText value="" styleClass="fa fa-link-icon fa-check" 
                               rendered="#{propertyValueObject.value}"/>
             </ui:fragment>
 

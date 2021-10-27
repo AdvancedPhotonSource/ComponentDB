@@ -11,6 +11,8 @@ See LICENSE file.
     <p:dataTable id="#{entityTypeName}MultiEditItemDataTable"
                  value="#{entityController.selectedItemsToEdit}"
                  rowKey="#{itemObject.viewUUID}MultiEditItemDataTableRow"
+                 sortMode="single"
+                 stripedRows="true"
                  var="itemObject"
                  rowIndexVar="rowIndex"
                  styleClass="visibleDatatableOverflow"

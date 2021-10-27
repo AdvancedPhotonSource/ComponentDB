@@ -128,13 +128,13 @@ public class UserInfoSettings extends CdbEntitySettingsBase<UserInfoController> 
             return;
         }
 
-        Map<String, FilterMeta> filters = dataTable.getFilterBy();
-        filterByEmail = (String) filters.get("email").getFilterField();
-        filterByFirstName = (String) filters.get("firstName").getFilterField();
-        filterByGroups = (String) filters.get("groups").getFilterField();
-        filterByLastName = (String) filters.get("lastName").getFilterField();
-        filterByMiddleName = (String) filters.get("middleName").getFilterField();
-        filterByUsername = (String) filters.get("username").getFilterField();
+        Map<String, FilterMeta> filters = dataTable.getFilterByAsMap();
+        filterByEmail = (String) filters.get("email").getField();
+        filterByFirstName = (String) filters.get("firstName").getField();
+        filterByGroups = (String) filters.get("groups").getField();
+        filterByLastName = (String) filters.get("lastName").getField();
+        filterByMiddleName = (String) filters.get("middleName").getField();
+        filterByUsername = (String) filters.get("username").getField();
     }
 
     public Boolean getDisplayEmail() {

@@ -24,7 +24,12 @@ See LICENSE file.
             </div>
 
             <ui:param name="entityController" value="#{userInfoController}"/>
-            <ui:include src="../common/private/commonListActionButtons.xhtml"/>
+            
+            <ui:decorate template="../common/private/commonListActionButtons.xhtml">
+                <ui:define name ="additonalListButtons">
+                    <ui:include src="../common/private/reusedParts/listViewImportExportFrameworkButtons.xhtml"/>
+                </ui:define>
+            </ui:decorate>
 
             <h:panelGroup>  
                 <ui:include src="private/userInfoListDataTable.xhtml"/>

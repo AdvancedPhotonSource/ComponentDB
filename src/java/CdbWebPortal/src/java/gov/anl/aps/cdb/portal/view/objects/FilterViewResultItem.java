@@ -25,6 +25,13 @@ public class FilterViewResultItem {
         }
         return false;
     }
+    
+    public String getViewUUID() {
+        if (itemObject != null) {
+            return itemObject.getViewUUID(); 
+        }
+        return "";
+    }
 
     public FilterViewResultItem(Item item) {
         this.itemObject = item;

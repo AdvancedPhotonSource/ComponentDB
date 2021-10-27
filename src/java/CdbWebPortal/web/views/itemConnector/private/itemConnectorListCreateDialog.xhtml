@@ -12,7 +12,7 @@ See LICENSE file.
     <p:dialog id="#{entityTypeName}#{itemConnectorEntityTypeName}AddDialog"
               widgetVar="#{entityTypeName}#{itemConnectorEntityTypeName}AddDialogWidget"
               modal="true"
-              header="Configure Connector"
+              header="Add #{entityController.displayItemConnectorLabel}"
               resizable="false"
               closable="false"
               styleClass="viewTransparentBackgroundDialog">
@@ -24,7 +24,7 @@ See LICENSE file.
 
             <ui:include src="itemConnectorSimpleEditObject.xhtml" />                                                
 
-            <p:outputLabel>Connector Name</p:outputLabel>
+            <p:outputLabel value="#{entityController.displayItemConnectorLabel} Name"/>
             <p:inputText value="#{currentItemConnector.connector.name}" />
 
         </p:panelGrid>
@@ -32,10 +32,10 @@ See LICENSE file.
         <f:facet name="footer" >
             <p:commandButton value="Save" 
                              oncomplete="PF('#{entityTypeName}#{itemConnectorEntityTypeName}AddDialogWidget').hide()"
-                             icon="ui-icon-disk"
+                             icon="fa fa-save"
                              update="#{itemConnectorEntityTypeName}ListDataTable"
-                             action="#{itemConnectorController.createWithoutRedirect()}"/>
-            <p:commandButton label="Cancel" icon="ui-icon-arrowreturnthick-1-w"
+                             action="#{entityController.saveItemConnectorDialog()}"/>
+            <p:commandButton label="Cancel" icon="fa fa-close"
                              value="Cancel"
                              update="#{itemConnectorEntityTypeName}ListDataTable"
                              oncomplete="PF('#{entityTypeName}#{itemConnectorEntityTypeName}AddDialogWidget').hide()"

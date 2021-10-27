@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
+import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
@@ -308,6 +309,23 @@ public abstract class ItemController<
     @Override
     public final String getEntityEntityCategoryName() {
         return getItemItemCategoryTitle();
+    }
+    
+    /**
+     * Returns name to use for ItemConnectors in UI.  Subclasses override to customize.
+     * @return 
+     */
+    public String getDisplayItemConnectorName() {
+        return "connector";
+    }
+    
+    public String getDisplayItemConnectorLabel() {
+        return StringUtility.capitalize(getDisplayItemConnectorName());
+    }
+    
+    public String getDisplayItemConnectorsLabel() {
+        String labelString = StringUtility.capitalize(getDisplayItemConnectorName());
+        return labelString + "s";
     }
 
     public List<ItemDomainEntity> getItemListWithProject(ItemProject itemProject) {
@@ -695,6 +713,7 @@ public abstract class ItemController<
 
     public TreeNode getItemsWithNoParentsRootNode() {
         if (itemsWithNoParentsRootNode == null) {
+            LOGGER.info("Generating a tree from top level items.");
             List<ItemDomainEntity> itemsWitNoParentsList = getItemsWithoutParents();
             itemsWithNoParentsRootNode = new DefaultTreeNode(null, null);
 
@@ -1838,18 +1857,22 @@ public abstract class ItemController<
     public static List<Item> getParentItemList(Item itemEntity) {
 
         List<Item> itemList = new ArrayList<>();
-
         List<ItemElement> itemElementList = new ArrayList<>();
-        itemElementList.addAll(itemEntity.getItemElementMemberList());
-        itemElementList.addAll(itemEntity.getItemElementMemberList2());
+        
+        if (itemEntity.getItemElementMemberList() != null) {
+            itemElementList.addAll(itemEntity.getItemElementMemberList());
+        }
+        
+        if (itemEntity.getItemElementMemberList2() != null) {
+            itemElementList.addAll(itemEntity.getItemElementMemberList2());
+        }
+        
         // Remove currently being viewed item. 
-        if (itemElementList != null) {
-            for (ItemElement itemElement : itemElementList) {
-                Item memberItem = itemElement.getParentItem();
+        for (ItemElement itemElement : itemElementList) {
+            Item memberItem = itemElement.getParentItem();
 
-                if (itemList.contains(memberItem) == false) {
-                    itemList.add(memberItem);
-                }
+            if (itemList.contains(memberItem) == false) {
+                itemList.add(memberItem);
             }
         }
 
@@ -1977,10 +2000,10 @@ public abstract class ItemController<
         String primaryImageValue = getPrimaryImageValueForItem(item);
         if (propertyValue.getValue() != null) {
             if (propertyValue.getValue().equals(primaryImageValue)) {
-                return "ui-icon-check";
+                return "fa fa-check";
             }
         }
-        return "ui-icon-close";
+        return "fa fa-close";
     }
 
     @Override
@@ -2178,6 +2201,10 @@ public abstract class ItemController<
 
             if (getCurrent() == null) {
                 loadCurrentFromFlash();
+                ItemDomainEntity current = getCurrent();
+                if (current != null) {
+                    reloadCurrent();                    
+                }
             }
 
             if (getCurrent() == null) {
@@ -2307,6 +2334,9 @@ public abstract class ItemController<
     }
 
     public List<Item> getItemsCreatedFromTemplateItem(Item templateItem) {
+        if (templateItem == null) {
+            return null; 
+        }
         return templateItem.getItemsCreatedFromThisTemplateItem();
     }
 
@@ -2468,7 +2498,7 @@ public abstract class ItemController<
         return false;
     }
 
-    @FacesConverter(value = "itemConverter", forClass = Item.class)
+    @FacesConverter(value = "itemConverter")
     public static class ItemControllerConverter implements Converter {
 
         @Override

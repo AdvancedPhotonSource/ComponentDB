@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
+import gov.anl.aps.cdb.portal.view.objects.LocationHistoryObject;
 import java.util.List;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuModel;
@@ -28,6 +29,7 @@ public abstract class LocatableItem extends Item {
     private transient String housingString; 
     private transient DefaultMenuModel locationMenuModel;
     private transient String importLocationItemString = null;
+    private transient List<LocationHistoryObject> locationHistoryListObject = null; 
 
     // Needed to determine whenever location was removed in edit process. 
     private transient Boolean originalLocationLoaded = false;
@@ -214,5 +216,15 @@ public abstract class LocatableItem extends Item {
         LocatableItemController.getInstance().setItemLocationInfo(this);
         return locationDetails; // avoid getter method because it adds values not stored in database
     }
+
+    @JsonIgnore
+    public List<LocationHistoryObject> getLocationHistoryListObject() {
+        return locationHistoryListObject;
+    }
+
+    public void setLocationHistoryListObject(List<LocationHistoryObject> locationHistoryListObject) {
+        this.locationHistoryListObject = locationHistoryListObject;
+    }
+    
            
 }

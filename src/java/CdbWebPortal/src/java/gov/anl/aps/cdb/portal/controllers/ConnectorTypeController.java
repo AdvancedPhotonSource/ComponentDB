@@ -6,11 +6,16 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.ConnectorTypeSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorTypeControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperConnectorType;
 import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
 import gov.anl.aps.cdb.portal.model.db.beans.ConnectorTypeFacade;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -85,4 +90,40 @@ public class ConnectorTypeController extends CdbEntityController<ConnectorTypeCo
 
     }
 
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected DomainImportExportInfo initializeDomainImportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        
+        formatInfo.add(new ImportExportFormatInfo(
+                "Basic Connector Type Create/Update/Delete Format", ImportHelperConnectorType.class));
+        
+        String completionUrl = "/views/connectorType/list?faces-redirect=true";
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+    
+    @Override
+    public boolean getEntityDisplayExportButton() {
+        return true;
+    }
+    
+    @Override
+    protected DomainImportExportInfo initializeDomainExportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        
+        formatInfo.add(new ImportExportFormatInfo(
+                "Basic Connector Type Create/Update/Delete Format", ImportHelperConnectorType.class));
+        
+        String completionUrl = "/views/connectorType/list?faces-redirect=true";
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+    
 }

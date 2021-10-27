@@ -6,11 +6,15 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.ItemTypeSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemTypeControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.inject.Named;
@@ -85,7 +89,7 @@ public class ItemTypeController extends ItemTypeCategoryController<ItemTypeContr
     /**
      * Converter class for component type objects.
      */
-    @FacesConverter(value = "itemTypeConverter", forClass = ItemType.class)
+    @FacesConverter(value = "itemTypeConverter")
     public static class ItemTypeControllerConverter implements Converter {
 
         @Override
@@ -137,4 +141,40 @@ public class ItemTypeController extends ItemTypeCategoryController<ItemTypeContr
         this.selectedItemType = selectedItemType;
     }
 
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected DomainImportExportInfo initializeDomainImportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        
+        formatInfo.add(new ImportExportFormatInfo(
+                "Basic Item Type Create/Update/Delete Format", ImportHelperItemType.class));
+        
+        String completionUrl = "/views/itemType/list?faces-redirect=true";
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+    
+    @Override
+    public boolean getEntityDisplayExportButton() {
+        return true;
+    }
+    
+    @Override
+    protected DomainImportExportInfo initializeDomainExportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        
+        formatInfo.add(new ImportExportFormatInfo(
+                "Basic Item Type Create/Update/Delete Format", ImportHelperItemType.class));
+        
+        String completionUrl = "/views/itemType/list?faces-redirect=true";
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+    
 }

@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/env python
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -121,7 +121,7 @@ def run_command():
 	catalogItem = catalogItems[0]
 
 	# Lists of items seem to be lists of dict items
-	catalogId = catalogItem.get('id')
+	catalogId = catalogItem.id
 
 	# Single items seem to be appropriate type
 	catalogFetchedById = itemApi.get_item_by_id(catalogId)

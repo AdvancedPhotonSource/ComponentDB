@@ -7,7 +7,7 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="private/templates/itemDomainMachineListViewTemplate.xhtml">
+                template="private/templates/listViewTemplate.xhtml">
 
     <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
     <ui:param name="itemObject" value="#{entityController.current}" />    
@@ -31,7 +31,7 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="additionalSupport" >
-        <ui:include src="private/itemDomainMachineDesignViewSupport.xhtml"/> 
+        <ui:include src="../itemDomainMachineDesignBase/private/itemDomainMachineDesignViewSupport.xhtml"/> 
     </ui:define>
 
 </ui:composition>
