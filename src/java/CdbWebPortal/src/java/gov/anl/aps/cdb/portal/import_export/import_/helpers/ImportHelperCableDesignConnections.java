@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemElementRelationshipController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
@@ -31,6 +32,7 @@ public class ImportHelperCableDesignConnections
     
     private static final String KEY_CABLE_ITEM = "importSecondItem";
     private static final String KEY_CABLE_END = "cableEndDesignation";
+    private static final String KEY_IS_PRIMARY = "importPrimaryCableConnection";
     private static final String KEY_MACHINE_ITEM = "importFirstItem";
     private static final String KEY_PORT_NAME = "importFirstItemConnectorName";
     private static final String KEY_CONNECTOR_NAME = "importSecondItemConnectorName";
@@ -87,6 +89,14 @@ public class ImportHelperCableDesignConnections
                 "getCableEndDesignation",
                 ColumnModeOptions.rCREATE(),
                 0));
+        
+        specs.add(new BooleanColumnSpec(
+                "Is Primary",
+                KEY_IS_PRIMARY,
+                "setImportPrimaryCableConnection",
+                "True/yes if connection is primary for cable end, false/no otherwise. Primary connections cannot be created using this format, use cable design create format instead.",
+                "isPrimaryCableConnection",
+                ColumnModeOptions.oCREATE()));
 
         specs.add(new IdOrNameRefColumnSpec(
                 "Machine Item",
@@ -159,6 +169,7 @@ public class ImportHelperCableDesignConnections
         Item machineItem = (Item) rowMap.get(KEY_MACHINE_ITEM);
         String machineItemPortName = (String) rowMap.get(KEY_PORT_NAME);
         String cableConnectorName = (String) rowMap.get(KEY_CONNECTOR_NAME);
+        Boolean isPrimary = (Boolean) rowMap.get(KEY_IS_PRIMARY);
         
         // create default instance for validation table in case of error
         ItemElementRelationship connectionRelationship = 
@@ -168,6 +179,11 @@ public class ImportHelperCableDesignConnections
         if (cableDesignItem == null) {
             isValid = false;
             // validStr = LABEL_CABLE_ITEM + " must be specified.";
+            
+        } else if (isPrimary) {
+            // primary connections cannot be created using this format
+            isValid = false;
+            validStr = "Primary connections cannot be created using this format.";
             
         } else {
             // create cable relationshiop with specified parameters

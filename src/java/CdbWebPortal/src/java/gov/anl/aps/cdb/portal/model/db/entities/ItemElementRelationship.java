@@ -108,12 +108,13 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     
     public static String VALUE_LABEL_PRIMARY_CABLE_CONN = "PRI";
     public static String VALUE_LABEL_DETAIL_CABLE_CONN = "DET";
-    private static String PRIMARY_CABLE_CONN_INDICATOR = "*";
+    private static String PRIMARY_CABLE_CONN_INDICATOR = "yes";
     
     private transient Item importFirstItem = null;
     private transient Item importSecondItem = null;
     private transient String importFirstItemConnectorName;
     private transient String importSecondItemConnectorName;
+    private transient Boolean importPrimaryCableConnection;
 
     public ItemElementRelationship() {
     }
@@ -359,6 +360,14 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     }
 
     // <editor-fold defaultstate="collapsed" desc="import/export support">   
+    
+    public Boolean getImportPrimaryCableConnection() {
+        return importPrimaryCableConnection;
+    }
+    
+    public void setImportPrimaryCableConnection(Boolean isPrimary) {
+        importPrimaryCableConnection = isPrimary;
+    }
     
     public Item getImportFirstItem() {
         return importFirstItem;

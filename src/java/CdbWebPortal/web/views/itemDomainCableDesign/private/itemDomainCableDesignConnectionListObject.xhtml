@@ -32,10 +32,11 @@ See LICENSE file.
                     Cable End
                 </f:facet>
             </p:column>
-            <p:column>
+            <p:column id="primaryConnectionColumn">
                 <f:facet name="header">
-                    <h:outputText/>
-                    Primary
+                    <h:outputText value="Primary"/>
+                    <p:tooltip value="Indicates primary connection for cable end." 
+                               for="primaryConnectionColumn" />
                 </f:facet>
             </p:column>
             <p:column>
