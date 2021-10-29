@@ -81,7 +81,7 @@ body .ui-galleria .ui-galleria-thumbnail-container {
     padding-right: 15px; 
     padding-bottom: 15px;
     margin: 0px 0px 0px 0px;
-    height: 110px;
+    height: 84px;
 }
 
 #menu {
@@ -139,6 +139,14 @@ footer {
     text-align: left;
     font-size: 10px;
     padding-top: 4px;
+}
+
+.topRightContent .ui-widget {
+    font-size: 8pt; 
+}
+
+.topRightContent .ui-widget.clckableLabel {
+    text-decoration: underline;
 }
 
 .menubar {
@@ -517,7 +525,8 @@ select {
 }
 
 .narrowColumn, .narrowColumnNoPad {
-    width: 26px;    
+    width: 26px;
+    text-align: center;
 }
 
 th.narrowColumn {
@@ -562,7 +571,7 @@ h1 {
 }
 
 .pageTitle {
-    padding-bottom: 27px;
+    padding-bottom: 15px;
 }
 
 .pageTitle h1 {
@@ -679,12 +688,16 @@ h2 {
 }
 
 .mainMenuBar .ui-menu .ui-menu-child .ui-menuitem {
-    padding-bottom: 5px;
+    padding-bottom: 2px;
     padding-right: 5px;   
 }
 
 .mainMenuBar .ui-menuitem > ul > li:nth-child(1) {
-    padding-top: 5px !important;    
+    padding-top: 2px !important;    
+}
+
+.mainMenuBar .ui-menu-list .ui-menuitem .ui-menuitem-link {
+    padding: 0.5rem 0.5rem !important;
 }
 
 .wideSubMenu ul {
@@ -697,12 +710,12 @@ h2 {
 
 .mainMenuBar .ui-menu .ui-menuitem .ui-menuitem-link {
     background-color: rgba(255, 255, 255, 0.4);
-    
+
 }
 
 .mainMenuBar .activeSubMenuParentItem .ui-submenu-link, 
 .mainMenuBar .activeMenuItem {
-   background-color: rgba(255, 255, 255, 0.7) !important;
+    background-color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .mainMenuBar .ui-menu .ui-menuitem .ui-menuitem-link:hover {    
@@ -711,6 +724,7 @@ h2 {
 
 .mainMenuBar .ui-menu .ui-menuitem {    
     padding-left: 5px;
+    font-size: 10pt;
 }
 
 .mainMenuBar .ui-menuitem-text {
@@ -827,7 +841,7 @@ h2 {
     }
 }
 
-.ui-icon-machine-design-template, .ui-icon-machine-design-template-white  {    
+.ui-icon-machine-design-template  {    
     background-image: url(../../resources/images/aps-icon-template.svg) !important;
     background-repeat: no-repeat;
     background-position: center;
@@ -835,10 +849,6 @@ h2 {
     fill: currentColor; 
     animation: transition-ui-icon-machine-design 0.25s;    
     filter: grayscale(100%) brightness(500%) brightness(10%);
-}
-
-.ui-icon-machine-design-template-white {        
-    filter: grayscale(100%) brightness(500%) brightness(100%);
 }
 
 @keyframes transition-ui-icon-machine-design-template {
@@ -934,9 +944,44 @@ h2 {
     table-layout: auto !important;
 }
 
-.ui-datatable .ui-datatable-data > tr > td {    
-    border-width: 1px !important;
-    padding: 5px !important;
+body .ui-datatable .ui-datatable-data > tr > td,
+body .ui-treetable .ui-treetable-data > tr > td {    
+    border-width: 1px;
+    border-color: #ababab; 
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+body .ui-datatable thead th, body .ui-datatable thead,
+body .ui-treetable thead th,
+body .ui-datatable .ui-paginator.ui-paginator-bottom, 
+body .ui-datatable .ui-paginator.ui-paginator-top {
+    border-color: #8f8f8f;
+    border-style: solid;
+    border-width: 1px;    
+    background: #c4c4c4 -webkit-gradient(linear,left top,left bottom,from(rgba(255,255,255,0.8)),to(rgba(255,255,255,0)));
+    text-align: center; 
+    padding: 0.3rem;
+}
+
+body .ui-datatable thead th {
+    padding: 5px;
+}
+
+body .ui-paginator .ui-paginator-pages .ui-paginator-page {
+    border-color: #9d9d9d;
+    line-height: 2em;
+    height: 2em;
+    min-width: 2em;
+}
+
+body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-hover {
+    border-color: #9d9d9d;        
+}
+
+body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
+    background: #7c7c7c;
+    color: white; 
 }
 
 .ui-treetable .ui-treetable-data > tr > td {
@@ -956,8 +1001,45 @@ h2 {
     overflow: visible !important; 
 }
 
-.ui-datatable .ui-paginator.ui-paginator-bottom, .ui-datatable .ui-paginator.ui-paginator-top {
-    background: rgba(255,255,255,0.45) !important;
+body .ui-datatable .ui-paginator.ui-paginator-top,
+body .ui-datatable .ui-paginator.ui-paginator-bottom {
+    padding-top: 0.2rem;
+    padding-bottom: 0.1rem;
+}
+
+body .ui-datatable .ui-paginator.ui-paginator-bottom {
+    border-top: none;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;    
+}
+
+
+body .ui-datatable .ui-paginator.ui-paginator-top {
+    border-bottom: none;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+}
+
+body .ui-datatable.ui-datatable-striped .ui-datatable-data > tr.ui-datatable-odd {
+    background-color: #f2f5f9;
+}
+
+
+body .ui-button {    
+    background: #c4c4c4 -webkit-gradient(linear,left top,left bottom,from(rgba(255,255,255,0.8)),to(rgba(255,255,255,0)));
+    border-color: #8f8f8f;
+    margin: 1px;
+    color: black;
+}
+
+body .ui-panel .ui-panel-titlebar  {
+    padding: 0.7rem;
+    background: #c4c4c4 -webkit-gradient(linear,left top,left bottom,from(rgba(255,255,255,0.8)),to(rgba(255,255,255,0)));
+    border-color: #8f8f8f;
+    border-style: solid;
+    border-width: 1px;    
+    border-bottom: 0px;
+    margin-bottom: 1px;
 }
 
 .invalidTableData {
@@ -980,7 +1062,7 @@ h2 {
 }
 
 .ui-datatable .ui-sortable-column {
-    box-shadow: none;
+    box-shadow: none;    
 }
 
 .domainEntityRowExpansionDetails {
@@ -1396,10 +1478,6 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
 .ui-panel .ui-panel-content {
     background: transparent !important; 
     border: 0px !important;
-}
-
-.ui-panel .ui-panel-titlebar {
-    background-color: rgba(255,255,255,0.75) !important;
 }
 
 .draggableTreeTableDataCell {
