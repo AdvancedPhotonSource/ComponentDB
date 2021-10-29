@@ -51,7 +51,7 @@ body .ui-galleria .ui-galleria-thumbnail-container {
 }
 
 #contentContainer {
-    min-height: 95%;
+    min-height: 97%;
     margin-bottom: 15px;
 }
 
@@ -134,7 +134,7 @@ footer {
 
 .topRightContent {
     float: right;
-    width: 170px;
+    margin-right: 20px;
     vertical-align: central;
     text-align: left;
     font-size: 10px;
@@ -164,7 +164,7 @@ footer {
 
 .menuLeftContent {
     float: left;
-    width: 40px;
+    width: 20px;
     height: fit-content;
     text-align: center;
     background-color: #6da5d8;
@@ -188,7 +188,7 @@ footer {
 }
 
 .menuBarSupportingItems {
-    margin-right: 40px; 
+    margin-right: 20px; 
     border: none; 
     padding: 0px;
 }
@@ -205,7 +205,7 @@ footer {
     position: relative;
     vertical-align: central;
     text-align: left;
-    margin: 40px;
+    margin: 25px;
     color: #6da5d8;
 }
 
@@ -968,8 +968,7 @@ body .ui-datatable thead th {
     padding: 5px;
 }
 
-body .ui-paginator .ui-paginator-pages .ui-paginator-page {
-    border-color: #9d9d9d;
+body .ui-paginator .ui-paginator-pages .ui-paginator-page {    
     line-height: 2em;
     height: 2em;
     min-width: 2em;
@@ -980,8 +979,8 @@ body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-hover {
 }
 
 body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
-    background: #7c7c7c;
-    color: white; 
+    background: #85b2cb -webkit-gradient(linear,left top,left bottom,from(rgba(255,255,255,0)),to(rgba(255,255,255,0.4)));
+    color: black;
 }
 
 .ui-treetable .ui-treetable-data > tr > td {
@@ -1025,10 +1024,18 @@ body .ui-datatable.ui-datatable-striped .ui-datatable-data > tr.ui-datatable-odd
 }
 
 
-body .ui-button {    
+body .ui-button,
+body .ui-paginator .ui-paginator-pages .ui-paginator-page {    
     background: #c4c4c4 -webkit-gradient(linear,left top,left bottom,from(rgba(255,255,255,0.8)),to(rgba(255,255,255,0)));
     border-color: #8f8f8f;
     margin: 1px;
+    color: black;
+}
+
+body .ui-button.ui-state-hover,
+body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-hover {
+    background: #85b2cb -webkit-gradient(linear,left top,left bottom,from(rgba(255,255,255,0.6)),to(rgba(255,255,255,0)));
+    border-color: #85b2cb;
     color: black;
 }
 
