@@ -44,28 +44,6 @@ public class ImportHelperCableDesignConnections
     private static final String LABEL_IS_PRIMARY = "Is Primary";
     private static final String LABEL_MACHINE_ITEM = "Machine Item";
     
-    private final Map<Item, Set<String>> itemNameMap = new HashMap<>();
-    
-    private boolean nameInUse(Item item, String name) {
-        Set<String> names = itemNameMap.get(item);
-        if (names == null) {
-            return false;
-        } else if (names.contains(name)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
-    private void addNameInUse(Item item, String name) {
-        Set<String> names = itemNameMap.get(item);
-        if (names == null) {
-            names = new HashSet<>();
-            itemNameMap.put(item, names);
-        }
-        names.add(name);
-    }
-
     @Override
     protected List initColumnSpecs() {
 
@@ -195,11 +173,34 @@ public class ImportHelperCableDesignConnections
             isValid = false;
             validStr = LABEL_CABLE_ITEM + " must be specified.";
         }
+        
         if (cableEnd == null) {
             // cable end must be specified
             isValid = false;
             validStr = appendToString(validStr, LABEL_CABLE_END + " must be specified.");
 
+        }
+
+        // check if port name is in use within spreadsheet
+        if ((machineItemPortName != null) && (!machineItemPortName.isEmpty())) {
+            if (nameInUse(machineItem, machineItemPortName)) {
+                isValid = false;
+                validStr = appendToString(
+                        validStr,
+                        "Duplicate use of port name: "
+                        + machineItemPortName + " for same machine item in spreadsheet.");
+            }
+        }
+
+        // check if connector name is in use within spreadsheet
+        if ((cableConnectorName != null) && (!cableConnectorName.isEmpty())) {
+            if (nameInUse(cableDesignItem, cableConnectorName)) {
+                isValid = false;
+                validStr = appendToString(
+                        validStr,
+                        "Duplicate use of cable connector name: "
+                        + cableConnectorName + " for same cable in spreadsheet.");
+            }
         }
         
         if (existingRelationship == null) {// create a new relationship
@@ -291,30 +292,12 @@ public class ImportHelperCableDesignConnections
 
         if (connectionRelationship != null) {
 
-            // check if port name is in use within spreadsheet
+            // update data structures for checking duplicate names            
             if ((machineItemPortName != null) && (!machineItemPortName.isEmpty())) {
-                if (nameInUse(machineItem, machineItemPortName)) {
-                    isValid = false;
-                    validStr = appendToString(
-                            validStr, 
-                            "Duplicate use of port name: " 
-                                    + machineItemPortName + " for same machine item in spreadsheet.");
-                } else {
-                    addNameInUse(machineItem, machineItemPortName);
-                }
+                addNameInUse(machineItem, machineItemPortName);
             }
-
-            // check if connector name is in use within spreadsheet
             if ((cableConnectorName != null) && (!cableConnectorName.isEmpty())) {
-                if (nameInUse(cableDesignItem, cableConnectorName)) {
-                    isValid = false;
-                    validStr = appendToString(
-                            validStr, 
-                            "Duplicate use of cable connector name: " 
-                                    + cableConnectorName + " for same cable in spreadsheet.");
-                } else {
-                    addNameInUse(cableDesignItem, cableConnectorName);
-                }
+                addNameInUse(cableDesignItem, cableConnectorName);
             }
 
             // set attributes in invalid entity for display in validation table

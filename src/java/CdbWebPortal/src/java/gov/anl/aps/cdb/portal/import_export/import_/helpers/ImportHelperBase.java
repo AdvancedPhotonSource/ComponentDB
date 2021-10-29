@@ -50,8 +50,10 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -133,6 +135,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     protected TreeNode rootTreeNode = new DefaultTreeNode("Root", null);
     private int numExpectedColumns = 0;
     private List<HelperWizardOption> wizardOptions = null;
+    
+    private final Map<CdbEntity, Set<String>> itemNameMap = new HashMap<>();
 
     public ImportHelperBase() {
     }
@@ -141,6 +145,26 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return rows;
     }
     
+    protected boolean nameInUse(CdbEntity item, String name) {
+        Set<String> names = itemNameMap.get(item);
+        if (names == null) {
+            return false;
+        } else if (names.contains(name)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected void addNameInUse(CdbEntity item, String name) {
+        Set<String> names = itemNameMap.get(item);
+        if (names == null) {
+            names = new HashSet<>();
+            itemNameMap.put(item, names);
+        }
+        names.add(name);
+    }
+
     public ValidInfo generateExportEntityList() {
         
         boolean isValid = true;
@@ -1239,7 +1263,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             isValid = false;
         }
         
-        if (isValid) {
+        if (true) {
 
             // capture item field values for comparison with original field values
             FieldValueMapResult postUpdateValueMapResult = getFieldValueMap(entity);
@@ -1267,16 +1291,18 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             boolean first = true;
             for (String key : preUpdateMap.keySet()) {
                 if (!fieldDiffMap.keySet().contains(key)) {
-                    if (!first) {
-                        unchangedString = unchangedString + "<br>";
-                    } else {
-                        first = false;
-                    }
                     String value = preUpdateMap.get(key);
-                    unchangedString = unchangedString + key + ": ";
-                    unchangedString = unchangedString + "<span style=\"color:green\">";
-                    unchangedString = unchangedString + "'" + value + "'";
-                    unchangedString = unchangedString + "</span>";
+                    if ((value != null) && (!value.isEmpty())) {
+                        if (!first) {
+                            unchangedString = unchangedString + "<br>";
+                        } else {
+                            first = false;
+                        }
+                        unchangedString = unchangedString + key + ": ";
+                        unchangedString = unchangedString + "<span style=\"color:green\">";
+                        unchangedString = unchangedString + "'" + value + "'";
+                        unchangedString = unchangedString + "</span>";
+                    }
                 }
             }
             entity.setImportUnchanged(unchangedString);

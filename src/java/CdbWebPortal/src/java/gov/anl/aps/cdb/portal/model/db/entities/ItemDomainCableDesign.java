@@ -43,8 +43,9 @@ public class ItemDomainCableDesign extends Item {
     private transient String route = null;
     private transient String notes = null;
     
-    private transient String endpoint1Port = null;
-    private transient String endpoint1Connector = null;
+    private transient Item endpoint1ItemImport = null;
+    private transient String endpoint1PortImport = null;
+    private transient String endpoint1ConnectorImport = null;
     private transient String endpoint1Description = null;
     private transient String endpoint1Route = null;
     private transient String endpoint1Pinlist = null;
@@ -53,8 +54,9 @@ public class ItemDomainCableDesign extends Item {
     private transient String endpoint1Notes = null;
     private transient String endpoint1Drawing = null;
     
-    private transient String endpoint2Port = null;
-    private transient String endpoint2Connector = null;
+    private transient Item endpoint2ItemImport = null;
+    private transient String endpoint2PortImport = null;
+    private transient String endpoint2ConnectorImport = null;
     private transient String endpoint2Description = null;
     private transient String endpoint2Route = null;
     private transient String endpoint2Pinlist = null;
@@ -332,19 +334,26 @@ public class ItemDomainCableDesign extends Item {
         String validStr = "";
         String methodName = "updateCableRelationship() ";
         
-        // validate and change cableEnd
+        String origCableEnd = cableRelationship.getCableEndDesignation();
+        
         if (cableEnd == null) {
+            // cable end cannot be null
             isValid = false;
             String msg = "Cable End cannot be null.";
             LOGGER.error(methodName + msg);
+            return new ValidInfo(isValid, msg);
             
-        } else if (cableRelationship.isPrimaryCableConnection()) {
-            isValid = false;
-            String msg = "Cannot change cable end for primary connection.";
-            LOGGER.error(methodName + msg);
-            
-        } else {
-            cableRelationship.setCableEndDesignation(cableEnd);
+        } else if (!cableEnd.equals(origCableEnd)) {
+            // can't change cable end for primary connection
+            if (cableRelationship.isPrimaryCableConnection()) {
+                isValid = false;
+                String msg = "Cannot change cable end for primary connection.";
+                LOGGER.error(methodName + msg);
+                return new ValidInfo(isValid, msg);
+                
+            } else {
+                cableRelationship.setCableEndDesignation(cableEnd);
+            }
         }
         
         ItemElement origItemElement = cableRelationship.getFirstItemElement();
@@ -362,7 +371,7 @@ public class ItemDomainCableDesign extends Item {
         // delete original connector if updating to new one
         ItemConnector origEndpointConnector = cableRelationship.getFirstItemConnector();
         if ((origEndpointConnector != null) 
-                && ((endpointConnector == null) || (!endpointConnector.getId().equals(origEndpointConnector.getId())))) {
+                && ((endpointConnector == null) || (!endpointConnector.getConnector().getName().equals(origEndpointConnector.getConnector().getName())))) {
             this.getDeletedConnectorList().add(origEndpointConnector);
             itemEndpoint.getItemConnectorList().remove(origEndpointConnector);
         }
@@ -372,8 +381,8 @@ public class ItemDomainCableDesign extends Item {
         
         // delete original connector if updating to new one
         ItemConnector origCableConnector = cableRelationship.getSecondItemConnector();
-        if ((((origCableConnector != null) && (origCableConnector.getId() != null)))
-                && ((cableConnector == null) || (cableConnector.getId() == null) || (!cableConnector.getId().equals(origCableConnector.getId())))) {
+        if ((origCableConnector != null)
+                && ((cableConnector == null) || (!cableConnector.getConnector().getName().equals(origCableConnector.getConnector().getName())))){
             this.getDeletedConnectorList().add(origCableConnector);
             this.getItemConnectorList().remove(origCableConnector);
         }
@@ -464,12 +473,9 @@ public class ItemDomainCableDesign extends Item {
         
         // validate
         
-        if ((itemEndpoint == null)
-                && (((endpointConnectorName != null) && (!endpointConnectorName.isBlank()))
-                || ((cableConnectorName != null) && (!cableConnectorName.isBlank())))) {
-            
+        if (itemEndpoint == null) {            
             isValid = false;
-            validString = "Must specify endpoint item to specify port or connector.";
+            validString = "Must specify endpoint machine item.";
         }
         
         if (cableEnd == null) {
@@ -522,9 +528,6 @@ public class ItemDomainCableDesign extends Item {
                         && (endpointConnectorName.equals(origEndpointConnector.getConnector().getName()))) {
                     endpointConnector = origEndpointConnector;
                 } else {
-                    if (origEndpointConnector != null) {
-                        getDeletedConnectorList().add(origEndpointConnector);
-                    }
                     endpointConnector = itemEndpoint.getConnectorNamed(endpointConnectorName);
                     if (endpointConnector == null) {
                         isValid = false;
@@ -551,9 +554,6 @@ public class ItemDomainCableDesign extends Item {
                         && (cableConnectorName.equals(origCableConnector.getConnector().getName()))) {
                     cableConnector = origCableConnector;
                 } else {
-                    if (origCableConnector != null) {
-                        getDeletedConnectorList().add(origCableConnector);
-                    }
                     cableConnector = this.getConnectorNamed(cableConnectorName);
                     if (cableConnector == null) {
                         isValid = false;
@@ -561,7 +561,7 @@ public class ItemDomainCableDesign extends Item {
                     } else if (cableConnector.isConnected()) {
                         isValid = false;
                         validString = validString + "Cable connector: " + cableConnectorName + " is already connected.";
-                    } else if (!cableConnector.getCableEndDesignation().equals(cableEnd)) {
+                    } else if (!cableConnector.getConnector().getCableEndDesignation().equals(cableEnd)) {
                         isValid = false;
                         validString = validString + "Cable end for specified cable connector different than specified cable end.";
                     }
@@ -572,19 +572,19 @@ public class ItemDomainCableDesign extends Item {
             changedConnector = true;
         }
         
-        if (existingRelationship == null) {
-            connectionRelationship = this.addCableRelationship(
-                    itemEndpoint, endpointConnector, cableConnector, cableEnd, isPrimary);
-        } else {
-            if (changedCableEnd && changedEndpoint && changedPort && changedConnector) {
-                ValidInfo updateInfo = this.updateCableRelationship(
-                        connectionRelationship, itemEndpoint, endpointConnector, cableConnector, cableEnd);
-                if (!updateInfo.isValid()) {
-                    isValid = false;
-                    validString = updateInfo.getValidString();
-                }
+        if (isValid) {
+            if (existingRelationship == null) {
+                connectionRelationship = this.addCableRelationship(
+                        itemEndpoint, endpointConnector, cableConnector, cableEnd, isPrimary);
             } else {
-                validString = validString + "No changes for existing connection on end: " + cableEnd;
+                if (changedCableEnd || changedEndpoint || changedPort || changedConnector) {
+                    ValidInfo updateInfo = this.updateCableRelationship(
+                            connectionRelationship, itemEndpoint, endpointConnector, cableConnector, cableEnd);
+                    if (!updateInfo.isValid()) {
+                        isValid = false;
+                        validString = updateInfo.getValidString();
+                    }
+                }
             }
         }
         
@@ -993,19 +993,63 @@ public class ItemDomainCableDesign extends Item {
             String endpointConnectorName,
             String cableConnectorName) {
         
-        endpoint1Port = endpointConnectorName;
-        endpoint1Connector = cableConnectorName;
         return setEndpointImport(itemEndpoint, endpointConnectorName, cableConnectorName, VALUE_CABLE_END_1);
     }
-
+    
+    @JsonIgnore
+    public String getEndpoint1Connector() {
+        return getConnectorForEndpoint(VALUE_CABLE_END_1);
+    }
+    
     @JsonIgnore
     public String getEndpoint1Port() {
         return getPortForEndpoint(VALUE_CABLE_END_1);
     }
+    
+    @JsonIgnore
+    public Item getEndpoint1ItemImport() {
+        if (endpoint1ItemImport == null) {
+            endpoint1ItemImport = getEndpoint1();
+        }
+        return endpoint1ItemImport;
+    }
+    
+    @JsonIgnore
+    public String getEndpoint1ItemStringImport() {
+        Item item = getEndpoint1ItemImport();
+        if (item != null) {
+            return item.getName();
+        } else {
+            return null;
+        }
+    }
+    
+    public void setEndpoint1ItemImport(Item item) {
+        endpoint1ItemImport = item;
+    }
 
     @JsonIgnore
-    public String getEndpoint1Connector() {
-        return getConnectorForEndpoint(VALUE_CABLE_END_1);
+    public String getEndpoint1PortImport() {
+        if (endpoint1PortImport == null) {
+            endpoint1PortImport = getEndpoint1Port();
+        }
+        return endpoint1PortImport;
+    }
+    
+    public void setEndpoint1PortImport(String port) {
+        endpoint1PortImport = port;
+    }
+
+    @JsonIgnore
+    public String getEndpoint1ConnectorImport() {
+        if (endpoint1ConnectorImport == null) {
+            endpoint1ConnectorImport = getEndpoint1Connector();
+        }
+        return endpoint1ConnectorImport;
+    }
+    
+    public void setEndpoint1ConnectorImport(String connector) {
+        endpoint1ConnectorImport = connector;
     }
 
     @JsonIgnore
@@ -1042,8 +1086,6 @@ public class ItemDomainCableDesign extends Item {
             String endpointConnectorName,
             String cableConnectorName) {
         
-        endpoint2Port = endpointConnectorName;
-        endpoint2Connector = cableConnectorName;
         return setEndpointImport(itemEndpoint, endpointConnectorName, cableConnectorName, VALUE_CABLE_END_2);
     }
 
@@ -1055,6 +1097,52 @@ public class ItemDomainCableDesign extends Item {
     @JsonIgnore
     public String getEndpoint2Connector() {
         return getConnectorForEndpoint(VALUE_CABLE_END_2);
+    }
+
+    @JsonIgnore
+    public Item getEndpoint2ItemImport() {
+        if (endpoint2ItemImport == null) {
+            endpoint2ItemImport = getEndpoint2();
+        }
+        return endpoint2ItemImport;
+    }
+    
+    @JsonIgnore
+    public String getEndpoint2ItemStringImport() {
+        Item item = getEndpoint2ItemImport();
+        if (item != null) {
+            return item.getName();
+        } else {
+            return null;
+        }
+    }
+    
+    public void setEndpoint2ItemImport(Item item) {
+        endpoint2ItemImport = item;
+    }
+
+    @JsonIgnore
+    public String getEndpoint2PortImport() {
+        if (endpoint2PortImport == null) {
+            endpoint2PortImport = getEndpoint2Port();
+        }
+        return endpoint2PortImport;
+    }
+    
+    public void setEndpoint2PortImport(String port) {
+        endpoint2PortImport = port;
+    }
+
+    @JsonIgnore
+    public String getEndpoint2ConnectorImport() {
+        if (endpoint2ConnectorImport == null) {
+            endpoint2ConnectorImport = getEndpoint2Connector();
+        }
+        return endpoint2ConnectorImport;
+    }
+    
+    public void setEndpoint2ConnectorImport(String connector) {
+        endpoint2ConnectorImport = connector;
     }
 
     @JsonIgnore

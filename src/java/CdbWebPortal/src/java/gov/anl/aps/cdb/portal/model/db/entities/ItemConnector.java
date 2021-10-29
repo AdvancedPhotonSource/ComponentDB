@@ -256,6 +256,12 @@ public class ItemConnector extends CdbEntity implements Serializable {
     }
 
     @JsonIgnore
+    @Override
+    public String getCableEndDesignation() {        
+        return getConnector().getCableEndDesignation();
+    }
+    
+    @JsonIgnore
     public String getImportConnectorName() {
         return importConnectorName;
     }
