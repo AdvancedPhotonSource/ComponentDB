@@ -561,10 +561,11 @@ public class ItemDomainCableDesign extends Item {
                     } else if (cableConnector.isConnected()) {
                         isValid = false;
                         validString = validString + "Cable connector: " + cableConnectorName + " is already connected.";
-                    } else if (!cableConnector.getConnector().getCableEndDesignation().equals(cableEnd)) {
-                        isValid = false;
-                        validString = validString + "Cable end for specified cable connector different than specified cable end.";
-                    }
+                    } 
+                }
+                if ((cableConnector != null) && (!cableConnector.getConnector().getCableEndDesignation().equals(cableEnd))) {
+                    isValid = false;
+                    validString = validString + "Cable end for specified cable connector different than specified cable end.";
                 }
             }
         }

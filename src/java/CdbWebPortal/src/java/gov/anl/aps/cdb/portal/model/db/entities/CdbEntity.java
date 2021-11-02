@@ -272,7 +272,7 @@ public class CdbEntity implements Serializable, Cloneable {
         }
     }
     
-    public boolean isValidCableEndDesignation(String designation) {
+    public static boolean isValidCableEndDesignation(String designation) {
         List<String> list = Arrays.asList(VALUE_CABLE_END_1, VALUE_CABLE_END_2);
         return list.contains(designation);
     }

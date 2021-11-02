@@ -362,6 +362,9 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     // <editor-fold defaultstate="collapsed" desc="import/export support">   
     
     public Boolean getImportPrimaryCableConnection() {
+        if (importPrimaryCableConnection == null) {
+            importPrimaryCableConnection = isPrimaryCableConnection();
+        }
         return importPrimaryCableConnection;
     }
     
@@ -370,6 +373,9 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     }
     
     public Item getImportFirstItem() {
+        if (importFirstItem == null) {
+            importFirstItem = getFirstItem();
+        }
         return importFirstItem;
     }
 
@@ -378,6 +384,9 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     }
 
     public Item getImportSecondItem() {
+        if (importSecondItem == null) {
+            importSecondItem = getSecondItem();
+        }
         return importSecondItem;
     }
 
@@ -386,6 +395,9 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     }
 
     public String getImportFirstItemConnectorName() {
+        if (importFirstItemConnectorName == null) {
+            importFirstItemConnectorName = getFirstItemConnectorName();
+        }
         return importFirstItemConnectorName;
     }
 
@@ -394,6 +406,9 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     }
 
     public String getImportSecondItemConnectorName() {
+        if (importSecondItemConnectorName == null) {
+            importSecondItemConnectorName = getSecondItemConnectorName();
+        }
         return importSecondItemConnectorName;
     }
 

@@ -1225,18 +1225,18 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (entity == null) {
             // helper must return an instance for use in the validation table,
             // even if the specified item is not located
-            String msg = "Import helper not properly configured to retrieve items for update operation.";
+            String msg = "Import helper not properly configured to retrieve items for update operation (override newInvalidUpdateInstance?).";
             throw new CdbException(msg);
         }
+        
+        // set existing item id so it appears in validation table for retrieval errors, and doesn't appear as a diff for other cases
+        entity.setImportExistingItemId((Integer) rowDict.get(KEY_EXISTING_ITEM_ID));        
         
         ValidInfo createValidInfo = createInfo.getValidInfo();
         if (!createValidInfo.isValid()) {
             return createInfo;
         }
-        
-        // set existing item id so it doesn't appear as a diff
-        entity.setImportExistingItemId((Integer) rowDict.get(KEY_EXISTING_ITEM_ID));
-        
+                
         // capture item field values for comparison later with updated field values
         FieldValueMapResult preUpdateValueMapResult = getFieldValueMap(entity);
         if (!preUpdateValueMapResult.getValidInfo().isValid()) {
@@ -1587,8 +1587,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return new ValidInfo(true, "");
     }
     
+    /**
+     * Return an invalid instance for use in the validation table if creation/retrieval fails.
+     * Subclasses override to customize.
+     * @return 
+     */
     protected EntityType newInvalidUpdateInstance() {
-        return null;
+//        return null;
+        return (EntityType) getEntityController().createEntityInstance();
     }
 
     /**

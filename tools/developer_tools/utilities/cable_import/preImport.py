@@ -2258,7 +2258,7 @@ def main():
     if input_sheet.max_row < last_data_row_num:
         fatal_error("fewer rows in inputFile: %s than last data row: %d, exiting" % (option_input_file, last_data_row_num))
     if input_sheet.max_column != helper.num_input_cols():
-        fatal_error("inputFile %s doesn't contain expected number of columns: %d, exiting" % (option_input_file, helper.num_input_cols()))
+        fatal_error("inputFile %s actual columns: %d doesn't match expected columns: %d, exiting" % (option_input_file, input_sheet.max_column, helper.num_input_cols()))
 
     # initialize helper
     print()

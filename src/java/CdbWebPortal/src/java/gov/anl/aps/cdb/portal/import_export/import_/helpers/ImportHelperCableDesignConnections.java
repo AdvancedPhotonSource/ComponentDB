@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnS
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -59,7 +60,7 @@ public class ImportHelperCableDesignConnections
                 "Numeric ID or name of CDB cable design item. Name must be unique and prefixed with '#'.",
                 "getSecondItem",
                 "getSecondItem",
-                ColumnModeOptions.rCREATE(),
+                ColumnModeOptions.rCREATErUPDATE(),
                 ItemDomainCableDesignController.getInstance(),
                 Item.class,
                 ""));
@@ -70,7 +71,7 @@ public class ImportHelperCableDesignConnections
                 "setCableEndDesignation",
                 "Specifies end of cable for connection, legal values are 1 and 2.",
                 "getCableEndDesignation",
-                ColumnModeOptions.rCREATE(),
+                ColumnModeOptions.rCREATErUPDATE(),
                 0));
         
         specs.add(new BooleanColumnSpec(
@@ -79,7 +80,7 @@ public class ImportHelperCableDesignConnections
                 "setImportPrimaryCableConnection",
                 "True/yes if connection is primary for cable end, false/no otherwise. Primary connections cannot be created using this format, use cable design create format instead.",
                 "isPrimaryCableConnection",
-                ColumnModeOptions.oCREATE()));
+                ColumnModeOptions.oCREATEoUPDATE()));
 
         specs.add(new IdOrNameRefColumnSpec(
                 LABEL_MACHINE_ITEM,
@@ -88,7 +89,7 @@ public class ImportHelperCableDesignConnections
                 "Numeric ID or name of CDB machine item. Name must be unique and prefixed with '#'.",
                 "getFirstItem",
                 "getFirstItem",
-                ColumnModeOptions.rCREATE(),
+                ColumnModeOptions.rCREATErUPDATE(),
                 ItemDomainMachineDesignController.getInstance(),
                 Item.class,
                 ""));
@@ -99,7 +100,7 @@ public class ImportHelperCableDesignConnections
                 "setImportFirstItemConnectorName",
                 "Name of connector for port on machine item.",
                 "getFirstItemConnectorName",
-                ColumnModeOptions.oCREATE(),
+                ColumnModeOptions.oCREATEoUPDATE(),
                 0));
 
         specs.add(new StringColumnSpec(
@@ -108,7 +109,7 @@ public class ImportHelperCableDesignConnections
                 "setImportSecondItemConnectorName",
                 "Name of cable connector for connection.",
                 "getSecondItemConnectorName",
-                ColumnModeOptions.oCREATE(),
+                ColumnModeOptions.oCREATEoUPDATE(),
                 0));
 
         return specs;
@@ -138,6 +139,11 @@ public class ImportHelperCableDesignConnections
     @Override
     public boolean supportsModeTransfer() {
         return true;
+    }
+    
+    @Override
+    protected String getCreateMessageTypeName() {
+        return "cable design connection";
     }
     
     @Override
@@ -180,6 +186,11 @@ public class ImportHelperCableDesignConnections
             validStr = appendToString(validStr, LABEL_CABLE_END + " must be specified.");
 
         }
+        
+        if (!CdbEntity.isValidCableEndDesignation(cableEnd)) {
+            isValid = false;
+            validStr = appendToString(validStr, "Invalid cable end value: " + cableEnd);
+        }
 
         // check if port name is in use within spreadsheet
         if ((machineItemPortName != null) && (!machineItemPortName.isEmpty())) {
@@ -208,8 +219,8 @@ public class ImportHelperCableDesignConnections
             if (isPrimary == null || isPrimary) {
                 // isPrimary must be specified to be false for creating new connections
                 isValid = false;
-                appendToString(validStr, 
-                        LABEL_IS_PRIMARY + " must be specified to be false for creating new connections.");                
+                validStr = appendToString(validStr,
+                        LABEL_IS_PRIMARY + " must be specified to be false for creating new connections.");
             }
             
             // create default instance for validation table in case of error
@@ -242,7 +253,7 @@ public class ImportHelperCableDesignConnections
 
             connectionRelationship = existingRelationship;
             
-            if (!cableDesignItem.equals(connectionRelationship.getSecondItem())) {
+            if ((cableDesignItem != null) && (!cableDesignItem.equals(connectionRelationship.getSecondItem()))) {
                 // cable design item cannot be changed in update
                 isValid = false;
                 validStr = LABEL_CABLE_ITEM + " cannot be modified in update operation.";
