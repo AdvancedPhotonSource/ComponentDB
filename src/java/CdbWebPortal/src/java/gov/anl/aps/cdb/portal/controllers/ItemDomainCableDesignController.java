@@ -643,9 +643,11 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         public String save(String remoteCommandSuccess) {
             
             // make sure we don't change cable end for primary connection
-            String cableEnd = null;
-            if (!getCableRelationship().isPrimaryCableConnection()) {
-                cableEnd = cableEndDesignation;
+            if (getCableRelationship().isPrimaryCableConnection()) {
+                if (!getCableRelationship().getCableEndDesignation().equals(cableEndDesignation)) {
+                    SessionUtility.addErrorMessage("Error", "Cable End cannot be updated for primarry connection.");
+                    return null;
+                }
             }
 
             getCurrent().updateCableRelationship(
@@ -653,7 +655,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     selectedMdItem,
                     selectedMdConnector,
                     getSelectedCableConnector(),
-                    cableEnd);
+                    cableEndDesignation);
             
             updateItem(remoteCommandSuccess);
 

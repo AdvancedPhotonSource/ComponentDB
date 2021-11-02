@@ -1695,7 +1695,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
         EntityControllerType controller = this.getEntityController();
         if (!updateEntities.isEmpty()) {
-            controller.updateList(updateEntities);
+            controller.updateList(updateEntities, getCreateMessageTypeName());
         }
     }
     
@@ -1705,7 +1705,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
      */
     protected void deleteList() throws CdbException, RuntimeException {
         EntityControllerType controller = this.getEntityController();
-        controller.destroyList(rows, null);
+        controller.destroyList(rows, null, getCreateMessageTypeName());
     }
     
     public String getExportFilename() {

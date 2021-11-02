@@ -293,7 +293,8 @@ public class ImportHelperCableDesignConnections
                         machineItemPortName, 
                         cableConnectorName, 
                         cableEnd, 
-                        connectionRelationship.isPrimaryCableConnection());
+                        connectionRelationship.isPrimaryCableConnection(),
+                        connectionRelationship);
                 if (!updateInfo.getValidInfo().isValid()) {
                     isValid = false;
                     validStr = appendToString(validStr, updateInfo.getValidInfo().getValidString());
