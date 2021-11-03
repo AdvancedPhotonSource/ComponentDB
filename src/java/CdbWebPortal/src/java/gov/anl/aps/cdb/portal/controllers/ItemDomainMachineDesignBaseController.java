@@ -89,8 +89,8 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     // </editor-fold>       
     // <editor-fold defaultstate="collapsed" desc="Dual list view configuration variables ">
-    private MachineTreeNode selectedItemInListTreeTable = null;
-    private MachineTreeNode lastExpandedNode = null;
+    protected MachineTreeNode selectedItemInListTreeTable = null;
+    protected MachineTreeNode lastExpandedNode = null;
 
     private MachineTreeNode currentMachineDesignListRootTreeNode = null;
     private MachineTreeNode machineDesignTreeRootTreeNode = null;
@@ -273,6 +273,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         currentMachineDesignListRootTreeNode = null;
         machineDesignTemplateRootTreeNode = null;
         machineDesignTreeRootTreeNode = null;
+        favoriteMachineDesignTreeRootTreeNode = null; 
     }
     // </editor-fold>   
 
@@ -688,7 +689,11 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     public void unlinkContainedItem2FromSelectedItem() {
         ItemElement element = (ItemElement) selectedItemInListTreeTable.getData();
-
+          
+        unlinkAssignedItemFromMachineElement(element);
+    }
+    
+    public void unlinkAssignedItemFromMachineElement(ItemElement element) {
         ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) element.getContainedItem();
         Item originalContainedItem = mdItem.getAssignedItem();
 
@@ -3020,10 +3025,13 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         if (rootItemToDelete == null) {
             return;
         }
+        
+        ItemDomainMachineDesign current = getCurrent();
+        ItemDomainMachineDesign parentMachineDesign = current.getParentMachineDesign();
 
         // mark all items as deleted entity type (moves them to "trash")
         for (ItemDomainMachineDesign item : moveToTrashItemsToUpdate) {
-            item.setIsDeleted();
+            performMoveToTrashOperationsForItem(item);            
         }
 
         // remove relationship for root item to its parent and 
@@ -3056,6 +3064,15 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetListDataModel();
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetSelectDataModel();
+        
+        if (parentMachineDesign != null) {
+            expandToSpecificMachineDesignItem(parentMachineDesign);
+        }
+    }
+    
+    
+    protected void performMoveToTrashOperationsForItem(ItemDomainMachineDesign item) {
+        item.setIsDeleted();        
     }
 
     // </editor-fold>
