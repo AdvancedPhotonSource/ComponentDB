@@ -112,13 +112,13 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
         if (combinedItemElementList == null) {
             combinedItemElementList = new ArrayList<>();
+            combinedItemElementList.addAll(getItemElementDisplayList());
             combinedItemElementListParentElement = element;
 
             Item containedItem2 = getAssignedItem();
             if (containedItem2 != null) {
                 combinedItemElementList.addAll(containedItem2.getItemElementDisplayList());
             }
-            combinedItemElementList.addAll(getItemElementDisplayList());
         }
 
         return combinedItemElementList;
@@ -207,9 +207,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public ItemDomainMachineDesignBaseControllerUtility getItemControllerUtility() {
         if (isItemControl(this)) {
             return new ItemDomainMachineDesignControlControllerUtility();
-        } 
+        }
         if (isItemPower(this)) {
-            return new ItemDomainMachineDesignPowerControllerUtility(); 
+            return new ItemDomainMachineDesignPowerControllerUtility();
         }
         if (isItemDeleted(this)) {
             return new ItemDomainMachineDesignDeletedControllerUtility();
@@ -364,17 +364,68 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         setItemIdentifier1(n);
     }
 
+    public ItemElement getAssignedRepresentedElement() {
+        ItemElement representsCatalogElement = getRepresentsCatalogElement();
+        if (representsCatalogElement != null) {
+            ItemDomainMachineDesign parentMachineDesign = getParentMachineDesign();
+            if (parentMachineDesign != null) {
+                Item assignedItem = parentMachineDesign.getAssignedItem();
+                if (assignedItem instanceof ItemDomainInventory) {
+                    List<ItemElement> itemElementDisplayList = assignedItem.getItemElementDisplayList();
+                    for (ItemElement itemElement : itemElementDisplayList) {
+                        ItemElement catalogElementRef = itemElement.getDerivedFromItemElement();
+                        if (catalogElementRef.equals(representsCatalogElement)) {
+                            return itemElement;
+                        }
+                    }
+                }
+                return representsCatalogElement;
+            }
+        }
+        return null;
+    }
+
     public Item getAssignedItem() {
         ItemElement selfElement = getSelfElement();
         if (selfElement == null) {
             return null;
         }
+        ItemElement assignedRepresentedElement = getAssignedRepresentedElement();
+        if (assignedRepresentedElement != null) {
+            Item containedItem = assignedRepresentedElement.getContainedItem();
+            if (containedItem != null) {
+                // Catalog or inventory item defined. 
+                return containedItem;
+            }
+
+            ItemElement derivedFromItemElement = assignedRepresentedElement.getDerivedFromItemElement();
+            if (derivedFromItemElement != null) {
+                // Catalog element 
+                return derivedFromItemElement.getContainedItem();
+            }
+        }
+
         return selfElement.getContainedItem2();
     }
 
     public void setAssignedItem(Item item) {
         ItemElement selfElement = getSelfElement();
         selfElement.setContainedItem2(item);
+    }
+
+    @JsonIgnore
+    public ItemElement getRepresentsCatalogElement() {
+        ItemElement selfElement = getSelfElement();
+        if (selfElement != null) {
+            ItemElement repElement = selfElement.getRepresentsItemElement();
+            return repElement;
+        }
+        return null;
+    }
+
+    public void setRepresentsCatalogElement(ItemElement representsCatalogElement) {
+        ItemElement selfElement = getSelfElement();
+        selfElement.setRepresentsItemElement(representsCatalogElement);
     }
 
     public boolean isIsHoused() {
@@ -606,8 +657,8 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     @JsonIgnore
     public String getImportLocationItemString() {
-        if ((importLocationItemString == null) 
-                && (getId() != null) 
+        if ((importLocationItemString == null)
+                && (getId() != null)
                 && (this.getExportLocation() != null)) {
             return this.getExportLocation().getName();
         }

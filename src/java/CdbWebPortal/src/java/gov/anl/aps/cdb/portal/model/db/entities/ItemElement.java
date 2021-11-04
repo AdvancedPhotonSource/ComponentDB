@@ -133,6 +133,9 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     @JoinColumn(name = "derived_from_item_element_id", referencedColumnName = "id")
     @ManyToOne
     private ItemElement derivedFromItemElement;
+    @JoinColumn(name = "represents_item_element_id", referencedColumnName = "id")
+    @ManyToOne
+    private ItemElement representsItemElement;
     @JoinColumn(name = "contained_item_id1", referencedColumnName = "id")
     @ManyToOne()
     private Item containedItem1;
@@ -364,6 +367,15 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     public void setDerivedFromItemElementList(List<ItemElement> derivedFromItemElementList) {
         this.derivedFromItemElementList = derivedFromItemElementList;
+    }
+
+    @XmlTransient
+    public ItemElement getRepresentsItemElement() {
+        return representsItemElement;
+    }
+
+    public void setRepresentsItemElement(ItemElement representsItemElement) {
+        this.representsItemElement = representsItemElement;
     }
 
     @XmlTransient

@@ -145,6 +145,9 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
     }
     
     public PropertyValue getControlInterfaceToParentForItem(ItemDomainMachineDesign mdItem) {
+        if (mdItem == null) {
+            return null; 
+        }
         PropertyValue controlInterfaceToParent = mdItem.getControlInterfaceToParent();
         if (controlInterfaceToParent == null) {
             ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();
