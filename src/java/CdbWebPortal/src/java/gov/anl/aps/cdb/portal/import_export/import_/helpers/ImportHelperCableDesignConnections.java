@@ -20,11 +20,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  *
@@ -334,5 +331,20 @@ public class ImportHelperCableDesignConnections
     protected ValidInfo updateEntityInstance(ItemElementRelationship entity, Map<String, Object> rowMap) {
         CreateInfo updateInfo = createUpdateEntityCommon(entity, rowMap);
         return updateInfo.getValidInfo();
+    }
+
+    @Override
+    protected ValidInfo validateDeleteEntityInstance(ItemElementRelationship entity, Map<String, Object> rowMap) {
+        
+        boolean isValid = true;
+        String validStr = "";
+        
+        // don't allow deleting primary connection
+        if (entity.isPrimaryCableConnection()) {
+            isValid = false;
+            validStr = "Deleting primary cable connection is not allowed.";
+        }
+        
+        return new ValidInfo(isValid, validStr);
     }
 }
