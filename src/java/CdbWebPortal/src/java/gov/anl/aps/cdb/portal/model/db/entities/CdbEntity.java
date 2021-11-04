@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,9 @@ public class CdbEntity implements Serializable, Cloneable {
     protected transient List<PropertyValue> propertyValueInternalList = null; 
     
     private transient Map<String, String> apiProperties;
+    
+    // persistence management for associated ItemConnectors, deleted on call to edit this item in facade 
+    private transient List<ItemConnector> deletedConnectorList = null;
     
     // import wizard variables
     private transient boolean isValidImport = true;
@@ -118,6 +122,20 @@ public class CdbEntity implements Serializable, Cloneable {
     @JsonIgnore
     public boolean getIsValidImport() {
         return isValidImport;
+    }
+    
+    @JsonIgnore
+    public List<ItemConnector> getDeletedConnectorList() {
+        if (deletedConnectorList == null) {
+            deletedConnectorList = new ArrayList<>();
+        }
+        return deletedConnectorList;
+    }
+    
+    public void clearDeletedConnectorList() {
+        if (deletedConnectorList != null) {
+            deletedConnectorList.clear();
+        }
     }
     
     @JsonIgnore
@@ -272,7 +290,7 @@ public class CdbEntity implements Serializable, Cloneable {
         }
     }
     
-    public boolean isValidCableEndDesignation(String designation) {
+    public static boolean isValidCableEndDesignation(String designation) {
         List<String> list = Arrays.asList(VALUE_CABLE_END_1, VALUE_CABLE_END_2);
         return list.contains(designation);
     }

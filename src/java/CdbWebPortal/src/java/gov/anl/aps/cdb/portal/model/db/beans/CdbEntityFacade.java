@@ -5,6 +5,8 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -34,7 +36,18 @@ public abstract class CdbEntityFacade<T> {
     }
 
     public T edit(T entity) {
-        return getEntityManager().merge(entity);
+        T result = getEntityManager().merge(entity);
+
+        // delete list of connectors, if any
+        if (entity instanceof CdbEntity) {
+            CdbEntity cdbEntity = (CdbEntity) entity;
+            for (ItemConnector connector : cdbEntity.getDeletedConnectorList()) {
+                ItemConnectorFacade.getInstance().remove(connector);
+            }
+            cdbEntity.clearDeletedConnectorList();
+        }
+        
+        return result;
     }
 
     public void edit(List<T> entities) {

@@ -32,13 +32,13 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     
     private static final String KEY_CATALOG_ITEM = "catalogItemString";
 
-    private static final String KEY_ENDPOINT1_ITEM = "endpoint1String";
-    private static final String KEY_ENDPOINT1_PORT = "endpoint1Port";
-    private static final String KEY_ENDPOINT1_CONNECTOR = "endpoint1Connector";
+    private static final String KEY_ENDPOINT1_ITEM = "endpoint1ItemStringImport";
+    private static final String KEY_ENDPOINT1_PORT = "endpoint1PortImport";
+    private static final String KEY_ENDPOINT1_CONNECTOR = "endpoint1ConnectorImport";
 
-    private static final String KEY_ENDPOINT2_ITEM = "endpoint2String";
-    private static final String KEY_ENDPOINT2_PORT = "endpoint2Port";
-    private static final String KEY_ENDPOINT2_CONNECTOR = "endpoint2Connector";
+    private static final String KEY_ENDPOINT2_ITEM = "endpoint2ItemImport";
+    private static final String KEY_ENDPOINT2_PORT = "endpoint2PortImport";
+    private static final String KEY_ENDPOINT2_CONNECTOR = "endpoint2ConnectorImport";
 
     @Override
     protected List<ColumnSpec> initColumnSpecs() {
@@ -162,7 +162,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         specs.add(new IdOrNameRefColumnSpec(
                 "Endpoint1", 
                 KEY_ENDPOINT1_ITEM, 
-                "", 
+                "setEndpoint1ItemImport", 
                 "Numeric ID or name of CDB machine design item for endpoint1. Name must be unique and prefixed with '#'.", 
                 "getEndpoint1", 
                 "getEndpoint1AttributeMap",
@@ -174,7 +174,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         specs.add(new StringColumnSpec(
                 "Endpoint1 Port", 
                 KEY_ENDPOINT1_PORT, 
-                "", 
+                "setEndpoint1PortImport", 
                 "Port name on device for endpoint1 connection.", 
                 "getEndpoint1Port",
                 ColumnModeOptions.oCREATEoUPDATE(), 
@@ -183,7 +183,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         specs.add(new StringColumnSpec(
                 "Endpoint1 Connector", 
                 KEY_ENDPOINT1_CONNECTOR, 
-                "", 
+                "setEndpoint1ConnectorImport", 
                 "Cable connector name for endpoint1 connection.", 
                 "getEndpoint1Connector",
                 ColumnModeOptions.oCREATEoUPDATE(), 
@@ -255,7 +255,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         specs.add(new IdOrNameRefColumnSpec(
                 "Endpoint2", 
                 KEY_ENDPOINT2_ITEM, 
-                "", 
+                "setEndpoint2ItemImport", 
                 "Numeric ID or name of CDB machine design item for endpoint2. Name must be unique and prefixed with '#'.", 
                 "getEndpoint2", 
                 "getEndpoint2AttributeMap",
@@ -267,7 +267,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         specs.add(new StringColumnSpec(
                 "Endpoint2 Port", 
                 KEY_ENDPOINT2_PORT, 
-                "", 
+                "setEndpoint2PortImport", 
                 "Port name on device for endpoint2 connection.", 
                 "getEndpoint2Port",
                 ColumnModeOptions.oCREATEoUPDATE(), 
@@ -276,7 +276,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         specs.add(new StringColumnSpec(
                 "Endpoint2 Connector", 
                 KEY_ENDPOINT2_CONNECTOR, 
-                "", 
+                "setEndpoint2ConnectorImport", 
                 "Cable connector name for endpoint2 connection.", 
                 "getEndpoint2Connector",
                 ColumnModeOptions.oCREATEoUPDATE(), 
@@ -428,13 +428,34 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
             return new ValidInfo(isValid, validString);                   
         }
         
-        // handle endpoint1 ======        
-        // shouldn't specify endpoint properties if endpoint is not specified
-        if (endpoint1Item == null) {
-            if ((endpoint1PortName != null) || (endpoint1ConnectorName != null)) {                
+        // check if port names in use within spreadsheet
+        if ((endpoint1PortName != null) && (!endpoint1PortName.isEmpty())) {
+            if (nameInUse(endpoint1Item, endpoint1PortName)) {
                 isValid = false;
                 validString = appendToString(
-                        validString, "Endpoint1 properties cannot be specified if endpoint1 is not specified.");                
+                        validString,
+                        "Duplicate use of port name: "
+                        + endpoint1PortName + " for same Endpoint1 machine item in spreadsheet.");
+            }
+        }
+        if ((endpoint2PortName != null) && (!endpoint2PortName.isEmpty())) {
+            if (nameInUse(endpoint2Item, endpoint2PortName)) {
+                isValid = false;
+                validString = appendToString(
+                        validString,
+                        "Duplicate use of port name: "
+                        + endpoint2PortName + " for same Endpoint2 machine item in spreadsheet.");
+            }
+        }
+        
+        // handle endpoint1 ======        
+        // endpoint machine item must be specified
+        if (endpoint1Item == null) {
+            if (isValid) {
+                // avoid duplicate warning if unable to find specified item (vs. not specifying one)
+                isValid = false;
+                validString = appendToString(
+                        validString, "Endpoint1 must be specified.");
             }
         } else {
             ValidInfo endpoint1ValidInfo =
@@ -449,11 +470,9 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         // handle endpoint2 ======        
         // shouldn't specify endpoint properties if endpoint is not specified
         if (endpoint2Item == null) {
-            if ((endpoint2PortName != null) || (endpoint2ConnectorName != null)) {                
-                isValid = false;
-                validString = appendToString(
-                        validString, "Endpoint2 properties cannot be specified if endpoint2 is not specified.");                
-            }
+            isValid = false;
+            validString = appendToString(
+                    validString, "Endpoint2 must be specified.");
         } else {
             ValidInfo endpoint2ValidInfo =
                     entity.setEndpoint2Import(endpoint2Item, endpoint2PortName, endpoint2ConnectorName);
@@ -462,6 +481,14 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 validString = appendToString(
                         validString, endpoint2ValidInfo.getValidString());
             }
+        }
+        
+        // update data structures for checking duplicate port names
+        if ((endpoint1PortName != null) && (!endpoint1PortName.isEmpty())) {
+            addNameInUse(endpoint1Item, endpoint1PortName);
+        }
+        if ((endpoint2PortName != null) && (!endpoint2PortName.isEmpty())) {
+            addNameInUse(endpoint2Item, endpoint2PortName);
         }
         
         return new ValidInfo(isValid, validString);

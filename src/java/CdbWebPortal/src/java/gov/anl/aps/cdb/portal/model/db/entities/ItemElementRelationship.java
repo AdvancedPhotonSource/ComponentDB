@@ -108,12 +108,13 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     
     public static String VALUE_LABEL_PRIMARY_CABLE_CONN = "PRI";
     public static String VALUE_LABEL_DETAIL_CABLE_CONN = "DET";
-    private static String PRIMARY_CABLE_CONN_INDICATOR = "*";
+    private static String PRIMARY_CABLE_CONN_INDICATOR = "yes";
     
-    private transient Item importFirstItem;
-    private transient Item importSecondItem;
+    private transient Item importFirstItem = null;
+    private transient Item importSecondItem = null;
     private transient String importFirstItemConnectorName;
     private transient String importSecondItemConnectorName;
+    private transient Boolean importPrimaryCableConnection;
 
     public ItemElementRelationship() {
     }
@@ -187,6 +188,14 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     public void setFirstItemElement(ItemElement firstItemElement) {
         this.firstItemElement = firstItemElement;
     }
+    
+    public Item getFirstItem() {
+        if (firstItemElement != null) {
+            return firstItemElement.getParentItem();
+        } else {
+            return null;
+        }
+    }
 
     public ItemConnector getFirstItemConnector() {
         return firstItemConnector;
@@ -194,6 +203,14 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
 
     public void setFirstItemConnector(ItemConnector firstItemConnector) {
         this.firstItemConnector = firstItemConnector;
+    }
+    
+    public String getFirstItemConnectorName() {
+        if (firstItemConnector != null) {
+            return firstItemConnector.getConnectorName();
+        } else {
+            return null;
+        }
     }
 
     public Float getFirstSortOrder() {
@@ -212,12 +229,28 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
         this.secondItemElement = secondItemElement;
     }
 
+    public Item getSecondItem() {
+        if (secondItemElement != null) {
+            return secondItemElement.getParentItem();
+        } else {
+            return null;
+        }
+    }
+
     public ItemConnector getSecondItemConnector() {
         return secondItemConnector;
     }
 
     public void setSecondItemConnector(ItemConnector secondItemConnector) {
         this.secondItemConnector = secondItemConnector;
+    }
+
+    public String getSecondItemConnectorName() {
+        if (secondItemConnector != null) {
+            return secondItemConnector.getConnectorName();
+        } else {
+            return null;
+        }
     }
 
     public Float getSecondSortOrder() {
@@ -328,7 +361,21 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
 
     // <editor-fold defaultstate="collapsed" desc="import/export support">   
     
+    public Boolean getImportPrimaryCableConnection() {
+        if (importPrimaryCableConnection == null) {
+            importPrimaryCableConnection = isPrimaryCableConnection();
+        }
+        return importPrimaryCableConnection;
+    }
+    
+    public void setImportPrimaryCableConnection(Boolean isPrimary) {
+        importPrimaryCableConnection = isPrimary;
+    }
+    
     public Item getImportFirstItem() {
+        if (importFirstItem == null) {
+            importFirstItem = getFirstItem();
+        }
         return importFirstItem;
     }
 
@@ -337,6 +384,9 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     }
 
     public Item getImportSecondItem() {
+        if (importSecondItem == null) {
+            importSecondItem = getSecondItem();
+        }
         return importSecondItem;
     }
 
@@ -345,6 +395,9 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     }
 
     public String getImportFirstItemConnectorName() {
+        if (importFirstItemConnectorName == null) {
+            importFirstItemConnectorName = getFirstItemConnectorName();
+        }
         return importFirstItemConnectorName;
     }
 
@@ -353,6 +406,9 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     }
 
     public String getImportSecondItemConnectorName() {
+        if (importSecondItemConnectorName == null) {
+            importSecondItemConnectorName = getSecondItemConnectorName();
+        }
         return importSecondItemConnectorName;
     }
 
