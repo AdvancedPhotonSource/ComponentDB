@@ -11,5 +11,6 @@ INSERT INTO property_type(name, description, is_internal) VALUES (@property_type
 SET @property_type_id = (SELECT id FROM property_type WHERE name = @property_type_name);
 INSERT INTO allowed_property_value (property_type_id, value) VALUES (@property_type_id, 'Direct Connection'); 
 
-
+ALTER TABLE item_element ADD COLUMN `represents_item_element_id` int(11) unsigned DEFAULT NULL AFTER derived_from_item_element_id;
+ALTER TABLE item_element_history ADD COLUMN `represents_item_element_id` int(11) unsigned DEFAULT NULL AFTER derived_from_item_element_id;
 

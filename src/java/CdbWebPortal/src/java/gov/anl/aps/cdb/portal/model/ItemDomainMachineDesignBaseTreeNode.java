@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.comparator.ItemSelfElementSortOrderComparator;
@@ -71,7 +72,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
         config.setDesignFacade(facade);
         this.topLevelItems = items;
         // Make sure the sort order is correct for top level nodes 
-        this.topLevelItems.sort(new ItemSelfElementSortOrderComparator()); 
+        this.topLevelItems.sort(new ItemSelfElementSortOrderComparator());
 
         addTopLevelChildren(this.topLevelItems);
 
@@ -82,7 +83,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
     public ItemDomainMachineDesignBaseTreeNode(Object data) {
         super(data);
     }
-    
+
     public boolean getIsTopLevel() {
         ItemDomainMachineDesignBaseTreeNode parent = this.getParent();
         return parent.topLevelItems != null;
@@ -151,11 +152,11 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
     protected <T extends ItemDomainMachineDesignBaseTreeNode> T createChildNode(ItemElement itemElement) {
         return createChildNode(itemElement, false);
     }
-    
+
     protected <T extends ItemDomainMachineDesignBaseTreeNode> T createChildNode(ItemElement itemElement, boolean childrenLoaded) {
         return createChildNode(itemElement, childrenLoaded, true);
     }
-    
+
     protected <T extends ItemDomainMachineDesignBaseTreeNode> T createChildNode(ItemElement itemElement, boolean childrenLoaded, boolean setType) {
         T machine = createTreeNodeObject(itemElement, config, this, setType);
         if (childrenLoaded) {
@@ -163,10 +164,8 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
         }
         super.getChildren().add(machine);
 
-        return machine;        
+        return machine;
     }
-
-        
 
     public <T extends ItemDomainMachineDesignBaseTreeNode> List<T> getMachineChildren() {
         return (List<T>) (List<?>) this.getChildren();
@@ -202,7 +201,25 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
                                 itemElementList = containedItem.getItemElementDisplayList();
                             }
 
+                            List<Integer> skipElementIds = new ArrayList<>();
                             for (ItemElement itemElement : itemElementList) {
+                                if (idm != null) {
+                                    Integer id = itemElement.getId();
+                                    if (skipElementIds.contains(id)) {
+                                        continue;
+                                    }
+                                    Item containedItem1 = itemElement.getContainedItem();
+                                    if (containedItem1 instanceof ItemDomainMachineDesign) {
+                                        ItemElement asnElement = ((ItemDomainMachineDesign) containedItem1).getAssignedRepresentedElement();
+                                        if (asnElement != null) {
+                                            skipElementIds.add(asnElement.getId());
+                                            ItemElement derivedFromItemElement = asnElement.getDerivedFromItemElement();
+                                            if (derivedFromItemElement != null) {
+                                                skipElementIds.add(derivedFromItemElement.getId());
+                                            }
+                                        }
+                                    }
+                                }
                                 createChildNode(itemElement);
                             }
                         }
@@ -262,6 +279,12 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
         ItemElement ie = this.getElement();
         Item item = ie.getContainedItem();
         if (item == null) {
+            // Check if element is blank inventory element
+            Item parentItem = ie.getParentItem();
+            if (parentItem instanceof ItemDomainInventory) {
+                this.setType("Inventory");
+            }
+            
             return;
         }
         ItemDomainMachineDesign mdItem = null;
@@ -294,12 +317,17 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
                         // parent is template -- default name is correct
                         defaultDomainAssignment += "Member";
                     } else {
-                        // parent is machine desing 
+                        // parent is machine design 
                         defaultDomainAssignment += "Placeholder";
                     }
-                } else if (itemDomainId == ItemDomainName.MACHINE_DESIGN_ID) {
+                } else if (itemDomainId == ItemDomainName.MACHINE_DESIGN_ID) {                    
                     // machine design sub item of a machine design 
                     defaultDomainAssignment += "Member";
+                    
+                    ItemElement representsCatalogElement = ((ItemDomainMachineDesign) item).getRepresentsCatalogElement();
+                    if (representsCatalogElement != null) {
+                        defaultDomainAssignment += "Assembly"; 
+                    }
                 } else if (itemDomainId == ItemDomainName.CATALOG_ID) {
                     // catalog sub item of a machine design 
                     if (isItemMachineDesignAndTemplate(parentItem)) {
@@ -368,8 +396,8 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
 
         if (nameFilter.isEmpty()) {
             clearFilterResults();
-        } else {                        
-            rawFilterResults = fetchMachineItemsByNameFilter(nameFilter); 
+        } else {
+            rawFilterResults = fetchMachineItemsByNameFilter(nameFilter);
 
             SessionUtility.addInfoMessage("Hang tight, Loading hierarchy results", "Found " + rawFilterResults.size() + " Results.", true);
         }
@@ -406,11 +434,11 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
         ItemDomainMachineDesign parentMachineDesign = item.getParentMachineDesign();
         return parentMachineDesign;
     }
-    
+
     protected ItemElement getParentItemElement(ItemDomainMachineDesign item) {
         return item.getParentMachineElement();
     }
-    
+
     protected <T extends ItemDomainMachineDesignBaseTreeNode> T createSearchResultChildNode(ItemDomainMachineDesignBaseTreeNode parentNode, ItemElement ie, boolean childrenLoaded) {
         return (T) parentNode.createChildNode(ie, childrenLoaded);
     }
@@ -438,13 +466,13 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
                 return null;
             }
         } else {
-            childElement = getParentItemElement(item); 
+            childElement = getParentItemElement(item);
         }
 
         List<ItemDomainMachineDesignBaseTreeNode> children = parentNode.getMachineChildren();
         for (ItemDomainMachineDesignBaseTreeNode node : children) {
             ItemElement element = node.getElement();
-            
+
             if (element.equals(childElement)) {
                 childNode = node;
                 if (childNode.isExpanded() == false) {
@@ -457,7 +485,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
 
         if (childNode == null) {
             displayedNodes[0]++;
-            childNode = createSearchResultChildNode(parentNode, childElement, !searchResultNode);             
+            childNode = createSearchResultChildNode(parentNode, childElement, !searchResultNode);
             if (searchResultNode == false) {
                 childNode.setExpanded(true);
             }
