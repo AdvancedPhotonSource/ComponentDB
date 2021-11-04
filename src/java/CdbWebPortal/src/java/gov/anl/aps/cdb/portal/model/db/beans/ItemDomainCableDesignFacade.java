@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -41,11 +40,6 @@ public class ItemDomainCableDesignFacade extends ItemFacadeBase<ItemDomainCableD
     public ItemDomainCableDesign edit(ItemDomainCableDesign entity) {
         
         ItemDomainCableDesign result = super.edit(entity);
-        
-        for (ItemConnector connector : entity.getDeletedConnectorList()) {
-            ItemConnectorFacade.getInstance().remove(connector);
-        }
-        entity.clearDeletedConnectorList();
         
         for (ItemElementRelationship ier : entity.getDeletedIerList()) {
             ItemElementRelationshipFacade.getInstance().remove(ier);

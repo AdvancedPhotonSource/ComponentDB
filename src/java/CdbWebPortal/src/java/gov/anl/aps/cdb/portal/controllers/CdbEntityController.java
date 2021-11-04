@@ -1071,15 +1071,19 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     }
 
     public void updateList(List<EntityType> entities) throws CdbException, RuntimeException {
+        updateList(entities, getDisplayEntityTypeName());
+    }
+    
+    public void updateList(List<EntityType> entities, String typeName) throws CdbException, RuntimeException {
         try {
             performUpdateOperations(entities);
-            SessionUtility.addInfoMessage("Success", "Updated " + entities.size() + " " + getDisplayEntityTypeName() + " instances.");
+            SessionUtility.addInfoMessage("Success", "Updated " + entities.size() + " " + typeName + " instances.");
         } catch (CdbException ex) {
-            SessionUtility.addErrorMessage("Error", "Could not update list of " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            SessionUtility.addErrorMessage("Error", "Could not update list of " + typeName + ": " + ex.getMessage());
             throw ex;
         } catch (RuntimeException ex) {
             Throwable t = ExceptionUtils.getRootCause(ex);
-            SessionUtility.addErrorMessage("Error", "Could not update list of " + getDisplayEntityTypeName() + ": " + t.getMessage());
+            SessionUtility.addErrorMessage("Error", "Could not update list of " + typeName + ": " + t.getMessage());
             throw ex;
         }
     }
@@ -1275,14 +1279,18 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     }
 
     public void destroyList(List<EntityType> entities, EntityType updateEntity) {
-        logger.debug("Destroying " + entities.size() + " " + getDisplayEntityTypeName() + " instances.");
+        destroyList(entities, updateEntity, getDisplayEntityTypeName());
+    }
+    
+    public void destroyList(List<EntityType> entities, EntityType updateEntity, String typeName) {
+        logger.debug("Destroying " + entities.size() + " " + typeName + " instances.");
         try {
             performListDestroyOperations(entities, updateEntity);
-            SessionUtility.addInfoMessage("Success", "Deleted " + entities.size() + " " + getDisplayEntityTypeName() + " instances.");
+            SessionUtility.addInfoMessage("Success", "Deleted " + entities.size() + " " + typeName + " instances.");
         } catch (CdbException ex) {
-            SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + "instances: " + ex.getMessage());
+            SessionUtility.addErrorMessage("Error", "Could not delete " + typeName + "instances: " + ex.getMessage());
         } catch (RuntimeException ex) {
-            SessionUtility.addErrorMessage("Error", "Could not delete list of " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            SessionUtility.addErrorMessage("Error", "Could not delete list of " + typeName + ": " + ex.getMessage());
         }
     }
 

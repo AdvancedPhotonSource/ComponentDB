@@ -64,6 +64,54 @@ from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomain
 
 # constants
 
+LABEL_CABLES_NAME = "BRCM kabel name (*NOT the final APS-U, CDB, or MBA name)"
+LABEL_CABLES_LAYING = "Laying"
+LABEL_CABLES_VOLTAGE = "Voltage"
+LABEL_CABLES_OWNER = "Owner"
+LABEL_CABLES_TYPE = "Type"
+LABEL_CABLES_SRC_LOCATION = "Location"
+LABEL_CABLES_SRC_ANSU = "A/N/S/U"
+LABEL_CABLES_SRC_ETPMC = "E/T/P/M/C"
+LABEL_CABLES_SRC_ADDRESS = "Address"
+LABEL_CABLES_SRC_DESCRIPTION = "Description"
+LABEL_CABLES_DEST_LOCATION = "Location"
+LABEL_CABLES_DEST_ANSU = "A/N/S/U"
+LABEL_CABLES_DEST_ETPMC = "E/T/P/M/C"
+LABEL_CABLES_DEST_ADDRESS = "Address"
+LABEL_CABLES_DEST_DESCRIPTION = "Description"
+LABEL_CABLES_LEGACY_ID = "Legacy cable ID"
+LABEL_CABLES_FROM_DEVICE = "FROM (device)"
+LABEL_CABLES_FROM_PORT = "FROM (port)"
+LABEL_CABLES_TO_DEVICE = "TO (device)"
+LABEL_CABLES_TO_PORT = "TO (port)"
+LABEL_CABLES_IMPORT_ID = "Import cable ID"
+LABEL_CABLES_FIRST_WAYPOINT = "First waypoint"
+LABEL_CABLES_FINAL_WAYPOINT = "Final waypoint"
+LABEL_CABLES_NOTES = "Notes"
+
+LABEL_CABLESPECS_DESCRIPTION = "cable type description"
+LABEL_CABLESPECS_MANUFACTURER = "manufacturer"
+LABEL_CABLESPECS_PART_NUM = "part number"
+LABEL_CABLESPECS_ALT_PART_NUM = "alt part number"
+LABEL_CABLESPECS_DIAMETER = "diameter"
+LABEL_CABLESPECS_WEIGHT = "weight"
+LABEL_CABLESPECS_CONDUCTORS = "conductors"
+LABEL_CABLESPECS_INSULATION = "insulation"
+LABEL_CABLESPECS_JACKET = "jacket color"
+LABEL_CABLESPECS_VOLTAGE = "voltage rating"
+LABEL_CABLESPECS_FIRE_LOAD = "fire load"
+LABEL_CABLESPECS_HEAT_LIMIT = "heat limit"
+LABEL_CABLESPECS_BEND_RADIUS = "bend radius"
+LABEL_CABLESPECS_RAD_TOLERANCE = "rad tolerance"
+LABEL_CABLESPECS_LINK = "link (URL)"
+LABEL_CABLESPECS_IMAGE = "image (URL)"
+LABEL_CABLESPECS_TOTAL_LENGTH = "total length"
+LABEL_CABLESPECS_REEL_LENGTH = "reel length"
+LABEL_CABLESPECS_REEL_QUANTITY = "reel quantity"
+LABEL_CABLESPECS_LEAD_TIME = "lead time"
+LABEL_CABLESPECS_ORDERED = "ordered"
+LABEL_CABLESPECS_RECEIVED = "received"
+
 CABLE_TYPE_NAME_KEY = "Name"
 CABLE_TYPE_ALT_NAME_KEY = "Alt Name"
 CABLE_TYPE_DESCRIPTION_KEY = "Description"
@@ -997,10 +1045,11 @@ class SourceHandler(InputHandler):
 
 class InputColumnModel:
 
-    def __init__(self, col_index, key, validator=None, required=False):
+    def __init__(self, col_index, key=None, label=None, validator=None, required=False):
         self.index = col_index
         self.key = key
         self.required = required
+        self.label = label
 
 
 class OutputColumnModel:
@@ -1098,7 +1147,29 @@ class SourceHelper(PreImportHelper):
 
     def generate_input_column_list(self):
         column_list = [
-            InputColumnModel(col_index=2, key=CABLE_TYPE_MANUFACTURER_KEY),
+            InputColumnModel(col_index=CABLE_TYPE_NAME_INDEX, required=True),
+            InputColumnModel(col_index=1, label=LABEL_CABLESPECS_DESCRIPTION),
+            InputColumnModel(col_index=CABLE_TYPE_MANUFACTURER_INDEX, key=CABLE_TYPE_MANUFACTURER_KEY, label=LABEL_CABLESPECS_MANUFACTURER),
+            InputColumnModel(col_index=3, label=LABEL_CABLESPECS_PART_NUM),
+            InputColumnModel(col_index=4, label=LABEL_CABLESPECS_ALT_PART_NUM),
+            InputColumnModel(col_index=5, label=LABEL_CABLESPECS_DIAMETER),
+            InputColumnModel(col_index=6, label=LABEL_CABLESPECS_WEIGHT),
+            InputColumnModel(col_index=7, label=LABEL_CABLESPECS_CONDUCTORS),
+            InputColumnModel(col_index=8, label=LABEL_CABLESPECS_INSULATION),
+            InputColumnModel(col_index=9, label=LABEL_CABLESPECS_JACKET),
+            InputColumnModel(col_index=10, label=LABEL_CABLESPECS_VOLTAGE),
+            InputColumnModel(col_index=11, label=LABEL_CABLESPECS_FIRE_LOAD),
+            InputColumnModel(col_index=12, label=LABEL_CABLESPECS_HEAT_LIMIT),
+            InputColumnModel(col_index=13, label=LABEL_CABLESPECS_BEND_RADIUS),
+            InputColumnModel(col_index=14, label=LABEL_CABLESPECS_RAD_TOLERANCE),
+            InputColumnModel(col_index=15, label=LABEL_CABLESPECS_LINK),
+            InputColumnModel(col_index=16, label=LABEL_CABLESPECS_IMAGE),
+            InputColumnModel(col_index=17, label=LABEL_CABLESPECS_TOTAL_LENGTH),
+            InputColumnModel(col_index=18, label=LABEL_CABLESPECS_REEL_LENGTH),
+            InputColumnModel(col_index=19, label=LABEL_CABLESPECS_REEL_QUANTITY),
+            InputColumnModel(col_index=20, label=LABEL_CABLESPECS_LEAD_TIME),
+            InputColumnModel(col_index=21, label=LABEL_CABLESPECS_ORDERED),
+            InputColumnModel(col_index=22, label=LABEL_CABLESPECS_RECEIVED),
         ]
         return column_list
 
@@ -1254,28 +1325,28 @@ class CableTypeHelper(PreImportHelper):
     def generate_input_column_list(self):
         column_list = [
             InputColumnModel(col_index=CABLE_TYPE_NAME_INDEX, key=CABLE_TYPE_NAME_KEY, required=True),
-            InputColumnModel(col_index=1, key=CABLE_TYPE_DESCRIPTION_KEY),
-            InputColumnModel(col_index=CABLE_TYPE_MANUFACTURER_INDEX, key=CABLE_TYPE_MANUFACTURER_KEY),
-            InputColumnModel(col_index=3, key=CABLE_TYPE_PART_NUMBER_KEY),
-            InputColumnModel(col_index=4, key=CABLE_TYPE_ALT_PART_NUMBER_KEY),
-            InputColumnModel(col_index=5, key=CABLE_TYPE_DIAMETER_KEY),
-            InputColumnModel(col_index=6, key=CABLE_TYPE_WEIGHT_KEY),
-            InputColumnModel(col_index=7, key=CABLE_TYPE_CONDUCTORS_KEY),
-            InputColumnModel(col_index=8, key=CABLE_TYPE_INSULATION_KEY),
-            InputColumnModel(col_index=9, key=CABLE_TYPE_JACKET_COLOR_KEY),
-            InputColumnModel(col_index=10, key=CABLE_TYPE_VOLTAGE_RATING_KEY),
-            InputColumnModel(col_index=11, key=CABLE_TYPE_FIRE_LOAD_KEY),
-            InputColumnModel(col_index=12, key=CABLE_TYPE_HEAT_LIMIT_KEY),
-            InputColumnModel(col_index=13, key=CABLE_TYPE_BEND_RADIUS_KEY),
-            InputColumnModel(col_index=14, key=CABLE_TYPE_RAD_TOLERANCE_KEY),
-            InputColumnModel(col_index=15, key=CABLE_TYPE_LINK_URL_KEY),
-            InputColumnModel(col_index=16, key=CABLE_TYPE_IMAGE_URL_KEY),
-            InputColumnModel(col_index=17, key=CABLE_TYPE_TOTAL_LENGTH_KEY),
-            InputColumnModel(col_index=18, key=CABLE_TYPE_REEL_LENGTH_KEY),
-            InputColumnModel(col_index=19, key=CABLE_TYPE_REEL_QTY_KEY),
-            InputColumnModel(col_index=20, key=CABLE_TYPE_LEAD_TIME_KEY),
-            InputColumnModel(col_index=21, key=CABLE_TYPE_ORDERED_KEY),
-            InputColumnModel(col_index=22, key=CABLE_TYPE_RECEIVED_KEY),
+            InputColumnModel(col_index=1, key=CABLE_TYPE_DESCRIPTION_KEY, label=LABEL_CABLESPECS_DESCRIPTION),
+            InputColumnModel(col_index=CABLE_TYPE_MANUFACTURER_INDEX, key=CABLE_TYPE_MANUFACTURER_KEY, label=LABEL_CABLESPECS_MANUFACTURER),
+            InputColumnModel(col_index=3, key=CABLE_TYPE_PART_NUMBER_KEY, label=LABEL_CABLESPECS_PART_NUM),
+            InputColumnModel(col_index=4, key=CABLE_TYPE_ALT_PART_NUMBER_KEY, label=LABEL_CABLESPECS_ALT_PART_NUM),
+            InputColumnModel(col_index=5, key=CABLE_TYPE_DIAMETER_KEY, label=LABEL_CABLESPECS_DIAMETER),
+            InputColumnModel(col_index=6, key=CABLE_TYPE_WEIGHT_KEY, label=LABEL_CABLESPECS_WEIGHT),
+            InputColumnModel(col_index=7, key=CABLE_TYPE_CONDUCTORS_KEY, label=LABEL_CABLESPECS_CONDUCTORS),
+            InputColumnModel(col_index=8, key=CABLE_TYPE_INSULATION_KEY, label=LABEL_CABLESPECS_INSULATION),
+            InputColumnModel(col_index=9, key=CABLE_TYPE_JACKET_COLOR_KEY, label=LABEL_CABLESPECS_JACKET),
+            InputColumnModel(col_index=10, key=CABLE_TYPE_VOLTAGE_RATING_KEY, label=LABEL_CABLESPECS_VOLTAGE),
+            InputColumnModel(col_index=11, key=CABLE_TYPE_FIRE_LOAD_KEY, label=LABEL_CABLESPECS_FIRE_LOAD),
+            InputColumnModel(col_index=12, key=CABLE_TYPE_HEAT_LIMIT_KEY, label=LABEL_CABLESPECS_HEAT_LIMIT),
+            InputColumnModel(col_index=13, key=CABLE_TYPE_BEND_RADIUS_KEY, label=LABEL_CABLESPECS_BEND_RADIUS),
+            InputColumnModel(col_index=14, key=CABLE_TYPE_RAD_TOLERANCE_KEY, label=LABEL_CABLESPECS_RAD_TOLERANCE),
+            InputColumnModel(col_index=15, key=CABLE_TYPE_LINK_URL_KEY, label=LABEL_CABLESPECS_LINK),
+            InputColumnModel(col_index=16, key=CABLE_TYPE_IMAGE_URL_KEY, label=LABEL_CABLESPECS_IMAGE),
+            InputColumnModel(col_index=17, key=CABLE_TYPE_TOTAL_LENGTH_KEY, label=LABEL_CABLESPECS_TOTAL_LENGTH),
+            InputColumnModel(col_index=18, key=CABLE_TYPE_REEL_LENGTH_KEY, label=LABEL_CABLESPECS_REEL_LENGTH),
+            InputColumnModel(col_index=19, key=CABLE_TYPE_REEL_QTY_KEY, label=LABEL_CABLESPECS_REEL_QUANTITY),
+            InputColumnModel(col_index=20, key=CABLE_TYPE_LEAD_TIME_KEY, label=LABEL_CABLESPECS_LEAD_TIME),
+            InputColumnModel(col_index=21, key=CABLE_TYPE_ORDERED_KEY, label=LABEL_CABLESPECS_ORDERED),
+            InputColumnModel(col_index=22, key=CABLE_TYPE_RECEIVED_KEY, label=LABEL_CABLESPECS_RECEIVED),
         ]
         return column_list
 
@@ -1532,11 +1603,37 @@ class CableInventoryHelper(PreImportHelper):
 
     def generate_input_column_list(self):
         column_list = [
-            InputColumnModel(col_index=0, key=CABLE_DESIGN_NAME_KEY, required=True),
-            InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, required=True),
-            InputColumnModel(col_index=4, key=CABLE_DESIGN_TYPE_KEY, required=True),
-            InputColumnModel(col_index=15, key=CABLE_DESIGN_LEGACY_ID_KEY),
-            InputColumnModel(col_index=20, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
+            InputColumnModel(col_index=0, key=CABLE_DESIGN_NAME_KEY, label=LABEL_CABLES_NAME, required=True),
+            InputColumnModel(col_index=1, label=LABEL_CABLES_LAYING),
+            InputColumnModel(col_index=2, label=LABEL_CABLES_VOLTAGE),
+            InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, label=LABEL_CABLES_OWNER, required=True),
+            InputColumnModel(col_index=CABLE_DESIGN_TYPE_INDEX, key=CABLE_DESIGN_TYPE_KEY, label=LABEL_CABLES_TYPE, required=True),
+            InputColumnModel(col_index=5, label=LABEL_CABLES_SRC_LOCATION),
+            InputColumnModel(col_index=6, label=LABEL_CABLES_SRC_ANSU),
+            InputColumnModel(col_index=CABLE_DESIGN_SRC_ETPM_INDEX, label=LABEL_CABLES_SRC_ETPMC),
+            InputColumnModel(col_index=8, label=LABEL_CABLES_SRC_ADDRESS),
+            InputColumnModel(col_index=9, label=LABEL_CABLES_SRC_DESCRIPTION),
+            InputColumnModel(col_index=10, label=LABEL_CABLES_DEST_LOCATION),
+            InputColumnModel(col_index=11, label=LABEL_CABLES_DEST_ANSU),
+            InputColumnModel(col_index=CABLE_DESIGN_DEST_ETPM_INDEX, label=LABEL_CABLES_DEST_ETPMC),
+            InputColumnModel(col_index=13, label=LABEL_CABLES_DEST_ADDRESS),
+            InputColumnModel(col_index=14, label=LABEL_CABLES_DEST_DESCRIPTION),
+            InputColumnModel(col_index=CABLE_DESIGN_LEGACY_ID_INDEX, key=CABLE_DESIGN_LEGACY_ID_KEY, label=LABEL_CABLES_LEGACY_ID),
+            InputColumnModel(col_index=CABLE_DESIGN_FROM_DEVICE_NAME_INDEX, label=LABEL_CABLES_FROM_DEVICE),
+            InputColumnModel(col_index=17, label=LABEL_CABLES_FROM_PORT),
+            InputColumnModel(col_index=CABLE_DESIGN_TO_DEVICE_NAME_INDEX, label=LABEL_CABLES_TO_DEVICE),
+            InputColumnModel(col_index=19, label=LABEL_CABLES_TO_PORT),
+            InputColumnModel(col_index=CABLE_DESIGN_IMPORT_ID_INDEX, key=CABLE_DESIGN_IMPORT_ID_KEY, label=LABEL_CABLES_IMPORT_ID, required=True),
+            InputColumnModel(col_index=21, label=LABEL_CABLES_FIRST_WAYPOINT),
+            InputColumnModel(col_index=22, label=LABEL_CABLES_FINAL_WAYPOINT),
+            InputColumnModel(col_index=23, label=LABEL_CABLES_NOTES),
+
+
+            # InputColumnModel(col_index=0, key=CABLE_DESIGN_NAME_KEY, required=True),
+            # InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, required=True),
+            # InputColumnModel(col_index=4, key=CABLE_DESIGN_TYPE_KEY, required=True),
+            # InputColumnModel(col_index=15, key=CABLE_DESIGN_LEGACY_ID_KEY),
+            # InputColumnModel(col_index=20, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
         ]
         return column_list
 
@@ -1672,30 +1769,30 @@ class CableDesignHelper(PreImportHelper):
 
     def generate_input_column_list(self):
         column_list = [
-            InputColumnModel(col_index=0, key=CABLE_DESIGN_NAME_KEY, required=True),
-            InputColumnModel(col_index=1, key=CABLE_DESIGN_LAYING_KEY, required=True),
-            InputColumnModel(col_index=2, key=CABLE_DESIGN_VOLTAGE_KEY, required=True),
-            InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, required=True),
-            InputColumnModel(col_index=CABLE_DESIGN_TYPE_INDEX, key=CABLE_DESIGN_TYPE_KEY, required=True),
-            InputColumnModel(col_index=5, key=CABLE_DESIGN_SRC_LOCATION_KEY, required=True),
-            InputColumnModel(col_index=6, key=CABLE_DESIGN_SRC_ANS_KEY, required=True),
-            InputColumnModel(col_index=CABLE_DESIGN_SRC_ETPM_INDEX, key=CABLE_DESIGN_SRC_ETPM_KEY, required=True),
-            InputColumnModel(col_index=8, key=CABLE_DESIGN_SRC_ADDRESS_KEY, required=True),
-            InputColumnModel(col_index=9, key=CABLE_DESIGN_SRC_DESCRIPTION_KEY, required=True),
-            InputColumnModel(col_index=10, key=CABLE_DESIGN_DEST_LOCATION_KEY, required=True),
-            InputColumnModel(col_index=11, key=CABLE_DESIGN_DEST_ANS_KEY, required=True),
-            InputColumnModel(col_index=CABLE_DESIGN_DEST_ETPM_INDEX, key=CABLE_DESIGN_DEST_ETPM_KEY, required=True),
-            InputColumnModel(col_index=13, key=CABLE_DESIGN_DEST_ADDRESS_KEY, required=True),
-            InputColumnModel(col_index=14, key=CABLE_DESIGN_DEST_DESCRIPTION_KEY, required=True),
-            InputColumnModel(col_index=CABLE_DESIGN_LEGACY_ID_INDEX, key=CABLE_DESIGN_LEGACY_ID_KEY),
-            InputColumnModel(col_index=CABLE_DESIGN_FROM_DEVICE_NAME_INDEX, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, required=True),
-            InputColumnModel(col_index=17, key=CABLE_DESIGN_FROM_PORT_NAME_KEY, required=False),
-            InputColumnModel(col_index=CABLE_DESIGN_TO_DEVICE_NAME_INDEX, key=CABLE_DESIGN_TO_DEVICE_NAME_KEY, required=True),
-            InputColumnModel(col_index=19, key=CABLE_DESIGN_TO_PORT_NAME_KEY, required=False),
-            InputColumnModel(col_index=CABLE_DESIGN_IMPORT_ID_INDEX, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
-            InputColumnModel(col_index=21, key=CABLE_DESIGN_VIA_ROUTE_KEY, required=False),
-            InputColumnModel(col_index=22, key=CABLE_DESIGN_WAYPOINT_ROUTE_KEY, required=False),
-            InputColumnModel(col_index=23, key=CABLE_DESIGN_NOTES_KEY, required=False),
+            InputColumnModel(col_index=0, key=CABLE_DESIGN_NAME_KEY, label=LABEL_CABLES_NAME, required=True),
+            InputColumnModel(col_index=1, key=CABLE_DESIGN_LAYING_KEY, label=LABEL_CABLES_LAYING, required=True),
+            InputColumnModel(col_index=2, key=CABLE_DESIGN_VOLTAGE_KEY, label=LABEL_CABLES_VOLTAGE, required=True),
+            InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, label=LABEL_CABLES_OWNER, required=True),
+            InputColumnModel(col_index=CABLE_DESIGN_TYPE_INDEX, key=CABLE_DESIGN_TYPE_KEY, label=LABEL_CABLES_TYPE, required=True),
+            InputColumnModel(col_index=5, key=CABLE_DESIGN_SRC_LOCATION_KEY, label=LABEL_CABLES_SRC_LOCATION, required=True),
+            InputColumnModel(col_index=6, key=CABLE_DESIGN_SRC_ANS_KEY, label=LABEL_CABLES_SRC_ANSU, required=True),
+            InputColumnModel(col_index=CABLE_DESIGN_SRC_ETPM_INDEX, key=CABLE_DESIGN_SRC_ETPM_KEY, label=LABEL_CABLES_SRC_ETPMC, required=True),
+            InputColumnModel(col_index=8, key=CABLE_DESIGN_SRC_ADDRESS_KEY, label=LABEL_CABLES_SRC_ADDRESS, required=True),
+            InputColumnModel(col_index=9, key=CABLE_DESIGN_SRC_DESCRIPTION_KEY, label=LABEL_CABLES_SRC_DESCRIPTION, required=True),
+            InputColumnModel(col_index=10, key=CABLE_DESIGN_DEST_LOCATION_KEY, label=LABEL_CABLES_DEST_LOCATION, required=True),
+            InputColumnModel(col_index=11, key=CABLE_DESIGN_DEST_ANS_KEY, label=LABEL_CABLES_DEST_ANSU, required=True),
+            InputColumnModel(col_index=CABLE_DESIGN_DEST_ETPM_INDEX, key=CABLE_DESIGN_DEST_ETPM_KEY, label=LABEL_CABLES_DEST_ETPMC, required=True),
+            InputColumnModel(col_index=13, key=CABLE_DESIGN_DEST_ADDRESS_KEY, label=LABEL_CABLES_DEST_ADDRESS, required=True),
+            InputColumnModel(col_index=14, key=CABLE_DESIGN_DEST_DESCRIPTION_KEY, label=LABEL_CABLES_DEST_DESCRIPTION, required=True),
+            InputColumnModel(col_index=CABLE_DESIGN_LEGACY_ID_INDEX, key=CABLE_DESIGN_LEGACY_ID_KEY, label=LABEL_CABLES_LEGACY_ID),
+            InputColumnModel(col_index=CABLE_DESIGN_FROM_DEVICE_NAME_INDEX, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, label=LABEL_CABLES_FROM_DEVICE, required=True),
+            InputColumnModel(col_index=17, key=CABLE_DESIGN_FROM_PORT_NAME_KEY, label=LABEL_CABLES_FROM_PORT, required=False),
+            InputColumnModel(col_index=CABLE_DESIGN_TO_DEVICE_NAME_INDEX, key=CABLE_DESIGN_TO_DEVICE_NAME_KEY, label=LABEL_CABLES_TO_DEVICE, required=True),
+            InputColumnModel(col_index=19, key=CABLE_DESIGN_TO_PORT_NAME_KEY, label=LABEL_CABLES_TO_PORT, required=False),
+            InputColumnModel(col_index=CABLE_DESIGN_IMPORT_ID_INDEX, key=CABLE_DESIGN_IMPORT_ID_KEY, label=LABEL_CABLES_IMPORT_ID, required=True),
+            InputColumnModel(col_index=21, key=CABLE_DESIGN_VIA_ROUTE_KEY, label=LABEL_CABLES_FIRST_WAYPOINT, required=False),
+            InputColumnModel(col_index=22, key=CABLE_DESIGN_WAYPOINT_ROUTE_KEY, label=LABEL_CABLES_FINAL_WAYPOINT, required=False),
+            InputColumnModel(col_index=23, key=CABLE_DESIGN_NOTES_KEY, label=LABEL_CABLES_NOTES, required=False),
         ]
         return column_list
 
@@ -2257,8 +2354,8 @@ def main():
     # validate input spreadsheet dimensions
     if input_sheet.max_row < last_data_row_num:
         fatal_error("fewer rows in inputFile: %s than last data row: %d, exiting" % (option_input_file, last_data_row_num))
-    if input_sheet.max_column != helper.num_input_cols():
-        fatal_error("inputFile %s doesn't contain expected number of columns: %d, exiting" % (option_input_file, helper.num_input_cols()))
+    if input_sheet.max_column < helper.num_input_cols():
+        fatal_error("inputFile %s actual columns: %d less than expected columns: %d, exiting" % (option_input_file, input_sheet.max_column, helper.num_input_cols()))
 
     # initialize helper
     print()
@@ -2281,57 +2378,105 @@ def main():
     validation_map = {}
     num_input_rows = 0
     num_empty_rows = 0
-    for row_ind in range(first_data_index, last_data_index + 1):
+    rows = input_sheet.rows
+    row_ind = 0
 
-        current_row_num = row_ind
-        num_input_rows = num_input_rows + 1
+    # validate header and first data indexes
+    if header_index < row_ind:
+        fatal_error("invalid header_index: %d" % header_index)
+    if first_data_index <= header_index:
+        fatal_error("invalid first data row: %d less than expected header row: %d" % (first_data_index, header_index))
 
-        logging.debug("processing row %d from input spreadsheet" % current_row_num)
+    for row in rows:
 
-        input_dict = {}
+        row_ind = row_ind + 1
 
-        for col_ind in range(helper.num_input_cols()):
-            if col_ind in helper.input_columns:
-                # read cell value from spreadsheet
-                val = input_sheet.cell(row_ind, col_ind+1).value
-                if val is None:
-                    val = ""
-                logging.debug("col: %d value: %s" % (col_ind, str(val)))
-                helper.handle_input_cell_value(input_dict=input_dict, index=col_ind, value=val, row_num=current_row_num)
-
-        # ignore row if blank
-        if helper.input_row_is_empty(input_dict=input_dict, row_num=current_row_num):
-            num_empty_rows = num_empty_rows + 1
+        # skip to header row
+        if row_ind < header_index:
             continue
 
-        row_is_valid = True
-        row_valid_messages = []
+        # validate header row
+        elif row_ind == header_index:
+            num_header_cols = 0
+            header_cell_ind = 0
+            for cell in row:
+                header_cell_value = cell.value
+                if header_cell_value is not None:
+                    header_input_column = helper.input_columns[header_cell_ind]
+                    if header_input_column is None:
+                        fatal_error("unexpected actual header column: %s" % header_cell_value)
+                    expected_header_label = header_input_column.label
+                    if expected_header_label is not None:
+                        if header_cell_value != expected_header_label:
+                            fatal_error("actual header column: %s mismatch with expected: %s" % (header_cell_value, expected_header_label))
+                    num_header_cols = num_header_cols + 1
+                    header_cell_ind = header_cell_ind + 1
+                    continue
+                else:
+                    break
+            if num_header_cols != helper.num_input_cols():
+                fatal_error("actual number of header columns: %d mismatch with expected number: %d" % (num_header_cols, helper.num_input_cols()))
 
-        # validate row
-        (is_valid, valid_messages) = helper.input_row_is_valid(input_dict=input_dict, row_num=row_ind)
-        if not is_valid:
-            row_is_valid = False
-            row_valid_messages.extend(valid_messages)
+        # skip to first data row:
+        elif row_ind < first_data_index:
+            continue
 
-        # invoke handlers
-        (handler_is_valid, handler_messages) = helper.invoke_row_handlers(input_dict=input_dict, row_num=row_ind)
-        if not handler_is_valid:
-            row_is_valid = False
-            row_valid_messages.extend(handler_messages)
+        # skip trailing rows
+        elif row_ind > last_data_index:
+            continue
 
-        if row_is_valid:
-            output_obj = helper.get_output_object(input_dict=input_dict)
-            if output_obj:
-                output_objects.append(output_obj)
+        # process data rows
         else:
-            input_valid = False
-            msg = "validation ERRORS found for row %d" % current_row_num
-            logging.error(msg)
-            validation_map[current_row_num] = row_valid_messages
 
-        # print progress message
-        if num_input_rows % helper.progress_increment() == 0:
-            print("processed %d spreadsheet rows" % num_input_rows, flush=True)
+            current_row_num = row_ind
+            num_input_rows = num_input_rows + 1
+
+            logging.debug("processing row %d from input spreadsheet" % current_row_num)
+
+            input_dict = {}
+
+            for col_ind in range(helper.num_input_cols()):
+                if col_ind in helper.input_columns:
+                    # read cell value from spreadsheet
+                    val = row[col_ind].value
+                    if val is None:
+                        val = ""
+                    logging.debug("col: %d value: %s" % (col_ind, str(val)))
+                    helper.handle_input_cell_value(input_dict=input_dict, index=col_ind, value=val, row_num=current_row_num)
+
+            # ignore row if blank
+            if helper.input_row_is_empty(input_dict=input_dict, row_num=current_row_num):
+                num_empty_rows = num_empty_rows + 1
+                continue
+
+            row_is_valid = True
+            row_valid_messages = []
+
+            # validate row
+            (is_valid, valid_messages) = helper.input_row_is_valid(input_dict=input_dict, row_num=row_ind)
+            if not is_valid:
+                row_is_valid = False
+                row_valid_messages.extend(valid_messages)
+
+            # invoke handlers
+            (handler_is_valid, handler_messages) = helper.invoke_row_handlers(input_dict=input_dict, row_num=row_ind)
+            if not handler_is_valid:
+                row_is_valid = False
+                row_valid_messages.extend(handler_messages)
+
+            if row_is_valid:
+                output_obj = helper.get_output_object(input_dict=input_dict)
+                if output_obj:
+                    output_objects.append(output_obj)
+            else:
+                input_valid = False
+                msg = "validation ERRORS found for row %d" % current_row_num
+                logging.error(msg)
+                validation_map[current_row_num] = row_valid_messages
+
+            # print progress message
+            if num_input_rows % helper.progress_increment() == 0:
+                print("processed %d spreadsheet rows" % num_input_rows, flush=True)
 
     # print final progress message
     print("processed %d spreadsheet rows" % num_input_rows)

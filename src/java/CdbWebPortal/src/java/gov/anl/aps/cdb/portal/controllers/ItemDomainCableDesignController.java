@@ -643,9 +643,11 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         public String save(String remoteCommandSuccess) {
             
             // make sure we don't change cable end for primary connection
-            String cableEnd = null;
-            if (!getCableRelationship().isPrimaryCableConnection()) {
-                cableEnd = cableEndDesignation;
+            if (getCableRelationship().isPrimaryCableConnection()) {
+                if (!getCableRelationship().getCableEndDesignation().equals(cableEndDesignation)) {
+                    SessionUtility.addErrorMessage("Error", "Cable End cannot be updated for primarry connection.");
+                    return null;
+                }
             }
 
             getCurrent().updateCableRelationship(
@@ -653,7 +655,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     selectedMdItem,
                     selectedMdConnector,
                     getSelectedCableConnector(),
-                    cableEnd);
+                    cableEndDesignation);
             
             updateItem(remoteCommandSuccess);
 
@@ -1295,7 +1297,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                 "Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
 
         formatInfo.add(new ImportExportFormatInfo(
-                "Add Connections to Existing Cables Format", 
+                "Cable Design Connections Format", 
                 ImportHelperCableDesignConnections.class));
         
         String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";
@@ -1314,6 +1316,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         
         formatInfo.add(new ImportExportFormatInfo("Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
+        formatInfo.add(new ImportExportFormatInfo("Cable Design Connections Format", ImportHelperCableDesignConnections.class));
         formatInfo.add(new ImportExportFormatInfo("Cable Design Pull List Extract Format", ImportHelperCableDesignPullList.class));
         
         String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";
