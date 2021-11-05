@@ -67,7 +67,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     private boolean showOptionalPartsInBom = false;
     private Boolean currentItemBOMTreeHasOptionalItems = null;
     private Integer BOM_CHILD_MIN_COUNT_FOR_SCROLLPANEL = 30;
-    private boolean isDisplayBomTreeInScrollpanel = false;
+    private boolean isDisplayBomTreeInScrollpanel = false;                                      
 
     private ItemDomainInventoryLazyDataModel itemDomainInventoryLazyDataModel = null;
 
@@ -110,7 +110,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     @Override
     public ItemEnforcedPropertiesController getItemEnforcedPropertiesController() {
         return ItemEnforcedPropertiesDomainInventoryController.getInstance();
-    }
+    } 
 
     public boolean isCollapsedRelatedMAARCItemsForCurrent() {
         return getRelatedMAARCRelationshipsForCurrent().size() < 1;
@@ -559,6 +559,20 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
                 return (ItemDomainCatalog) derivedFromItemElement.getContainedItem();
             }
         }
+        return null;
+    }
+    
+    public List<Item> getSelectionListForSelectedItemElementForUpdate() {
+        ItemDomainInventory current = getCurrent();
+        ItemElement selectedItemElementForUpdate = current.getSelectedItemElementForUpdate();
+        if (selectedItemElementForUpdate != null) {
+            ItemElement derivedFromItemElement = selectedItemElementForUpdate.getDerivedFromItemElement();
+            Item containedItem = derivedFromItemElement.getContainedItem();
+            if (containedItem != null) {
+                List<Item> derivedFromItemList = containedItem.getDerivedFromItemList();
+                return derivedFromItemList; 
+            }
+        }        
         return null;
     }
 

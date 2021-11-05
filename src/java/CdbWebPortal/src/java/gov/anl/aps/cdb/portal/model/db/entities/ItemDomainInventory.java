@@ -40,6 +40,7 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
     
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;   
+    private transient ItemElement selectedItemElementForUpdate = null;
     // </editor-fold>
     
     @Override
@@ -153,6 +154,15 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
 
     public void setRelatedMAARCRelationshipsForCurrent(List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent) {
         this.relatedMAARCRelationshipsForCurrent = relatedMAARCRelationshipsForCurrent;
+    }
+    
+    @JsonIgnore
+    public ItemElement getSelectedItemElementForUpdate() {
+        return selectedItemElementForUpdate;
+    }
+
+    public void setSelectedItemElementForUpdate(ItemElement selectedItemElementForUpdate) {
+        this.selectedItemElementForUpdate = selectedItemElementForUpdate;
     }
     // </editor-fold>
     
