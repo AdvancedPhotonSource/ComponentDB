@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="updateAssignedInventoryItemDialog"
+              widgetVar="updateAssignedInventoryItemDialogWidget"
+              header="Update Assigned Inventory Item"
+              modal="true"
+              closable="false"
+              styleClass="viewTransparentBackgroundDialog"
+              resizable="false">
+
+        <ui:param name="selectElementToUpdate"
+                  value="#{currentObject.selectedItemElementForUpdate}"/> 
+
+        <ui:fragment id="updateAssignedInventoryItemDialogFragment"
+                     rendered="#{selectElementToUpdate != null}">                
+            <ui:include src="../../item/private/itemSelectDataTable.xhtml">
+                <ui:param name="overrideSelectionDataModel" value="#{true}" /> 
+                <ui:param name="selectDataModel" value="#{itemDomainInventoryController.selectionListForSelectedItemElementForUpdate}" />
+                <ui:param name="overrideSelectionValue" value="#{true}" />
+                <ui:param name="selectionValue" value="#{selectElementToUpdate.containedItem}" />
+                <ui:param name="selectionController" value="#{itemDomainInventoryController}" />
+                <ui:param name="updateTarget" value="updateAssignedInventoryItemDialogFragment" />
+            </ui:include>
+
+        </ui:fragment>
+
+        <f:facet name="footer">
+            <p:commandButton value="Save"
+                             icon="fa fa-save"
+                             onclick="PF('loadingDialog').show();
+                                     PF('updateAssignedInventoryItemDialogWidget').hide();"
+                             oncomplete="PF('loadingDialog').hide()"
+                             action="#{itemDomainInventoryController.updateWithoutRedirect()}"                             
+                             update="componentInstanceViewElementsPanel"/>
+            <p:commandButton value="Cancel"
+                             icon="fa fa-close"
+                             onclick="PF('updateAssignedInventoryItemDialogWidget').hide();"
+                             action="#{itemDomainInventoryController.reloadCurrent()}"/>
+        </f:facet>
+    </p:dialog>
+</ui:composition>
