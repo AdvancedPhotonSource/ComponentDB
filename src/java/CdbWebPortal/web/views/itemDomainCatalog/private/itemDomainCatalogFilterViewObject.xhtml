@@ -12,7 +12,7 @@ See LICENSE file.
 
     <ui:define name="additonalItemColumns">
         <p:column headerText="Inventory">
-            
+
             <ui:param name="inventoryList"
                       value="#{itemListObject.derivedFromItemList}" />
             <ui:param name="largeList" 
@@ -22,20 +22,24 @@ See LICENSE file.
                            rendered="#{largeList}"> 
                 <ui:repeat value="#{inventoryList}"
                            var="inventoryItem">
-                    <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
-                        <ui:param name="itemObject" value="#{inventoryItem}" />
-                        <ui:param name="displayString" value="#{inventoryItem.name}"/>
-                    </ui:include>                    
+                    <p:outputPanel>
+                        <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                            <ui:param name="itemObject" value="#{inventoryItem}" />
+                            <ui:param name="displayString" value="#{inventoryItem.name}"/>
+                        </ui:include>  
+                    </p:outputPanel>
                 </ui:repeat>
             </p:scrollPanel>
 
             <p:outputPanel rendered="#{!largeList}">
                 <ui:repeat value="#{inventoryList}"
                            var="inventoryItem">
-                    <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
-                        <ui:param name="itemObject" value="#{inventoryItem}" />
-                        <ui:param name="displayString" value="#{inventoryItem.name}"/>
-                    </ui:include>                    
+                    <p:outputPanel>
+                        <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                            <ui:param name="itemObject" value="#{inventoryItem}" />
+                            <ui:param name="displayString" value="#{inventoryItem.name}"/>
+                        </ui:include>
+                    </p:outputPanel>
                 </ui:repeat>
             </p:outputPanel>
         </p:column>

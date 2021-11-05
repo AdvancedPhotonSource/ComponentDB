@@ -92,6 +92,10 @@ public class FacesUtility {
 
         return false;
     }
+    
+    public boolean displayFilters(List<Object> dataList, int countRows) {
+        return displayFiltersForList(dataList, countRows); 
+    }
 
     public boolean displayFilters(DataModel dataModel, int countRows) {
         if (dataModel != null) {

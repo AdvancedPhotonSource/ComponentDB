@@ -21,17 +21,18 @@ See LICENSE file.
               filterable="#{filterable}"
               sortable="#{sortable}"
               rendered="#{rendered}">
-        <p:outputPanel rendered="#{itemListObject != null}" >
+        <ui:insert name="identifierObjectPrefix" />
+        <ui:fragment rendered="#{itemListObject != null}" >
             <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
                 <ui:param name="displayString"
                           value="#{partNameString}" />
                 <ui:param name="itemObject"
                           value="#{itemListObject}"/>
             </ui:include>
-        </p:outputPanel>
-        <p:outputPanel rendered="#{itemListObject == null}" >
+        </ui:fragment>
+        <ui:fragment rendered="#{itemListObject == null}" >
             <h:outputText value="#{partNameString}" />                               
-        </p:outputPanel>
+        </ui:fragment>
     </p:column>
 
 </ui:composition>
