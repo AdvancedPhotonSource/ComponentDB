@@ -20,7 +20,7 @@ See LICENSE file.
         <ui:param name="selectElementToUpdate"
                   value="#{currentObject.selectedItemElementForUpdate}"/> 
 
-        <ui:fragment id="updateAssignedInventoryItemDialogFragment"
+        <p:outputPanel id="updateAssignedInventoryItemDialogOutputPanel"
                      rendered="#{selectElementToUpdate != null}">                
             <ui:include src="../../item/private/itemSelectDataTable.xhtml">
                 <ui:param name="overrideSelectionDataModel" value="#{true}" /> 
@@ -28,10 +28,10 @@ See LICENSE file.
                 <ui:param name="overrideSelectionValue" value="#{true}" />
                 <ui:param name="selectionValue" value="#{selectElementToUpdate.containedItem}" />
                 <ui:param name="selectionController" value="#{itemDomainInventoryController}" />
-                <ui:param name="updateTarget" value="updateAssignedInventoryItemDialogFragment" />
+                <ui:param name="updateTarget" value="updateAssignedInventoryItemDialogOutputPanel" />
             </ui:include>
 
-        </ui:fragment>
+        </p:outputPanel>
 
         <f:facet name="footer">
             <p:commandButton value="Save"
