@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesContr
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogBaseControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
@@ -155,7 +156,16 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
     @Override
     public boolean getEntityDisplayItemConnectors() {
         return true; 
-    }    
+    }
+    
+    /**
+     * Allows subclasses to determine whether a new ItemConnector instance is valid. Default
+     * implementation returns true.
+     * @return 
+     */
+    protected ValidInfo validateNewItemConnector(ItemConnector itemConnector) {
+        return new ValidInfo(true, "");
+    }
 
     /**
      * Handles save button for itemConnectorListCreateDialog.
@@ -167,6 +177,8 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         ItemConnector newConnector = controller.getCurrent();
         Item item = newConnector.getItem();
         List<ItemConnector> connectorList = item.getItemConnectorList();   
+        
+        // check to see if new item is duplicate
         boolean isDuplicate = false;
         for (ItemConnector itemConnector : connectorList) {
             if ((itemConnector.getId() != null) 
@@ -174,14 +186,22 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
                 isDuplicate = true;
                 break;
             }
-        }
-        
+        }        
         if (isDuplicate) {
             this.revertItemConnectorListForCurrent();
             SessionUtility.addErrorMessage("Error", "Unable to create connector. Please use unique name.");
-        } else {
-            controller.createWithoutRedirect();
+            return;
         }
+        
+        // allow subclass to validate new item
+        ValidInfo validateInfo = validateNewItemConnector(newConnector);
+        if (!validateInfo.isValid()) {
+            this.revertItemConnectorListForCurrent();
+            SessionUtility.addErrorMessage("Error", "Unable to create connector. " + validateInfo.getValidString());
+            return;
+        }
+        
+        controller.createWithoutRedirect();
     }
 
 }
