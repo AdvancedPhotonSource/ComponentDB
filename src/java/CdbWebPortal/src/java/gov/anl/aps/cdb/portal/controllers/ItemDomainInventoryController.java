@@ -21,6 +21,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
@@ -206,6 +207,23 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         resetBOMSupportVariables();
         setCurrent(inventoryItem);
         return super.prepareEdit(inventoryItem);
+    } 
+
+    @Override
+    protected void completeEntityUpdate(ItemDomainInventory entity) {
+        super.completeEntityUpdate(entity); 
+        
+        List<ItemElement> itemElementMemberList = entity.getItemElementMemberList2();
+        
+        for (ItemElement element : itemElementMemberList) {
+            Item parentItem = element.getParentItem();
+            if (parentItem instanceof ItemDomainMachineDesign) {
+                // Make sure the machine hierarchy is updated to reflect the changes made to inventory item. 
+                ItemDomainMachineDesignController instance = ItemDomainMachineDesignController.getInstance();
+                instance.resetListDataModel();
+                break;
+            }
+        }
     }
 
     public Boolean displayBOMEditButton() {
