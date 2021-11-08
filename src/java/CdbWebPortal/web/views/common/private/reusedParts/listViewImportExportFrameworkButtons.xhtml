@@ -20,7 +20,8 @@ See LICENSE file.
                        ? exportEntityActionFunctionName 
                        : 'prepareExport'}" /> 
 
-        <p:commandButton value="Import"
+        <p:commandButton id="#{entityTypeName}#{viewName}ImportButton"
+                         value="Import"
                          icon="fa fa-plus"
                          action="#{entityController[importEntityActionFunctionName]}"
                          rendered="#{loginController.loggedInForImport
