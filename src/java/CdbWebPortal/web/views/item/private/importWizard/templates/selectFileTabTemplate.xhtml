@@ -21,7 +21,8 @@ See LICENSE file.
                     
                     <p:row>
                         <p:column>
-                            <p:fileUpload listener="#{wizardController.fileUploadListenerData}" 
+                            <p:fileUpload id="#{rootViewId}SelectFileUpload"
+                                          listener="#{wizardController.fileUploadListenerData}" 
                                           auto="true" 
                                           allowTypes="/(\.|\/)([xX][lL][sS][xX]?)$/"
                                           rendered="#{wizardController.renderFileuploadData}"
