@@ -28,53 +28,55 @@ public abstract class ImportHelperConnectorBase extends ImportHelperBase<ItemCon
     private static final String KEY_NAME = "importConnectorName";
     private static final String KEY_DESCRIPTION = "importConnectorDescription";
     private static final String KEY_TYPE = "importConnectorTypeString";
-
-    @Override
-    protected List<ColumnSpec> initColumnSpecs() {
-        
-        List<ColumnSpec> specs = new ArrayList<>();
-        
-        specs.add(new IdOrNameRefColumnSpec(
-                getItemColumnHeader(), 
-                "item", 
-                "setItem", 
-                "ID or name of parent cable catalog item. Name must be unique and prefixed with '#'.", 
-                null, null,
-                ColumnModeOptions.rCREATE(), 
+    
+    protected IdOrNameRefColumnSpec parentItemColumnSpec(String label, String description) {
+        return new IdOrNameRefColumnSpec(
+                label,
+                "item",
+                "setItem",
+                description,
+                null, 
+                null,
+                ColumnModeOptions.rCREATE(),
                 getItemControllerInstance(),
-                Item.class, 
-                null));   
-        
-        specs.add(new StringColumnSpec(
-                "Connector Name", 
-                KEY_NAME, 
-                "setImportConnectorName", 
-                "Name for cable connector.", 
+                Item.class,
+                null);        
+    }
+    
+    protected StringColumnSpec connectorNameColumnSpec(String label, String description) {
+        return new StringColumnSpec(
+                label,
+                KEY_NAME,
+                "setImportConnectorName",
+                description,
                 null,
-                ColumnModeOptions.rCREATE(), 
-                128));
-        
-        specs.add(new StringColumnSpec(
-                "Description", 
-                KEY_DESCRIPTION, 
-                "setImportConnectorDescription", 
-                "Connector description.", 
+                ColumnModeOptions.rCREATE(),
+                128);
+    }
+    
+    protected StringColumnSpec connectorDescriptionColumnSpec(String description) {
+        return new StringColumnSpec(
+                "Description",
+                KEY_DESCRIPTION,
+                "setImportConnectorDescription",
+                description,
                 null,
-                ColumnModeOptions.oCREATE(), 
-                128));
-        
-        specs.add(new IdOrNameRefColumnSpec(
-                "Connector Type", 
-                KEY_TYPE, 
-                "setImportConnectorType", 
-                "ID or name of connector type. Name must be unique and prefixed with '#'.", 
-                null, null,
-                ColumnModeOptions.oCREATE(), 
-                ConnectorTypeController.getInstance(), 
-                ConnectorType.class, 
-                null));   
-        
-        return specs;
+                ColumnModeOptions.oCREATE(),
+                128);
+    }
+    
+    protected IdOrNameRefColumnSpec connectorTypeColumnSpec() {
+        return new IdOrNameRefColumnSpec(
+                "Connector Type",
+                KEY_TYPE,
+                "setImportConnectorType",
+                "ID or name of connector type. Name must be unique and prefixed with '#'.",
+                null, 
+                null,
+                ColumnModeOptions.oCREATE(),
+                ConnectorTypeController.getInstance(),
+                ConnectorType.class,
+                null);
     }
 
     @Override
@@ -99,8 +101,6 @@ public abstract class ImportHelperConnectorBase extends ImportHelperBase<ItemCon
             
         return new CreateInfo(itemConnector, isValid, validString);
     }
-    
-    protected abstract String getItemColumnHeader();
     
     protected abstract ItemController getItemControllerInstance();
     
