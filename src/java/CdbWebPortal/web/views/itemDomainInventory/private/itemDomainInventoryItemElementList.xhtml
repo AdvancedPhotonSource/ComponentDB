@@ -6,11 +6,13 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="../../itemElement/private/templates/itemElementListTemplate.xhtml">
+                template="../../itemElement/private/templates/itemElementListTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:param name="renderEditButton" value="#{isEntityWriteable and entityController.displayBOMEditButton()}"/>
     <ui:param name="itemListDisplayDerivedFromItem"
-                  value="#{false}"/>
+              value="#{false}"/>
 
     <ui:define name="listActionButtons">
         <ui:include src="../../itemElement/private/itemElementListActionButtons.xhtml">
@@ -19,30 +21,45 @@ See LICENSE file.
             <ui:param name="showAddButton" value="#{false}" />
         </ui:include>
     </ui:define>    
-    
+
     <ui:param name="redneredIsRequired" value="#{false}" />
     <ui:param name="itemElementAssemblyStartCount" value="0" /> 
 
     <!-- simple view list object overrides --> 
-    <ui:define name="customItemIdentifierColumn">
-        <ui:include src="itemDomainInventoryListCustomIdentifierObject.xhtml" >
+    <ui:define name="customItemIdentifierColumn">        
+        <ui:decorate template="itemDomainInventoryListCustomIdentifierObject.xhtml" >
+            <ui:define name="identifierObjectPrefix">
+                <ui:fragment rendered="#{isEntityWriteable}">
+                    <p:commandLink id="#{entityTypeName}AssignedItemEditActionButton" 
+                                   styleClass="fa fa-link-icon fa-pencil" 
+                                   title="Edit assignment"                                   
+                                   update="@form:updateAssignedInventoryItemDialog"
+                                   onclick="PF('loadingDialog').show();"
+                                   onerror="PF('loadingDialog').hide();"
+                                   oncomplete="PF('loadingDialog').hide(); PF('updateAssignedInventoryItemDialogWidget').show()">
+                        <p:tooltip for="#{entityTypeName}AssignedItemEditActionButton" value="Edit assignment."/>
+                        <f:setPropertyActionListener value="#{itemElementObject}"
+                                                     target="#{currentObject.selectedItemElementForUpdate}" />
+                    </p:commandLink>   
+                </ui:fragment>
+            </ui:define>
             <ui:param name="partNameString"
                       value="#{itemListObject != null 
                                ? itemDomainInventoryController.getItemDisplayString(itemListObject) 
                                : itemDomainInventoryController.getInventoryItemElementDisplayString(itemElementObject)}" />
-        </ui:include>
+        </ui:decorate>        
     </ui:define>
-    
+
     <ui:define name="partNameColumnUIParams">
         <ui:param name="partNameColumnValue"
                   value="#{itemElementObject.derivedFromItemElement.name}" />
     </ui:define>
-    
+
     <ui:define name="partDescriptionColumnUIParams">
         <ui:param name="partDescriptionColumnValue"
                   value="#{itemElementObject.derivedFromItemElement.description}" />
     </ui:define>
-    
+
     <ui:define name="nameColumn"/>
 
 </ui:composition>

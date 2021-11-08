@@ -62,13 +62,16 @@ See LICENSE file.
                  emptyMessage="No available items found.">
 
         <p:ajax event="rowSelect"
+                onstart="PF('loadingDialog').show()"
                 disabled="#{singleClickSelectionDisabled}"
                 oncomplete="#{selectionRemoteComandName}(); #{additionalSelectionMadeRemoteCommands}" />
         <p:ajax event="rowUnselect"
+                onstart="PF('loadingDialog').show()"
                 disabled="#{singleClickSelectionDisabled}"
                 oncomplete="#{selectionRemoteComandName}(); #{additionalSelectionMadeRemoteCommands}" />
 
-        <p:ajax event="rowDblselect"                
+        <p:ajax event="rowDblselect"
+                onstart="PF('loadingDialog').show()"
                 disabled="#{!singleClickSelectionDisabled}"
                 oncomplete="#{selectionRemoteComandName}(); #{additionalSelectionMadeRemoteCommands}" />
 

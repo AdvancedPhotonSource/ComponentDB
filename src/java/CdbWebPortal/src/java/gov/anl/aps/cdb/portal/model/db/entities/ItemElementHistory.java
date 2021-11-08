@@ -66,6 +66,9 @@ public class ItemElementHistory extends CdbEntity implements Serializable {
     @JoinColumn(name = "derived_from_item_element_id", referencedColumnName = "id")
     @ManyToOne
     private ItemElement derivedFromItemElement;
+    @JoinColumn(name = "represents_item_element_id", referencedColumnName = "id")
+    @ManyToOne
+    private ItemElement representsItemElement;
     @JoinColumn(name = "parent_item_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Item parentItem;
@@ -113,6 +116,7 @@ public class ItemElementHistory extends CdbEntity implements Serializable {
             this.snapshotContainedItem2Name = this.containedItem2.toString();
         }
         this.derivedFromItemElement = element.getDerivedFromItemElement(); 
+        this.representsItemElement = element.getRepresentsItemElement();
         this.isRequired = element.getIsRequired(); 
         this.sortOrder = element.getSortOrder(); 
         this.description = element.getDescription(); 
@@ -249,6 +253,15 @@ public class ItemElementHistory extends CdbEntity implements Serializable {
 
     public void setDerivedFromItemElement(ItemElement derivedFromItemElement) {
         this.derivedFromItemElement = derivedFromItemElement;
+    }
+    
+    @XmlTransient
+    public ItemElement getRepresentsItemElement() {
+        return representsItemElement;
+    }
+
+    public void setRepresentsItemElement(ItemElement representsItemElement) {
+        this.representsItemElement = representsItemElement;
     }
 
     @XmlTransient

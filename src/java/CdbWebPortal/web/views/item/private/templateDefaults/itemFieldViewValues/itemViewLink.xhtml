@@ -9,7 +9,7 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:outputPanel>
+    <ui:fragment>
         <ui:param name="displayString"
                   value="#{displayString != null 
                            ? displayString 
@@ -23,6 +23,6 @@ See LICENSE file.
         </h:outputLink>
         <h:outputText rendered="#{itemObject == null}"
                       value="#{displayString}"/>
-    </p:outputPanel>
+    </ui:fragment>
 
 </ui:composition>

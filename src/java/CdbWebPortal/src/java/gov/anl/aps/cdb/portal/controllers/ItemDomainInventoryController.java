@@ -21,6 +21,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
@@ -67,7 +68,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     private boolean showOptionalPartsInBom = false;
     private Boolean currentItemBOMTreeHasOptionalItems = null;
     private Integer BOM_CHILD_MIN_COUNT_FOR_SCROLLPANEL = 30;
-    private boolean isDisplayBomTreeInScrollpanel = false;
+    private boolean isDisplayBomTreeInScrollpanel = false;                                      
 
     private ItemDomainInventoryLazyDataModel itemDomainInventoryLazyDataModel = null;
 
@@ -110,7 +111,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     @Override
     public ItemEnforcedPropertiesController getItemEnforcedPropertiesController() {
         return ItemEnforcedPropertiesDomainInventoryController.getInstance();
-    }
+    } 
 
     public boolean isCollapsedRelatedMAARCItemsForCurrent() {
         return getRelatedMAARCRelationshipsForCurrent().size() < 1;
@@ -206,6 +207,23 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         resetBOMSupportVariables();
         setCurrent(inventoryItem);
         return super.prepareEdit(inventoryItem);
+    } 
+
+    @Override
+    protected void completeEntityUpdate(ItemDomainInventory entity) {
+        super.completeEntityUpdate(entity); 
+        
+        List<ItemElement> itemElementMemberList = entity.getItemElementMemberList2();
+        
+        for (ItemElement element : itemElementMemberList) {
+            Item parentItem = element.getParentItem();
+            if (parentItem instanceof ItemDomainMachineDesign) {
+                // Make sure the machine hierarchy is updated to reflect the changes made to inventory item. 
+                ItemDomainMachineDesignController instance = ItemDomainMachineDesignController.getInstance();
+                instance.resetListDataModel();
+                break;
+            }
+        }
     }
 
     public Boolean displayBOMEditButton() {
@@ -559,6 +577,20 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
                 return (ItemDomainCatalog) derivedFromItemElement.getContainedItem();
             }
         }
+        return null;
+    }
+    
+    public List<Item> getSelectionListForSelectedItemElementForUpdate() {
+        ItemDomainInventory current = getCurrent();
+        ItemElement selectedItemElementForUpdate = current.getSelectedItemElementForUpdate();
+        if (selectedItemElementForUpdate != null) {
+            ItemElement derivedFromItemElement = selectedItemElementForUpdate.getDerivedFromItemElement();
+            Item containedItem = derivedFromItemElement.getContainedItem();
+            if (containedItem != null) {
+                List<Item> derivedFromItemList = containedItem.getDerivedFromItemList();
+                return derivedFromItemList; 
+            }
+        }        
         return null;
     }
 

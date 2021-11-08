@@ -73,55 +73,27 @@ public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBa
 
     public void createRepresentingMachineForAssemblyElement() {
         ItemDomainMachineDesignTreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
-        ItemElement element = selectedItemInListTreeTable.getElement();
-
-        Item parentItem = element.getParentItem();
-        if ((parentItem instanceof ItemDomainCatalog
-                || parentItem instanceof ItemDomainInventory) == false) {
-            SessionUtility.addErrorMessage("Error", "Cannot create representing machine element for selected item.");
-        }
-
-        ItemDomainMachineDesignTreeNode parent = (ItemDomainMachineDesignTreeNode) selectedItemInListTreeTable.getParent();
+                
         // After update the parent should be selected 
+        ItemDomainMachineDesignTreeNode parent = (ItemDomainMachineDesignTreeNode) selectedItemInListTreeTable.getParent();
+        ItemElement machineElement = parent.getElement();        
         this.selectedItemInListTreeTable = parent;
-
-        // Create new machine placeholder
-        UserInfo user = SessionUtility.getUser();
-        ItemElement machineElement = parent.getElement();
+                
         ItemDomainMachineDesign parentMachine = (ItemDomainMachineDesign) machineElement.getContainedItem();
-        setCurrent(parentMachine);
-        ItemElement machinePlaceholder = null;
+        ItemElement element = selectedItemInListTreeTable.getElement();
+        UserInfo user = SessionUtility.getUser();
+        
+        
         try {
-            machinePlaceholder = getControllerUtility().prepareMachinePlaceholder(parentMachine, user);
-            parentMachine.getFullItemElementList().add(machinePlaceholder);
+            ItemDomainMachineDesign newMachine = getControllerUtility().createRepresentingMachineForAssemblyElement(parentMachine, element, user);
+            setCurrent(newMachine);
         } catch (CdbException ex) {
-            LOGGER.error(ex);
+            LOGGER.error(ex);            
             SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
             return;
-        }
-
-        // Ensure to get catalog element
-        ItemElement derivedFromItemElement = element.getDerivedFromItemElement();
-        if (derivedFromItemElement != null) {
-            element = derivedFromItemElement;
-        }
-
-        ItemDomainMachineDesign newMachine = (ItemDomainMachineDesign) machinePlaceholder.getContainedItem();
-        newMachine.setRepresentsCatalogElement(element);
-
-        String name = element.getName();
-        newMachine.setName(name);
-
-        // Ensure uniqueness with many element names named E1, E2, ...
-        String viewUUID = newMachine.getViewUUID();
-        newMachine.setItemIdentifier2(viewUUID);
-
-        // Set default project list from the catalog item
-        Item catalogItem = element.getContainedItem();
-        List<ItemProject> itemProjectList = catalogItem.getItemProjectList();
-        newMachine.setItemProjectList(itemProjectList);
-
-        update();
+        }        
+        
+        create();
 
         resetListConfigurationVariables();
         resetListDataModel();
