@@ -50,35 +50,35 @@ See LICENSE file.
 
                     <p:outputLabel for="numberOfUsers" value="Registered Users" styleClass="sectionText"/>
                     <h:outputText id="numberOfUsers" styleClass="sectionText" 
-                                  value="#{userInfoController.availableItems.size()}"/>
+                                  value="#{userInfoController.countOfEntity}"/>
 
                     <p:outputLabel for="numberOfCatalogItems" value="Catalog Items" styleClass="sectionText"/>
                     <h:outputText id="numberOfCatalogItems" styleClass="sectionText" 
-                                  value="#{itemDomainCatalogController.itemList.size()}"/>
+                                  value="#{itemDomainCatalogController.countOfEntity}"/>
 
                     <p:outputLabel for="numberOfInventoryItems" value="Inventory Items" styleClass="sectionText"/>
                     <h:outputText id="numberOfInventoryItems" styleClass="sectionText" 
-                                  value="#{itemDomainInventoryController.itemList.size()}"/>
+                                  value="#{itemDomainInventoryController.countOfEntity}"/>
                     
                     <p:outputLabel for="numberOfMachineElements" value="Machine Elements" styleClass="sectionText"/>
                     <h:outputText id="numberOfMachineElements" styleClass="sectionText" 
-                                  value="#{itemDomainMachineDesignController.itemList.size()}"/>
+                                  value="#{itemDomainMachineDesignController.countOfEntity}"/>
                     
                     <p:outputLabel for="numberofMAARCItems" value="MAARC Items" styleClass="sectionText"/>
                     <h:outputText id="numberofMAARCItems" styleClass="sectionText" 
-                                  value="#{itemDomainMAARCController.itemList.size()}"/>
+                                  value="#{itemDomainMAARCController.countOfEntity}"/>
                     
                     <p:outputLabel for="numberofCableCatalogItems" value="Cable Catalog Items" styleClass="sectionText"/>
                     <h:outputText id="numberofCableCatalogItems" styleClass="sectionText" 
-                                  value="#{itemDomainCableCatalogController.itemList.size()}"/>
+                                  value="#{itemDomainCableCatalogController.countOfEntity}"/>
                     
                     <p:outputLabel for="numberofCableInventoryItems" value="Cable Inventory Items" styleClass="sectionText"/>
                     <h:outputText id="numberofCableInventoryItems" styleClass="sectionText" 
-                                  value="#{itemDomainCableInventoryController.itemList.size()}"/>
+                                  value="#{itemDomainCableInventoryController.countOfEntity}"/>
                     
                     <p:outputLabel for="numberofCableDesignItems" value="Cable Design Items" styleClass="sectionText"/>
                     <h:outputText id="numberofCableDesignItems" styleClass="sectionText" 
-                                  value="#{itemDomainCableDesignController.itemList.size()}"/>
+                                  value="#{itemDomainCableDesignController.countOfEntity}"/>
 
                     <h:outputText value="Software Version" styleClass="sectionText"/>
                     <h:outputLink value="#{resources.CdbSoftwareVersionUrl}" target="#{resources.CdbSoftwareVersion}">
