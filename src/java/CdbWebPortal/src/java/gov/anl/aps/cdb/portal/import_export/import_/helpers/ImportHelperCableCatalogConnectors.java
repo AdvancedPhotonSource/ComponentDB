@@ -41,6 +41,8 @@ public class ImportHelperCableCatalogConnectors extends ImportHelperConnectorBas
         
         specs.add(connectorNameColumnSpec("Connector Name", "Name for cable connector."));
         
+        specs.add(cableEndColumnSpec());
+        
         specs.add(connectorDescriptionColumnSpec("Connector description."));
         
         specs.add(connectorTypeColumnSpec());

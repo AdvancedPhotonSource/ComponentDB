@@ -7,16 +7,15 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 import gov.anl.aps.cdb.portal.controllers.ConnectorTypeController;
 import gov.anl.aps.cdb.portal.controllers.ItemConnectorController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogBaseController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,6 +27,7 @@ public abstract class ImportHelperConnectorBase extends ImportHelperBase<ItemCon
     private static final String KEY_NAME = "importConnectorName";
     private static final String KEY_DESCRIPTION = "importConnectorDescription";
     private static final String KEY_TYPE = "importConnectorTypeString";
+    private static final String KEY_CABLE_END = "importCableEnd";
     
     protected IdOrNameRefColumnSpec parentItemColumnSpec(String label, String description) {
         return new IdOrNameRefColumnSpec(
@@ -52,6 +52,17 @@ public abstract class ImportHelperConnectorBase extends ImportHelperBase<ItemCon
                 null,
                 ColumnModeOptions.rCREATE(),
                 128);
+    }
+    
+    protected StringColumnSpec cableEndColumnSpec() {
+        return new StringColumnSpec(
+                "Cable End",
+                KEY_CABLE_END,
+                "setImportCableEnd",
+                "Cable end designation ('1' or '2').",
+                "getCableEndDesignation",
+                ColumnModeOptions.rCREATE(),
+                256);
     }
     
     protected StringColumnSpec connectorDescriptionColumnSpec(String description) {
@@ -83,7 +94,7 @@ public abstract class ImportHelperConnectorBase extends ImportHelperBase<ItemCon
     public ItemConnectorController getEntityController() {
         return ItemConnectorController.getInstance();
     }
-
+    
     @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
         
@@ -94,14 +105,21 @@ public abstract class ImportHelperConnectorBase extends ImportHelperBase<ItemCon
         
         // create Connector
         String connectorName = (String) rowMap.get(KEY_NAME);
+        String cableEnd = (String) rowMap.get(KEY_CABLE_END);
         String connectorDesc = (String) rowMap.get(KEY_DESCRIPTION);
         ConnectorType connectorType = (ConnectorType) rowMap.get(KEY_TYPE);
-
-        itemConnector.setImportConnectorDetails(connectorName, connectorDesc, connectorType);
+        
+        itemConnector.setImportConnectorDetails(connectorName, cableEnd, connectorDesc, connectorType);
             
+        ValidInfo validationInfo = getItemControllerInstance().validateNewItemConnector(itemConnector);
+        if (!validationInfo.isValid()) {
+            isValid = false;
+            validString = validationInfo.getValidString();
+        }
+
         return new CreateInfo(itemConnector, isValid, validString);
     }
     
-    protected abstract ItemController getItemControllerInstance();
+    protected abstract ItemDomainCatalogBaseController getItemControllerInstance();
     
 }

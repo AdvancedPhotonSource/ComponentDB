@@ -159,12 +159,36 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
     }
     
     /**
-     * Allows subclasses to determine whether a new ItemConnector instance is valid. Default
-     * implementation returns true.
+     * Allows subclasses to perform custom validation of a new ItemConnector instance.
+     * @param itemConnector
      * @return 
      */
-    protected ValidInfo validateNewItemConnector(ItemConnector itemConnector) {
+    protected ValidInfo validateNewItemConnector_(ItemConnector itemConnector) {
         return new ValidInfo(true, "");
+    }
+    
+    public ValidInfo validateNewItemConnector(ItemConnector itemConnector) {
+        
+        boolean isValid = true;
+        String validStr = "";
+        
+        ValidInfo validateInfo = validateNewItemConnector_(itemConnector);
+        if (!validateInfo.isValid()) {
+            isValid = false;
+            validStr = validateInfo.getValidString();
+        }
+        
+        if (itemConnector.getConnector() == null) {
+            isValid = false;
+            validStr = validStr + "ItemConnector is missing child Connector object.";
+        } else {
+            if (itemConnector.getConnectorName() == null || itemConnector.getConnectorName().isBlank()) {
+                isValid = false;
+                validStr = validStr + "Connector name must be specified.";
+            }
+        }
+        
+        return new ValidInfo(isValid, validStr);
     }
 
     /**

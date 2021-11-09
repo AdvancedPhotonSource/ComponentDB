@@ -113,7 +113,7 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     }
 
     @Override
-    protected ValidInfo validateNewItemConnector(ItemConnector itemConnector) {
+    protected ValidInfo validateNewItemConnector_(ItemConnector itemConnector) {
         
         boolean isValid = true;
         String validStr = "";

@@ -75,6 +75,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
     private transient Item itemConnectedVia; 
     
     private transient String importConnectorName = null;
+    private transient String importCableEnd = null;
     private transient String importConnectorDescription = null;
     private transient ConnectorType importConnectorType = null;
         
@@ -261,6 +262,10 @@ public class ItemConnector extends CdbEntity implements Serializable {
         return getConnector().getCableEndDesignation();
     }
     
+    public void setCableEndDesignation(String cableEnd) {
+        getConnector().setCableEndDesignation(cableEnd);
+    }
+    
     @JsonIgnore
     public String getImportConnectorName() {
         return importConnectorName;
@@ -268,6 +273,15 @@ public class ItemConnector extends CdbEntity implements Serializable {
 
     public void setImportConnectorName(String importConnectorName) {
         this.importConnectorName = importConnectorName;
+    }
+
+    @JsonIgnore
+    public String getImportCableEnd() {
+        return importCableEnd;
+    }
+
+    public void setImportCableEnd(String cableEnd) {
+        this.importCableEnd = cableEnd;
     }
 
     @JsonIgnore
@@ -299,6 +313,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
 
     public void setImportConnectorDetails(
             String connectorName,
+            String cableEnd,
             String connectorDesc,
             ConnectorType connectorType) {
         
@@ -307,6 +322,10 @@ public class ItemConnector extends CdbEntity implements Serializable {
         conn.setName(connectorName);
         if (connectorDesc != null) {
             conn.setDescription(connectorDesc);
+        }
+        
+        if (cableEnd != null) {
+            conn.setCableEndDesignation(cableEnd);
         }
         
         if (connectorType != null) {
