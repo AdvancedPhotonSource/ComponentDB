@@ -36,6 +36,9 @@ public class ImportHelperCatalogPorts extends ImportHelperConnectorBase {
         
         List<ColumnSpec> specs = new ArrayList<>();
         
+        specs.add(existingItemIdColumnSpec());
+        specs.add(deleteExistingItemColumnSpec());
+        
         specs.add(parentItemColumnSpec(
                 "Catalog Item", 
                 "ID or name of parent catalog item. Name must be unique and prefixed with '#'."));

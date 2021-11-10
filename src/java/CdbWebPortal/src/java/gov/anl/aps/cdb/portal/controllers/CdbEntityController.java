@@ -159,7 +159,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      *
      * @return entity DB facade
      */
-    protected abstract FacadeType getEntityDbFacade();   
+    public abstract FacadeType getEntityDbFacade();   
 
     /**
      * Abstract method for creating new entity instance.

@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemConnectorControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +79,8 @@ public class ItemConnector extends CdbEntity implements Serializable {
     private transient String importCableEnd = null;
     private transient String importConnectorDescription = null;
     private transient ConnectorType importConnectorType = null;
+    
+    private transient List<Connector> connectorsToUpdate = null;
         
     public ItemConnector() {
     }
@@ -179,6 +182,18 @@ public class ItemConnector extends CdbEntity implements Serializable {
     public void setItemElementRelationshipList1(List<ItemElementRelationship> itemElementRelationshipList1) {
         this.itemElementRelationshipList1 = itemElementRelationshipList1;
     }
+    
+    @XmlTransient
+    public List<Connector> getConnectorsToUpdate() {
+        if (connectorsToUpdate == null) {
+            connectorsToUpdate = new ArrayList<>();
+        }
+        return connectorsToUpdate;
+    }
+    
+    public void clearConnectorsToUpdate() {
+        connectorsToUpdate = null;
+    }
 
     @Override
     public int hashCode() {
@@ -268,6 +283,9 @@ public class ItemConnector extends CdbEntity implements Serializable {
     
     @JsonIgnore
     public String getImportConnectorName() {
+        if (importConnectorName == null) {
+            importConnectorName = getConnectorName();
+        }
         return importConnectorName;
     }
 
@@ -277,6 +295,9 @@ public class ItemConnector extends CdbEntity implements Serializable {
 
     @JsonIgnore
     public String getImportCableEnd() {
+        if (importCableEnd == null) {
+            importCableEnd = getCableEndDesignation();
+        }
         return importCableEnd;
     }
 
@@ -286,6 +307,9 @@ public class ItemConnector extends CdbEntity implements Serializable {
 
     @JsonIgnore
     public String getImportConnectorDescription() {
+        if (importConnectorDescription == null) {
+            importConnectorDescription = getConnectorDescription();
+        }
         return importConnectorDescription;
     }
 
@@ -295,13 +319,16 @@ public class ItemConnector extends CdbEntity implements Serializable {
 
     @JsonIgnore
     public ConnectorType getImportConnectorType() {
+        if (importConnectorType == null) {
+            importConnectorType = getConnectorType();
+        }
         return importConnectorType;
     }
     
     @JsonIgnore
     public String getImportConnectorTypeString() {
-        if (importConnectorType != null) {
-            return importConnectorType.getName();
+        if (getImportConnectorType() != null) {
+            return getImportConnectorType().getName();
         } else {
             return "";
         }
@@ -312,27 +339,25 @@ public class ItemConnector extends CdbEntity implements Serializable {
     }
 
     public void setImportConnectorDetails(
+            boolean isUpdate,
             String connectorName,
             String cableEnd,
             String connectorDesc,
             ConnectorType connectorType) {
         
-        Connector conn = new Connector();
+        Connector conn;
+        if (isUpdate) {
+            conn = getConnector();
+            getConnectorsToUpdate().add(conn);
+        } else {
+            conn = new Connector();
+            this.setConnector(conn);        
+        }
         
         conn.setName(connectorName);
-        if (connectorDesc != null) {
-            conn.setDescription(connectorDesc);
-        }
-        
-        if (cableEnd != null) {
-            conn.setCableEndDesignation(cableEnd);
-        }
-        
-        if (connectorType != null) {
-            conn.setConnectorType(connectorType);
-        }
-        
-        this.setConnector(conn);        
+        conn.setCableEndDesignation(cableEnd);
+        conn.setDescription(connectorDesc);
+        conn.setConnectorType(connectorType);        
     }
     
     // convenience method for comparator sorting
@@ -354,4 +379,57 @@ public class ItemConnector extends CdbEntity implements Serializable {
             return "";
         }
     }
+    
+    @JsonIgnore
+    public String getConnectorDescription() {
+        if ((connector != null) && (connector.getDescription() != null)) {
+            return connector.getDescription();
+        } else {
+            return "";
+        }
+    }
+    
+    @JsonIgnore
+    public ConnectorType getConnectorType() {
+        if ((connector != null) && (connector.getConnectorType() != null)) {
+            return connector.getConnectorType();
+        } else {
+            return null;
+        }
+    }
+    
+    @JsonIgnore
+    public List<Item> otherItemsUsingConnector(Item item) {
+        if (getConnector() == null) {
+            return new ArrayList<>();
+        }
+        return getConnector().otherItemsUsingConnector(item);
+    }
+    
+    @JsonIgnore
+    @Override
+    public ValidInfo isDeleteAllowed() {
+        
+        boolean isValid = true;
+        String validStr = "";
+        
+        List<Item> itemsUsingConnector = otherItemsUsingConnector(getItem());
+        if (!itemsUsingConnector.isEmpty()) {
+            String itemString = "";
+            boolean first = true;
+            for (Item item : itemsUsingConnector) {
+                if (!first) {
+                    itemString = itemString + ", ";
+                } else {
+                    first = false;
+                }
+                itemString = itemString + item.getName();
+            }
+            isValid = false;
+            validStr = "Child Connector is in use by other items: " + itemString;
+        }
+        
+        return new ValidInfo(isValid, validStr);
+    }
+
 }

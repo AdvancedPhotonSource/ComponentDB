@@ -35,6 +35,9 @@ public class ImportHelperCableCatalogConnectors extends ImportHelperConnectorBas
         
         List<ColumnSpec> specs = new ArrayList<>();
         
+        specs.add(existingItemIdColumnSpec());
+        specs.add(deleteExistingItemColumnSpec());
+        
         specs.add(parentItemColumnSpec(
                 "Cable Catalog Item", 
                 "ID or name of parent cable catalog item. Name must be unique and prefixed with '#'."));

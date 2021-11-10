@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
@@ -208,6 +209,15 @@ public class CdbEntity implements Serializable, Cloneable {
     @JsonIgnore
     public Boolean getIsItemDeleted() {
         return false;
+    }
+    
+    /**
+     * Allows subclasses to determine whether an instance can be deleted.
+     * @return 
+     */
+    @JsonIgnore
+    public ValidInfo isDeleteAllowed() {
+        return new ValidInfo(true, "");
     }
 
     // default implementation is to do nothing

@@ -163,16 +163,16 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
      * @param itemConnector
      * @return 
      */
-    protected ValidInfo validateNewItemConnector_(ItemConnector itemConnector) {
+    protected ValidInfo validateItemConnector_(boolean isUpdate, ItemConnector itemConnector) {
         return new ValidInfo(true, "");
     }
     
-    public ValidInfo validateNewItemConnector(ItemConnector itemConnector) {
+    public ValidInfo validateItemConnector(boolean isUpdate, ItemConnector itemConnector) {
         
         boolean isValid = true;
         String validStr = "";
         
-        ValidInfo validateInfo = validateNewItemConnector_(itemConnector);
+        ValidInfo validateInfo = validateItemConnector_(isUpdate, itemConnector);
         if (!validateInfo.isValid()) {
             isValid = false;
             validStr = validateInfo.getValidString();
@@ -180,11 +180,11 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         
         if (itemConnector.getConnector() == null) {
             isValid = false;
-            validStr = validStr + "ItemConnector is missing child Connector object.";
+            validStr = validStr + "ItemConnector is missing child Connector object";
         } else {
             if (itemConnector.getConnectorName() == null || itemConnector.getConnectorName().isBlank()) {
                 isValid = false;
-                validStr = validStr + "Connector name must be specified.";
+                validStr = validStr + "Connector name must be specified";
             }
         }
         
@@ -218,10 +218,10 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         }
         
         // allow subclass to validate new item
-        ValidInfo validateInfo = validateNewItemConnector(newConnector);
+        ValidInfo validateInfo = validateItemConnector(false, newConnector);
         if (!validateInfo.isValid()) {
             this.revertItemConnectorListForCurrent();
-            SessionUtility.addErrorMessage("Error", "Unable to create connector. " + validateInfo.getValidString());
+            SessionUtility.addErrorMessage("Error", "Unable to create connector. " + validateInfo.getValidString() + ".");
             return;
         }
         

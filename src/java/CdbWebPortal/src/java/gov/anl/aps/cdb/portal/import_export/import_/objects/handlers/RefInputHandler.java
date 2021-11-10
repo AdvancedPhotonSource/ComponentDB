@@ -296,7 +296,7 @@ public class RefInputHandler extends SimpleInputHandler {
                             try {
                                 objValue =  getObjectManager().getObjectWithName(nameToken.trim(), getDomainNameFilter());
                             } catch (CdbException ex) {
-                                msg = "exception searching for object with name: "
+                                msg = "Exception searching for object with name: "
                                         + nameToken + " reason: " + ex.getMessage();
                             }
                             if (objValue == null) {
@@ -327,7 +327,7 @@ public class RefInputHandler extends SimpleInputHandler {
                     try {
                         objValue = getObjectManager().getObjectWithId(strValue.trim());
                     } catch (CdbException ex) {
-                        msg = "exception searching for object with id: "
+                        msg = "Exception searching for object with id: "
                                 + strValue + " reason: " + ex.getMessage();
                     }
                     
@@ -354,7 +354,7 @@ public class RefInputHandler extends SimpleInputHandler {
                         try {
                             objValue = getObjectManager().getObjectWithId(idToken.trim());
                         } catch (CdbException ex) {
-                            msg = "exception searching for object with id: "
+                            msg = "Exception searching for object with id: "
                                     + idToken + " reason: " + ex.getMessage();
                         }
                         

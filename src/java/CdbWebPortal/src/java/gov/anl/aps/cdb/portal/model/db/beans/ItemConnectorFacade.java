@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
@@ -39,9 +40,27 @@ public class ItemConnectorFacade extends CdbEntityFacade<ItemConnector> {
      * code, where new Connector objects were created instead of sharing the
      * existing Connector for the ItemConnector of the catalog item.
      */
+    @Override
     public void create(ItemConnector entity) {        
         ConnectorFacade.getInstance().create(entity.getConnector());
         super.create(entity);
+    }
+
+    /**
+     * Updates ItemConnector.  Overridden here because, if we edit an ItemConnector, 
+     * we need to update attributes of the child Connector object.
+     */
+    @Override
+    public ItemConnector edit(ItemConnector entity) {
+        
+        ItemConnector result = super.edit(entity);
+        
+        for (Connector connector : entity.getConnectorsToUpdate()) {
+            ConnectorFacade.getInstance().edit(connector);
+        }
+        entity.clearConnectorsToUpdate();
+        
+        return result;
     }
 
 }
