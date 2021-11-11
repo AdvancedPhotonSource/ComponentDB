@@ -29,20 +29,7 @@ See LICENSE file.
                        value="Toggle show cables in machine element hierarchy." />
         </p:selectBooleanButton>
         
-        <p:selectBooleanButton id="itemDomainMachineToggleShowAssyElements"
-                               onLabel="" offLabel=""
-                               onIcon="ui-icon ui-icon-inventory"
-                               value="#{entityController.showAssemblyElements}"
-                               onchange="onChangeItemDomainMachineToggleShowAssyElements()"
-                               rendered="#{!entityController.displayListConfigurationView}"
-                               offIcon="ui-icon ui-icon-inventory">
-            <p:remoteCommand name="onChangeItemDomainMachineToggleShowAssyElements"
-                             update="itemDomainMachineToggleShowAssyElements itemMachineDesignListDataTable#{viewId}"
-                             onstart="PF('loadingDialog').show()"
-                             oncomplete="PF('loadingDialog').hide()"/>
-            <p:tooltip for="itemDomainMachineToggleShowAssyElements" 
-                       value="Toggle show assembly elements in machine element hierarchy." />
-        </p:selectBooleanButton>
+        <ui:include src="../itemDomainMachineDesignToggleAssemblyElementsButton.xhtml"/>
     </ui:define>        
 
 </ui:composition>

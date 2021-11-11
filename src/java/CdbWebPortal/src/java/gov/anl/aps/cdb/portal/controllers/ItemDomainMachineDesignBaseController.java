@@ -1651,7 +1651,15 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     }
 
     public void templateToCreateNewItemSelected(NodeSelectEvent nodeSelection) {
-        templateToCreateNewItem = getMachineFromNodeSelectEvent(nodeSelection);
+        ItemDomainMachineDesign machineFromNodeSelectEvent = getMachineFromNodeSelectEvent(nodeSelection);
+        
+        if (machineFromNodeSelectEvent.getRepresentsCatalogElement() != null) {
+            // Depends on parent machine to function. 
+            SessionUtility.addWarningMessage("Invalid Selection", "Promoted machine element relies on parent for its assignment. Please use parent to continue.", true);
+            return;
+        }            
+        
+        templateToCreateNewItem = machineFromNodeSelectEvent; 
     }
 
     @Override
@@ -2218,8 +2226,13 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         ItemDomainMachineDesign createItemFromTemplate
                 = createItemFromTemplate(templateItem, ownerUser, ownerGroup);
 
-        Item assignedItem = templateItem.getAssignedItem();
-        createItemFromTemplate.setAssignedItem(assignedItem);
+        ItemElement representsCatalogElement = templateItem.getRepresentsCatalogElement();
+        if (representsCatalogElement == null) {
+            Item assignedItem = templateItem.getAssignedItem();
+            createItemFromTemplate.setAssignedItem(assignedItem);
+        } else {
+            createItemFromTemplate.setRepresentsCatalogElement(representsCatalogElement);
+        }
 
         itemElement.setContainedItem(createItemFromTemplate);
 

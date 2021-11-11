@@ -18,11 +18,17 @@ See LICENSE file.
     </f:metadata>
 
     <ui:define name="listDataTable">
-        <ui:include src="../itemDomainMachineDesignBase/private/itemDomainMachineDesignDualColumnListViewPanelGrid.xhtml" /> 
+        <ui:decorate template="../itemDomainMachineDesignBase/private/itemDomainMachineDesignDualColumnListViewPanelGrid.xhtml" > 
+            <ui:define name="mdTreeListContextMenu"> 
+                <ui:include src="private/itemDomainMachineDesignTemplateContextMenu.xhtml"/>
+            </ui:define>
+        </ui:decorate>
     </ui:define>
-    
+
     <ui:define name="itemListPageEmphasizedContentBelowTitle">
-        <p:outputPanel id="emphasizedContentBelowTitleOutputPanel"/>
+        <p:outputPanel id="emphasizedContentBelowTitleOutputPanel">
+            <ui:include src="private/itemDomainMachineDesignToggleAssemblyElementsButton.xhtml"/> 
+        </p:outputPanel>
     </ui:define>
 
     <ui:define name="listActionButtons">
@@ -37,20 +43,20 @@ See LICENSE file.
 
                 <ui:param name="addEntityActionFunctionName"
                           value="prepareCreateTemplate"  /> 
-                
+
                 <ui:param name="resetListActionFunctionName"
-                      value="resetTemplateList" /> 
+                          value="resetTemplateList" /> 
             </ui:include>
         </p:outputPanel>
     </ui:define>
-    
-     <ui:define name="customizeDisplayDialog">
-         <ui:include src="../itemDomainMachineDesignBase/private/itemDomainMachineDesignListCustomizeDisplayDialog.xhtml"> 
-             <ui:param name="includeDisplayInstalledQrId"
-                       value="#{false}" /> 
-         </ui:include>
+
+    <ui:define name="customizeDisplayDialog">
+        <ui:include src="../itemDomainMachineDesignBase/private/itemDomainMachineDesignListCustomizeDisplayDialog.xhtml"> 
+            <ui:param name="includeDisplayInstalledQrId"
+                      value="#{false}" /> 
+        </ui:include>
     </ui:define>
-    
+
     <ui:define name="additionalListSupport" >     
         <ui:include src="../itemDomainMachineDesignBase/private/itemDomainMachineDesignJavascriptFunctionality.xhtml"/>
         <ui:include src="../itemDomainMachineDesignBase/private/itemDomainMachineDesignReorderOverlayPanel.xhtml" /> 
