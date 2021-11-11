@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
+import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -33,6 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author djarosz
  */
 @Entity
+@Cacheable(true)
 @Table(name = "item_category")
 @XmlRootElement
 @NamedQueries({

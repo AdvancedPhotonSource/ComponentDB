@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,6 +29,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author djarosz
  */
 @Entity
+@Cacheable(true)
 @Table(name = "relationship_type")
 @XmlRootElement
 @NamedQueries({

@@ -43,7 +43,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;

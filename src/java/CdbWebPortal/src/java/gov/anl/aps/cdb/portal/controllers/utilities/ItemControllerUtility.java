@@ -58,6 +58,8 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
     PropertyTypeMetadataFacade propertyTypeMetadataFacade;
     AllowedPropertyMetadataValueFacade allowedPropertyMetadataValueFacade;
 
+    Domain defaultDomain = null;
+
     public ItemControllerUtility() {
         domainFacade = DomainFacade.getInstance();
         itemFacade = getItemFacadeInstance();
@@ -378,7 +380,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
 
         return item;
     }
-    
+
     public final void prepareAddItemElement(ItemDomainEntity item, ItemElement itemElement) {
         List<ItemElement> itemElementList = item.getFullItemElementList();
         List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
@@ -394,7 +396,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         if (parentItem != null) {
             prepareAddItemElement(parentItem, itemElement);
         }
-        
+
         if (containedItem != null && containedItem.getId() == null) {
             // New item, skip history, it will be done under update of current.                   
             prepareEntityInsert(containedItem, sessionUser, true);
@@ -639,15 +641,16 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
     public abstract String getDerivedFromItemTitle();
 
     public Domain getDefaultDomain() {
-        Domain defaultControllerDomain;
-        defaultControllerDomain = domainFacade.findByName(getDefaultDomainName());
+        if (defaultDomain == null) {
+            defaultDomain = domainFacade.findByName(getDefaultDomainName());
 
-        if (defaultControllerDomain == null) {
-            defaultControllerDomain = new Domain();
-            defaultControllerDomain.setName(getDefaultDomainName());
+            if (defaultDomain == null) {
+                defaultDomain = new Domain();
+                defaultDomain.setName(getDefaultDomainName());
+            }
         }
 
-        return defaultControllerDomain;
+        return defaultDomain;
     }
 
     /**

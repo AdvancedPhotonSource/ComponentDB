@@ -7,7 +7,6 @@ package gov.anl.aps.cdb.portal.model;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMAARCFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemDomainMaarcQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
-import java.util.ArrayList;
 import java.util.Map;
 import org.primefaces.model.SortOrder;
 
@@ -19,11 +18,6 @@ public class ItemDomainMAARCLazyDataModel extends ItemLazyDataModel<ItemDomainMA
    
     public ItemDomainMAARCLazyDataModel(ItemDomainMAARCFacade facade, Domain itemDomain) {
         super(facade, itemDomain);
-    }
-
-    @Override
-    protected void initalizeItemList() {
-        updateItemList(new ArrayList<>());
     }
 
     @Override

@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,11 +38,7 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
     public ItemLazyDataModel(Facade facade, Domain itemDomain) {
         this.facade = facade;
         this.itemDomain = itemDomain;
-        initalizeItemList();
-    }
-
-    protected void initalizeItemList() {
-        updateItemList(facade.findByDomain(itemDomain.getName()));
+        updateItemList(new ArrayList<>());
     }
 
     protected void updateItemList(List<Item> itemList) {
@@ -91,52 +88,52 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
 
         for (Object key : filterKeySet) {
             FilterMeta curFilter = (FilterMeta) filterBy.get(key);
-            Object filterValue = curFilter.getFilterValue();            
-            Object lastFilterValue = lastFilterMap.get(key);             
-            
+            Object filterValue = curFilter.getFilterValue();
+            Object lastFilterValue = lastFilterMap.get(key);
+
             if (lastFilterValue == null || lastFilterValue.equals(filterValue) == false) {
                 copyLastMaps(sortOrderMap, filterBy);
                 return true;
             }
         }
-        
+
         for (Object key : sortKeySet) {
             SortMeta curValue = (SortMeta) sortOrderMap.get(key);
             SortOrder sortOrder = curValue.getOrder();
             int intValue = sortOrder.intValue();
-            Integer lastIntValue = lastSortMap.get(key); 
-            
+            Integer lastIntValue = lastSortMap.get(key);
+
             if (intValue != lastIntValue) {
                 copyLastMaps(sortOrderMap, filterBy);
                 return true;
             }
         }
-        
+
         return false;
     }
-        
+
     @Override
     public int count(Map map) {
         return itemList.size();
     }
-    
+
     private void copyLastMaps(Map sortOrderMap, Map filterBy) {
-        lastFilterMap = new HashMap(); 
-        lastSortMap = new HashMap(); 
-        
-        for (Object key: filterBy.keySet()) {
+        lastFilterMap = new HashMap();
+        lastSortMap = new HashMap();
+
+        for (Object key : filterBy.keySet()) {
             FilterMeta filterMeta = (FilterMeta) filterBy.get(key);
             Object filterValue = filterMeta.getFilterValue();
-            lastFilterMap.put(key, filterValue); 
+            lastFilterMap.put(key, filterValue);
         }
-        
+
         for (Object key : sortOrderMap.keySet()) {
             SortMeta curValue = (SortMeta) sortOrderMap.get(key);
             SortOrder sortOrder = curValue.getOrder();
-            
+
             int intValue = sortOrder.intValue();
             lastSortMap.put(key, intValue);
-        }        
+        }
     }
 
     private List paginate(int first, int pageSize) {
@@ -165,9 +162,9 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
     @Override
     public String getRowKey(Object object) {
         if (object instanceof Item) {
-            return ((Item) object).getViewUUID(); 
+            return ((Item) object).getViewUUID();
         }
-        return ""; 
+        return "";
     }
-    
+
 }

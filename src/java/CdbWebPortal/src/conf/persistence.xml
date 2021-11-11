@@ -3,8 +3,9 @@
   <persistence-unit name="CdbWebPortalPU" transaction-type="JTA">
     <jta-data-source>CdbDataSource</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
-    <shared-cache-mode>NONE</shared-cache-mode>
+    <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
     <properties>
+      <property name="eclipselink.cache.type.default" value="Full"/>
     </properties>
   </persistence-unit>
 </persistence>
