@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.import_export.import_.objects;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.AssignedItemHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.LocationHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
@@ -311,7 +312,9 @@ public class MachineImportHelperCommon {
         
         String templateName = "";
         Map<String, String> varNameValueMap = new HashMap<>();
+        //TODO Craig
         ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
+        ItemDomainMachineDesignControllerUtility utility = new ItemDomainMachineDesignControllerUtility();
         
         String templateParams = (String) rowMap.get(MachineImportHelperCommon.KEY_TEMPLATE_INVOCATION);
         if ((templateParams == null) || (templateParams.isEmpty())) {
@@ -389,8 +392,8 @@ public class MachineImportHelperCommon {
                 } else {
                     // generate list of variable name/value pairs
                     controller.setMachineDesignNameList(new ArrayList<>());
-                    controller.generateMachineDesignTemplateNameVarsRecursivelly(templateItem);
-                    List<KeyValueObject> varNameList = controller.getMachineDesignNameList();
+                    // TODO Craig
+                    List<KeyValueObject> varNameList = utility.generateMachineDesignTemplateNameListRecursivelly(templateItem);
                     for (KeyValueObject obj : varNameList) {
                         
                         // check that all params in template are specified in import params

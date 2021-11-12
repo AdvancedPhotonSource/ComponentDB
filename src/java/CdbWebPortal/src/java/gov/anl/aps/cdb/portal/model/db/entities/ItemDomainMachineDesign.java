@@ -746,15 +746,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
         ItemElement itemElement = importCreateItemElementForParent(parentItem, user, group, null);
 
-        ItemDomainMachineDesignController controller
-                = ItemDomainMachineDesignController.getInstance();
+        //TODO Craig
+        ItemDomainMachineDesignBaseControllerUtility utility = parentItem.getItemControllerUtility();
 
         ItemDomainMachineDesign newItem;
-        try {
-
-            newItem = controller.createMachineDesignFromTemplate(itemElement, templateItem, user, group);
-
-            controller.createMachineDesignFromTemplateHierachically(itemElement);
+        try {         
+            // TODO Craig has the name value param been filled out? It may be part of "current" if done using old method.
+            List<KeyValueObject> nameVars = utility.generateMachineDesignTemplateNameVars(templateItem);
+            // TODO Craig
+            newItem = utility.createMachineDesignFromTemplateHierachically(itemElement, templateItem, user, group, nameVars);
 
             setImportChildParentRelationship(newItem, parentItem, itemElement);
 
