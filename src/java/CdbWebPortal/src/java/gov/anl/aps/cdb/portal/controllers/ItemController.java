@@ -1179,52 +1179,6 @@ public abstract class ItemController<
 
     }
 
-    public void deleteItemConnector(ItemConnector itemConnector) {
-        Item item = getCurrent();
-
-        ConnectorControllerUtility connectorControllerUtility = new ConnectorControllerUtility();
-        itemConnector = itemConnectorFacade.find(itemConnector.getId());
-        Connector connector = itemConnector.getConnector();
-        if (connectorControllerUtility.verifySafeRemovalOfConnector(connector)) {
-            completeDeleteItemConnector(itemConnector);
-        } else {
-            // Generate a userfull message
-            String message = "";
-            List<ItemConnector> itemConnectorList = connector.getItemConnectorList();
-            List<ItemConnector> connectorDeleteList = new ArrayList<>();
-            for (ItemConnector ittrConnector : itemConnectorList) {
-                Item ittrItem = ittrConnector.getItem();
-                if (ittrItem.equals(item) == false) {
-                    if (ittrItem.getDomain().getName().equals(ItemDomainName.machineDesign.getValue())) {
-                        if (ittrConnector.getItemElementRelationshipList().size() == 0) {
-                            connectorDeleteList.add(ittrConnector);
-                        } else {
-                            message = "Please check connections on machine design item: " + ittrItem.toString();
-                            SessionUtility.addErrorMessage("Error", "Cannot remove connector, check if it is used for connections in machine design. " + message);
-                        }
-                    }
-                } else {
-                    connectorDeleteList.add(ittrConnector);
-                }
-            }
-
-            if (itemConnectorList.size() == connectorDeleteList.size()) {
-                // All save. 
-                for (ItemConnector relatedConnector : connectorDeleteList) {
-                    completeDeleteItemConnector(relatedConnector);
-                }
-            }
-        }
-        reloadCurrent();
-    }
-
-    private void completeDeleteItemConnector(ItemConnector itemConnector) {
-        Item item = getCurrent();
-        List<ItemConnector> itemConnectorList = item.getItemConnectorList();
-        itemConnectorList.remove(itemConnector);
-        ItemConnectorController.getInstance().destroy(itemConnector);
-    }
-    
     /**
      * Initializes new instance of ItemConnector. Subclasses override to customize.
      */

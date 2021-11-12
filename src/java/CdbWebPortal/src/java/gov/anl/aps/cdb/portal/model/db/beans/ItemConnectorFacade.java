@@ -62,5 +62,21 @@ public class ItemConnectorFacade extends CdbEntityFacade<ItemConnector> {
         
         return result;
     }
+    
+    /**
+     * Deletes ItemConnector.  Overridden here so that when we delete an ItemConnector, we
+     * can delete the associated list of Connectors if not empty.
+     */
+    @Override
+    public void remove(ItemConnector entity) {
+        
+        super.remove(entity);
+        
+        // must remove child Connector before parent ItemConnector
+        for (Connector connector : entity.getConnectorsToRemove()) {
+            ConnectorFacade.getInstance().remove(connector);
+        }
+        entity.clearConnectorsToRemove();        
+    }
 
 }

@@ -1183,6 +1183,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             validString = appendToString(validString, deleteEntityValidInfo.getValidString());
             isValid = false;
         }
+        
+        // allow subclass to take appropriate action on deleting the entity, beyond calling destroy
+        ValidInfo deleteEntityInfo = deleteEntityInstance(entity, rowDict);
+        if (!deleteEntityInfo.isValid()) {
+            isValid = false;
+            validString = appendToString(validString, deleteEntityInfo.getValidString());
+        }
 
         // invoke each input handler to update the entity with row dictionary values
         ValidInfo updateValidInfo = invokeHandlersToUpdateEntity(entity, rowDict);
@@ -1697,6 +1704,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             validStr = "Item cannot be deleted. " + deleteAllowedInfo.getValidString();
         }
         return new ValidInfo(isValid, validStr);
+    }
+    
+    /**
+     * Allows subclass to take domain-specific action before destroy is called to delete the entity.
+     * Default implementation does nothing.
+     */
+    protected ValidInfo deleteEntityInstance(EntityType entity, Map<String, Object> rowMap) {
+        return new ValidInfo(true, "");
     }
     
     /**

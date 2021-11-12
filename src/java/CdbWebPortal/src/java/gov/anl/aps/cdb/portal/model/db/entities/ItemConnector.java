@@ -81,6 +81,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
     private transient ConnectorType importConnectorType = null;
     
     private transient List<Connector> connectorsToUpdate = null;
+    private transient List<Connector> connectorsToRemove = null;
         
     public ItemConnector() {
     }
@@ -193,6 +194,22 @@ public class ItemConnector extends CdbEntity implements Serializable {
     
     public void clearConnectorsToUpdate() {
         connectorsToUpdate = null;
+    }
+
+    @XmlTransient
+    public List<Connector> getConnectorsToRemove() {
+        if (connectorsToRemove == null) {
+            connectorsToRemove = new ArrayList<>();
+        }
+        return connectorsToRemove;
+    }
+    
+    public void clearConnectorsToRemove() {
+        connectorsToRemove = null;
+    }
+    
+    public void addConnectorToRemove(Connector connector) {
+        getConnectorsToRemove().add(connector);
     }
 
     @Override

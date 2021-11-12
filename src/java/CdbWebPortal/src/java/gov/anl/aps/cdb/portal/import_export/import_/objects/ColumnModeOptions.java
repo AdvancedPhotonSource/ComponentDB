@@ -102,6 +102,15 @@ public class ColumnModeOptions {
         return options;
     }
     
+    public static List<ColumnModeOptions> rCREATErUPDATErDELETE() {
+        List<ColumnModeOptions> options = new ArrayList<>();
+        options.add(new ColumnModeOptions(ImportMode.CREATE, true, false, false));
+        options.add(new ColumnModeOptions(ImportMode.UPDATE, true, false, false));
+        options.add(new ColumnModeOptions(ImportMode.COMPARE, true, false, false));
+        options.add(new ColumnModeOptions(ImportMode.DELETE, true, false, false));
+        return options;
+    }
+    
     public static List<ColumnModeOptions> rdCREATErUPDATE() {
         List<ColumnModeOptions> options = new ArrayList<>();
         options.add(new ColumnModeOptions(ImportMode.CREATE, true, false, true));

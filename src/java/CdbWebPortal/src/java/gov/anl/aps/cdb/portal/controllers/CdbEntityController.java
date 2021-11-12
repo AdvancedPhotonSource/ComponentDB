@@ -159,8 +159,8 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      *
      * @return entity DB facade
      */
-    public abstract FacadeType getEntityDbFacade();   
-
+    protected abstract FacadeType getEntityDbFacade(); 
+    
     /**
      * Abstract method for creating new entity instance.
      *
@@ -1101,6 +1101,10 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         resetListDataModel();
         resetSelectDataModel();
         resetLogText();
+    }
+    
+    public EntityType reloadEntity(EntityType entity) {
+        return getEntityDbFacade().find(entity.getId());
     }
 
     public void reloadCurrent() {

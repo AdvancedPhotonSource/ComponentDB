@@ -141,7 +141,8 @@ public abstract class ImportHelperConnectorBase extends ImportHelperBase<ItemCon
         List<ItemConnector> entityList = new ArrayList<>();
         List<ItemDomainCatalogBase> catalogList = getItemControllerInstance().getExportEntityList();
         for (ItemDomainCatalogBase catalogItem : catalogList) {
-            ItemDomainCatalogBase updatedItem = (ItemDomainCatalogBase) getItemControllerInstance().getEntityDbFacade().find(catalogItem.getId());
+            ItemDomainCatalogBase updatedItem = 
+                    (ItemDomainCatalogBase) getItemControllerInstance().reloadEntity(catalogItem);
             entityList.addAll(updatedItem.getItemConnectorList());
         }
         return entityList;
@@ -275,4 +276,20 @@ public abstract class ImportHelperConnectorBase extends ImportHelperBase<ItemCon
         return updateInfo.getValidInfo();
     }
 
+    protected ValidInfo deleteEntityInstance(ItemConnector entity, Map<String, Object> rowMap) {
+        
+        boolean isValid = true;
+        String validStr = "";
+        
+        ItemDomainCatalogBase catalogItem = (ItemDomainCatalogBase) entity.getItem();
+        if (catalogItem != null) {
+            getItemControllerInstance().removeCatalogItemConnector(catalogItem, entity);
+        } else {
+            isValid = false;
+            validStr = getLabelItem() + " must be specified for delete";
+        }
+        
+        return new ValidInfo(isValid, validStr);
+    }
+    
 }

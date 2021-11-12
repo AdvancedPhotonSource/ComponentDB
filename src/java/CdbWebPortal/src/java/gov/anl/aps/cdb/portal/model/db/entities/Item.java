@@ -456,6 +456,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     @ManyToOne
     private Item derivedFromItem;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
+//    @JoinTable(name = "item_connector", joinColumns = {
+//        @JoinColumn(name = "item_id", referencedColumnName = "id")})
+//    @OneToMany(cascade = CascadeType.ALL)
     private List<ItemConnector> itemConnectorList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
     private List<ItemSource> itemSourceList;
