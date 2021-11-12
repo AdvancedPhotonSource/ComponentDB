@@ -554,8 +554,12 @@ public class Item extends CdbDomainEntity implements Serializable {
         UserGroup firstGroup = userInfo.getUserGroupList().get(0);
         return clone(userInfo, firstGroup);
     }
-
+    
     public Item clone(UserInfo ownerUser, UserGroup ownerGroup) throws CloneNotSupportedException {
+        return clone(ownerUser, ownerGroup, false, false, false);
+    }
+
+    public Item clone(UserInfo ownerUser, UserGroup ownerGroup, boolean cloneProperties, boolean cloneSources, boolean cloneCreateItemElementPlaceholders) throws CloneNotSupportedException {
         Item clonedItem = createInstance();
         clonedItem.isCloned = true;
 
@@ -589,7 +593,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         clonedItem.setDerivedFromItemList(null);
         clonedItem.setItemElementMemberList(null);
 
-        clonedItem = getItemDomainController().completeClone(clonedItem, this.getId());
+        clonedItem = getItemControllerUtility().completeClone(clonedItem, this.getId(), ownerUser, cloneProperties, cloneSources, cloneCreateItemElementPlaceholders);
 
         return clonedItem;
     }
@@ -1169,6 +1173,14 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setItemElementMemberList(List<ItemElement> itemElementMemberList) {
         this.itemElementMemberList = itemElementMemberList;
     }
+    
+    public void appendItemElementMemberList(ItemElement itemElement) {
+        if (itemElementMemberList == null) {
+            itemElementMemberList = new ArrayList<>(); 
+        }
+        
+        itemElementMemberList.add(itemElement);
+    }
 
     @XmlTransient
     public List<ItemElement> getItemElementMemberList2() {
@@ -1177,6 +1189,14 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setItemElementMemberList2(List<ItemElement> itemElementMemberList2) {
         this.itemElementMemberList2 = itemElementMemberList2;
+    }
+    
+    public void appendItemElementMemberList2(ItemElement itemElement) {
+        if (itemElementMemberList2 == null) {
+            itemElementMemberList2 = new ArrayList<>(); 
+        }
+        
+        itemElementMemberList2.add(itemElement);        
     }
 
     @XmlTransient

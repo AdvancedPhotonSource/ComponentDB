@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.ListName;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
 import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyMetadataValueFacade;
@@ -14,22 +15,28 @@ import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeMetadataFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import java.util.ArrayList;
@@ -57,6 +64,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
     PropertyTypeFacade propertyTypeFacade;
     PropertyTypeMetadataFacade propertyTypeMetadataFacade;
     AllowedPropertyMetadataValueFacade allowedPropertyMetadataValueFacade;
+    RelationshipTypeFacade relationshipTypeFacade;
 
     Domain defaultDomain = null;
 
@@ -66,6 +74,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         propertyTypeFacade = PropertyTypeFacade.getInstance();
         propertyTypeMetadataFacade = PropertyTypeMetadataFacade.getInstance();
         allowedPropertyMetadataValueFacade = AllowedPropertyMetadataValueFacade.getInstance();
+        relationshipTypeFacade = RelationshipTypeFacade.getInstance();
     }
 
     protected abstract ItemDomainEntityFacade getItemFacadeInstance();
@@ -182,7 +191,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         return itemElement;
     }
 
-    public String generateUniqueElementNameForItem(ItemDomainEntity item) {
+    public String generateUniqueElementNameForItem(Item item) {
         List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
         int elementNumber = itemElementsDisplayList.size() + 1;
         String elementNameSuffix = "E";
@@ -709,6 +718,178 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
 
         // no match
         return null;
+    }
+
+    protected String getItemCreatedFromTemplateRelationshipName() {
+        return ItemElementRelationshipTypeNames.template.getValue();
+    }
+
+    public void addCreatedFromTemplateRelationshipToItem(ItemDomainEntity item, ItemDomainEntity templateToCreateNewItem) {
+        RelationshipType templateRelationship
+                = relationshipTypeFacade.findByName(getItemCreatedFromTemplateRelationshipName());
+
+        // Create item element relationship between the template and the clone 
+        ItemElementRelationship itemElementRelationship = new ItemElementRelationship();
+        itemElementRelationship.setRelationshipType(templateRelationship);
+        itemElementRelationship.setFirstItemElement(item.getSelfElement());
+        itemElementRelationship.setSecondItemElement(templateToCreateNewItem.getSelfElement());
+
+        item.setItemElementRelationshipList(new ArrayList<>());
+        item.getItemElementRelationshipList().add(itemElementRelationship);
+    }
+
+    public ItemDomainEntity completeClone(ItemDomainEntity clonedItem, Integer cloningFromItemId, UserInfo user, boolean cloneProperties, boolean cloneSources, boolean cloneCreateItemElementPlaceholders) {
+        ItemDomainEntity cloningFrom = findById(cloningFromItemId);
+
+        if (cloneProperties) {
+            clonedItem = cloneProperties(clonedItem, cloningFrom, user);
+        }
+        if (cloneSources) {
+            clonedItem = cloneSources(clonedItem, cloningFrom);
+        }
+        if (cloneCreateItemElementPlaceholders) {            
+            clonedItem = defaultCloneCreateItemElementsForClone(clonedItem, cloningFrom, user);
+        }
+
+        cloneProperties = false;
+        cloneSources = false;
+        cloneCreateItemElementPlaceholders = false;
+
+        return clonedItem;
+    }
+    
+    /**
+     * Default domain specific configuration for cloning elements when doing the complete clone
+     * 
+     * @param clonedItem
+     * @param cloningFrom
+     * @param user
+     * @return 
+     */
+    protected ItemDomainEntity defaultCloneCreateItemElementsForClone(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, UserInfo user) {
+        return cloneCreateItemElements(clonedItem, cloningFrom, user, false, false, false);
+    }
+
+    public ItemDomainEntity cloneProperties(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, UserInfo enteredByUser) {
+        List<PropertyValue> cloningFromPropertyValueList = cloningFrom.getPropertyValueList();
+
+        if (cloningFromPropertyValueList != null) {
+            List<PropertyValue> newItemPropertyValueList = new ArrayList<>();
+
+            Date enteredOnDateTime = new Date();
+
+            for (PropertyValue propertyValue : cloningFromPropertyValueList) {
+                PropertyTypeHandlerInterface handler;
+                handler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+                if (handler != null) {
+                    if (handler.isPropertyCloneable(cloningFrom.getDomain()) == false) {
+                        continue;
+                    }
+                }
+
+                PropertyValue newPropertyValue = new PropertyValue();
+                newPropertyValue.setPropertyType(propertyValue.getPropertyType());
+                newPropertyValue.setValue(propertyValue.getValue());
+                newPropertyValue.setTag(propertyValue.getTag());
+                newPropertyValue.setUnits(propertyValue.getUnits());
+                newPropertyValue.setDescription(propertyValue.getDescription());
+                newPropertyValue.setIsDynamic(propertyValue.getIsDynamic());
+                newPropertyValue.setEnteredOnDateTime(enteredOnDateTime);
+                newPropertyValue.setEnteredByUser(enteredByUser);
+
+                newItemPropertyValueList.add(newPropertyValue);
+            }
+
+            clonedItem.setPropertyValueList(newItemPropertyValueList);
+        }
+
+        return clonedItem;
+    }
+
+    public ItemDomainEntity cloneSources(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom) {
+        List<ItemSource> cloningFromSourceList = cloningFrom.getItemSourceList();
+
+        if (cloningFromSourceList != null) {
+            List<ItemSource> newItemSourceList = new ArrayList<>();
+
+            for (ItemSource itemSource : cloningFromSourceList) {
+                ItemSource newItemSource = new ItemSource();
+
+                newItemSource.setItem(clonedItem);
+                newItemSource.setSource(itemSource.getSource());
+                newItemSource.setPartNumber(itemSource.getPartNumber());
+                newItemSource.setCost(itemSource.getCost());
+                newItemSource.setDescription(itemSource.getDescription());
+                newItemSource.setIsVendor(itemSource.getIsVendor());
+                newItemSource.setIsManufacturer(itemSource.getIsManufacturer());
+                newItemSource.setContactInfo(itemSource.getContactInfo());
+                newItemSource.setUrl(itemSource.getUrl());
+
+                newItemSourceList.add(newItemSource);
+            }
+
+            clonedItem.setItemSourceList(newItemSourceList);
+        }
+
+        return clonedItem;
+    }
+
+    public ItemDomainEntity cloneCreateItemElements(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, UserInfo user, boolean addContained, boolean assignDerivedFromItemElement, boolean generateUniqueElementName) {
+        List<ItemElement> cloningFromItemElementList = cloningFrom.getItemElementDisplayList();
+
+        if (cloningFromItemElementList != null) {
+            for (ItemElement itemElement : cloningFromItemElementList) {
+                cloneCreateItemElement(itemElement, clonedItem, user, addContained, assignDerivedFromItemElement, generateUniqueElementName);
+            }
+        }
+
+        return clonedItem;
+    }
+
+    public ItemElement cloneCreateItemElement(ItemElement itemElement, Item clonedItem, UserInfo user, boolean addContained, boolean assignDerivedFromItemElement, boolean generateUniqueElementName) {
+        String newName = null;
+        if (generateUniqueElementName) {
+            clonedItem.resetItemElementVars();
+            newName = generateUniqueElementNameForItem(clonedItem);
+        }
+
+        ItemElement newItemElement = new ItemElement();
+
+        if (itemElement.getDerivedFromItemElement() != null) {
+            newItemElement.init(clonedItem, itemElement.getDerivedFromItemElement(), user);
+        } else {
+            newItemElement.init(clonedItem, user);
+        }
+
+        if (addContained) {
+            Item containedItem = itemElement.getContainedItem();
+            if (containedItem != null) {
+                containedItem.appendItemElementMemberList(newItemElement);
+                newItemElement.setContainedItem(itemElement.getContainedItem());
+            }
+            Item containedItem2 = itemElement.getContainedItem2();
+            if (containedItem2 != null) {
+                containedItem2.appendItemElementMemberList2(newItemElement);
+                newItemElement.setContainedItem2(itemElement.getContainedItem2());
+            }
+        }
+
+        if (assignDerivedFromItemElement) {
+            newItemElement.setDerivedFromItemElement(itemElement);
+        }
+
+        newItemElement.setName(itemElement.getName());
+        newItemElement.setIsRequired(itemElement.getIsRequired());
+
+        clonedItem.getFullItemElementList().add(newItemElement);
+
+        newItemElement.setSortOrder(itemElement.getSortOrder());
+
+        if (newName != null) {
+            newItemElement.setName(newName);
+        }
+
+        return newItemElement;
     }
 
 }
