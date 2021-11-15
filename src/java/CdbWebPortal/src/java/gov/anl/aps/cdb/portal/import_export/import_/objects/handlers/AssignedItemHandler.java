@@ -30,6 +30,8 @@ import org.apache.poi.ss.usermodel.Row;
  * here is on the ItemFacade.
  */
 public class AssignedItemHandler extends RefInputHandler {
+    
+    private static final String PREFIX_QR = "qr:";
 
     public AssignedItemHandler() {
         super(MachineImportHelperCommon.HEADER_ASSIGNED_ITEM);
@@ -85,21 +87,55 @@ public class AssignedItemHandler extends RefInputHandler {
                 assignedItem = (Item) entity;
 
             } else {
-                // parse as id
-                int id;
-                try {
-                    id = Integer.valueOf(parsedValue);
-                    assignedItem = ItemFacade.getInstance().findById(id);
-                    if (assignedItem == null) {
-                        String msg = "Unable to find object for: " + getColumnName()
-                                + " with id: " + parsedValue;
+                if (parsedValue.startsWith(PREFIX_QR)) {
+                    // parse as qrId
+                    String[] tokens = parsedValue.split(PREFIX_QR);
+                    if (tokens.length != 2) {
+                        isValid = false;
+                        validString = "Invalid qrId format or missing qrId: " + parsedValue;
+                    } else {
+                        String qrStr = tokens[1];
+                        if ((qrStr == null) || (qrStr.isBlank())) {
+                            isValid = false;
+                            validString = "Missing or emtpy qrId.";
+                        } else {
+                            qrStr = qrStr.trim(); // remove leading/trailing space
+                            qrStr = qrStr.replaceAll("\\s+", ""); // remove internal spaces e.g., "000 123 456"
+                            Integer qrId = null;
+                            try {
+                                qrId = Integer.valueOf(qrStr);
+                                assignedItem = ItemFacade.getInstance().findByQrId(qrId);
+                                if (assignedItem == null) {
+                                    String msg = "Unable to find object for: " + getColumnName()
+                                            + " with qrId: " + qrId;
+                                    isValid = false;
+                                    validString = msg;
+                                }
+                            } catch (NumberFormatException ex) {
+                                String msg = "Invalid qrId number: " + qrStr + " for column: " + getColumnName();
+                                isValid = false;
+                                validString = msg;
+                            }
+                        }
+                    }
+                    
+                } else {
+                    // parse as cdb item id
+                    int id;
+                    try {
+                        id = Integer.valueOf(parsedValue);
+                        assignedItem = ItemFacade.getInstance().findById(id);
+                        if (assignedItem == null) {
+                            String msg = "Unable to find object for: " + getColumnName()
+                                    + " with id: " + parsedValue;
+                            isValid = false;
+                            validString = msg;
+                        }
+                    } catch (NumberFormatException ex) {
+                        String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
                         isValid = false;
                         validString = msg;
                     }
-                } catch (NumberFormatException ex) {
-                    String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
-                    isValid = false;
-                    validString = msg;
                 }
             }
 
