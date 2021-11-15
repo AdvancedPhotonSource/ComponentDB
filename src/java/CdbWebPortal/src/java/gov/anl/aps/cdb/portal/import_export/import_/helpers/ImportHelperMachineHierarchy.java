@@ -91,7 +91,6 @@ public class ImportHelperMachineHierarchy
         specs.add(MachineImportHelperCommon.altNameColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.descriptionColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.sortOrderColumnSpec(ColumnModeOptions.oCREATE()));
-        specs.add(MachineImportHelperCommon.assignedItemDescriptionColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.assignedItemColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.locationColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(locationDetailsColumnSpec());

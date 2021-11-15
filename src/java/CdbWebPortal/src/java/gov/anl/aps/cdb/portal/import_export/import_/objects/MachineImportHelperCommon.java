@@ -149,17 +149,6 @@ public class MachineImportHelperCommon {
                 options);
     }
     
-    public static StringColumnSpec assignedItemDescriptionColumnSpec(List<ColumnModeOptions> options) {
-        return new StringColumnSpec(
-                HEADER_ASSIGNED_ITEM_DESCRIPTION,
-                "importAssignedItemDescription",
-                "setImportAssignedItemDescription",
-                "Description of catalog or inventory item assigned to machine element (for documentation purposes only, ignored by import mechanism).",
-                "getCatalogItemName",
-                options,
-                256);
-    }
-    
     public static CustomColumnSpec assignedItemColumnSpec(List<ColumnModeOptions> options) {
         AssignedItemHandler assignedItemHandler = new AssignedItemHandler();
         return new CustomColumnSpec(
