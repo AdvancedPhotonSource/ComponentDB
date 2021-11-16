@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
@@ -21,6 +22,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -316,21 +318,25 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
     }
 
     /**
-     * Function used to create a new machine from a template hierarchically. 
+     * Function used to create a new machine from a template hierarchically.
      *
-     * @param machineElement (if null then top level) parent element of the new machine design created from template. 
-     * @param templateItem template used to create a new item. 
-     * @param user user creating the new machine design from template. 
-     * @param ownerGroup owner group of the new machine design created from template
-     * @param machineDesignNameList key value pairs for filling in parameters in template name ex {varName}. Generate using generateMachineDesignTemplateNameListRecursivelly()
-     * 
+     * @param machineElement (if null then top level) parent element of the new
+     * machine design created from template.
+     * @param templateItem template used to create a new item.
+     * @param user user creating the new machine design from template.
+     * @param ownerGroup owner group of the new machine design created from
+     * template
+     * @param machineDesignNameList key value pairs for filling in parameters in
+     * template name ex {varName}. Generate using
+     * generateMachineDesignTemplateNameListRecursivelly()
+     *
      * @throws CdbException
      * @throws CloneNotSupportedException
      */
     public ItemDomainMachineDesign createMachineDesignFromTemplateHierachically(ItemElement machineElement, ItemDomainMachineDesign templateItem, UserInfo user, UserGroup ownerGroup, List<KeyValueObject> machineDesignNameList) throws CdbException, CloneNotSupportedException {
         ItemDomainMachineDesign newMachine = createMachineDesignFromTemplate(machineElement, templateItem, user, ownerGroup, machineDesignNameList);
         createMachineDesignFromTemplateHierachically(newMachine, machineDesignNameList);
-        
+
         return newMachine;
     }
 
@@ -352,11 +358,15 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
     /**
      * Function used to create a new machine from a template.
      *
-     * @param machineElement (if null then top level) parent element of the new machine design created from template. 
-     * @param templateItem template used to create a new item. 
-     * @param user user creating the new machine design from template. 
-     * @param ownerGroup owner group of the new machine design created from template
-     * @param machineDesignNameList key value pairs for filling in parameters in template name ex {varName}. Generate using generateMachineDesignTemplateNameListRecursivelly()
+     * @param machineElement (if null then top level) parent element of the new
+     * machine design created from template.
+     * @param templateItem template used to create a new item.
+     * @param user user creating the new machine design from template.
+     * @param ownerGroup owner group of the new machine design created from
+     * template
+     * @param machineDesignNameList key value pairs for filling in parameters in
+     * template name ex {varName}. Generate using
+     * generateMachineDesignTemplateNameListRecursivelly()
      * @return
      * @throws CdbException
      * @throws CloneNotSupportedException
@@ -377,7 +387,7 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         // Top level 
         if (machineElement != null) {
             machineElement.setContainedItem(newItem);
-            newItem.appendItemElementMemberList(machineElement);            
+            newItem.appendItemElementMemberList(machineElement);
         }
 
         assignTemplateInfoToMd(newItem, templateItem, user, machineDesignNameList);
@@ -421,7 +431,7 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         ItemElement representsCatalogElement = template.getRepresentsCatalogElement();
         if (representsCatalogElement == null) {
             Item assignedItem = template.getAssignedItem();
-            item.setAssignedItem(assignedItem);
+            updateAssignedItem(item, assignedItem, ownerUser);
         } else {
             ItemDomainMachineDesign parentMachineDesign = item.getParentMachineDesign();
             if (parentMachineDesign == null) {
@@ -549,6 +559,130 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         }
 
         return templateIdentifierString;
+    }
+
+    /**
+     * Function used to validate and complete a assignment of assigned item in
+     * machine design
+     *
+     * @param mdItem machine design whose assigned item is updated.
+     * @param newAssignment new assigned item
+     * @param userInfo user doing the assignment
+     * @throws gov.anl.aps.cdb.common.exceptions.CdbException
+     */
+    public void updateAssignedItem(ItemDomainMachineDesign mdItem, Item newAssignment, UserInfo userInfo) throws CdbException {
+        updateAssignedItem(mdItem, newAssignment, userInfo, null);
+    }
+
+    /**
+     * Function used to validate and complete a assignment of assigned item in
+     * machine design
+     *
+     * @param mdItem machine design whose assigned item is updated.
+     * @param newAssignment new assigned item
+     * @param userInfo user doing the assignment
+     * @param isInstalled planned/installed for inventory item. Invalid for
+     * items other than inventory.
+     * @throws CdbException
+     */
+    public void updateAssignedItem(ItemDomainMachineDesign mdItem, Item newAssignment, UserInfo userInfo, Boolean isInstalled) throws CdbException {
+        if (newAssignment != null) {
+            if (isInstalled != null && (newAssignment instanceof ItemDomainInventory) == false) {
+                throw new CdbException("Is installed can only be set for inventory assignments.");
+            }
+
+            if (newAssignment instanceof ItemDomainInventory == false) {
+                isInstalled = null;
+            }
+        } else {
+            isInstalled = null;
+        }
+
+        if (isInstalled == null) {
+            // Reset to default
+            isInstalled = true;
+        }
+
+        // Ensure it is only installed in one place.
+        if (newAssignment instanceof ItemDomainInventory) {
+            for (ItemElement itemElement : newAssignment.getItemElementMemberList2()) {
+                Item item = itemElement.getParentItem();
+                if (item instanceof ItemDomainMachineDesign) {
+                    throw new CdbException("Inventory item used. Inventory item cannot be saved, used in: " + item.toString());
+                }
+            }
+        }
+
+        ItemElement representsCatalogElement = mdItem.getRepresentsCatalogElement();
+        if (representsCatalogElement != null) {
+            throw new CdbException("Cannot update assigned item of machine design. Must update parent assembly for promotoed machine elements.");
+        }
+
+        // Verify that items need to be of specific catalog type.
+        Item mustRepCatalog = null;
+        if (mdItem.getItemElementDisplayList().size() > 0) {
+            List<ItemElement> itemElementDisplayList = mdItem.getItemElementDisplayList();
+            for (ItemElement ie : itemElementDisplayList) {
+                ItemDomainMachineDesign containedMd = (ItemDomainMachineDesign) ie.getContainedItem();
+                ItemElement repElement = containedMd.getRepresentsCatalogElement();
+                if (repElement != null) {
+                    mustRepCatalog = repElement.getParentItem();
+                    break;
+                }
+            }
+        }
+
+        if (mustRepCatalog != null) {
+            if (newAssignment == null) {
+                // Clear can only be done to the catalog item.
+                newAssignment = mustRepCatalog;
+            }
+            Item installCatalog = null;
+
+            if (newAssignment instanceof ItemDomainInventory) {
+                installCatalog = newAssignment.getDerivedFromItem();
+            } else {
+                installCatalog = newAssignment;
+            }
+
+            if (installCatalog.equals(mustRepCatalog) == false) {
+                throw new CdbException("Existing assembly representing machine elements exist. The assigned item can only be of catalog type: " + mustRepCatalog);
+            }
+        }
+
+        Item originalContainedItem = mdItem.getAssignedItem();
+        mdItem.setAssignedItem(newAssignment);
+        mdItem.setIsHoused(isInstalled);
+
+        updateTemplateReferenceForAssignedItem(mdItem, originalContainedItem, newAssignment, userInfo);
+    }
+
+    /**
+     * Updates assigned item on elements created from template if update is
+     * valid.
+     *
+     * @param currentElement
+     * @param newAssignedItem
+     */
+    private void updateTemplateReferenceForAssignedItem(Item mdItem,
+            Item originalContainedItem,
+            Item newAssignedItem, UserInfo userInfo) throws CdbException {
+        if (mdItem.getIsItemTemplate()) {
+            List<ItemDomainMachineDesign> itemsCreatedFromThisTemplateItem = (List<ItemDomainMachineDesign>) (List<?>) mdItem.getItemsCreatedFromThisTemplateItem();
+            List<ItemDomainMachineDesign> itemsToUpdate = new ArrayList<>();
+
+            for (ItemDomainMachineDesign item : itemsCreatedFromThisTemplateItem) {
+                Item assignedItem = item.getAssignedItem();
+
+                // Verify if in sync with template
+                if (ObjectUtility.equals(originalContainedItem, assignedItem)) {
+                    item.setAssignedItem(newAssignedItem);
+                    itemsToUpdate.add(item);
+                }
+            }
+
+            updateList(itemsToUpdate, userInfo);
+        }
     }
 
 }

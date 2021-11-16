@@ -312,14 +312,11 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
 
         UserInfo currentUser = verifyCurrentUserPermissionForItem(currentItem);
         ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) currentItem;
-
-        mdItem.setAssignedItem(assignedItem);
-        if (isInstalled != null && assignedItem instanceof ItemDomainInventory) {
-            mdItem.setIsHoused(isInstalled);
-        }
       
-        ItemControllerUtility itemControllerUtility = mdItem.getItemControllerUtility();
-
+        ItemDomainMachineDesignBaseControllerUtility itemControllerUtility = mdItem.getItemControllerUtility();
+        
+        itemControllerUtility.updateAssignedItem(mdItem, assignedItem, currentUser, isInstalled);
+        
         itemControllerUtility.update(mdItem, currentUser);
 
         return getMachineDesignItemById(mdItemId);
