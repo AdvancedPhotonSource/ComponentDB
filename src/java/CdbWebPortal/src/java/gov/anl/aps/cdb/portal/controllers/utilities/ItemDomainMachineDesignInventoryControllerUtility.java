@@ -8,12 +8,15 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableStatusItem;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
+import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -94,6 +97,15 @@ public class ItemDomainMachineDesignInventoryControllerUtility extends ItemDomai
     @Override
     public InventoryStatusPropertyTypeInfo initializeInventoryStatusPropertyTypeInfo() {
         return ItemStatusUtility.initializeInventoryStatusPropertyTypeInfo(); 
+    }
+
+    @Override
+    public ItemDomainMachineDesign createMachineDesignFromTemplate(ItemElement machineElement, ItemDomainMachineDesign templateItem, UserInfo user, UserGroup ownerGroup, List<KeyValueObject> machineDesignNameList) throws CdbException, CloneNotSupportedException {
+        ItemDomainMachineDesign newMachine = super.createMachineDesignFromTemplate(machineElement, templateItem, user, ownerGroup, machineDesignNameList); 
+        
+        assignInventoryAttributes(newMachine, templateItem, user);
+        
+        return newMachine; 
     }
     
 }

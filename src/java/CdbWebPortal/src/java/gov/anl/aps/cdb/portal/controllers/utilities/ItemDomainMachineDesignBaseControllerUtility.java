@@ -318,7 +318,7 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
     /**
      * Function used to create a new machine from a template hierarchically. 
      *
-     * @param machineElement parent element of the new machine design created from template. 
+     * @param machineElement (if null then top level) parent element of the new machine design created from template. 
      * @param templateItem template used to create a new item. 
      * @param user user creating the new machine design from template. 
      * @param ownerGroup owner group of the new machine design created from template
@@ -352,7 +352,7 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
     /**
      * Function used to create a new machine from a template.
      *
-     * @param machineElement parent element of the new machine design created from template. 
+     * @param machineElement (if null then top level) parent element of the new machine design created from template. 
      * @param templateItem template used to create a new item. 
      * @param user user creating the new machine design from template. 
      * @param ownerGroup owner group of the new machine design created from template
@@ -374,8 +374,11 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
 
         ItemDomainMachineDesign newItem = (ItemDomainMachineDesign) templateItem.clone(user, ownerGroup, cloneProperties, cloneSources, cloneCreateItemElementPlaceholders);
 
-        machineElement.setContainedItem(newItem);
-        newItem.appendItemElementMemberList(machineElement);
+        // Top level 
+        if (machineElement != null) {
+            machineElement.setContainedItem(newItem);
+            newItem.appendItemElementMemberList(machineElement);            
+        }
 
         assignTemplateInfoToMd(newItem, templateItem, user, machineDesignNameList);
 
