@@ -69,6 +69,7 @@ See LICENSE file.
                 <p:menuitem value="Machine"
                             icon="ui-icon-machine-design"
                             url="#{request.contextPath}/views/itemDomainMachineDesignInventory/list"
+                            rendered="#{resources.EnabledMachineInventoryFunctionality}"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesignInventory/list') ? 'activeMenuItem' : ''} "/>                                
             </p:submenu>
 

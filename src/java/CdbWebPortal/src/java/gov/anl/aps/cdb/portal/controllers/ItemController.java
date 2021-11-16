@@ -1514,71 +1514,6 @@ public abstract class ItemController<
         updateOnRemoval();
     }
 
-    protected ItemDomainEntity cloneProperties(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom) {
-        List<PropertyValue> cloningFromPropertyValueList = cloningFrom.getPropertyValueList();
-
-        if (cloningFromPropertyValueList != null) {
-            List<PropertyValue> newItemPropertyValueList = new ArrayList<>();
-
-            Date enteredOnDateTime = new Date();
-            UserInfo enteredByUser = (UserInfo) SessionUtility.getUser();
-
-            for (PropertyValue propertyValue : cloningFromPropertyValueList) {
-                PropertyTypeHandlerInterface handler;
-                handler = PropertyTypeHandlerFactory.getHandler(propertyValue);
-                if (handler != null) {
-                    if (handler.isPropertyCloneable(cloningFrom.getDomain()) == false) {
-                        continue;
-                    }
-                }
-
-                PropertyValue newPropertyValue = new PropertyValue();
-                newPropertyValue.setPropertyType(propertyValue.getPropertyType());
-                newPropertyValue.setValue(propertyValue.getValue());
-                newPropertyValue.setTag(propertyValue.getTag());
-                newPropertyValue.setUnits(propertyValue.getUnits());
-                newPropertyValue.setDescription(propertyValue.getDescription());
-                newPropertyValue.setIsDynamic(propertyValue.getIsDynamic());
-                newPropertyValue.setEnteredOnDateTime(enteredOnDateTime);
-                newPropertyValue.setEnteredByUser(enteredByUser);
-
-                newItemPropertyValueList.add(newPropertyValue);
-            }
-
-            clonedItem.setPropertyValueList(newItemPropertyValueList);
-        }
-
-        return clonedItem;
-    }
-
-    protected ItemDomainEntity cloneSources(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom) {
-        List<ItemSource> cloningFromSourceList = cloningFrom.getItemSourceList();
-
-        if (cloningFromSourceList != null) {
-            List<ItemSource> newItemSourceList = new ArrayList<>();
-
-            for (ItemSource itemSource : cloningFromSourceList) {
-                ItemSource newItemSource = new ItemSource();
-
-                newItemSource.setItem(clonedItem);
-                newItemSource.setSource(itemSource.getSource());
-                newItemSource.setPartNumber(itemSource.getPartNumber());
-                newItemSource.setCost(itemSource.getCost());
-                newItemSource.setDescription(itemSource.getDescription());
-                newItemSource.setIsVendor(itemSource.getIsVendor());
-                newItemSource.setIsManufacturer(itemSource.getIsManufacturer());
-                newItemSource.setContactInfo(itemSource.getContactInfo());
-                newItemSource.setUrl(itemSource.getUrl());
-
-                newItemSourceList.add(newItemSource);
-            }
-
-            clonedItem.setItemSourceList(newItemSourceList);
-        }
-
-        return clonedItem;
-    }
-
     protected ItemDomainEntity cloneCreateItemElements(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom) {
         return cloneCreateItemElements(clonedItem, cloningFrom, false);
     }
@@ -1588,78 +1523,11 @@ public abstract class ItemController<
     }
 
     protected ItemDomainEntity cloneCreateItemElements(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, boolean addContained, boolean assignDerivedFromItemElement) {
-        return cloneCreateItemElements(clonedItem, cloningFrom, true, true, false);
-    }
-
-    protected ItemDomainEntity cloneCreateItemElements(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, boolean addContained, boolean assignDerivedFromItemElement, boolean generateUniqueElementName) {
-        List<ItemElement> cloningFromItemElementList = cloningFrom.getItemElementDisplayList();
-
-        if (cloningFromItemElementList != null) {
-            for (ItemElement itemElement : cloningFromItemElementList) {
-                String newName = null;
-                if (generateUniqueElementName) {
-                    clonedItem.resetItemElementVars();
-                    newName = getControllerUtility().generateUniqueElementNameForItem(clonedItem);
-                }
-                ItemElement newElement = cloneCreateItemElement(itemElement, clonedItem, addContained, assignDerivedFromItemElement);
-
-                if (newName != null) {
-                    newElement.setName(newName);
-                }
-            }
-        }
-
-        return clonedItem;
-    }
-
-    protected ItemElement cloneCreateItemElement(ItemElement itemElement, Item clonedItem, boolean addContained, boolean assignDerivedFromItemElement) {
-        ItemElement newItemElement = new ItemElement();
-
+        ControllerUtility controllerUtility = getControllerUtility();
         UserInfo user = SessionUtility.getUser();
-        if (itemElement.getDerivedFromItemElement() != null) {
-            newItemElement.init(clonedItem, itemElement.getDerivedFromItemElement(), user);
-        } else {
-            newItemElement.init(clonedItem, user);
-        }
-
-        if (addContained) {
-            newItemElement.setContainedItem(itemElement.getContainedItem());
-            newItemElement.setContainedItem2(itemElement.getContainedItem2());
-        }
-
-        if (assignDerivedFromItemElement) {
-            newItemElement.setDerivedFromItemElement(itemElement);
-        }
-
-        newItemElement.setName(itemElement.getName());
-        newItemElement.setIsRequired(itemElement.getIsRequired());
-
-        clonedItem.getFullItemElementList().add(newItemElement);
-
-        newItemElement.setSortOrder(itemElement.getSortOrder());
-
-        return newItemElement;
-    }
-
-    public ItemDomainEntity completeClone(ItemDomainEntity clonedItem, Integer cloningFromItemId) {
-        ItemDomainEntity cloningFrom = findById(cloningFromItemId);
-
-        if (cloneProperties) {
-            clonedItem = cloneProperties(clonedItem, cloningFrom);
-        }
-        if (cloneSources) {
-            clonedItem = cloneSources(clonedItem, cloningFrom);
-        }
-        if (cloneCreateItemElementPlaceholders) {
-            clonedItem = cloneCreateItemElements(clonedItem, cloningFrom);
-        }
-
-        cloneProperties = false;
-        cloneSources = false;
-        cloneCreateItemElementPlaceholders = false;
-
-        return clonedItem;
-    }
+        
+        return controllerUtility.cloneCreateItemElements(clonedItem, cloningFrom, user, addContained, assignDerivedFromItemElement, false);
+    }      
 
     public boolean isShowCloneCreateItemElementsPlaceholdersOption() {
         if (itemToClone != null) {
@@ -1700,6 +1568,22 @@ public abstract class ItemController<
         }
 
         return "";
+    } 
+
+    @Override
+    public ItemDomainEntity cloneEntityInstance(ItemDomainEntity entity) {
+        ItemDomainEntity clonedItem;
+        
+        try {
+            UserInfo user = SessionUtility.getUser();        
+            UserGroup firstGroup = user.getUserGroupList().get(0);      
+            
+            clonedItem = (ItemDomainEntity) (entity.clone(user, firstGroup, cloneProperties, cloneSources, cloneCreateItemElementPlaceholders));
+        } catch (CloneNotSupportedException ex) {
+            LOGGER.error("Object cannot be cloned: " + ex);
+            clonedItem = createEntityInstance();
+        }
+        return clonedItem;
     }
 
     @Override
@@ -2295,34 +2179,21 @@ public abstract class ItemController<
         if (this.templateToCreateNewItem != null) {
             current.setItemCategoryList(templateToCreateNewItem.getItemCategoryList());
             current.setItemTypeList(templateToCreateNewItem.getItemTypeList());
-            current = cloneProperties(current, templateToCreateNewItem);
-            current = cloneSources(current, templateToCreateNewItem);
+            
+            ControllerUtility controllerUtility = getControllerUtility();
+            UserInfo user = SessionUtility.getUser();
+            
+            current = controllerUtility.cloneProperties(current, templateToCreateNewItem, user);
+            current = controllerUtility.cloneSources(current, templateToCreateNewItem);
             addCreatedFromTemplateRelationshipToItem(current);
         }
-    }
-
-    protected String getItemCreatedFromTemplateRelationshipName() {
-        return ItemElementRelationshipTypeNames.template.getValue();
-    }
+    }   
 
     public void addCreatedFromTemplateRelationshipToItem(ItemDomainEntity item) {
-        addCreatedFromTemplateRelationshipToItem(item, templateToCreateNewItem);
+        ControllerUtility controllerUtility = getControllerUtility();
+        controllerUtility.addCreatedFromTemplateRelationshipToItem(item, templateToCreateNewItem);
     }
-
-    public void addCreatedFromTemplateRelationshipToItem(ItemDomainEntity item, ItemDomainEntity templateToCreateNewItem) {
-        RelationshipType templateRelationship
-                = relationshipTypeFacade.findByName(getItemCreatedFromTemplateRelationshipName());
-
-        // Create item element relationship between the template and the clone 
-        ItemElementRelationship itemElementRelationship = new ItemElementRelationship();
-        itemElementRelationship.setRelationshipType(templateRelationship);
-        itemElementRelationship.setFirstItemElement(item.getSelfElement());
-        itemElementRelationship.setSecondItemElement(templateToCreateNewItem.getSelfElement());
-
-        item.setItemElementRelationshipList(new ArrayList<>());
-        item.getItemElementRelationshipList().add(itemElementRelationship);
-    }
-
+    
     public Item getCreatedFromTemplateForCurrentItem() {
         ItemDomainEntity current = getCurrent();
         return current.getCreatedFromTemplate();

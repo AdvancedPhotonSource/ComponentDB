@@ -16,6 +16,8 @@ See LICENSE file.
                      var="filterViewItemResultObject"
                      id="filterViewDatatable"
                      rowKey="#{filterViewItemResultObject.viewUUID}"
+                     resizableColumns="true"
+                     liveResize="true"
                      sortMode="single"
                      stripedRows="true"
                      paginator="true"
@@ -40,10 +42,10 @@ See LICENSE file.
                         <p:treeTable id="itemFilterViewRowExpansion"
                                      value="#{resultExpansionObject.rootTreeNode}"
                                      var="itemElementTreeNode">
-                            
+
                             <ui:param name="itemTreeNode"
                                       value="#{itemElementTreeNode.containedItem}"/> 
-                            
+
                             <ui:insert name="partItemElementReference">
                                 <ui:param name="itemElementObject"
                                           value="#{itemElementTreeNode}"/> 

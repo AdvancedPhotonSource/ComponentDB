@@ -10,7 +10,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
@@ -148,6 +147,11 @@ public abstract class ItemDomainCatalogBaseControllerUtility<ItemCatalogBaseDoma
     @Override
     public String getEntityTypeName() {
         return "component";
+    }
+
+    @Override
+    protected ItemCatalogBaseDomainEntity defaultCloneCreateItemElementsForClone(ItemCatalogBaseDomainEntity clonedItem, ItemCatalogBaseDomainEntity cloningFrom, UserInfo user) {
+        return cloneCreateItemElements(clonedItem, cloningFrom, user, true, false, false);
     }
 
 }

@@ -103,7 +103,7 @@ public class ItemDomainMachineDesignRelationshipTreeNode extends ItemDomainMachi
     }
 
     @Override
-    protected void loadRelationships() {        
+    protected void loadAdditionalChildren() {        
         ItemElementRelationshipTypeNames relationshipToLoad = getConfig().getRelationshipToLoad();
         String type = MachineTreeRelationshipConfiguration.RELATIONSHIP_CHILD_NODE_TYPE;
         loadRelationshipsFromRelationshipList(false, relationshipToLoad, type);

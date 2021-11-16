@@ -11,7 +11,8 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html">                
 
     <ui:param name="entityController"
-              value="#{itemDomainMachineDesignInventoryController}"/> 
+              value="#{itemDomainMachineDesignInventoryController}"/>     
+    <ui:param name="pageRendered" value="#{resources.EnabledMachineInventoryFunctionality}" />
 
     <ui:param name="itemObject" value="#{entityController.current}" />    
     <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}" />

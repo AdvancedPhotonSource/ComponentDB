@@ -44,6 +44,16 @@ public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBa
         return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);
     }
 
+    public boolean isShowAssemblyElements() {
+        ItemDomainMachineDesignTreeNode.MachineTreeConfiguration config = getCurrentMachineDesignListRootTreeNode().getConfig();
+        return config.isShowAssemblyElements();
+    }
+
+    public void setShowAssemblyElements(boolean showAssemblyElements) {
+        ItemDomainMachineDesignTreeNode.MachineTreeConfiguration config = getCurrentMachineDesignListRootTreeNode().getConfig();
+        config.setShowAssemblyElements(showAssemblyElements);
+    }
+
     public boolean isCablesShown() {
         ItemDomainMachineDesignTreeNode.MachineTreeConfiguration config = getCurrentMachineDesignListRootTreeNode().getConfig();
         return config.isShowCables();
@@ -73,26 +83,25 @@ public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBa
 
     public void createRepresentingMachineForAssemblyElement() {
         ItemDomainMachineDesignTreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
-                
+
         // After update the parent should be selected 
         ItemDomainMachineDesignTreeNode parent = (ItemDomainMachineDesignTreeNode) selectedItemInListTreeTable.getParent();
-        ItemElement machineElement = parent.getElement();        
+        ItemElement machineElement = parent.getElement();
         this.selectedItemInListTreeTable = parent;
-                
+
         ItemDomainMachineDesign parentMachine = (ItemDomainMachineDesign) machineElement.getContainedItem();
         ItemElement element = selectedItemInListTreeTable.getElement();
         UserInfo user = SessionUtility.getUser();
-        
-        
+
         try {
             ItemDomainMachineDesign newMachine = getControllerUtility().createRepresentingMachineForAssemblyElement(parentMachine, element, user);
             setCurrent(newMachine);
         } catch (CdbException ex) {
-            LOGGER.error(ex);            
+            LOGGER.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
             return;
-        }        
-        
+        }
+
         create();
 
         resetListConfigurationVariables();

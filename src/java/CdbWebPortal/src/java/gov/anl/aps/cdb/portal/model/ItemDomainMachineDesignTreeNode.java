@@ -11,9 +11,12 @@ import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
+import java.util.ArrayList;
 import java.util.List;
 import org.primefaces.model.TreeNode;
 
@@ -23,6 +26,7 @@ import org.primefaces.model.TreeNode;
  */
 public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBaseTreeNode<MachineTreeConfiguration> {
 
+    boolean assemblyElementsLoaded = false;
     boolean cablesLoaded = false;
     boolean cableRelatedNode = false;
 
@@ -67,9 +71,59 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
     }
 
     @Override
-    protected void loadRelationships() {
-        super.loadRelationships();
+    protected void loadAdditionalChildren() {
+        super.loadAdditionalChildren();
 
+        loadAssemblyChildren();
+        loadCableChildren();
+    }
+
+    private void loadAssemblyChildren() {
+        boolean loadAssembly = loadAssemblyNodes();
+
+        if (loadAssembly) {
+            assemblyElementsLoaded = true;
+            ItemElement element = getElement();
+
+            Item containedItem = element.getContainedItem();
+
+            if (containedItem == null) {
+                return;
+            }
+
+            if (!(containedItem instanceof ItemDomainMachineDesign)) {
+                return;
+            }
+
+            ItemDomainMachineDesign idm = (ItemDomainMachineDesign) containedItem;
+            List<ItemElement> itemElementList = idm.getCombinedItemElementList(element);
+
+            List<Integer> skipElementIds = new ArrayList<>();
+            for (ItemElement itemElement : itemElementList) {
+                if (idm != null) {
+                    Integer id = itemElement.getId();
+                    if (skipElementIds.contains(id)) {
+                        continue;
+                    }
+                    Item containedItem1 = itemElement.getContainedItem();
+                    if (containedItem1 instanceof ItemDomainMachineDesign) {
+                        ItemElement asnElement = ((ItemDomainMachineDesign) containedItem1).getAssignedRepresentedElement();
+                        if (asnElement != null) {
+                            skipElementIds.add(asnElement.getId());
+                            ItemElement derivedFromItemElement = asnElement.getDerivedFromItemElement();
+                            if (derivedFromItemElement != null) {
+                                skipElementIds.add(derivedFromItemElement.getId());
+                            }
+                        }
+                        continue;
+                    }
+                }
+                createChildNode(itemElement);
+            }
+        }
+    }
+
+    private void loadCableChildren() {
         boolean loadCables = loadCables();
 
         ItemElement element = getElement();
@@ -84,8 +138,8 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
             if (idm != null) {
 
                 // build list of connectors for this md item (syncs available connectors from catalog item)
-                List<MachineDesignConnectorListObject> connList = 
-                        MachineDesignConnectorListObject.createMachineDesignConnectorList(idm);
+                List<MachineDesignConnectorListObject> connList
+                        = MachineDesignConnectorListObject.createMachineDesignConnectorList(idm);
 
                 for (MachineDesignConnectorListObject connObj : connList) {
                     ItemDomainMachineDesignTreeNode connectorNode = null;
@@ -109,8 +163,36 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
     }
 
     @Override
-    protected void unloadRelationships() {
-        super.unloadRelationships();
+    protected void unloadAdditionalChildren() {
+        super.unloadAdditionalChildren();
+
+        unloadAssemblyChildren();
+        unloadCableChildren();
+    }
+
+    private void unloadAssemblyChildren() {
+        boolean unloadAssemblyChildren = assemblyElementsLoaded && (!config.isShowAssemblyElements());
+
+        if (unloadAssemblyChildren) {
+            TreeNode parent = getParent();
+            if (parent == null || parent.isExpanded()) {
+                assemblyElementsLoaded = false;
+                List<ItemDomainMachineDesignTreeNode> machineChildren = getMachineChildren();
+                
+                for (int i = machineChildren.size() - 1; i >= 0; i--) {
+                    ItemDomainMachineDesignTreeNode node = machineChildren.get(i);
+                    ItemElement element = node.getElement();
+                    Item containedItem = element.getContainedItem();
+                    if (containedItem instanceof ItemDomainCatalog ||
+                            containedItem instanceof ItemDomainInventory) {
+                        machineChildren.remove(i);
+                    }                                             
+                }
+            }
+        }
+    }
+
+    private void unloadCableChildren() {
         boolean unloadCables = cablesLoaded && (!config.cablesNeedLoading());
 
         if (unloadCables) {
@@ -126,16 +208,19 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
                 }
             }
         }
-
     }
 
     private boolean loadCables() {
         return !cablesLoaded && (config.cablesNeedLoading());
     }
+    
+    private boolean loadAssemblyNodes() {
+        return !assemblyElementsLoaded && (config.isShowAssemblyElements());
+    }
 
     @Override
-    protected boolean loadRelationshipsForNode() {
-        return loadCables();
+    protected boolean loadAdditionalNodes() {
+        return loadCables() || loadAssemblyNodes();
     }
 
     @Override
@@ -149,8 +234,17 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
             super();
         }
 
+        private boolean showAssemblyElements = false;
         private boolean showCables = false;
         private boolean showConnectorsOnly = false;
+
+        public boolean isShowAssemblyElements() {
+            return showAssemblyElements;
+        }
+
+        public void setShowAssemblyElements(boolean showAssemblyElements) {
+            this.showAssemblyElements = showAssemblyElements;
+        }
 
         public boolean isShowCables() {
             return showCables;

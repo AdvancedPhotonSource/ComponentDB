@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,6 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author djarosz
  */
 @Entity
+@Cacheable(true)
 @Table(name = "source")
 @XmlRootElement
 @NamedQueries({

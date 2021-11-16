@@ -11,6 +11,11 @@ See LICENSE file.
     <p:submenu icon="ui-icon-inventory"
                label="Linked Inventory"
                disabled="#{disabledEditContextMenuItemForSelection}">
+        
+        <ui:include src="assignInventoryItemContextMenuItem.xhtml" >
+            <ui:param name="assignInventoryTitle"
+                      value="Update inventory" /> 
+        </ui:include>        
 
         <p:menuitem value="Change install state"
                     icon="fa fa-wrench"

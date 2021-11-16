@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import java.io.Serializable;
+import javax.persistence.Cacheable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -21,6 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author djarosz
  */
 @Entity
+@Cacheable(true)
 @Table(name = "user_role")
 @XmlRootElement
 @NamedQueries({
