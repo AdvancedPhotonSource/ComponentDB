@@ -10,7 +10,9 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ParseInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.RefObjectManager;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +26,7 @@ import java.util.Map;
 public class RefInputHandler extends SimpleInputHandler {
 
     private static final String SEPARATOR = ",";
+    private static final String PREFIX_QR = "qr:";
 
     private Class paramType;
     private CdbEntityController controller;
@@ -168,6 +171,32 @@ public class RefInputHandler extends SimpleInputHandler {
     }
 
     /**
+     * Allows subclasses to customize look up for single object by qr. 
+     */
+    protected ParseInfo getSingleObjectByQrId(Integer qrId) {
+        
+        CdbEntity objValue = null;
+        String msg = "";
+
+        try {
+            objValue = getObjectManager().getObjectWithQrId(qrId);
+        } catch (CdbException ex) {
+            msg = "Exception searching for object with QR: "
+                    + qrId + " reason: " + ex.getMessage();
+        }
+
+        if (objValue == null) {
+            if (msg.isEmpty()) {
+                msg = "Unable to find object for: "
+                        + getColumnName() + " with QR: " + qrId;
+            }
+            return new ParseInfo<>(null, false, msg);
+        }
+        
+        return new ParseInfo<>(objValue, true, "");                        
+    }
+
+    /**
      * Allows subclasses to customize look up for single object by name. 
      */
     protected ParseInfo getObjectWithAttributes(Map<String,String> attributeMap) {
@@ -240,6 +269,59 @@ public class RefInputHandler extends SimpleInputHandler {
                 } else {
                     objValue = (CdbEntity) parseInfo.getValue();
                     return new ParseInfo<>(objValue, true, "");
+                }
+                
+            } else if (strValue.startsWith(PREFIX_QR)) {
+                // parse as qrId
+                
+                String msg = "";
+                Item objValue = null;
+                
+                if (!singleValue) {
+                    msg = "Lookup by QR code only supported for single item references, not list.";
+                    return new ParseInfo<>(null, false, msg);
+                }
+                
+                if (idOnly) {
+                    msg = "Lookup by QR code not enabled for column: " + getColumnName();
+                    return new ParseInfo<>(null, false, msg);
+                }
+
+                String[] tokens = strValue.split(PREFIX_QR);
+                if (tokens.length != 2) {
+                    msg = "Invalid qrId format or missing qrId: " + strValue;
+                    return new ParseInfo<>(null, false, msg);
+                    
+                } else {
+                    String qrStr = tokens[1];
+                    if ((qrStr == null) || (qrStr.isBlank())) {
+                        msg = "Missing or emtpy qrId.";
+                        return new ParseInfo<>(null, false, msg);
+                        
+                    } else {
+                        qrStr = qrStr.trim(); // remove leading/trailing space
+                        qrStr = qrStr.replaceAll("\\s+", ""); // remove internal spaces e.g., "000 123 456"
+                        Integer qrId = null;
+                        try {
+                            qrId = Integer.valueOf(qrStr);
+                            
+                            ParseInfo objWithNameInfo = getSingleObjectByQrId(qrId);
+                            if (!objWithNameInfo.getValidInfo().isValid()) {
+                                return objWithNameInfo;
+                            } else {
+                                objValue = (Item) objWithNameInfo.getValue();
+                            }
+                            
+                            if (objValue == null) {
+                                msg = "Unable to find object for: " + getColumnName() + " with qrId: " + qrId;
+                                return new ParseInfo<>(null, false, msg);
+                            }
+                            
+                        } catch (NumberFormatException ex) {
+                            msg = "Invalid qrId number: " + qrStr + " for column: " + getColumnName();
+                            return new ParseInfo<>(null, false, msg);
+                        }
+                    }
                 }
 
             } else if (strValue.charAt(0) == '#') {

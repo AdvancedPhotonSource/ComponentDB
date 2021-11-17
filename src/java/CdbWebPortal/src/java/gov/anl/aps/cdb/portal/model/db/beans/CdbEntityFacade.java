@@ -104,4 +104,8 @@ public abstract class CdbEntityFacade<T> {
         throw new CdbException("findUniqueWithAttributes() operation not implemented by facade");
     }
     
+    public T findByQrId(Integer qrId) throws CdbException {
+        throw new CdbException("findByQrId() operation not implemented by facade");
+    }
+    
 }

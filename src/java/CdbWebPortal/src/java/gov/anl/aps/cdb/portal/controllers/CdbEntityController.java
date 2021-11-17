@@ -291,6 +291,10 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         return getEntityDbFacade().findUniqueWithAttributes(attributeMap);
     }
 
+    public EntityType findByQrId(Integer qrId) throws CdbException {
+        return getEntityDbFacade().findByQrId(qrId);
+    }
+
     /**
      * New current is being set, reset related variables.
      */
