@@ -172,8 +172,9 @@ public class RefInputHandler extends SimpleInputHandler {
             try {
                 objValue = getObjectManager(controller).getObjectWithId(idString);
             } catch (CdbException ex) {
-                msg = "Exception searching for object with id: "
-                        + idString + " reason: " + ex.getMessage();
+                msg = "Exception searching for object with id: " + idString 
+                        + " in column: " + getColumnName()
+                        + " reason: " + ex.getMessage();
                 break;
             }
             if (objValue != null) {
@@ -205,8 +206,9 @@ public class RefInputHandler extends SimpleInputHandler {
             try {
                 objValue = getObjectManager(controller).getObjectWithName(nameString.trim(), getDomainNameFilter());
             } catch (CdbException ex) {
-                msg = "Exception searching for object: "
-                        + nameString + " reason: " + ex.getMessage();
+                msg = "Exception searching for object with name: " + nameString 
+                        + " in column: " + getColumnName()
+                        + " reason: " + ex.getMessage();
                 break;
             }
             if (objValue != null) {
@@ -238,8 +240,9 @@ public class RefInputHandler extends SimpleInputHandler {
             try {
                 objValue = getObjectManager(controller).getObjectWithQrId(qrId);
             } catch (CdbException ex) {
-                msg = "Exception searching for object with QR: "
-                        + qrId + " reason: " + ex.getMessage();
+                msg = "Exception searching for object with QR: " + qrId 
+                        + " in column: " + getColumnName()
+                        + " reason: " + ex.getMessage();
                 break;
             }
             if (objValue != null) {
@@ -271,8 +274,9 @@ public class RefInputHandler extends SimpleInputHandler {
             try {
                 objValue = getObjectManager(controller).getObjectWithAttributes(attributeMap);
             } catch (CdbException ex) {
-                msg = "Exception searching for object with attributes: "
-                        + attributeMap.toString() + " reason: " + ex.getMessage();
+                msg = "Exception searching for object with attributes: " + attributeMap.toString() 
+                        + " in column: " + getColumnName()
+                        + " reason: " + ex.getMessage();
                 break;
             }
             if (objValue != null) {
@@ -301,8 +305,9 @@ public class RefInputHandler extends SimpleInputHandler {
             try {
                 objValue = getObjectManager(controller).getObjectWithPath(path);
             } catch (CdbException ex) {
-                msg = "Exception searching for object with path: "
-                        + path + " reason: " + ex.getMessage();
+                msg = "Exception searching for object with path: " + path 
+                        + " in column: " + getColumnName()
+                        + " reason: " + ex.getMessage();
                 break;
             }
             if (objValue != null) {
@@ -378,7 +383,9 @@ public class RefInputHandler extends SimpleInputHandler {
                 CdbEntity objValue = null;
                 
                 if (!singleValue) {
-                    msg = "Lookup by QR code only supported for single item references, not list.";
+                    msg = "Lookup by QR code" 
+                            + " in column: " + getColumnName()
+                            + " only supported for single item references, not list.";
                     return new ParseInfo<>(null, false, msg);
                 }
                 
@@ -389,13 +396,15 @@ public class RefInputHandler extends SimpleInputHandler {
 
                 String[] tokens = strValue.split(PREFIX_QR);
                 if (tokens.length != 2) {
-                    msg = "Invalid qrId format or missing qrId: " + strValue;
+                    msg = "Invalid qrId format or missing qrId: " + strValue
+                            + " in column: " + getColumnName();
                     return new ParseInfo<>(null, false, msg);
                     
                 } else {
                     String qrStr = tokens[1];
                     if ((qrStr == null) || (qrStr.isBlank())) {
-                        msg = "Missing or emtpy qrId.";
+                        msg = "Missing or emtpy qrId"
+                                + " in column: " + getColumnName();
                         return new ParseInfo<>(null, false, msg);
                         
                     } else {
