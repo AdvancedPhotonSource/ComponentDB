@@ -47,9 +47,10 @@ public class IdOrNameRefListColumnSpec extends IdOrNameRefColumnSpec {
                 getHeader(),
                 getPropertyName(),
                 getEntitySetterMethod(),
-                controller,
+                controllers,
                 paramType,
                 domainNameFilter,
+                false,
                 false,
                 false);
     }

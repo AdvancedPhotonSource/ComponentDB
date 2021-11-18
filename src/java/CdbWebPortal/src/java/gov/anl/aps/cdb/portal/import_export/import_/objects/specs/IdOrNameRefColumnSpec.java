@@ -44,6 +44,32 @@ public class IdOrNameRefColumnSpec extends IdRefColumnSpec {
         this.domainNameFilter = domainNameFilter;
     }
 
+    public IdOrNameRefColumnSpec(
+            String header, 
+            String importPropertyName, 
+            String importSetterMethod, 
+            String description, 
+            String exportGetterMethod, 
+            String exportTransferGetterMethod, 
+            List<ColumnModeOptions> options, 
+            List<CdbEntityController> controllers, 
+            Class paramType, 
+            String domainNameFilter) {
+        
+        super(
+                header, 
+                importPropertyName, 
+                importSetterMethod, 
+                description, 
+                exportGetterMethod,
+                exportTransferGetterMethod,
+                options,
+                controllers, 
+                paramType);
+        
+        this.domainNameFilter = domainNameFilter;
+    }
+
     @Override
     public InputHandler getInputHandler(int colIndex) {
         return new RefInputHandler(
@@ -51,11 +77,12 @@ public class IdOrNameRefColumnSpec extends IdRefColumnSpec {
                 getHeader(),
                 getPropertyName(),
                 getEntitySetterMethod(),
-                controller,
+                controllers,
                 paramType,
                 domainNameFilter,
                 false,
-                true);
+                true,
+                false);
     }
 
 }
