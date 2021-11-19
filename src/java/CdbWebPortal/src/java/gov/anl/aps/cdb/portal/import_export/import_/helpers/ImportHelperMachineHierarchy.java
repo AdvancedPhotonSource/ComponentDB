@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
+import static gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon.KEY_ASSIGNED_ITEM;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
@@ -213,10 +214,10 @@ public class ImportHelperMachineHierarchy
         }
         
         // template items cannot have assigned inventory - only catalog
-        Item assignedItem = (Item) rowMap.get(MachineImportHelperCommon.KEY_ASSIGNED_ITEM);
+        Item assignedItem = (Item) rowMap.get(KEY_ASSIGNED_ITEM);
         if ((item.getIsItemTemplate()) && ((assignedItem instanceof ItemDomainInventory))) {
             isValid = false;
-            validString = "Template cannot have assigned inventory item";
+            validString = "Template cannot have assigned inventory item, must use catalog item";
             return new ValidInfo(isValid, validString);
         }
 
