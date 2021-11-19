@@ -4,7 +4,6 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
-import com.oracle.wls.shaded.org.apache.bcel.classfile.Utility;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;

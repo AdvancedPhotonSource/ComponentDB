@@ -530,6 +530,7 @@ public class ItemDomainCableDesign extends Item {
         return new CreateInfo(connectionRelationship, isValid, validString);
     }
     
+    @JsonIgnore
     public List<ItemElementRelationship> getCableRelationshipList() {
         ItemElement selfElement = this.getSelfElement();
         List<ItemElementRelationship> ierList = selfElement.getItemElementRelationshipList1();
@@ -552,6 +553,7 @@ public class ItemDomainCableDesign extends Item {
         return new ArrayList<>();
     }
     
+    @JsonIgnore
     public List<Item> getDevicesForCableEnd(String cableEnd) {
         
         List<Item> deviceList = new ArrayList<>();
