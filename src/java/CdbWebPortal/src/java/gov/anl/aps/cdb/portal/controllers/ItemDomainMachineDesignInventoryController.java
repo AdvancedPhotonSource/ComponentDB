@@ -26,6 +26,7 @@ import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
+import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
@@ -42,8 +43,8 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
 
     public final static String controllerNamed = "itemDomainMachineDesignInventoryController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignInventoryController.class.getName());
-    
-    private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignInventoryDetailsViewSections";      
+
+    private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignInventoryDetailsViewSections";
 
     @Override
     public void createListDataModel() {
@@ -51,18 +52,18 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
         ListDataModel listDataModel = new ListDataModel(itemList);
         setListDataModel(listDataModel);
     }
-    
+
     public boolean isCurrentTopLevel() {
         ItemDomainMachineDesign current = getCurrent();
-        
+
         if (current != null) {
             List<ItemElement> itemElementMemberList = current.getItemElementMemberList();
             List<ItemElement> itemElementMemberList2 = current.getItemElementMemberList2();
-            
-            return itemElementMemberList.isEmpty() && itemElementMemberList2.isEmpty(); 
+
+            return itemElementMemberList.isEmpty() && itemElementMemberList2.isEmpty();
         }
-        
-        return false; 
+
+        return false;
     }
 
     public String getSubassemblyPageTitle() {
@@ -78,11 +79,11 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
         }
 
         return title;
-    } 
+    }
 
     @Override
     protected String getViewPath() {
-        return "/views/itemDomainMachineDesignInventory/view.xhtml"; 
+        return "/views/itemDomainMachineDesignInventory/view.xhtml";
     }
 
     @Override
@@ -103,32 +104,32 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     @Override
     public String getDefaultDomainDerivedFromDomainName() {
         return ItemDomainName.machineDesign.getValue();
-    }   
-
-    @Override
-    public DataModel getTopLevelMachineDesignSelectionList() {    
-        ItemDomainMachineDesign current = getCurrent();
-        DataModel topLevelMachineDesignSelectionList = current.getTopLevelMachineDesignSelectionList();
-        
-        if (topLevelMachineDesignSelectionList == null) {
-            List<ItemDomainMachineDesign> topLevelMachineDesignInventory = itemDomainMachineDesignFacade.getTopLevelMachineDesignInventory();
-                        
-            removeTopLevelParentOfItemFromList(current, topLevelMachineDesignInventory);            
-            
-            topLevelMachineDesignSelectionList = new ListDataModel(topLevelMachineDesignInventory);             
-            current.setTopLevelMachineDesignSelectionList(topLevelMachineDesignSelectionList);
-        }
-        
-        return topLevelMachineDesignSelectionList;         
     }
 
-    public static ItemDomainMachineDesignInventoryController getInstance() {        
-        return (ItemDomainMachineDesignInventoryController) SessionUtility.findBean(controllerNamed);        
+    @Override
+    public DataModel getTopLevelMachineDesignSelectionList() {
+        ItemDomainMachineDesign current = getCurrent();
+        DataModel topLevelMachineDesignSelectionList = current.getTopLevelMachineDesignSelectionList();
+
+        if (topLevelMachineDesignSelectionList == null) {
+            List<ItemDomainMachineDesign> topLevelMachineDesignInventory = itemDomainMachineDesignFacade.getTopLevelMachineDesignInventory();
+
+            removeTopLevelParentOfItemFromList(current, topLevelMachineDesignInventory);
+
+            topLevelMachineDesignSelectionList = new ListDataModel(topLevelMachineDesignInventory);
+            current.setTopLevelMachineDesignSelectionList(topLevelMachineDesignSelectionList);
+        }
+
+        return topLevelMachineDesignSelectionList;
+    }
+
+    public static ItemDomainMachineDesignInventoryController getInstance() {
+        return (ItemDomainMachineDesignInventoryController) SessionUtility.findBean(controllerNamed);
     }
 
     public void prepareCreateInventoryFromTemplate(ItemDomainMachineDesign template) {
-        ItemDomainMachineDesign currentForCurrentData = getCurrentForCurrentData(); 
-        currentForCurrentData.setNewMdInventoryItem(performPrepareCreateInventoryFromTemplate(template)); 
+        ItemDomainMachineDesign currentForCurrentData = getCurrentForCurrentData();
+        currentForCurrentData.setNewMdInventoryItem(performPrepareCreateInventoryFromTemplate(template));
     }
 
     public ItemDomainMachineDesign performPrepareCreateInventoryFromTemplate(ItemDomainMachineDesign template) {
@@ -139,12 +140,20 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
             ItemDomainMachineDesign template,
             UserInfo ownerUser,
             UserGroup ownerGroup) {
-        
+
         ItemDomainMachineDesign mdInventory = null;
 
         try {
-            mdInventory = createItemFromTemplate(template, ownerUser, ownerGroup);
-            createMachineDesignFromTemplateHierachically(mdInventory);
+            ItemDomainMachineDesignInventoryControllerUtility controllerUtility = getControllerUtility();
+            if (ownerUser == null) {
+                ownerUser = SessionUtility.getUser();
+            }
+            if (ownerGroup == null) {                
+                ownerGroup = ownerUser.getUserGroupList().get(0);
+            }
+
+            List<KeyValueObject> machineDesignNameList = getMachineDesignNameList();
+            mdInventory = controllerUtility.createMachineDesignFromTemplateHierachically(null, template, ownerUser, ownerGroup, machineDesignNameList);
         } catch (CdbException | CloneNotSupportedException ex) {
             LOGGER.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getMessage());
@@ -162,7 +171,7 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
 
         return mdInventory;
     }
-    
+
     public void createInventoryFromTemplateSelected(NodeSelectEvent nodeSelection) {
         templateToCreateNewItemSelected(nodeSelection);
         prepareCreateInventoryFromTemplate(templateToCreateNewItem);
@@ -185,34 +194,24 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     }
 
     @Override
-    public ItemDomainMachineDesign createMachineDesignFromTemplate(ItemElement itemElement, ItemDomainMachineDesign templateItem, UserInfo ownerUser, UserGroup ownerGroup) throws CdbException, CloneNotSupportedException {
-        ItemDomainMachineDesign createItemFromTemplate = super.createMachineDesignFromTemplate(itemElement, templateItem, ownerUser, ownerGroup);
-        
-        UserInfo user = SessionUtility.getUser();
-        getControllerUtility().assignInventoryAttributes(createItemFromTemplate, templateItem, user);
-
-        return createItemFromTemplate;
-    }    
-
-    @Override
-    public List<ItemDomainMachineDesign> getDefaultTopLevelMachineList() {        
+    public List<ItemDomainMachineDesign> getDefaultTopLevelMachineList() {
         ItemDomainMachineDesign md = getCurrent();
         ItemDomainMachineDesign parentMachineDesign = md.getParentMachineDesign();
-        while(parentMachineDesign != null) {
-            md = parentMachineDesign; 
-            parentMachineDesign = parentMachineDesign.getParentMachineDesign(); 
-        }        
-        
+        while (parentMachineDesign != null) {
+            md = parentMachineDesign;
+            parentMachineDesign = parentMachineDesign.getParentMachineDesign();
+        }
+
         md = findById(md.getId());
-        List<ItemDomainMachineDesign> parentList = new ArrayList<>(); 
-        parentList.add(md); 
-        return parentList; 
+        List<ItemDomainMachineDesign> parentList = new ArrayList<>();
+        parentList.add(md);
+        return parentList;
     }
 
     @Override
     protected boolean resetFiltersOnPreRenderList() {
         ItemDomainMachineDesign current = getCurrent();
-        return current != null; 
+        return current != null;
     }
 
     @Override
@@ -220,7 +219,7 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
         processPreRenderList();
         if (isMdInventory(entity)) {
             loadViewModeUrlParameter();
-        }        
+        }
     }
 
     @Override
@@ -264,38 +263,38 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
 
     public ItemDomainMachineDesign getNewMdInventoryItem() {
         ItemDomainMachineDesign currentForCurrentData = getCurrentForCurrentData();
-        return currentForCurrentData.getNewMdInventoryItem(); 
-    }
-    
-    @Override
-    public String getPluginItemMachineDesignSectionsName() {
-        return pluginItemMachineDesignSectionsName; 
+        return currentForCurrentData.getNewMdInventoryItem();
     }
 
     @Override
-    public void prepareEditInventoryStatus() {      
+    public String getPluginItemMachineDesignSectionsName() {
+        return pluginItemMachineDesignSectionsName;
+    }
+
+    @Override
+    public void prepareEditInventoryStatus() {
         ItemDomainMachineDesign current = getCurrent();
         UserInfo user = SessionUtility.getUser();
         getControllerUtility().prepareEditInventoryStatus(current, user);
     }
 
     @Override
-    public PropertyValue getCurrentStatusPropertyValue() {        
-        return getControllerUtility().getItemStatusPropertyValue(getCurrent()); 
-    }   
-    
+    public PropertyValue getCurrentStatusPropertyValue() {
+        return getControllerUtility().getItemStatusPropertyValue(getCurrent());
+    }
+
     @Override
     public final PropertyType getInventoryStatusPropertyType() {
-        return getControllerUtility().getInventoryStatusPropertyType(); 
+        return getControllerUtility().getInventoryStatusPropertyType();
     }
 
     @Override
     public boolean getRenderedHistoryButton() {
         return ItemStatusUtility.getRenderedHistoryButton(this);
     }
-    
+
     public PropertyValue getItemStatusPropertyValue(LocatableStatusItem item) {
-        return ItemStatusUtility.getItemStatusPropertyValue(item); 
+        return ItemStatusUtility.getItemStatusPropertyValue(item);
     }
 
     @Override
@@ -305,24 +304,24 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
 
     @Override
     protected DomainImportExportInfo initializeDomainImportInfo() {
-        
+
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         formatInfo.add(new ImportExportFormatInfo("Basic Machine Inventory Format", ImportHelperMachineInventory.class));
-        
+
         String completionUrl = "/views/itemDomainMachineDesignInventory/list?faces-redirect=true";
-        
+
         return new DomainImportExportInfo(formatInfo, completionUrl);
     }
 
     public String deletedItemsList() {
         return "/views/itemDomainMachineDesign/deletedItemsList?faces-redirect=true";
-    } 
+    }
 
     @Override
     protected ItemDomainMachineDesignInventoryControllerUtility getControllerUtility() {
-        return new ItemDomainMachineDesignInventoryControllerUtility(); 
+        return new ItemDomainMachineDesignInventoryControllerUtility();
     }
-    
+
     /**
      * Executes move to trash operation invoked from confirmation dialog.
      * Invokes base implementation, and then redirects to the machine inventory
@@ -347,9 +346,9 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
 
     @Override
     protected ItemDomainMachineDesignInventoryControllerUtility createControllerUtilityInstance() {
-        return new ItemDomainMachineDesignInventoryControllerUtility(); 
+        return new ItemDomainMachineDesignInventoryControllerUtility();
     }
-    
+
     @Override
     public ItemDomainMachineDesignTreeNode loadMachineDesignRootTreeNode(List<ItemDomainMachineDesign> itemsWithoutParents) {
         ItemDomainMachineDesignTreeNode rootTreeNode = new ItemDomainMachineDesignTreeNode(itemsWithoutParents, getDefaultDomain(), getEntityDbFacade());
@@ -359,6 +358,6 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
 
     @Override
     public ItemDomainMachineDesignTreeNode createMachineTreeNodeInstance() {
-        return new ItemDomainMachineDesignTreeNode(); 
+        return new ItemDomainMachineDesignTreeNode();
     }
 }

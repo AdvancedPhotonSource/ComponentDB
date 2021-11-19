@@ -172,15 +172,14 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
     }
 
     private void fetchChildren() {
-        unloadRelationships();
+        unloadAdditionalChildren();
 
-        if (!childrenLoaded || loadRelationshipsForNode()) {
+        if (!childrenLoaded || loadAdditionalNodes()) {
             TreeNode parent = getParent();
             if (config.isLoadAllChildren() || parent == null || parent.isExpanded()) {
                 ItemElement element = getElement();
                 if (element != null) {
                     Item containedItem = element.getContainedItem();
-                    List<ItemElement> itemElementList;
 
                     if (containedItem == null) {
                         return;
@@ -195,50 +194,28 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
                         childrenLoaded = true;
 
                         if (isLoadElementChildren()) {
-                            if (idm != null) {
-                                itemElementList = idm.getCombinedItemElementList(element);
-                            } else {
-                                itemElementList = containedItem.getItemElementDisplayList();
-                            }
+                            List<ItemElement> itemElementList = containedItem.getItemElementDisplayList();
 
-                            List<Integer> skipElementIds = new ArrayList<>();
                             for (ItemElement itemElement : itemElementList) {
-                                if (idm != null) {
-                                    Integer id = itemElement.getId();
-                                    if (skipElementIds.contains(id)) {
-                                        continue;
-                                    }
-                                    Item containedItem1 = itemElement.getContainedItem();
-                                    if (containedItem1 instanceof ItemDomainMachineDesign) {
-                                        ItemElement asnElement = ((ItemDomainMachineDesign) containedItem1).getAssignedRepresentedElement();
-                                        if (asnElement != null) {
-                                            skipElementIds.add(asnElement.getId());
-                                            ItemElement derivedFromItemElement = asnElement.getDerivedFromItemElement();
-                                            if (derivedFromItemElement != null) {
-                                                skipElementIds.add(derivedFromItemElement.getId());
-                                            }
-                                        }
-                                    }
-                                }
                                 createChildNode(itemElement);
                             }
                         }
                     }
 
-                    loadRelationships();
+                    loadAdditionalChildren();
                 }
             }
         }
     }
 
-    protected void loadRelationships() {
+    protected void loadAdditionalChildren() {
     }
 
-    protected void unloadRelationships() {
+    protected void unloadAdditionalChildren() {
     }
 
     // If toggle of relationship is avaialble, override this.
-    protected boolean loadRelationshipsForNode() {
+    protected boolean loadAdditionalNodes() {
         return false;
     }
 
@@ -284,7 +261,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
             if (parentItem instanceof ItemDomainInventory) {
                 this.setType("Inventory");
             }
-            
+
             return;
         }
         ItemDomainMachineDesign mdItem = null;
@@ -320,13 +297,13 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
                         // parent is machine design 
                         defaultDomainAssignment += "Placeholder";
                     }
-                } else if (itemDomainId == ItemDomainName.MACHINE_DESIGN_ID) {                    
+                } else if (itemDomainId == ItemDomainName.MACHINE_DESIGN_ID) {
                     // machine design sub item of a machine design 
                     defaultDomainAssignment += "Member";
-                    
+
                     ItemElement representsCatalogElement = ((ItemDomainMachineDesign) item).getRepresentsCatalogElement();
                     if (representsCatalogElement != null) {
-                        defaultDomainAssignment += "Assembly"; 
+                        defaultDomainAssignment += "Assembly";
                     }
                 } else if (itemDomainId == ItemDomainName.CATALOG_ID) {
                     // catalog sub item of a machine design 

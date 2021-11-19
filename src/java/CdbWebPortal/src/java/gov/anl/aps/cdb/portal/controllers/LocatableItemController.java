@@ -173,7 +173,7 @@ public class LocatableItemController implements Serializable {
      * @param item
      * @return
      */
-    public String getHousingStringForItem(LocatableItem item) {
+    public String getHousingStringForItem(LocatableItem item) {        
         if (item != null) {
             String housingString = item.getHousingString();
             if (housingString == null) {

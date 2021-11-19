@@ -4,7 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
+import com.oracle.wls.shaded.org.apache.bcel.classfile.Utility;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
@@ -12,6 +14,9 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperC
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -128,8 +133,14 @@ public class ImportHelperMachineAssignTemplate extends ImportHelperBase<ItemDoma
                 isValid = false;
                 validString = loadTemplateInfo.getValidInfo().getValidString();
             } else {
+                // TODO Craig - Verify if controller utility used properly. 
+                ItemDomainMachineDesignControllerUtility utility =  new ItemDomainMachineDesignControllerUtility(); 
+                // TODO Craig - Is this in the spreadsheet? 
+                UserInfo user = SessionUtility.getUser();
+                List<KeyValueObject> nameKV = utility.generateMachineDesignTemplateNameVars(templateItem);
                 ValidInfo assignValidInfo
-                        = getEntityController().assignTemplateToItem(item, templateItem);
+                        = utility.assignTemplateToItem(item, templateItem, user, nameKV);
+                // TODO Craig End
                 if (!assignValidInfo.isValid()) {
                     isValid = false;
                     validString = assignValidInfo.getValidString();

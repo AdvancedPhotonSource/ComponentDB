@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import java.io.Serializable;
 import javax.persistence.Basic;
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,6 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author djarosz
  */
 @Entity
+@Cacheable(true)
 @Table(name = "item_source")
 @XmlRootElement
 @NamedQueries({
