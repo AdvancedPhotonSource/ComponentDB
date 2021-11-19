@@ -100,12 +100,12 @@
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
-            <version>8.0</version>
+            <version>11.0.0-RC2</version>
         </dependency>        
         <dependency>
             <groupId>org.primefaces.extensions</groupId>
             <artifactId>primefaces-extensions</artifactId>
-            <version>8.0</version>
+            <version>11.0.0-RC1</version>
         </dependency>
         <dependency>
             <groupId>com.itextpdf</groupId>
