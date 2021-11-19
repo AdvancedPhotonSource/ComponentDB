@@ -111,6 +111,10 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
         self.source.navigate_to_source_list()
         self.source.test_source_pages()
 
+    def test_source_import_pages(self):
+        self.source.navigate_to_source_list()
+        self.source.test_import_create(self)
+
     def test_user_info_pages(self):
         self.user_info.navigate_to_user_info_list()
         self.user_info.test_user_info_pages()

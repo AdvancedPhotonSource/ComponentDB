@@ -4,7 +4,7 @@
 Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
-
+import os
 import time
 
 from selenium import webdriver
@@ -151,6 +151,10 @@ class CdbSeleniumModuleBase:
 				pass
 
 	@add_stale_protection
+	def _wait_for_clickable_id_with_stale_protection(self,id):
+		self._wait_for_visible_id(id)
+
+	@add_stale_protection
 	def _click_on_id_with_stale_protection(self, identifier):
 		self._click_on_id(identifier)
 
@@ -162,3 +166,73 @@ class CdbSeleniumModuleBase:
 	def _get_attribute_in_xpath_with_stale_protection(self, attribute, xpath):
 		element = self._find_by_xpath(xpath)
 		return element.get_attribute(attribute)
+
+	def _read_data_table(self, form_name, table_id):
+		headerRowXpath = '//*[@id="%s:%sContent_head"]/tr' % (form_name, table_id)
+		header = self._wait_for_xpath(headerRowXpath)
+
+		header_cells = header.find_elements_by_tag_name("th")
+		header_titles = []
+
+		for h_cell in header_cells:
+			header_text = h_cell.text
+			header_titles.append(header_text)
+
+		data_id = "%s:%sContent_data" % (form_name, table_id)
+		data = self._find_by_id(data_id)
+		rows = data.find_elements_by_tag_name('tr')
+
+		table_data = []
+
+		for row in rows:
+			cells = row.find_elements_by_tag_name('td')
+
+			row_data = {}
+			for i, val in enumerate(cells):
+				key = header_titles[i]
+				row_data[key] = val.text
+
+			table_data.append(row_data)
+
+		return table_data
+
+	def _import_navigate_to_verification_data_table(self, form_name, import_file_name):
+		# self.module._wait_for_clickable_id('importSourceForm:importWizardSelectFormatMenu')
+		self._wait_for_clickable_id_with_stale_protection('%s:importWizardSelectFormatMenu' % form_name)
+		self._click_on_id('%s:importWizardSelectFormatMenu' % form_name)
+		self._wait_for_id_and_click('%s:importWizardSelectFormatMenu_1' % form_name)
+
+		next_step_id = '%s:importWizardNextButton' % form_name
+		self._wait_for_clickable_id_with_stale_protection(next_step_id)
+		self._click_on_id_with_stale_protection(next_step_id)
+
+		self._wait_for_id_and_click('%s:importWizardRadioCreate' % form_name)
+
+		self._wait_for_clickable_id_with_stale_protection(next_step_id)
+		self._click_on_id_with_stale_protection(next_step_id)
+
+		upload_input_id = '%s:importWizardSelectFileUpload_input' % form_name
+		upload_input = self._wait_for_id(upload_input_id)
+
+		rel_path = 'data/' + import_file_name
+		abs_path = os.path.abspath(rel_path)
+		upload_input.send_keys(abs_path)
+
+		self._wait_for_clickable_id_with_stale_protection(next_step_id)
+		self._click_on_id_with_stale_protection(next_step_id)
+
+		table_data = self._read_data_table(form_name, 'importWizardTable')
+
+		return table_data
+
+	def _import_complete(self, form_name, view_base_name):
+		next_step_id = '%s:importWizardNextButton' % form_name
+		self._wait_for_clickable_id_with_stale_protection(next_step_id)
+		self._click_on_id_with_stale_protection(next_step_id)
+
+		finish_id = '%s:importWizardFinishButton' % form_name
+		self._wait_for_clickable_id_with_stale_protection(finish_id)
+		self._click_on_id_with_stale_protection(finish_id)
+
+		self._wait_for_url_contains('%s/list' % view_base_name)
+
