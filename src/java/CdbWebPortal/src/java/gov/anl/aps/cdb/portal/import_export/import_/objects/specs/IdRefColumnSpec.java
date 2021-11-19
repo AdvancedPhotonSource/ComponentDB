@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandle
 import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.RefOutputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.RefInputHandler;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ import java.util.List;
  */
 public class IdRefColumnSpec extends ColumnSpec {
 
-    protected CdbEntityController controller;
+    protected List<CdbEntityController> controllers = new ArrayList<>();
     protected Class paramType;
 
     public IdRefColumnSpec(
@@ -41,7 +42,31 @@ public class IdRefColumnSpec extends ColumnSpec {
                 exportTransferGetterMethod,
                 options);
         
-        this.controller = controller;
+        this.controllers.add(controller);
+        this.paramType = paramType;
+    }
+
+    public IdRefColumnSpec(
+            String header, 
+            String importPropertyName, 
+            String importSetterMethod, 
+            String description,
+            String exportGetterMethod,
+            String exportTransferGetterMethod,
+            List<ColumnModeOptions> options, 
+            List<CdbEntityController> controllers, 
+            Class paramType) {
+        
+        super(
+                header, 
+                importPropertyName, 
+                importSetterMethod, 
+                description, 
+                exportGetterMethod,
+                exportTransferGetterMethod,
+                options);
+        
+        this.controllers.addAll(controllers);
         this.paramType = paramType;
     }
 
@@ -52,10 +77,12 @@ public class IdRefColumnSpec extends ColumnSpec {
                 getHeader(),
                 getPropertyName(),
                 getEntitySetterMethod(),
-                controller,
+                controllers,
                 paramType,
+                null,
                 true,
-                true);
+                true,
+                false);
     }
 
     @Override

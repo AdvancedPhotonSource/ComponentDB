@@ -4,8 +4,8 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementRelationshipControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -338,6 +338,21 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
         return new ItemElementRelationshipControllerUtility(); 
     }
     
+    @Override
+    public ValidInfo isDeleteAllowed() {
+
+        boolean isValid = true;
+        String validStr = "";
+
+        // don't allow deleting primary connection
+        if (isPrimaryCableConnection()) {
+            isValid = false;
+            validStr = "Deleting primary cable connection is not allowed.";
+        }
+
+        return new ValidInfo(isValid, validStr);
+    }
+
     // convenience method for cable relationship type
     public boolean isPrimaryCableConnection() {
         return VALUE_LABEL_PRIMARY_CABLE_CONN.equals(getLabel());

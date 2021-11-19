@@ -5,8 +5,6 @@
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
-import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
-import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.RefOutputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.RefInputHandler;
@@ -48,9 +46,11 @@ public class IdRefListColumnSpec extends IdRefColumnSpec {
                 getHeader(),
                 getPropertyName(),
                 getEntitySetterMethod(),
-                controller,
+                controllers,
                 paramType,
+                null,
                 true,
+                false,
                 false);
     }
 

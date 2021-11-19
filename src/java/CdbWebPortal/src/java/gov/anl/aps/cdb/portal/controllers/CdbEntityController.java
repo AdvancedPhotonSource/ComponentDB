@@ -297,6 +297,13 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     }
 
     /**
+     * Allows subclasses to provide operation for lookup by QR. Default implementation raises exception.
+     */
+    public EntityType findByQrId(Integer qrId) throws CdbException {
+        throw new CdbException("findByQrId() operation not implemented by facade");
+    }
+
+    /**
      * New current is being set, reset related variables.
      */
     protected final void resetVariablesForCurrent() {
@@ -1106,6 +1113,10 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         resetListDataModel();
         resetSelectDataModel();
         resetLogText();
+    }
+    
+    public EntityType reloadEntity(EntityType entity) {
+        return getEntityDbFacade().find(entity.getId());
     }
 
     public void reloadCurrent() {

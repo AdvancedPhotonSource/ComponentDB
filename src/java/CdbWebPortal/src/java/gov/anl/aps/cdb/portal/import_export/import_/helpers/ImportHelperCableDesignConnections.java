@@ -333,18 +333,4 @@ public class ImportHelperCableDesignConnections
         return updateInfo.getValidInfo();
     }
 
-    @Override
-    protected ValidInfo validateDeleteEntityInstance(ItemElementRelationship entity, Map<String, Object> rowMap) {
-        
-        boolean isValid = true;
-        String validStr = "";
-        
-        // don't allow deleting primary connection
-        if (entity.isPrimaryCableConnection()) {
-            isValid = false;
-            validStr = "Deleting primary cable connection is not allowed.";
-        }
-        
-        return new ValidInfo(isValid, validStr);
-    }
 }

@@ -10,8 +10,11 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainCatal
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogBaseControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
+import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
@@ -155,7 +158,40 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
     @Override
     public boolean getEntityDisplayItemConnectors() {
         return true; 
-    }    
+    }
+    
+    /**
+     * Allows subclasses to perform custom validation of a new ItemConnector instance.
+     * @param itemConnector
+     * @return 
+     */
+    protected ValidInfo validateItemConnector_(boolean isUpdate, ItemConnector itemConnector) {
+        return new ValidInfo(true, "");
+    }
+    
+    public ValidInfo validateItemConnector(boolean isUpdate, ItemConnector itemConnector) {
+        
+        boolean isValid = true;
+        String validStr = "";
+        
+        ValidInfo validateInfo = validateItemConnector_(isUpdate, itemConnector);
+        if (!validateInfo.isValid()) {
+            isValid = false;
+            validStr = validateInfo.getValidString();
+        }
+        
+        if (itemConnector.getConnector() == null) {
+            isValid = false;
+            validStr = validStr + "ItemConnector is missing child Connector object";
+        } else {
+            if (itemConnector.getConnectorName() == null || itemConnector.getConnectorName().isBlank()) {
+                isValid = false;
+                validStr = validStr + "Connector name must be specified";
+            }
+        }
+        
+        return new ValidInfo(isValid, validStr);
+    }
 
     /**
      * Handles save button for itemConnectorListCreateDialog.
@@ -167,6 +203,8 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         ItemConnector newConnector = controller.getCurrent();
         Item item = newConnector.getItem();
         List<ItemConnector> connectorList = item.getItemConnectorList();   
+        
+        // check to see if new item is duplicate
         boolean isDuplicate = false;
         for (ItemConnector itemConnector : connectorList) {
             if ((itemConnector.getId() != null) 
@@ -174,14 +212,77 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
                 isDuplicate = true;
                 break;
             }
-        }
-        
+        }        
         if (isDuplicate) {
             this.revertItemConnectorListForCurrent();
             SessionUtility.addErrorMessage("Error", "Unable to create connector. Please use unique name.");
-        } else {
-            controller.createWithoutRedirect();
+            return;
         }
+        
+        // allow subclass to validate new item
+        ValidInfo validateInfo = validateItemConnector(false, newConnector);
+        if (!validateInfo.isValid()) {
+            this.revertItemConnectorListForCurrent();
+            SessionUtility.addErrorMessage("Error", "Unable to create connector. " + validateInfo.getValidString() + ".");
+            return;
+        }
+        
+        controller.createWithoutRedirect();
     }
 
+    public void deleteItemConnector(ItemConnector itemConnector) {
+        Item item = getCurrent();
+
+        ConnectorControllerUtility connectorControllerUtility = new ConnectorControllerUtility();
+        itemConnector = itemConnectorFacade.find(itemConnector.getId());
+        Connector connector = itemConnector.getConnector();
+        if (connectorControllerUtility.verifySafeRemovalOfConnector(connector)) {
+            completeDeleteItemConnector(itemConnector);
+        } else {
+            // Generate a userfull message
+            String message = "";
+            List<ItemConnector> itemConnectorList = connector.getItemConnectorList();
+            List<ItemConnector> connectorDeleteList = new ArrayList<>();
+            for (ItemConnector ittrConnector : itemConnectorList) {
+                Item ittrItem = ittrConnector.getItem();
+                if (ittrItem.equals(item) == false) {
+                    if (ittrItem.getDomain().getName().equals(ItemDomainName.machineDesign.getValue())) {
+                        if (ittrConnector.getItemElementRelationshipList().size() == 0) {
+                            connectorDeleteList.add(ittrConnector);
+                        } else {
+                            message = "Please check connections on machine design item: " + ittrItem.toString();
+                            SessionUtility.addErrorMessage("Error", "Cannot remove connector, check if it is used for connections in machine design. " + message);
+                        }
+                    }
+                } else {
+                    connectorDeleteList.add(ittrConnector);
+                }
+            }
+
+            if (itemConnectorList.size() == connectorDeleteList.size()) {
+                // All save. 
+                for (ItemConnector relatedConnector : connectorDeleteList) {
+                    completeDeleteItemConnector(relatedConnector);
+                }
+            }
+        }
+        reloadCurrent();
+    }
+
+    private void completeDeleteItemConnector(ItemConnector itemConnector) {
+        ItemDomainCatalogBase item = getCurrent();
+        removeCatalogItemConnector(item, itemConnector);
+        ItemConnectorController.getInstance().destroy(itemConnector);
+    }
+    
+    public void removeCatalogItemConnector(ItemDomainCatalogBase item, ItemConnector itemConnector) {
+        List<ItemConnector> itemConnectorList = item.getItemConnectorList();
+        itemConnectorList.remove(itemConnector);
+        
+        Connector connector = itemConnector.getConnector();
+        connector.getItemConnectorList().remove(itemConnector);
+        
+        itemConnector.addConnectorToRemove(connector);
+    }
+    
 }

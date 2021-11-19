@@ -44,7 +44,7 @@ public class IdOrPathColumnSpec extends IdOrNameRefColumnSpec {
                 getHeader(),
                 getPropertyName(),
                 getEntitySetterMethod(),
-                controller,
+                controllers,
                 paramType,
                 domainNameFilter,
                 false,

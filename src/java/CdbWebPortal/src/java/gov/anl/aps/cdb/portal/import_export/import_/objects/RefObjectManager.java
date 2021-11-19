@@ -83,6 +83,22 @@ public class RefObjectManager {
         return objValue;
     }
 
+    public CdbEntity getObjectWithQrId(Integer qrId) throws CdbException {
+        
+        CdbEntity objValue = null;
+                
+        objValue = controller.findByQrId(qrId);
+        if (objValue != null) {
+            if (objValue.getIsItemDeleted()) {
+                objValue = null;
+                throw new CdbException("Item with QR: " + qrId + " is deleted");
+            }
+            return getCacheObject(objValue);
+        }
+        
+        return objValue;
+    }
+
     public CdbEntity getObjectWithAttributes(Map<String,String> attributeMap) throws CdbException {
         
         CdbEntity objValue = null;

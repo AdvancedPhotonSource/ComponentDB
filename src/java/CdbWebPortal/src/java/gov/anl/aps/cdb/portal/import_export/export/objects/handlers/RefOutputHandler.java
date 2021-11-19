@@ -31,10 +31,6 @@ public class RefOutputHandler extends SimpleOutputHandler {
     @Override
     protected String formatCellValue(Object value, ExportMode exportMode) throws CdbException {
         
-        if (value instanceof String) {
-            return (String) value;
-        }
-        
         // use id's for export mode, but don't for transfer mode
         boolean useIdValues;
         if (exportMode == ExportMode.TRANSFER) {
@@ -63,6 +59,9 @@ public class RefOutputHandler extends SimpleOutputHandler {
                 } else if (value instanceof CdbEntity) {
                     CdbEntity obj = (CdbEntity) value;
                     columnValue = obj.getId().toString();
+                    
+                } else if (value instanceof String) {
+                    return (String) value;
                 }
                 
             } else {
