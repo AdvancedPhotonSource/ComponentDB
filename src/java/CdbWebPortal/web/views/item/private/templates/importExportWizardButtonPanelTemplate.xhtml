@@ -59,6 +59,7 @@ See LICENSE file.
             </p:commandButton>
 
             <p:commandButton value="Next Step"
+                             id="#{rootViewId}NextButton"
                              process="@this"
                              update="@this"
                              onstart="PF('#{rootViewId}').next();"
