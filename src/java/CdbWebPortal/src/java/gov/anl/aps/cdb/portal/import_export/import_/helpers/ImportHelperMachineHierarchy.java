@@ -11,6 +11,8 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperC
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import java.util.ArrayList;
@@ -207,6 +209,14 @@ public class ImportHelperMachineHierarchy
             // return because we need this value to continue
             isValid = false;
             validString = ""; // we don't need a message because this is already flagged as invalid because it is a required column"
+            return new ValidInfo(isValid, validString);
+        }
+        
+        // template items cannot have assigned inventory - only catalog
+        Item assignedItem = (Item) rowMap.get(MachineImportHelperCommon.KEY_ASSIGNED_ITEM);
+        if ((item.getIsItemTemplate()) && ((assignedItem instanceof ItemDomainInventory))) {
+            isValid = false;
+            validString = "Template cannot have assigned inventory item";
             return new ValidInfo(isValid, validString);
         }
 

@@ -425,6 +425,7 @@ public class RefInputHandler extends SimpleInputHandler {
                                 msg = "Unable to find object for: " + getColumnName() + " with qrId: " + qrId;
                                 return new ParseInfo<>(null, false, msg);
                             }
+                            return new ParseInfo<>(objValue, true, "");
                             
                         } catch (NumberFormatException ex) {
                             msg = "Invalid qrId number: " + qrStr + " for column: " + getColumnName();

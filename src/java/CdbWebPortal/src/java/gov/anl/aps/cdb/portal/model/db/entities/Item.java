@@ -94,6 +94,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT i FROM Item i WHERE i.itemIdentifier2 = :itemIdentifier2"),
     @NamedQuery(name = "Item.findByQrId",
             query = "SELECT i FROM Item i WHERE i.qrId = :qrId"),
+    @NamedQuery(name = "Item.findByQrIdAndDomain",
+            query = "SELECT i FROM Item i WHERE i.qrId = :qrId AND i.domain.name = :domainName"),
     @NamedQuery(name = "Item.findByDomainName",
             query = "SELECT i FROM Item i WHERE i.domain.name = :domainName ORDER BY i.name ASC"),
     @NamedQuery(name = "Item.findByDomainNameAndProject",

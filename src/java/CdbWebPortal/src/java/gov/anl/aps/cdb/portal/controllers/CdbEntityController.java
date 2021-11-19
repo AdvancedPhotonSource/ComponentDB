@@ -291,8 +291,11 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         return getEntityDbFacade().findUniqueWithAttributes(attributeMap);
     }
 
+    /**
+     * Allows subclasses to provide operation for lookup by QR. Default implementation raises exception.
+     */
     public EntityType findByQrId(Integer qrId) throws CdbException {
-        return getEntityDbFacade().findByQrId(qrId);
+        throw new CdbException("findByQrId() operation not implemented by facade");
     }
 
     /**

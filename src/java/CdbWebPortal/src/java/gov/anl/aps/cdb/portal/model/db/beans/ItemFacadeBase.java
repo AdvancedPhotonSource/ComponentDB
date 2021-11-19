@@ -634,11 +634,21 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return (List<ItemDomainEntity>) em.createNamedQuery("Item.findAllWithName").getResultList();
     }
 
-    @Override
     public ItemDomainEntity findByQrId(Integer qrId) {
         try {
             return (ItemDomainEntity) em.createNamedQuery("Item.findByQrId")
                     .setParameter("qrId", qrId)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+
+    public ItemDomainEntity findByQrIdAndDomain(Integer qrId, String domainName) {
+        try {
+            return (ItemDomainEntity) em.createNamedQuery("Item.findByQrIdAndDomain")
+                    .setParameter("qrId", qrId)
+                    .setParameter("domainName", domainName)
                     .getSingleResult();
         } catch (NoResultException ex) {
         }

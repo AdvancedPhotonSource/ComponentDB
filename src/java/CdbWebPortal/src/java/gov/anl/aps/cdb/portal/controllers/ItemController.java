@@ -2356,8 +2356,9 @@ public abstract class ItemController<
         return "";
     }
 
+    @Override
     public ItemDomainEntity findByQrId(Integer qrId) {
-        return getEntityDbFacade().findByQrId(qrId);
+        return getEntityDbFacade().findByQrIdAndDomain(qrId, getDefaultDomain().getName());
     }
 
     public String getItemElementContainedItemText(ItemElement itemElement) {
