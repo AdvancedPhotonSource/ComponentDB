@@ -36,6 +36,7 @@ See LICENSE file.
                            oncomplete="PF('loadingDialog').hide();
                                        PF('travelerTemplateTravelerListDialogWidget').show();"
                            styleClass="fa-link-icon fa fa-list"
+                           update="@form:travelerTemplateTravelerListDialog"
                            action="#{travelerDomainTemplateController.prepareTravlersCreatedFromTemplate()}">
                 <f:setPropertyActionListener target="#{travelerDomainTemplateController.selectedTemplateForTravelersCreatedFromTemplate}"
                                              value="#{templateObject}"/> 
