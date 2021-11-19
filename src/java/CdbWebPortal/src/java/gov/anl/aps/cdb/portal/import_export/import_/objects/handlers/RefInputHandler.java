@@ -24,9 +24,10 @@ import java.util.Map;
 public class RefInputHandler extends SimpleInputHandler {
 
     private static final String SEPARATOR = ",";
+    private static final String PREFIX_QR = "qr:";
 
     private Class paramType;
-    private CdbEntityController controller;
+    private List<CdbEntityController> controllers = new ArrayList<>();
     private String domainNameFilter = null;
     private boolean idOnly = false;
     private boolean singleValue = true;
@@ -47,7 +48,7 @@ public class RefInputHandler extends SimpleInputHandler {
             Class paramType) {
         
         super(columnIndex, columnName, propertyName, setterMethod);
-        this.controller = controller;
+        this.controllers.add(controller);
         this.paramType = paramType;
     }
 
@@ -111,6 +112,27 @@ public class RefInputHandler extends SimpleInputHandler {
         this.allowPaths = allowPaths;
     }
     
+    public RefInputHandler(
+            int columnIndex,
+            String columnName,
+            String propertyName,
+            String setterMethod,
+            List<CdbEntityController> controllers,
+            Class paramType,
+            String domainNameFilter,
+            boolean idOnly,
+            boolean singleValue,
+            boolean allowPaths) {
+        
+        super(columnIndex, columnName, propertyName, setterMethod);
+        this.controllers.addAll(controllers);
+        this.paramType = paramType;
+        this.domainNameFilter = domainNameFilter;
+        this.idOnly = idOnly;
+        this.singleValue = singleValue;
+        this.allowPaths = allowPaths;
+    }
+    
     public void setDomainNameFilter(String filter) {
         domainNameFilter = filter;
     }
@@ -119,7 +141,7 @@ public class RefInputHandler extends SimpleInputHandler {
         return domainNameFilter;
     }
     
-    protected RefObjectManager getObjectManager() {
+    protected RefObjectManager getObjectManager(CdbEntityController controller) {
         return getObjectManager(controller, domainNameFilter);
     }
     
@@ -137,10 +159,41 @@ public class RefInputHandler extends SimpleInputHandler {
         return paramType;
     }
     
-    protected CdbEntity getCacheObject(CdbEntity entity) {
-        return getObjectManager().getCacheObject(entity);
+    protected CdbEntity getCacheObject(CdbEntityController controller, CdbEntity entity) {
+        return getObjectManager(controller).getCacheObject(entity);
     }
     
+    protected ParseInfo getSingleObjectById(String idString) {
+        
+        CdbEntity objValue = null;
+        String msg = "";
+
+        for (CdbEntityController controller : controllers) {
+            try {
+                objValue = getObjectManager(controller).getObjectWithId(idString);
+            } catch (CdbException ex) {
+                msg = "Exception searching for object with id: " + idString 
+                        + " in column: " + getColumnName()
+                        + " reason: " + ex.getMessage();
+                break;
+            }
+            if (objValue != null) {
+                // stop when we find a match
+                break;
+            }
+        }       
+
+        if (objValue == null) {
+            if (msg.isEmpty()) {
+                msg = "Unable to find object for: "
+                        + getColumnName() + " with id: " + idString;
+            }
+            return new ParseInfo<>(null, false, msg);
+        }
+        
+        return new ParseInfo<>(objValue, true, "");                        
+    }
+
     /**
      * Allows subclasses to customize look up for single object by name. 
      */
@@ -149,17 +202,59 @@ public class RefInputHandler extends SimpleInputHandler {
         CdbEntity objValue = null;
         String msg = "";
 
-        try {
-            objValue = getObjectManager().getObjectWithName(nameString.trim(), getDomainNameFilter());
-        } catch (CdbException ex) {
-            msg = "Exception searching for object: "
-                    + nameString + " reason: " + ex.getMessage();
-        }
+        for (CdbEntityController controller : controllers) {
+            try {
+                objValue = getObjectManager(controller).getObjectWithName(nameString.trim(), getDomainNameFilter());
+            } catch (CdbException ex) {
+                msg = "Exception searching for object with name: " + nameString 
+                        + " in column: " + getColumnName()
+                        + " reason: " + ex.getMessage();
+                break;
+            }
+            if (objValue != null) {
+                // stop when we find a match
+                break;
+            }
+        }       
 
         if (objValue == null) {
             if (msg.isEmpty()) {
                 msg = "Unable to find object for: "
                         + getColumnName() + " with name: " + nameString;
+            }
+            return new ParseInfo<>(null, false, msg);
+        }
+        
+        return new ParseInfo<>(objValue, true, "");                        
+    }
+
+    /**
+     * Allows subclasses to customize look up for single object by qr. 
+     */
+    protected ParseInfo getSingleObjectByQrId(Integer qrId) {
+        
+        CdbEntity objValue = null;
+        String msg = "";
+
+        for (CdbEntityController controller : controllers) {
+            try {
+                objValue = getObjectManager(controller).getObjectWithQrId(qrId);
+            } catch (CdbException ex) {
+                msg = "Exception searching for object with QR: " + qrId 
+                        + " in column: " + getColumnName()
+                        + " reason: " + ex.getMessage();
+                break;
+            }
+            if (objValue != null) {
+                // stop when we find a match
+                break;
+            }
+        }
+
+        if (objValue == null) {
+            if (msg.isEmpty()) {
+                msg = "Unable to find object for: "
+                        + getColumnName() + " with QR: " + qrId;
             }
             return new ParseInfo<>(null, false, msg);
         }
@@ -175,17 +270,56 @@ public class RefInputHandler extends SimpleInputHandler {
         CdbEntity objValue = null;
         String msg = "";
 
-        try {
-            objValue = getObjectManager().getObjectWithAttributes(attributeMap);
-        } catch (CdbException ex) {
-            msg = "Exception searching for object with attributes: "
-                    + attributeMap.toString() + " reason: " + ex.getMessage();
+        for (CdbEntityController controller : controllers) {
+            try {
+                objValue = getObjectManager(controller).getObjectWithAttributes(attributeMap);
+            } catch (CdbException ex) {
+                msg = "Exception searching for object with attributes: " + attributeMap.toString() 
+                        + " in column: " + getColumnName()
+                        + " reason: " + ex.getMessage();
+                break;
+            }
+            if (objValue != null) {
+                // stop when we find a match
+                break;
+            }
         }
 
         if (objValue == null) {
             if (msg.isEmpty()) {
                 msg = "Unable to find object for: "
                         + getColumnName() + " with attributes: " + attributeMap.toString();
+            }
+            return new ParseInfo<>(null, false, msg);
+        }
+        
+        return new ParseInfo<>(objValue, true, "");                        
+    }
+    
+    protected ParseInfo getObjectWithPath(String path) {
+        
+        CdbEntity objValue = null;
+        String msg = "";
+
+        for (CdbEntityController controller : controllers) {
+            try {
+                objValue = getObjectManager(controller).getObjectWithPath(path);
+            } catch (CdbException ex) {
+                msg = "Exception searching for object with path: " + path 
+                        + " in column: " + getColumnName()
+                        + " reason: " + ex.getMessage();
+                break;
+            }
+            if (objValue != null) {
+                // stop when we find a match
+                break;
+            }
+        }
+
+        if (objValue == null) {
+            if (msg.isEmpty()) {
+                msg = "Unable to find object for: "
+                        + getColumnName() + " with path: " + path;
             }
             return new ParseInfo<>(null, false, msg);
         }
@@ -241,6 +375,64 @@ public class RefInputHandler extends SimpleInputHandler {
                     objValue = (CdbEntity) parseInfo.getValue();
                     return new ParseInfo<>(objValue, true, "");
                 }
+                
+            } else if (strValue.startsWith(PREFIX_QR)) {
+                // parse as qrId
+                
+                String msg = "";
+                CdbEntity objValue = null;
+                
+                if (!singleValue) {
+                    msg = "Lookup by QR code" 
+                            + " in column: " + getColumnName()
+                            + " only supported for single item references, not list.";
+                    return new ParseInfo<>(null, false, msg);
+                }
+                
+                if (idOnly) {
+                    msg = "Lookup by QR code not enabled for column: " + getColumnName();
+                    return new ParseInfo<>(null, false, msg);
+                }
+
+                String[] tokens = strValue.split(PREFIX_QR);
+                if (tokens.length != 2) {
+                    msg = "Invalid qrId format or missing qrId: " + strValue
+                            + " in column: " + getColumnName();
+                    return new ParseInfo<>(null, false, msg);
+                    
+                } else {
+                    String qrStr = tokens[1];
+                    if ((qrStr == null) || (qrStr.isBlank())) {
+                        msg = "Missing or emtpy qrId"
+                                + " in column: " + getColumnName();
+                        return new ParseInfo<>(null, false, msg);
+                        
+                    } else {
+                        qrStr = qrStr.trim(); // remove leading/trailing space
+                        qrStr = qrStr.replaceAll("\\s+", ""); // remove internal spaces e.g., "000 123 456"
+                        Integer qrId = null;
+                        try {
+                            qrId = Integer.valueOf(qrStr);
+                            
+                            ParseInfo objWithQrInfo = getSingleObjectByQrId(qrId);
+                            if (!objWithQrInfo.getValidInfo().isValid()) {
+                                return objWithQrInfo;
+                            } else {
+                                objValue = (CdbEntity) objWithQrInfo.getValue();
+                            }
+                            
+                            if (objValue == null) {
+                                msg = "Unable to find object for: " + getColumnName() + " with qrId: " + qrId;
+                                return new ParseInfo<>(null, false, msg);
+                            }
+                            return new ParseInfo<>(objValue, true, "");
+                            
+                        } catch (NumberFormatException ex) {
+                            msg = "Invalid qrId number: " + qrStr + " for column: " + getColumnName();
+                            return new ParseInfo<>(null, false, msg);
+                        }
+                    }
+                }
 
             } else if (strValue.charAt(0) == '#') {
                 // lookup by name(s)
@@ -255,19 +447,24 @@ public class RefInputHandler extends SimpleInputHandler {
                 if (!nameString.isEmpty()) {
                     
                     if (singleValue) {
-                        // parse and lookup single name
+                        // parse and lookup single name or path
                         
                         CdbEntity objValue = null;
                         String msg = "";
                         
                         if (allowPaths && (nameString.charAt(0) == '/')) {
-                            try {
-                                objValue = getObjectManager().getObjectWithPath(nameString.trim());
-                            } catch (CdbException ex) {
-                                msg = "Exception searching for object: "
-                                        + nameString + " reason: " + ex.getMessage();
+                            // lookup by path
+                            
+                            ParseInfo objWithPathInfo = getObjectWithPath(nameString.trim());
+                            if (!objWithPathInfo.getValidInfo().isValid()) {
+                                return objWithPathInfo;
+                            } else {
+                                objValue = (CdbEntity) objWithPathInfo.getValue();
                             }
+                            
                         } else {
+                            // lookup by name
+                            
                             ParseInfo objWithNameInfo = getSingleObjectByName(nameString);
                             if (!objWithNameInfo.getValidInfo().isValid()) {
                                 return objWithNameInfo;
@@ -293,11 +490,11 @@ public class RefInputHandler extends SimpleInputHandler {
                         for (String nameToken : nameTokens) {
                             CdbEntity objValue = null;
                             String msg = "";
-                            try {
-                                objValue =  getObjectManager().getObjectWithName(nameToken.trim(), getDomainNameFilter());
-                            } catch (CdbException ex) {
-                                msg = "exception searching for object with name: "
-                                        + nameToken + " reason: " + ex.getMessage();
+                            ParseInfo objWithNameInfo = getSingleObjectByName(nameToken.trim());
+                            if (!objWithNameInfo.getValidInfo().isValid()) {
+                                return objWithNameInfo;
+                            } else {
+                                objValue = (CdbEntity) objWithNameInfo.getValue();
                             }
                             if (objValue == null) {
                                 if (msg.isEmpty()) {
@@ -324,11 +521,11 @@ public class RefInputHandler extends SimpleInputHandler {
                     CdbEntity objValue = null;
                     String msg = "";
                     
-                    try {
-                        objValue = getObjectManager().getObjectWithId(strValue.trim());
-                    } catch (CdbException ex) {
-                        msg = "exception searching for object with id: "
-                                + strValue + " reason: " + ex.getMessage();
+                    ParseInfo objWithidInfo = getSingleObjectById(strValue.trim());
+                    if (!objWithidInfo.getValidInfo().isValid()) {
+                        return objWithidInfo;
+                    } else {
+                        objValue = (CdbEntity) objWithidInfo.getValue();
                     }
                     
                     if (objValue == null) {
@@ -351,13 +548,13 @@ public class RefInputHandler extends SimpleInputHandler {
                         CdbEntity objValue = null;
                         String msg = "";
                         
-                        try {
-                            objValue = getObjectManager().getObjectWithId(idToken.trim());
-                        } catch (CdbException ex) {
-                            msg = "exception searching for object with id: "
-                                    + idToken + " reason: " + ex.getMessage();
+                        ParseInfo objWithidInfo = getSingleObjectById(idToken.trim());
+                        if (!objWithidInfo.getValidInfo().isValid()) {
+                            return objWithidInfo;
+                        } else {
+                            objValue = (CdbEntity) objWithidInfo.getValue();
                         }
-                        
+
                         if (objValue == null) {
                             if (msg.isEmpty()) {
                                 msg = "Unable to find object for: "

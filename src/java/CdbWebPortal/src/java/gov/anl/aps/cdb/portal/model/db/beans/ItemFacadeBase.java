@@ -644,6 +644,17 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return null;
     }
 
+    public ItemDomainEntity findByQrIdAndDomain(Integer qrId, String domainName) {
+        try {
+            return (ItemDomainEntity) em.createNamedQuery("Item.findByQrIdAndDomain")
+                    .setParameter("qrId", qrId)
+                    .setParameter("domainName", domainName)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+
     public ItemDomainEntity findById(Integer id) {
         try {
             return (ItemDomainEntity) em.createNamedQuery("Item.findById")

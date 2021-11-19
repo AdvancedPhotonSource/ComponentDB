@@ -5,18 +5,22 @@
 package gov.anl.aps.cdb.portal.import_export.import_.objects;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.AssignedItemHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.LocationHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.MachineItemRefColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.MultiDomainRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
@@ -34,7 +38,7 @@ public class MachineImportHelperCommon {
     public static final String KEY_INDENT = "indentLevel";
     public static final String KEY_MD_ITEM = "importMdItem";
     public static final String KEY_SORT_ORDER = "importSortOrder";
-    public static final String KEY_ASSIGNED_ITEM = "assignedItem";
+    public static final String KEY_ASSIGNED_ITEM = "assignedItemString";
     public static final String KEY_LOCATION = "location";
     public static final String KEY_IS_TEMPLATE = "importIsTemplateString";
     public static final String KEY_TEMPLATE_INVOCATION = "importTemplateAndParameters";
@@ -150,29 +154,26 @@ public class MachineImportHelperCommon {
                 options);
     }
     
-    public static StringColumnSpec assignedItemDescriptionColumnSpec(List<ColumnModeOptions> options) {
-        return new StringColumnSpec(
-                HEADER_ASSIGNED_ITEM_DESCRIPTION,
-                "importAssignedItemDescription",
-                "setImportAssignedItemDescription",
-                "Description of catalog or inventory item assigned to machine element (for documentation purposes only, ignored by import mechanism).",
-                "getCatalogItemName",
-                options,
-                256);
-    }
-    
-    public static CustomColumnSpec assignedItemColumnSpec(List<ColumnModeOptions> options) {
-        AssignedItemHandler assignedItemHandler = new AssignedItemHandler();
-        return new CustomColumnSpec(
+    public static MultiDomainRefColumnSpec assignedItemColumnSpec(List<ColumnModeOptions> options) {
+        List<CdbEntityController> controllers = new ArrayList<>();
+        controllers.add(ItemDomainCatalogController.getInstance());
+        controllers.add(ItemDomainInventoryController.getInstance());
+        return new MultiDomainRefColumnSpec(
                 HEADER_ASSIGNED_ITEM,
-                "importAssignedItemString",
-                "CDB ID or name of assigned catalog or inventory item. Name can only be used for catalog items and must be unique and prefixed with '#'.",
+                KEY_ASSIGNED_ITEM,
+                "setAssignedItem",
+                "CDB ID, QR ID or name of assigned catalog or inventory item. Name can only be used for catalog items and must be unique and prefixed with '#'. QR ID must be prefixed with 'qr:'.",
                 "getAssignedItem",
                 "getCatalogItemAttributeMap",
                 options,
-                assignedItemHandler);
+                controllers,
+                Item.class,
+                "",
+                false,
+                true,
+                false);
     }
-    
+
     public static CustomColumnSpec locationColumnSpec(List<ColumnModeOptions> options) {
         LocationHandler locationHandler = new LocationHandler();        
         return new CustomColumnSpec(

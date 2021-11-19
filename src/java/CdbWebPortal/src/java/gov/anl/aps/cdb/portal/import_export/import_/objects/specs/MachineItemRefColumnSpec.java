@@ -48,7 +48,7 @@ public class MachineItemRefColumnSpec extends IdOrNameRefColumnSpec {
                 getHeader(),
                 getPropertyName(),
                 getEntitySetterMethod(),
-                controller,
+                ItemDomainMachineDesignController.getInstance(),
                 paramType,
                 rootItem,
                 false,

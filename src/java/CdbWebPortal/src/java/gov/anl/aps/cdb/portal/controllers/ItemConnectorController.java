@@ -36,7 +36,7 @@ public class ItemConnectorController extends CdbEntityController<ItemConnectorCo
     }
 
     @Override
-    protected ItemConnectorFacade getEntityDbFacade() {
+    public ItemConnectorFacade getEntityDbFacade() {
         return itemConnectorFacade;
     }
 

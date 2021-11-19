@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCableCat
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableCatalogSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableCatalogControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableCatalogConnectors;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
@@ -111,6 +112,28 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         itemConnector.getConnector().setCableEndDesignation(CdbEntity.DEFAULT_CABLE_END_DESIGNATION);
     }
 
+    @Override
+    protected ValidInfo validateItemConnector_(boolean isUpdate, ItemConnector itemConnector) {
+        
+        boolean isValid = true;
+        String validStr = "";
+        
+        String cableEnd = itemConnector.getCableEndDesignation();
+        
+        // cable end must be specified
+        if (cableEnd == null || (cableEnd.isBlank())) {
+            isValid = false;
+            validStr = "Cable End must be specified";
+            
+        // cable end must be valid value
+        } else if (!CdbEntity.isValidCableEndDesignation(cableEnd)) {
+            isValid = false;
+            validStr = "Invalid value for Cable End: " + cableEnd;
+        }
+        
+        return new ValidInfo(isValid, validStr);
+    }
+
     // <editor-fold defaultstate="collapsed" desc="import/export support">   
     
     @Override
@@ -124,10 +147,10 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         
         formatInfo.add(new ImportExportFormatInfo(
-                "Basic Cable Catalog Create/Update Format", ImportHelperCableCatalog.class));
+                "Basic Cable Catalog Create/Update/Delete Format", ImportHelperCableCatalog.class));
         
         formatInfo.add(new ImportExportFormatInfo(
-                "Cable Catalog Connectors Create Format", ImportHelperCableCatalogConnectors.class));
+                "Cable Catalog Connectors Create/Update/Delete Format", ImportHelperCableCatalogConnectors.class));
         
         String completionUrl = "/views/itemDomainCableCatalog/list?faces-redirect=true";
         
@@ -147,6 +170,9 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         formatInfo.add(
                 new ImportExportFormatInfo("Basic Cable Catalog Create/Update Format", 
                         ImportHelperCableCatalog.class));
+        
+        formatInfo.add(new ImportExportFormatInfo(
+                "Cable Catalog Connectors Create/Update/Delete Format", ImportHelperCableCatalogConnectors.class));
         
         String completionUrl = "/views/itemDomainCableCatalog/list?faces-redirect=true";
         

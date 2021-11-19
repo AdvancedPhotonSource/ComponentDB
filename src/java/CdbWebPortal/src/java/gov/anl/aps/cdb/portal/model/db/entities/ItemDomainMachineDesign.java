@@ -9,7 +9,6 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
-import gov.anl.aps.cdb.portal.constants.SystemPropertyTypeNames;
 import gov.anl.aps.cdb.portal.controllers.EntityTypeController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignControlController;
@@ -54,9 +53,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient ItemDomainMachineDesign importMdItem = null;
     private transient String importPath = null;
     private transient String importParentPath = null;
-    private transient ItemDomainCatalog importAssignedCatalogItem = null;
-    private transient ItemDomainInventory importAssignedInventoryItem = null;
-    private transient String importAssignedItemDescription = null;
     private transient ItemDomainLocation importLocationItem = null;
     private transient String importLocationItemString = null;
     private transient String importTemplateAndParameters = null;
@@ -414,6 +410,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
 
     @JsonIgnore
+    public String getAssignedItemString() {
+    if (getAssignedItem() != null) {
+            return this.getAssignedItem().getName();
+        } else {
+            return "";
+        }
+    }
+
+    @JsonIgnore
     public ItemElement getRepresentsCatalogElement() {
         ItemElement selfElement = getSelfElement();
         if (selfElement != null) {
@@ -549,65 +554,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         }
         return null;
     }
-
-    @JsonIgnore
-    public ItemDomainCatalog getImportAssignedCatalogItem() {
-        return importAssignedCatalogItem;
-    }
-
-    public void setImportAssignedCatalogItem(ItemDomainCatalog item) {
-        importAssignedCatalogItem = item;
-    }
-
-    @JsonIgnore
-    public String getImportAssignedCatalogItemString() {
-        if (importAssignedCatalogItem != null) {
-            return importAssignedCatalogItem.getName();
-        } else {
-            return "";
-        }
-    }
-
-    public void setImportAssignedInventoryItem(ItemDomainInventory item) {
-        importAssignedInventoryItem = item;
-    }
-
-    @JsonIgnore
-    public ItemDomainInventory getImportAssignedInventoryItem() {
-        return importAssignedInventoryItem;
-    }
-
-    @JsonIgnore
-    public String getImportAssignedInventoryItemString() {
-        if (importAssignedInventoryItem != null) {
-            return importAssignedInventoryItem.getName();
-        } else {
-            return "";
-        }
-    }
-
-    @JsonIgnore
-    public String getImportAssignedItemString() {
-        if (importAssignedInventoryItem != null) {
-            return importAssignedInventoryItem.getName();
-        } else if (importAssignedCatalogItem != null) {
-            return importAssignedCatalogItem.getName();
-        } else if ((getId() != null) && (getAssignedItem() != null)) {
-            return this.getAssignedItem().getName();
-        } else {
-            return "";
-        }
-    }
-
-    @JsonIgnore
-    public String getImportAssignedItemDescription() {
-        return importAssignedItemDescription;
-    }
-
-    public void setImportAssignedItemDescription(String importAssignedItemDescription) {
-        this.importAssignedItemDescription = importAssignedItemDescription;
-    }
-
+    
     @JsonIgnore
     public ItemDomainCatalog getCatalogItem() {
         Item assignedItem = getAssignedItem();
@@ -676,14 +623,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public void setImportTemplateAndParameters(String importTemplateAndParameters) {
         this.importTemplateAndParameters = importTemplateAndParameters;
-    }
-
-    public void applyImportAssignedItem() {
-        if (importAssignedInventoryItem != null) {
-            setAssignedItem(importAssignedInventoryItem);
-        } else if (importAssignedCatalogItem != null) {
-            setAssignedItem(importAssignedCatalogItem);
-        }
     }
 
     /**

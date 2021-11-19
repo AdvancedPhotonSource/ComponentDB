@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.import_export.import_.objects.handlers;
 
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ParseInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
@@ -47,6 +48,10 @@ public class MachineItemRefInputHandler extends RefInputHandler {
         this.rootItem = rootItem;
     }
     
+    private ItemDomainMachineDesignController getController() {
+        return ItemDomainMachineDesignController.getInstance();
+    }
+    
     /**
      * Finds machine item with specified name and checks that its top-level 
      * parent item is rootParentItem. 
@@ -81,7 +86,7 @@ public class MachineItemRefInputHandler extends RefInputHandler {
             validString = "no item found with name: " + itemName + " and root item: " + rootParentItem.getName();
         } else if (matches.size() == 1) {
             entity = matches.get(0);
-            entity = super.getCacheObject(entity);
+            entity = super.getCacheObject(getController(), entity);
         }
         else if (matches.size() > 1) {
             // more than one match
