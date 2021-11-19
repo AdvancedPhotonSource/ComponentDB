@@ -11,10 +11,11 @@ See LICENSE file.
                 template="itemDomainEntityCustomizeDisplayDialogTemplate.xhtml">
     
     <ui:define name="defineCustomizeDisplayDialogVariables">
+        <ui:param name="customizeDisplayUpdateTarget"
+                  value="" />
         <ui:param name="customizeDisplayOnComplete"
                   value="customizeListDisplay()" />
-        <p:remoteCommand name="customizeListDisplay"
-                         update="@form"
+        <p:remoteCommand name="customizeListDisplay"                                                  
                          onstart="PF('loadingDialog').show()"
                          oncomplete="onCompleteCustomizeListDisplay()"
                          action="#{entityController.customizeListDisplay()}" />
