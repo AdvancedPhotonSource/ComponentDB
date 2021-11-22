@@ -672,6 +672,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public static ItemDomainMachineDesign importInstantiateTemplateUnderParent(
             ItemDomainMachineDesign templateItem,
+            List<KeyValueObject> nameVars,
             ItemDomainMachineDesign parentItem,
             UserInfo user,
             UserGroup group) {
@@ -685,18 +686,14 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
         ItemElement itemElement = importCreateItemElementForParent(parentItem, user, group, null);
 
-        //TODO Craig
         ItemDomainMachineDesignBaseControllerUtility utility = parentItem.getItemControllerUtility();
 
         ItemDomainMachineDesign newItem;
         try {         
-            // TODO Craig has the name value param been filled out? It may be part of "current" if done using old method.
-            List<KeyValueObject> nameVars = utility.generateMachineDesignTemplateNameVars(templateItem);
-            // TODO Craig
-            newItem = utility.createMachineDesignFromTemplateHierachically(itemElement, templateItem, user, group, nameVars);
-
+            newItem = utility.createMachineDesignFromTemplateHierachically(
+                    itemElement, templateItem, user, group, nameVars);
             setImportChildParentRelationship(newItem, parentItem, itemElement);
-
+            
         } catch (CdbException | CloneNotSupportedException ex) {
             LOGGER.error(logMethodName + "failed to instantiate template "
                     + templateItem.getName() + ": " + ex.toString());

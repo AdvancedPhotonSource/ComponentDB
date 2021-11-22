@@ -305,15 +305,15 @@ public class MachineImportHelperCommon {
         return new CreateInfo(existingItem, isValid, validString);
     }
 
-    public static CreateInfo loadTemplateAndSetParamValues(Map<String, Object> rowMap) {
+    public static TemplateInvocationInfo loadTemplateAndSetParamValues(Map<String, Object> rowMap) {
         
         boolean isValid = true;
         String validString = "";
-        ItemDomainMachineDesign templateItem = null; 
+        ItemDomainMachineDesign templateItem = null;
+        List<KeyValueObject> varNameList = null;
         
         String templateName = "";
         Map<String, String> varNameValueMap = new HashMap<>();
-        //TODO Craig
         ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
         ItemDomainMachineDesignControllerUtility utility = new ItemDomainMachineDesignControllerUtility();
         
@@ -365,7 +365,7 @@ public class MachineImportHelperCommon {
         }
         
         if (!isValid) {
-            return new CreateInfo(null, isValid, validString);
+            return new TemplateInvocationInfo(null, null, isValid, validString);
             
         } else {
             
@@ -393,8 +393,7 @@ public class MachineImportHelperCommon {
                 } else {
                     // generate list of variable name/value pairs
                     controller.setMachineDesignNameList(new ArrayList<>());
-                    // TODO Craig
-                    List<KeyValueObject> varNameList = utility.generateMachineDesignTemplateNameListRecursivelly(templateItem);
+                    varNameList = utility.generateMachineDesignTemplateNameListRecursivelly(templateItem);
                     for (KeyValueObject obj : varNameList) {
                         
                         // check that all params in template are specified in import params
@@ -412,7 +411,7 @@ public class MachineImportHelperCommon {
 
         }
         
-        return new CreateInfo(templateItem, isValid, validString);
+        return new TemplateInvocationInfo(templateItem, varNameList, isValid, validString);
     }
     
 }
