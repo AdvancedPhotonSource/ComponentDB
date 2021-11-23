@@ -73,13 +73,15 @@ See LICENSE file.
                 <f:ajax event="toggle" onevent="travelerInstanceForTemplateToggleArchivePanel()" /> 
                 <p:remoteCommand name="travelerInstanceForTemplateToggleArchivePanel"
                                  onstart="PF('loadingDialog').show()"
-                                 action="#{travelerDomainTemplateController.toggleArchivedPanel()}"                                 
+                                 action="#{travelerDomainTemplateController.toggleArchivedPanel()}"   
+                                 update="travelerTemplateTravelerListDialogPanel"
                                  oncomplete="onShowtravelerTemplateTravelerListDialog()" /> 
 
                 <p:commandButton id="travelerTemplateTravelerListDialogArchiveModeToggle"
                                  value="Current Mode: #{travelerDomainTemplateController.archiveMode}" 
-                                 action="#{travelerDomainTemplateController.toggleShowArchived()}" 
+                                 action="#{travelerDomainTemplateController.toggleShowArchived()}"                                  
                                  onclick="PF('loadingDialog').show();"
+                                 update="travelerTemplateTravelerListDialogPanel"
                                  oncomplete="onShowtravelerTemplateTravelerListDialog();" > 
                     <p:tooltip for="travelerTemplateTravelerListDialogArchiveModeToggle"
                                value="Click to toggle between archive and unarchive modes" /> 
@@ -112,6 +114,7 @@ See LICENSE file.
                 <p:commandButton value="#{travelerDomainTemplateController.archiveMode} Selection"
                                  action="#{travelerDomainTemplateController.archiveSelectedTravelersCreatedFromTemplate()}"
                                  onclick="PF('loadingDialog').show();"
+                                 update="travelerTemplateTravelerListDialogPanel"
                                  oncomplete="onShowtravelerTemplateTravelerListDialog();"/> 
 
             </p:panel>
@@ -125,8 +128,7 @@ See LICENSE file.
         </f:facet>
     </p:dialog>  
 
-    <p:remoteCommand name="onShowtravelerTemplateTravelerListDialog"
-                     update="travelerTemplateTravelerListDialogPanel"
+    <p:remoteCommand name="onShowtravelerTemplateTravelerListDialog"                     
                      onstart="PF('loadingDialog').show()"
                      oncomplete="PF('travelerTemplateTravelerListDialogWidget').initPosition();
                      PF('travelerTemplateTravelerListDialogDataTableWidget').unselectAllRows(); 
