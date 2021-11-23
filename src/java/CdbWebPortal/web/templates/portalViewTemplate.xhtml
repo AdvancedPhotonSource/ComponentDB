@@ -253,6 +253,9 @@ See LICENSE file.
                                   styleClass="viewTransparentBackgroundDialog">
                             <p:outputLabel value="Your session has expired due to inactivity." />
                             <f:facet name="footer">
+                                <p:commandButton value="Try last viewed page" 
+                                                 icon="fa fa-undo"
+                                                 onclick="loadLastViewedPage('#{pathContextRoot}');" />
                                 <p:commandButton value="Go back to home" 
                                                  icon="fa fa-home"
                                                  onclick="handleSessionTimeout('#{pathContextRoot}');" />
