@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemTypeController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
@@ -149,11 +150,6 @@ public class ImportHelperLocation
     }
     
     @Override
-    protected ItemDomainLocation newInstance_() {
-        return getEntityController().createEntityInstance();
-    }
-    
-    @Override
     protected String getKeyName_() {
         return KEY_NAME;
     }
@@ -169,8 +165,7 @@ public class ImportHelperLocation
     }
             
     @Override
-    protected ValidInfo initEntityInstance_(
-            ItemDomainLocation item,
+    protected CreateInfo createEntityInstance_(
             ItemDomainLocation itemParent,
             Map<String, Object> rowMap,
             String itemName,
@@ -179,6 +174,8 @@ public class ImportHelperLocation
         
         boolean isValid = true;
         String validString = "";
+        
+        ItemDomainLocation item = getEntityController().createEntityInstance();
 
         // determine sort order
         Float itemSortOrder = (Float)rowMap.get(KEY_SORT_ORDER);
@@ -217,7 +214,7 @@ public class ImportHelperLocation
                     itemParent, childItemElementName, itemSortOrder, user, group);
         }
         
-        return new ValidInfo(isValid, validString);
+        return new CreateInfo(item, isValid, validString);
     }
 
     protected String getCustomSummaryDetails() {        

@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
 import static gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon.KEY_ASSIGNED_ITEM;
@@ -35,8 +36,6 @@ public class ImportHelperMachineHierarchy
         extends ImportHelperHierarchyBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
         
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineHierarchy.class.getName());
-    
-    private Map<ItemDomainMachineDesign, Item> assignedItemMap = new HashMap<>();
     
     private int nonTemplateItemCount = 0;
     private int templateItemCount = 0;
@@ -159,11 +158,6 @@ public class ImportHelperMachineHierarchy
     }
             
     @Override
-    protected ItemDomainMachineDesign newInstance_() {
-        return getEntityController().createEntityInstance();
-    }
-    
-    @Override
     protected String getKeyName_() {
         return MachineImportHelperCommon.KEY_NAME;
     }
@@ -179,8 +173,7 @@ public class ImportHelperMachineHierarchy
     }
             
     @Override
-    protected ValidInfo initEntityInstance_(
-            ItemDomainMachineDesign item,
+    protected CreateInfo createEntityInstance_(
             ItemDomainMachineDesign itemParent,
             Map<String, Object> rowMap,
             String itemName,
@@ -189,7 +182,9 @@ public class ImportHelperMachineHierarchy
         
         boolean isValid = true;
         String validString = "";
-
+        
+        ItemDomainMachineDesign item = getEntityController().createEntityInstance();
+        
         // determine sort order
         Float itemSortOrder = (Float) rowMap.get(MachineImportHelperCommon.KEY_SORT_ORDER);
         if ((itemSortOrder == null) && (itemParent != null)) {
@@ -198,10 +193,10 @@ public class ImportHelperMachineHierarchy
             itemSortOrder = maxSortOrder + 1;
         }
         item.setImportSortOrder(itemSortOrder);
-        
+
         item.setName(itemName);
         item.setImportPath(itemPath);
-        
+
         // set uuid in case there are duplicate names
         String viewUUID = item.getViewUUID();
         item.setItemIdentifier2(viewUUID);
@@ -214,64 +209,80 @@ public class ImportHelperMachineHierarchy
             // return because we need this value to continue
             isValid = false;
             validString = ""; // we don't need a message because this is already flagged as invalid because it is a required column"
-            return new ValidInfo(isValid, validString);
+            return new CreateInfo(item, isValid, validString);
         }
-        
+
         // template items cannot have assigned inventory - only catalog
         Item assignedItem = (Item) rowMap.get(KEY_ASSIGNED_ITEM);
         if ((item.getIsItemTemplate()) && ((assignedItem instanceof ItemDomainInventory))) {
             isValid = false;
             validString = "Template cannot have assigned inventory item, must use catalog item";
-            return new ValidInfo(isValid, validString);
+            return new CreateInfo(item, isValid, validString);
         }
-        assignedItemMap.put(item, assignedItem); // update data structure for looking up assigned items
+
+        if (item.getIsItemTemplate()) {
+            templateItemCount = templateItemCount + 1;
+        } else {
+            nonTemplateItemCount = nonTemplateItemCount + 1;
+        }
+
+        if (itemParent != null) {
+            // handling for all items with parent, template or non-template
+            if (!Objects.equals(item.getIsItemTemplate(), itemParent.getIsItemTemplate())) {
+                // parent and child must both be templates or both not be
+                String msg = "parent and child must both be templates or both not be templates";
+                validString = appendToString(validString, msg);
+                isValid = false;
+            }
+        }
         
-        // handle assembly part column
         String assemblyPartName = (String) rowMap.get(KEY_ASSEMBLY_PART);
-        if (assemblyPartName != null) {
+        assemblyPartName = assemblyPartName.trim();
+        
+        // handling for non-promoted items to create parent-child relationship
+        if (assemblyPartName == null) {
+            item.setImportChildParentRelationship(itemParent, itemSortOrder);
+
+        } else {
+            // create promoted machine item from assembly element if "assembly part" column specified
+            // until we invoke utility to create promoted item, "item" variable is used as a placeholder
+            // for reporting errors so that the entity shows up correctly in the import wizard validation table
             
-            // can't use assigned item with assembly part column
+            // can't specify assigned item when using assembly part column
             if (assignedItem != null) {
                 isValid = false;
                 validString = appendToString(validString, "Assigned item cannot be used with assembly part column");
-                return new ValidInfo(isValid, validString);
-            }
-            
-            // can't use assembly part column with template item
-            if (item.getIsItemTemplate()) {
-                isValid = false;
-                validString = appendToString(validString, "Assembly part cannot be specified for template");
-                return new ValidInfo(isValid, validString);
+                return new CreateInfo(item, isValid, validString);
             }
             
             // parent must be specified
             if (itemParent == null) {
                 isValid = false;
                 validString = appendToString(validString, "Parent item must be specified to use assembly part column");
-                return new ValidInfo(isValid, validString);
-            }
-            
-            // check that assigned item is specified for parent
-            Item parentAssignedItem = assignedItemMap.get(itemParent);
-            if (parentAssignedItem == null) {
-                isValid = false;
-                validString = appendToString(validString, "Assigned item for parent must be specified");
-                return new ValidInfo(isValid, validString);
+                return new CreateInfo(item, isValid, validString);
             }
             
             // get catalog item for parent assigned item
-            ItemDomainCatalog catalogItem;
-            if (parentAssignedItem instanceof ItemDomainInventory) {
-                catalogItem = ((ItemDomainInventory) parentAssignedItem).getCatalogItem();
-            } else {
-                catalogItem = (ItemDomainCatalog) parentAssignedItem;
+            ItemDomainCatalog catalogItem = itemParent.getCatalogItem();
+            if (catalogItem == null) {
+                isValid = false;
+                validString = appendToString(validString, "Parent item must have assigned catalog or inventory item");
+                return new CreateInfo(item, isValid, validString);
             }
             
             // check that catalog item is an assembly
             if (catalogItem.isItemElementDisplayListEmpty()) {
                 isValid = false;
                 validString = appendToString(validString, "Assigned catalog item for parent must be assembly");
-                return new ValidInfo(isValid, validString);
+                return new CreateInfo(item, isValid, validString);
+            }
+            
+            // check that name not already in use for parent
+            if (nameInUse(itemParent, assemblyPartName)) {
+                isValid = false;
+                validString = appendToString(validString, "Assembly part name: " + assemblyPartName + " already in use for another spreadsheet row");
+            } else {
+                addNameInUse(itemParent, assemblyPartName);
             }
             
             // get element for specified part name
@@ -285,33 +296,13 @@ public class ImportHelperMachineHierarchy
             if (assemblyPartElement == null) {
                 isValid = false;
                 validString = appendToString(validString, "Unable to find element with specified part name in parent assembly");
-                return new ValidInfo(isValid, validString);
+                return new CreateInfo(item, isValid, validString);
             }
             
-            // TODO: check that name not already in use for parent
-            
             // TODO: call utility to created promoted machine item
+        }
             
-        }
-
-        if (item.getIsItemTemplate()) {
-            templateItemCount = templateItemCount + 1;
-        } else {            
-            nonTemplateItemCount = nonTemplateItemCount + 1;
-        }
-
-        if (itemParent != null) {
-            // handling for all items with parent, template or non-template
-            if (!Objects.equals(item.getIsItemTemplate(), itemParent.getIsItemTemplate())) {
-                // parent and child must both be templates or both not be
-                String msg = "parent and child must both be templates or both not be templates";
-                validString = appendToString(validString, msg);
-                isValid = false;
-            }            
-            item.setImportChildParentRelationship(itemParent, itemSortOrder);
-        }
-        
-        return new ValidInfo(isValid, validString);
+        return new CreateInfo(item, isValid, validString);
     }
 
     protected String getCustomSummaryDetails() {
