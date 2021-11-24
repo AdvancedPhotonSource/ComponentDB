@@ -280,8 +280,17 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         return newItem;
     }
 
-    public ItemElement prepareMachinePlaceholder(ItemDomainMachineDesign parentMachine, UserInfo sessionUser) throws CdbException {
-        ItemDomainMachineDesign newItem = createEntityInstanceBasedOnParent(parentMachine, sessionUser);
+    public ItemElement prepareMachinePlaceholder(
+            ItemDomainMachineDesign parentMachine, 
+            ItemDomainMachineDesign childMachine, 
+            UserInfo sessionUser) throws CdbException {
+        
+        ItemDomainMachineDesign newItem = null;
+        if (childMachine != null) {
+            newItem = childMachine;
+        } else {
+            newItem = createEntityInstanceBasedOnParent(parentMachine, sessionUser);
+        }
 
         ItemElement itemElement = createItemElement(parentMachine, sessionUser);
         itemElement.setContainedItem(newItem);

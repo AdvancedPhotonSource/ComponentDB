@@ -351,7 +351,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
 
         ItemDomainMachineDesignBaseControllerUtility itemControllerUtility = parentItem.getItemControllerUtility();
 
-        ItemElement machinePlaceholder = itemControllerUtility.prepareMachinePlaceholder(parentItem, currentUser);
+        ItemElement machinePlaceholder = itemControllerUtility.prepareMachinePlaceholder(parentItem, null, currentUser);
 
         ItemDomainMachineDesign newMachine = (ItemDomainMachineDesign) machinePlaceholder.getContainedItem();
 

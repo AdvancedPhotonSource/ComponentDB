@@ -9,10 +9,12 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
 import static gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon.KEY_ASSIGNED_ITEM;
+import static gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon.KEY_ASSEMBLY_PART;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -34,7 +36,7 @@ public class ImportHelperMachineHierarchy
         
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineHierarchy.class.getName());
     
-    private Map<Integer, ItemDomainMachineDesign> parentIndentMap = new HashMap<>();
+    private Map<ItemDomainMachineDesign, Item> assignedItemMap = new HashMap<>();
     
     private int nonTemplateItemCount = 0;
     private int templateItemCount = 0;
@@ -89,12 +91,14 @@ public class ImportHelperMachineHierarchy
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(MachineImportHelperCommon.existingMachineItemColumnSpec(ColumnModeOptions.oCREATE(), getMachineImportHelperCommon().getRootItem(), null, null));
+        specs.add(MachineImportHelperCommon.existingMachineItemColumnSpec(
+                ColumnModeOptions.oCREATE(), getMachineImportHelperCommon().getRootItem(), null, null));
         specs.add(MachineImportHelperCommon.nameHierarchyColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.altNameColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.descriptionColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.sortOrderColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.assignedItemColumnSpec(ColumnModeOptions.oCREATE()));
+        specs.add(MachineImportHelperCommon.assemblyPartColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.locationColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(locationDetailsColumnSpec());
         specs.add(MachineImportHelperCommon.isTemplateColumnSpec(ColumnModeOptions.rCREATE()));        
@@ -219,6 +223,75 @@ public class ImportHelperMachineHierarchy
             isValid = false;
             validString = "Template cannot have assigned inventory item, must use catalog item";
             return new ValidInfo(isValid, validString);
+        }
+        assignedItemMap.put(item, assignedItem); // update data structure for looking up assigned items
+        
+        // handle assembly part column
+        String assemblyPartName = (String) rowMap.get(KEY_ASSEMBLY_PART);
+        if (assemblyPartName != null) {
+            
+            // can't use assigned item with assembly part column
+            if (assignedItem != null) {
+                isValid = false;
+                validString = appendToString(validString, "Assigned item cannot be used with assembly part column");
+                return new ValidInfo(isValid, validString);
+            }
+            
+            // can't use assembly part column with template item
+            if (item.getIsItemTemplate()) {
+                isValid = false;
+                validString = appendToString(validString, "Assembly part cannot be specified for template");
+                return new ValidInfo(isValid, validString);
+            }
+            
+            // parent must be specified
+            if (itemParent == null) {
+                isValid = false;
+                validString = appendToString(validString, "Parent item must be specified to use assembly part column");
+                return new ValidInfo(isValid, validString);
+            }
+            
+            // check that assigned item is specified for parent
+            Item parentAssignedItem = assignedItemMap.get(itemParent);
+            if (parentAssignedItem == null) {
+                isValid = false;
+                validString = appendToString(validString, "Assigned item for parent must be specified");
+                return new ValidInfo(isValid, validString);
+            }
+            
+            // get catalog item for parent assigned item
+            ItemDomainCatalog catalogItem;
+            if (parentAssignedItem instanceof ItemDomainInventory) {
+                catalogItem = ((ItemDomainInventory) parentAssignedItem).getCatalogItem();
+            } else {
+                catalogItem = (ItemDomainCatalog) parentAssignedItem;
+            }
+            
+            // check that catalog item is an assembly
+            if (catalogItem.isItemElementDisplayListEmpty()) {
+                isValid = false;
+                validString = appendToString(validString, "Assigned catalog item for parent must be assembly");
+                return new ValidInfo(isValid, validString);
+            }
+            
+            // get element for specified part name
+            ItemElement assemblyPartElement = null;
+            for (ItemElement element : catalogItem.getItemElementDisplayList()) {
+                if (element.getName().equals(assemblyPartName)) {
+                    assemblyPartElement = element;
+                    break;
+                }
+            }
+            if (assemblyPartElement == null) {
+                isValid = false;
+                validString = appendToString(validString, "Unable to find element with specified part name in parent assembly");
+                return new ValidInfo(isValid, validString);
+            }
+            
+            // TODO: check that name not already in use for parent
+            
+            // TODO: call utility to created promoted machine item
+            
         }
 
         if (item.getIsItemTemplate()) {
