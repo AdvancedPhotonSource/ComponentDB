@@ -13,11 +13,18 @@ See LICENSE file.
                  value="#{itemObject.itemConnectorListSorted}"
                  sortMode="single"
                  stripedRows="true"
-                 var="itemConnectorObject">
-
+                 editable="true"
+                 var="itemConnectorObject">               
+        
+        <p:ajax event="rowEdit" listener="#{entityController.connectorEditRowEvent}" />
+        <p:ajax event="rowEditCancel" listener="#{entityController.connectorEditCancelRowEvent}" />
+        
         <ui:include src="itemConnectorListObject.xhtml" />
 
-        <p:column headerText="Actions" exportable="false">
+        <p:column headerText="Actions" exportable="false"
+                  rendered="#{isEntityWriteable}">
+            <p:rowEditor/>
+            
             <p:commandLink id="#{entityTypeName}ItemConnectorDeleteActionButton"
                            styleClass="fa fa-link-icon fa-trash"
                            onclick="PF('confirmDeleteItemConnector#{itemConnectorObject.viewUUID}Widget').show()"

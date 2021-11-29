@@ -17,16 +17,7 @@ See LICENSE file.
         <p:outputLabel>Connector Type</p:outputLabel>
     </p:column>
     <p:column>
-        <p:selectOneMenu value="#{currentItemConnector.connector.connectorType}"
-                         disabled="#{disabled}"
-                         var="connector">            
-            <p:ajax oncomplete="#{onChangeConnector}" />
-            <f:selectItems value="#{connectorTypeController.availableItems}"/> 
-            <p:column>
-                <b>#{connector.name}</b>
-                #{connector.description}
-            </p:column>
-        </p:selectOneMenu>
+        <ui:include src="itemConnectorTypeEditObject.xhtml" />
     </p:column>
 
     <p:column>
