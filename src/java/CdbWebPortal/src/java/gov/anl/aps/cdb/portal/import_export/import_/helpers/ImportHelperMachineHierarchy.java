@@ -4,7 +4,11 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
+import static gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase.KEY_USER;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
@@ -19,6 +23,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -182,8 +187,9 @@ public class ImportHelperMachineHierarchy
         
         boolean isValid = true;
         String validString = "";
+        ItemDomainMachineDesign item = null;
         
-        ItemDomainMachineDesign item = getEntityController().createEntityInstance();
+        // common handling and validation
         
         // determine sort order
         Float itemSortOrder = (Float) rowMap.get(MachineImportHelperCommon.KEY_SORT_ORDER);
@@ -192,43 +198,26 @@ public class ImportHelperMachineHierarchy
             Float maxSortOrder = itemParent.getMaxSortOrder();
             itemSortOrder = maxSortOrder + 1;
         }
-        item.setImportSortOrder(itemSortOrder);
-
-        item.setName(itemName);
-        item.setImportPath(itemPath);
-
-        // set uuid in case there are duplicate names
-        String viewUUID = item.getViewUUID();
-        item.setItemIdentifier2(viewUUID);
-
+        
         // set flag indicating item is template
         Boolean itemIsTemplate = (Boolean) rowMap.get(MachineImportHelperCommon.KEY_IS_TEMPLATE);
-        if (itemIsTemplate != null) {
-            item.setImportIsTemplate(itemIsTemplate);
-        } else {
+        if (itemIsTemplate == null) {
             // return because we need this value to continue
             isValid = false;
-            validString = ""; // we don't need a message because this is already flagged as invalid because it is a required column"
+            validString = "'" + MachineImportHelperCommon.HEADER_TEMPLATE + "' column value must be specified";
             return new CreateInfo(item, isValid, validString);
         }
 
         // template items cannot have assigned inventory - only catalog
         Item assignedItem = (Item) rowMap.get(KEY_ASSIGNED_ITEM);
-        if ((item.getIsItemTemplate()) && ((assignedItem instanceof ItemDomainInventory))) {
+        if ((itemIsTemplate) && ((assignedItem instanceof ItemDomainInventory))) {
             isValid = false;
             validString = "Template cannot have assigned inventory item, must use catalog item";
             return new CreateInfo(item, isValid, validString);
         }
 
-        if (item.getIsItemTemplate()) {
-            templateItemCount = templateItemCount + 1;
-        } else {
-            nonTemplateItemCount = nonTemplateItemCount + 1;
-        }
-
         if (itemParent != null) {
-            // handling for all items with parent, template or non-template
-            if (!Objects.equals(item.getIsItemTemplate(), itemParent.getIsItemTemplate())) {
+            if (!Objects.equals(itemIsTemplate, itemParent.getIsItemTemplate())) {
                 // parent and child must both be templates or both not be
                 String msg = "parent and child must both be templates or both not be templates";
                 validString = appendToString(validString, msg);
@@ -239,8 +228,10 @@ public class ImportHelperMachineHierarchy
         String assemblyPartName = (String) rowMap.get(KEY_ASSEMBLY_PART);
         assemblyPartName = assemblyPartName.trim();
         
-        // handling for non-promoted items to create parent-child relationship
+        // handling for non-promoted items
         if (assemblyPartName == null) {
+            
+            item = getEntityController().createEntityInstance();
             item.setImportChildParentRelationship(itemParent, itemSortOrder);
 
         } else {
@@ -262,21 +253,31 @@ public class ImportHelperMachineHierarchy
                 return new CreateInfo(item, isValid, validString);
             }
             
-            // get catalog item for parent assigned item
-            ItemDomainCatalog catalogItem = itemParent.getCatalogItem();
-            if (catalogItem == null) {
+            // get catalog assembly for parent
+            ItemDomainCatalog parentCatalogItem = null;            
+            ItemElement parentCatalogElement = itemParent.getRepresentsCatalogElement();
+            if (parentCatalogElement != null) {
+                // treat parent as promoted machine item that represents catalog element                
+                parentCatalogItem = (ItemDomainCatalog) parentCatalogElement.getContainedItem();                
+            } else {
+                // otherwise get parent's assigned catalog item            
+                parentCatalogItem = itemParent.getCatalogItem();
+            }
+            
+            // check that parent has assigned catalog item or represents a catalog item
+            if ((parentCatalogItem == null)) {
                 isValid = false;
-                validString = appendToString(validString, "Parent item must have assigned catalog or inventory item");
+                validString = appendToString(validString, "Catalog item assigned to or represented by parent item must be assembly");
                 return new CreateInfo(item, isValid, validString);
             }
             
-            // check that catalog item is an assembly
-            if (catalogItem.isItemElementDisplayListEmpty()) {
+            // check that parent catalog item is an assembly
+            if (parentCatalogItem.isItemElementDisplayListEmpty()) {
                 isValid = false;
                 validString = appendToString(validString, "Assigned catalog item for parent must be assembly");
                 return new CreateInfo(item, isValid, validString);
             }
-            
+
             // check that name not already in use for parent
             if (nameInUse(itemParent, assemblyPartName)) {
                 isValid = false;
@@ -287,7 +288,7 @@ public class ImportHelperMachineHierarchy
             
             // get element for specified part name
             ItemElement assemblyPartElement = null;
-            for (ItemElement element : catalogItem.getItemElementDisplayList()) {
+            for (ItemElement element : parentCatalogItem.getItemElementDisplayList()) {
                 if (element.getName().equals(assemblyPartName)) {
                     assemblyPartElement = element;
                     break;
@@ -299,9 +300,43 @@ public class ImportHelperMachineHierarchy
                 return new CreateInfo(item, isValid, validString);
             }
             
-            // TODO: call utility to created promoted machine item
+            ItemDomainMachineDesignControllerUtility utility = new ItemDomainMachineDesignControllerUtility();
+            UserInfo user = (UserInfo) rowMap.get(KEY_USER);
+            boolean exception = false;
+            String exceptionInfo = "";
+            try {
+                item = utility.createRepresentingMachineForAssemblyElement(itemParent, assemblyPartElement, user);
+            } catch (InvalidArgument ex) {
+                exception = true;
+                exceptionInfo = ex.getMessage();
+            } catch (CdbException ex) {
+                exception = true;
+                exceptionInfo = ex.getMessage();
+            }
+            if (exception) {
+                isValid = false;
+                validString = 
+                        appendToString(validString, "Error creating machine item for assembly element: " 
+                                + assemblyPartName + " details: " + exceptionInfo);
+            }
         }
             
+        item.setImportSortOrder(itemSortOrder);
+
+        item.setName(itemName);
+        item.setImportPath(itemPath);
+
+        // set uuid in case there are duplicate names
+        String viewUUID = item.getViewUUID();
+        item.setItemIdentifier2(viewUUID);
+        
+        item.setImportIsTemplate(itemIsTemplate);
+        if (item.getIsItemTemplate()) {
+            templateItemCount = templateItemCount + 1;
+        } else {
+            nonTemplateItemCount = nonTemplateItemCount + 1;
+        }
+
         return new CreateInfo(item, isValid, validString);
     }
 

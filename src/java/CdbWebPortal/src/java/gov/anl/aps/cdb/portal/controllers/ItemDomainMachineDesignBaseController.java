@@ -544,7 +544,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         ItemDomainMachineDesign parentMachine = getItemFromSelectedItemInTreeTable();
         ItemElement machinePlaceholder = null;
         try {
-            machinePlaceholder = getControllerUtility().prepareMachinePlaceholder(parentMachine, null, user);
+            machinePlaceholder = getControllerUtility().prepareMachinePlaceholder(parentMachine, user);
         } catch (CdbException ex) {
             LOGGER.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getErrorMessage());

@@ -94,8 +94,7 @@ public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBa
         UserInfo user = SessionUtility.getUser();
 
         try {
-            ItemDomainMachineDesign newMachine = 
-                    getControllerUtility().createRepresentingMachineForAssemblyElement(parentMachine, null, element, user);
+            ItemDomainMachineDesign newMachine = getControllerUtility().createRepresentingMachineForAssemblyElement(parentMachine, element, user);
             setCurrent(newMachine);
         } catch (CdbException ex) {
             LOGGER.error(ex);

@@ -48,7 +48,6 @@ public class ItemDomainMachineDesignControllerUtility extends ItemDomainMachineD
      * To Save update parentMachine or create @returns. 
      *
      * @param parentMachine parent machine should be assigned to an assembly.
-     * @param childMachine new child item if created externally, otherwise will be created by this method
      * @param catalogElement element to represent from the catalog of assigned
      * item to parent machine.
      * @param creatorUser User creating the new assembly element.
@@ -56,12 +55,8 @@ public class ItemDomainMachineDesignControllerUtility extends ItemDomainMachineD
      * @throws gov.anl.aps.cdb.common.exceptions.InvalidArgument
      * @throws gov.anl.aps.cdb.common.exceptions.CdbException
      */
-    public ItemDomainMachineDesign createRepresentingMachineForAssemblyElement(
-            ItemDomainMachineDesign parentMachine,
-            ItemDomainMachineDesign childMachine,
-            ItemElement catalogElement, 
-            UserInfo creatorUser) throws InvalidArgument, CdbException {
-        
+    public ItemDomainMachineDesign createRepresentingMachineForAssemblyElement(ItemDomainMachineDesign parentMachine,
+            ItemElement catalogElement, UserInfo creatorUser) throws InvalidArgument, CdbException {
         Item parentItem = catalogElement.getParentItem();
         if ((parentItem instanceof ItemDomainCatalog
                 || parentItem instanceof ItemDomainInventory) == false) {
@@ -70,7 +65,7 @@ public class ItemDomainMachineDesignControllerUtility extends ItemDomainMachineD
 
         // Create new machine placeholder       
         ItemElement machinePlaceholder = null;
-        machinePlaceholder = prepareMachinePlaceholder(parentMachine, childMachine, creatorUser);
+        machinePlaceholder = prepareMachinePlaceholder(parentMachine, creatorUser);
         parentMachine.getFullItemElementList().add(machinePlaceholder);                
 
         // Ensure to get catalog element
