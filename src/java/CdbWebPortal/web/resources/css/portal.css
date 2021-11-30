@@ -455,9 +455,8 @@ tr:hover .actionLink {
     white-space: pre;
 }
 
-input, textarea {
-    box-shadow: 0px 3px 5px #d5d5d5;
-    width: 300px;
+.narrowCalendarInput > input {
+    width: 75px;
 }
 
 .ui-selectcheckboxmenu .ui-selectcheckboxmenu-label {
@@ -466,10 +465,6 @@ input, textarea {
 
 .ui-selectcheckboxmenu-multiple-container {
     width: 284px;	
-}
-
-.ui-selectonemenu .ui-selectonemenu-label {
-    width: 272px;
 }
 
 .ui-autocomplete .ui-inputfield {
