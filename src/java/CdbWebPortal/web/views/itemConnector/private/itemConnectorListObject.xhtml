@@ -6,27 +6,46 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
 
 
     <p:column headerText="Name"
               exportFunction="#{facesUtility.getToString(itemConnectorObject.connector.name)}">
-        <ui:include src="../../connector/private/connectorNameObject.xhtml">
-            <ui:param name="connector"
-                      value="#{itemConnectorObject.connector}" />
-        </ui:include>
+        <p:cellEditor>
+            <f:facet name="output">
+                <ui:include src="../../connector/private/connectorNameObject.xhtml">
+                    <ui:param name="connector"
+                              value="#{itemConnectorObject.connector}" />
+                </ui:include>
+            </f:facet>
+            <f:facet name="input">
+                <h:inputText value="#{itemConnectorObject.connector.name}" /> 
+            </f:facet>
+        </p:cellEditor>
     </p:column>
 
     <p:column headerText="Cable End"
               rendered="#{entityController.entityDisplayConnectorCableEndDesignation}">
         #{itemConnectorObject.connector.cableEndDesignation}
     </p:column>
-    
+
     <p:column headerText="Type"
               exportFunction="#{facesUtility.getToString(itemConnectorObject.connector.connectorType)}">
-        #{itemConnectorObject.connector.connectorType}
+        <p:cellEditor>
+            <f:facet name="output">
+                #{itemConnectorObject.connector.connectorType}                
+            </f:facet>
+            <f:facet name="input">
+                <ui:include src="itemConnectorTypeEditObject.xhtml">
+                    <ui:param name="currentItemConnector"
+                              value="#{itemConnectorObject}"/> 
+                </ui:include>
+            </f:facet>
+        </p:cellEditor>
     </p:column>
-    
+
 </ui:composition>
 
 

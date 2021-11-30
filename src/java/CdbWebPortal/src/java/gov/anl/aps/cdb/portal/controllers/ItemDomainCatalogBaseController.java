@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainCatalogController;
@@ -20,6 +21,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.CatalogItemElementConstraintInformation;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.primefaces.event.RowEditEvent;
 
 /**
  *
@@ -283,6 +286,29 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         connector.getItemConnectorList().remove(itemConnector);
         
         itemConnector.addConnectorToRemove(connector);
+    }
+    
+    public void connectorEditRowEvent(RowEditEvent event) {
+        ConnectorControllerUtility utility = new ConnectorControllerUtility();
+        
+        UserInfo user = SessionUtility.getUser();
+        ItemConnector object = (ItemConnector) event.getObject();
+        Connector connector = object.getConnector();
+        
+        try {
+            utility.update(connector, user);
+            SessionUtility.addInfoMessage("Updated Connector", "Update connector: " + connector, true);
+        } catch (CdbException ex) {
+            logger.error(ex);
+            SessionUtility.addErrorMessage("Error", ex.getErrorMessage(), true);
+        } catch (RuntimeException ex) {
+            logger.error(ex);
+            SessionUtility.addErrorMessage("Error", ex.getMessage(), true);
+        }
+    }
+    
+    public void connectorEditCancelRowEvent(RowEditEvent event) {
+        reloadCurrent();
     }
     
 }
