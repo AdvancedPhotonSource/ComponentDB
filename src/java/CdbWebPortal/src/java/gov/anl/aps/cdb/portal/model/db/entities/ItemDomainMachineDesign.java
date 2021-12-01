@@ -53,6 +53,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient ItemDomainMachineDesign importMdItem = null;
     private transient String importPath = null;
     private transient String importParentPath = null;
+    private transient String importAssemblyPart = null;
     private transient ItemDomainLocation importLocationItem = null;
     private transient String importLocationItemString = null;
     private transient String importTemplateAndParameters = null;
@@ -259,7 +260,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     @JsonIgnore
     public void setImportIsTemplate(Boolean importIsTemplate) {
-        if (importIsTemplate) {
+        if (importIsTemplate != null && importIsTemplate) {
             // mark this item as template entity type
             setIsTemplate();
         }
@@ -585,6 +586,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         } else {
             return null;
         }
+    }
+    
+    public void setImportAssemblyPart(String assemblyPart) {
+        importAssemblyPart = assemblyPart;
+    }
+    
+    @JsonIgnore
+    public String getImportAssemblyPart() {
+        return importAssemblyPart;
     }
 
     public void setImportLocationItem(ItemDomainLocation locationItem) {

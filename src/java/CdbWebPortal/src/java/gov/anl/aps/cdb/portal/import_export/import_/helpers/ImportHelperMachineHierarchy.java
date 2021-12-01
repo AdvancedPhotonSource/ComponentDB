@@ -187,10 +187,9 @@ public class ImportHelperMachineHierarchy
         
         boolean isValid = true;
         String validString = "";
-        ItemDomainMachineDesign item = null;
         
-        // common handling and validation
-        
+        ItemDomainMachineDesign item = getEntityController().createEntityInstance();
+
         // determine sort order
         Float itemSortOrder = (Float) rowMap.get(MachineImportHelperCommon.KEY_SORT_ORDER);
         if ((itemSortOrder == null) && (itemParent != null)) {
@@ -198,40 +197,59 @@ public class ImportHelperMachineHierarchy
             Float maxSortOrder = itemParent.getMaxSortOrder();
             itemSortOrder = maxSortOrder + 1;
         }
-        
+        item.setImportSortOrder(itemSortOrder);
+
+        item.setName(itemName);
+        item.setImportPath(itemPath);
+
+        // set uuid in case there are duplicate names
+        String viewUUID = item.getViewUUID();
+        item.setItemIdentifier2(viewUUID);
+
         // set flag indicating item is template
         Boolean itemIsTemplate = (Boolean) rowMap.get(MachineImportHelperCommon.KEY_IS_TEMPLATE);
-        if (itemIsTemplate == null) {
+        if (itemIsTemplate != null) {
+            item.setImportIsTemplate(itemIsTemplate);
+        } else {
             // return because we need this value to continue
             isValid = false;
-            validString = "'" + MachineImportHelperCommon.HEADER_TEMPLATE + "' column value must be specified";
+            validString = ""; // we don't need a message because this is already flagged as invalid because it is a required column"
             return new CreateInfo(item, isValid, validString);
         }
 
         // template items cannot have assigned inventory - only catalog
         Item assignedItem = (Item) rowMap.get(KEY_ASSIGNED_ITEM);
-        if ((itemIsTemplate) && ((assignedItem instanceof ItemDomainInventory))) {
+        if ((item.getIsItemTemplate()) && ((assignedItem instanceof ItemDomainInventory))) {
             isValid = false;
             validString = "Template cannot have assigned inventory item, must use catalog item";
             return new CreateInfo(item, isValid, validString);
         }
 
+        if (item.getIsItemTemplate()) {
+            templateItemCount = templateItemCount + 1;
+        } else {
+            nonTemplateItemCount = nonTemplateItemCount + 1;
+        }
+
         if (itemParent != null) {
-            if (!Objects.equals(itemIsTemplate, itemParent.getIsItemTemplate())) {
+            // handling for all items with parent, template or non-template
+            if (!Objects.equals(item.getIsItemTemplate(), itemParent.getIsItemTemplate())) {
                 // parent and child must both be templates or both not be
                 String msg = "parent and child must both be templates or both not be templates";
                 validString = appendToString(validString, msg);
                 isValid = false;
+                return new CreateInfo(item, isValid, validString);
             }
         }
         
         String assemblyPartName = (String) rowMap.get(KEY_ASSEMBLY_PART);
-        assemblyPartName = assemblyPartName.trim();
+        if (assemblyPartName != null) {
+            assemblyPartName = assemblyPartName.trim();
+        }
         
         // handling for non-promoted items
         if (assemblyPartName == null) {
             
-            item = getEntityController().createEntityInstance();
             item.setImportChildParentRelationship(itemParent, itemSortOrder);
 
         } else {
@@ -281,7 +299,7 @@ public class ImportHelperMachineHierarchy
             // check that name not already in use for parent
             if (nameInUse(itemParent, assemblyPartName)) {
                 isValid = false;
-                validString = appendToString(validString, "Assembly part name: " + assemblyPartName + " already in use for another spreadsheet row");
+                validString = appendToString(validString, "Assembly part name: '" + assemblyPartName + "' already in use for another spreadsheet row");
             } else {
                 addNameInUse(itemParent, assemblyPartName);
             }
@@ -296,7 +314,7 @@ public class ImportHelperMachineHierarchy
             }
             if (assemblyPartElement == null) {
                 isValid = false;
-                validString = appendToString(validString, "Unable to find element with specified part name in parent assembly");
+                validString = appendToString(validString, "Unable to find element with specified part name: '" + assemblyPartName + "' in parent assembly");
                 return new CreateInfo(item, isValid, validString);
             }
             
@@ -305,7 +323,20 @@ public class ImportHelperMachineHierarchy
             boolean exception = false;
             String exceptionInfo = "";
             try {
+                // create new promoted machine item using utility function
                 item = utility.createRepresentingMachineForAssemblyElement(itemParent, assemblyPartElement, user);
+                
+                // added this line to ItemControllerUtility.generateUniqueElementNameForItem() to force it to
+                // rebuild the cached itemElementDisplayList when multiple children are added in sequence to the same parent.
+                // itemParent.resetItemElementDisplayList();
+                
+                // reapply import values to newly created promoted item
+                item.setImportSortOrder(itemSortOrder);
+                item.setName(itemName);
+                item.setImportPath(itemPath);
+                item.setItemIdentifier2(viewUUID);
+                item.setImportIsTemplate(itemIsTemplate);
+                
             } catch (InvalidArgument ex) {
                 exception = true;
                 exceptionInfo = ex.getMessage();
@@ -321,22 +352,6 @@ public class ImportHelperMachineHierarchy
             }
         }
             
-        item.setImportSortOrder(itemSortOrder);
-
-        item.setName(itemName);
-        item.setImportPath(itemPath);
-
-        // set uuid in case there are duplicate names
-        String viewUUID = item.getViewUUID();
-        item.setItemIdentifier2(viewUUID);
-        
-        item.setImportIsTemplate(itemIsTemplate);
-        if (item.getIsItemTemplate()) {
-            templateItemCount = templateItemCount + 1;
-        } else {
-            nonTemplateItemCount = nonTemplateItemCount + 1;
-        }
-
         return new CreateInfo(item, isValid, validString);
     }
 
