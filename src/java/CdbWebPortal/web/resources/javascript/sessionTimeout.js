@@ -24,7 +24,7 @@ window.onload = function () {
         }
     } else {
         startPageVerify(false);
-        addSessionUrl(); 
+        addSessionUrl();
     }
 };
 
@@ -34,7 +34,7 @@ function setCurrentPageViewId() {
     startPageVerify();
 }
 
-function startPageVerify(includeTabCheck = true) {    
+function startPageVerify(includeTabCheck = true) {
     // See if already generated
     var timeHash = document.getElementById('currentTimeHashHiddenText').innerHTML;
     var failureCount = 0;
@@ -65,7 +65,7 @@ function startPageVerify(includeTabCheck = true) {
     verifyView();
     if (includeTabCheck) {
         verifyViewOpenPageIdHiddenText();
-    }
+}
 }
 
 function sessionTimedOutEvent() {
@@ -104,4 +104,41 @@ function loadHomeView(pathContextRoot)
 {
     console.log('Loading home window after session timeout')
     window.location.replace(pathContextRoot + '/index.xhtml');
+}
+
+function loadLastViewedPage(pathContextRoot)
+{
+    lastPage = window.location.href;
+    proceed = false;
+
+    if (lastPage.includes("list")) {
+        proceed = true;
+    } else if (lastPage.includes("view") || lastPage.includes("edit")) {
+        if (lastPage.includes("id=")) {
+            proceed = true;
+        } else {
+            // Need to find id in the page. 
+            formId = $("#middleCenter > form").attr("id");
+            htmlIdEntityId = formId + ":id";
+            htmlId = document.getElementById(htmlIdEntityId);
+            
+            if (lastPage.includes("edit")) {
+                lastPage = lastPage.replace("edit","view"); 
+            }
+            
+            if (htmlId !== null) {
+                entityId = htmlId.innerHTML
+                lastPage += "?id=" + entityId;
+                proceed = true;
+            }
+        }
+    }
+
+    if (proceed) {
+        console.log('Loading last viewed page: ' + lastPage);
+        window.location.replace(lastPage);
+    } else {
+        alert("Failed to navigate to last viewed page... Proceed to home.");
+        loadHomeView(pathContextRoot)
+    }
 }

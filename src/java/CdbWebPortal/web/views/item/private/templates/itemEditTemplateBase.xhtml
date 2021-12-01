@@ -41,6 +41,8 @@ See LICENSE file.
                 <ui:param name="currentItemController" value="#{entityController}" />
                 <ui:param name="domainEntityObject" value="#{itemObject}" />
                 <ui:param name="currentObject" value="#{itemObject}" />
+                                
+                <h:outputText id="id" value="#{currentObject.id}" style="display: none"/> 
 
                 <ui:insert name="editPanelGrid"/>
 
