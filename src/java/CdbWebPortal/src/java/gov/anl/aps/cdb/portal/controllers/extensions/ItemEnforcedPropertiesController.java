@@ -58,12 +58,6 @@ public abstract class ItemEnforcedPropertiesController extends ItemControllerExt
         getItemController().subscribePrepareInsertForCurrent(this);
     }
 
-    @Override
-    public void prepareInsertForCurrent() {
-        super.prepareInsertForCurrent();
-        prepareSaveChangesMadeToEnforcedPropertiesForCurrent();
-    }
-
     public void revertChangesMadeToEnforcedPropertiesForCurrent() {
         PropertyValue propertyValue = getItemEnforcedConfigurationPropertyValue();
         if (propertyValue.getId() != null) {

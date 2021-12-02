@@ -28,9 +28,13 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -56,7 +60,27 @@ import org.primefaces.model.TreeNode;
     @NamedQuery(name = "ItemElement.findByDescription",
             query = "SELECT i FROM ItemElement i WHERE i.description = :description"),
     @NamedQuery(name = "ItemElement.findBySortOrder",
-            query = "SELECT i FROM ItemElement i WHERE i.sortOrder = :sortOrder"),})
+            query = "SELECT i FROM ItemElement i WHERE i.sortOrder = :sortOrder")
+})
+@NamedStoredProcedureQueries({
+    @NamedStoredProcedureQuery(
+        name = "itemElement.searchItemElements",
+        procedureName = "search_item_elements",
+        resultClasses = ItemElement.class,
+        parameters = {
+            @StoredProcedureParameter(
+                name = "limit_row",
+                mode = ParameterMode.IN,
+                type = Integer.class
+            ),
+            @StoredProcedureParameter(
+                name = "search_string",
+                mode = ParameterMode.IN,
+                type = String.class
+            )
+        }
+    )
+})
 @JsonIgnoreProperties(value = {
     "itemCanHaveInventoryItem",
     "catalogDisplayString",
@@ -218,7 +242,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     public void init(Item parentItem, UserInfo userInfo) {
-        EntityInfo ei = EntityInfoUtility.createEntityInfo(userInfo); 
+        EntityInfo ei = EntityInfoUtility.createEntityInfo(userInfo);
         init(parentItem, ei);
     }
 
@@ -643,7 +667,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     // </editor-fold>
     @Override
-    public SearchResult search(Pattern searchPattern) {
+    public SearchResult createSearchResultInfo(Pattern searchPattern) {
 
         SearchResult searchResult;
 

@@ -445,8 +445,8 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
 
     @Override
-    public SearchResult search(Pattern searchPattern) {
-        SearchResult result = super.search(searchPattern);
+    public SearchResult createSearchResultInfo(Pattern searchPattern) {
+        SearchResult result = super.createSearchResultInfo(searchPattern);
 
         Item assignedItem = getAssignedItem();
         if (assignedItem != null) {

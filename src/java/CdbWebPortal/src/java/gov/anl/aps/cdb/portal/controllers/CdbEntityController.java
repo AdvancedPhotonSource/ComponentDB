@@ -897,19 +897,6 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         return "";
     }
     
-    // TODO remove this method
-    protected final void prepareEntityInsert(EntityType entity) throws CdbException {
-        // TODO: This needs to be placed in item controller. 
-        EntityType current = getCurrent();
-        if (entity == current) {
-            if (entity instanceof Item) {
-                for (ItemControllerExtensionHelper helper : subscribedResetForCurrentControllerHelpers) {
-                    helper.prepareInsertForCurrent();
-                }
-            }
-        }
-    }      
-    
     public void createWithoutRedirect() {
         create(); 
     }

@@ -197,6 +197,28 @@ import org.primefaces.model.TreeNode;
 })
 @NamedStoredProcedureQueries({
     @NamedStoredProcedureQuery(
+        name = "item.searchItems",
+        procedureName = "search_items",
+        resultClasses = Item.class,
+        parameters = {
+            @StoredProcedureParameter(
+                    name = "limit_row",
+                    mode = ParameterMode.IN,
+                    type = Integer.class
+            ),
+            @StoredProcedureParameter(
+                    name = "domain_id",
+                    mode = ParameterMode.IN,
+                    type = Integer.class
+            ),
+            @StoredProcedureParameter(
+                    name = "search_string",
+                    mode = ParameterMode.IN,
+                    type = String.class
+            )
+        }
+    ),
+    @NamedStoredProcedureQuery(
             name = "item.itemWithWritePermissionsForUser",
             procedureName = "items_with_write_permission_for_user",
             resultClasses = Item.class,
@@ -1608,16 +1630,24 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         return null;
     }
+    
+    @JsonIgnore
+    protected String getDerivedFromLabel() {
+        return "derived from"; 
+    }
 
     @Override
-    public SearchResult search(Pattern searchPattern) {
+    public SearchResult createSearchResultInfo(Pattern searchPattern) {
         SearchResult searchResult;
 
         if (name != null) {
+            String itemIdentifier1Label = domain.getItemIdentifier1Label();
+            String itemIdentifier2Label = domain.getItemIdentifier2Label();
+            
             searchResult = new SearchResult(this, id, name);
             searchResult.doesValueContainPattern("name", name, searchPattern);
-            searchResult.doesValueContainPattern("item identifier 1", itemIdentifier1, searchPattern);
-            searchResult.doesValueContainPattern("item identifier 2", itemIdentifier2, searchPattern);
+            searchResult.doesValueContainPattern(itemIdentifier1Label, itemIdentifier1, searchPattern);
+            searchResult.doesValueContainPattern(itemIdentifier2Label, itemIdentifier2, searchPattern);
         } else if (derivedFromItem != null && derivedFromItem.getName() != null) {
             String title = "Derived from: " + derivedFromItem.getName();
             if (qrId != null) {
@@ -1629,7 +1659,9 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
 
         if (derivedFromItem != null) {
-            searchResult.doesValueContainPattern("derived from name", derivedFromItem.getName(), searchPattern);
+            String derivedLabel = getDerivedFromLabel();
+            derivedLabel += " name";
+            searchResult.doesValueContainPattern(derivedLabel, derivedFromItem.getName(), searchPattern);
         }
         searchResult.doesValueContainPattern("QrId", getQrIdFilter(), searchPattern);
         searchResult.doesValueContainPattern("created by", getEntityInfo().getCreatedByUser().getUsername(), searchPattern);

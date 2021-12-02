@@ -18,8 +18,8 @@ import javax.ejb.Stateless;
 public class ItemDomainInventoryFacade extends ItemFacadeBase<ItemDomainInventory> {
 
     @Override
-    public String getDomainName() {
-        return ItemDomainName.inventory.getValue();
+    public ItemDomainName getDomain() {
+        return ItemDomainName.inventory;
     }
     
     public ItemDomainInventoryFacade() {

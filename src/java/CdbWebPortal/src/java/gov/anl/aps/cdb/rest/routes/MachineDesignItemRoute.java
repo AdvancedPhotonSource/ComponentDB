@@ -9,16 +9,15 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemDomainMachineDesignQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
@@ -29,6 +28,7 @@ import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
 import gov.anl.aps.cdb.rest.entities.ItemDomainMachineDesignIdListRequest;
 import gov.anl.aps.cdb.rest.entities.NewControlRelationshipInformation;
 import gov.anl.aps.cdb.rest.entities.NewMachinePlaceholderOptions;
+import gov.anl.aps.cdb.rest.entities.PromoteMachineElementInformation;
 import gov.anl.aps.cdb.rest.entities.UpdateMachineAssignedItemInformation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -65,6 +65,8 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
 
     @EJB
     ItemDomainMachineDesignFacade facade;
+    @EJB
+    ItemElementFacade itemElementFacade; 
 
     @GET
     @Path("/all")
@@ -267,6 +269,33 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         }
 
         return itemHierarchy;
+    }
+    
+    @POST
+    @Path("/PromoteMachineElement")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Create a machine design that represents an assembly element that is assigned to machine hierarchy.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured    
+    public ItemDomainMachineDesign promoteAssemblyElementToMachine(@RequestBody(required = true) PromoteMachineElementInformation info) throws CdbException {
+        ItemDomainMachineDesignControllerUtility machineUtility = new ItemDomainMachineDesignControllerUtility(); 
+        
+        int parentMdItemId = info.getParentMdItemId();
+        ItemDomainMachineDesign parentMachine = getMachineDesignItemById(parentMdItemId);        
+        UserInfo creatorUser = verifyCurrentUserPermissionForItem(parentMachine);        
+        ItemElement assyElement = itemElementFacade.find(info.getAssemblyElementId()); 
+                
+        ItemDomainMachineDesign promotedMachine = machineUtility.createRepresentingMachineForAssemblyElement(parentMachine, assyElement, creatorUser);
+        
+        String newName = info.getNewName();
+        if (newName != null) {
+            promotedMachine.setName(newName);
+        }
+        
+        promotedMachine = machineUtility.create(promotedMachine, creatorUser); 
+        
+        return promotedMachine; 
     }
     
     @POST

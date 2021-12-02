@@ -4,7 +4,8 @@ from datetime import datetime
 from CdbApiFactory import CdbApiFactory
 from cdbApi import OpenApiException, ItemStatusBasicObject, NewLocationInformation, SimpleLocationInformation, \
     LogEntryEditInformation, PropertyValue, PropertyMetadata, ConciseItemOptions, NewMachinePlaceholderOptions, \
-    NewCatalogInformation, NewInventoryInformation, NewCatalogElementInformation, NewControlRelationshipInformation, UpdateMachineAssignedItemInformation
+    NewCatalogInformation, NewInventoryInformation, NewCatalogElementInformation, NewControlRelationshipInformation, \
+    UpdateMachineAssignedItemInformation, PromoteMachineElementInformation
 
 
 class MyTestCase(unittest.TestCase):
@@ -603,7 +604,34 @@ class MyTestCase(unittest.TestCase):
         except OpenApiException as ex:
             failed = True
 
-        self.assertEqual(failed, True, msg='Invalid control interface was entered without exception.')  
+        self.assertEqual(failed, True, msg='Invalid control interface was entered without exception.')
+
+    def test_create_promoted_machine_element(self):
+        self.loginAsAdmin()
+
+        newPlaceholderOpts = NewMachinePlaceholderOptions(name="PromotedTest")
+        parent_machine = self.machineDesignApi.create_placeholder(parent_md_id=self.MACHINE_DESIGN_ID,
+                                                                  new_machine_placeholder_options=newPlaceholderOpts)
+
+        parent_assembly_id = self.CATALOG_ITEM_ID
+
+        self.machineDesignApi.update_assigned_item(UpdateMachineAssignedItemInformation(md_item_id=parent_machine.id,
+                                                                                        assigned_item_id=parent_assembly_id))
+
+        hierarchy = self.itemApi.get_item_hierarchy_by_id(parent_assembly_id)
+
+        for i, child in enumerate(hierarchy.child_items):
+            name = child.element_name
+            name += "  - " + str(i)
+            assembly_id = child.element_id
+
+            promote_data = PromoteMachineElementInformation(parent_md_item_id=parent_machine.id,
+                                                            assembly_element_id=assembly_id,
+                                                            new_name=name)
+
+            promoted_machine = self.machineDesignApi.promote_assembly_element_to_machine(promote_data)
+
+            self.assertNotEquals(None, promoted_machine, msg="Promoted machine design has not been returned. ")
 
     def test_user_route(self):
         users = self.userApi.get_all1()
