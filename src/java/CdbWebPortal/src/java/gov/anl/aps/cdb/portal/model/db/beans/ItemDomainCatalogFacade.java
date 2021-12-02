@@ -19,8 +19,8 @@ import javax.ejb.Stateless;
 public class ItemDomainCatalogFacade extends ItemFacadeBase<ItemDomainCatalog> {
     
     @Override
-    public String getDomainName() {
-        return ItemDomainName.catalog.getValue();
+    public ItemDomainName getDomain() {
+        return ItemDomainName.catalog;
     }
     
     public ItemDomainCatalogFacade() {

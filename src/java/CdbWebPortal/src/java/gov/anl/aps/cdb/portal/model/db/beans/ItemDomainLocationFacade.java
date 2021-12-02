@@ -19,8 +19,8 @@ import javax.ejb.Stateless;
 public class ItemDomainLocationFacade extends ItemFacadeBase<ItemDomainLocation> {
     
     @Override
-    public String getDomainName() {
-        return ItemDomainName.location.getValue();
+    public ItemDomainName getDomain() {
+        return ItemDomainName.location;
     }
     
     public ItemDomainLocationFacade() {
