@@ -53,6 +53,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient ItemDomainMachineDesign importMdItem = null;
     private transient String importPath = null;
     private transient String importParentPath = null;
+    private transient String importAssemblyPart = null;
     private transient ItemDomainLocation importLocationItem = null;
     private transient String importLocationItemString = null;
     private transient String importTemplateAndParameters = null;
@@ -259,7 +260,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     @JsonIgnore
     public void setImportIsTemplate(Boolean importIsTemplate) {
-        if (importIsTemplate) {
+        if (importIsTemplate != null && importIsTemplate) {
             // mark this item as template entity type
             setIsTemplate();
         }
@@ -586,6 +587,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             return null;
         }
     }
+    
+    public void setImportAssemblyPart(String assemblyPart) {
+        importAssemblyPart = assemblyPart;
+    }
+    
+    @JsonIgnore
+    public String getImportAssemblyPart() {
+        return importAssemblyPart;
+    }
 
     public void setImportLocationItem(ItemDomainLocation locationItem) {
         if (locationItem != null) {
@@ -672,6 +682,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public static ItemDomainMachineDesign importInstantiateTemplateUnderParent(
             ItemDomainMachineDesign templateItem,
+            List<KeyValueObject> nameVars,
             ItemDomainMachineDesign parentItem,
             UserInfo user,
             UserGroup group) {
@@ -685,18 +696,14 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
         ItemElement itemElement = importCreateItemElementForParent(parentItem, user, group, null);
 
-        //TODO Craig
         ItemDomainMachineDesignBaseControllerUtility utility = parentItem.getItemControllerUtility();
 
         ItemDomainMachineDesign newItem;
         try {         
-            // TODO Craig has the name value param been filled out? It may be part of "current" if done using old method.
-            List<KeyValueObject> nameVars = utility.generateMachineDesignTemplateNameVars(templateItem);
-            // TODO Craig
-            newItem = utility.createMachineDesignFromTemplateHierachically(itemElement, templateItem, user, group, nameVars);
-
+            newItem = utility.createMachineDesignFromTemplateHierachically(
+                    itemElement, templateItem, user, group, nameVars);
             setImportChildParentRelationship(newItem, parentItem, itemElement);
-
+            
         } catch (CdbException | CloneNotSupportedException ex) {
             LOGGER.error(logMethodName + "failed to instantiate template "
                     + templateItem.getName() + ": " + ex.toString());

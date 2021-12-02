@@ -39,6 +39,7 @@ public class MachineImportHelperCommon {
     public static final String KEY_MD_ITEM = "importMdItem";
     public static final String KEY_SORT_ORDER = "importSortOrder";
     public static final String KEY_ASSIGNED_ITEM = "assignedItemString";
+    public static final String KEY_ASSEMBLY_PART = "importAssemblyPart";
     public static final String KEY_LOCATION = "location";
     public static final String KEY_IS_TEMPLATE = "importIsTemplateString";
     public static final String KEY_TEMPLATE_INVOCATION = "importTemplateAndParameters";
@@ -50,8 +51,8 @@ public class MachineImportHelperCommon {
     public static final String HEADER_ALT_NAME = "Alternate Name";
     public static final String HEADER_DESCRIPTION = "Description";
     public static final String HEADER_SORT_ORDER = "Sort Order";
-    public static final String HEADER_ASSIGNED_ITEM_DESCRIPTION = "Assigned Catalog/Inventory Item Description";
     public static final String HEADER_ASSIGNED_ITEM = "Assigned Catalog/Inventory Item";
+    public static final String HEADER_ASSEMBLY_PART = "Assembly Part";
     public static final String HEADER_LOCATION = "Location";
     public static final String HEADER_TEMPLATE = "Is Template?";
     public static final String HEADER_TEMPLATE_INVOCATION = "Template Instantiation";
@@ -174,6 +175,17 @@ public class MachineImportHelperCommon {
                 false);
     }
 
+    public static StringColumnSpec assemblyPartColumnSpec(List<ColumnModeOptions> options) {
+        return new StringColumnSpec(
+                HEADER_ASSEMBLY_PART,
+                KEY_ASSEMBLY_PART,
+                "setImportAssemblyPart",
+                "Assembly part name for this child. Child and parent item most both specify the same assembly catalog item in column H.",
+                "getImportAssemblyPart",
+                options,
+                0);
+    }
+    
     public static CustomColumnSpec locationColumnSpec(List<ColumnModeOptions> options) {
         LocationHandler locationHandler = new LocationHandler();        
         return new CustomColumnSpec(
@@ -305,15 +317,15 @@ public class MachineImportHelperCommon {
         return new CreateInfo(existingItem, isValid, validString);
     }
 
-    public static CreateInfo loadTemplateAndSetParamValues(Map<String, Object> rowMap) {
+    public static TemplateInvocationInfo loadTemplateAndSetParamValues(Map<String, Object> rowMap) {
         
         boolean isValid = true;
         String validString = "";
-        ItemDomainMachineDesign templateItem = null; 
+        ItemDomainMachineDesign templateItem = null;
+        List<KeyValueObject> varNameList = null;
         
         String templateName = "";
         Map<String, String> varNameValueMap = new HashMap<>();
-        //TODO Craig
         ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
         ItemDomainMachineDesignControllerUtility utility = new ItemDomainMachineDesignControllerUtility();
         
@@ -365,7 +377,7 @@ public class MachineImportHelperCommon {
         }
         
         if (!isValid) {
-            return new CreateInfo(null, isValid, validString);
+            return new TemplateInvocationInfo(null, null, isValid, validString);
             
         } else {
             
@@ -393,8 +405,7 @@ public class MachineImportHelperCommon {
                 } else {
                     // generate list of variable name/value pairs
                     controller.setMachineDesignNameList(new ArrayList<>());
-                    // TODO Craig
-                    List<KeyValueObject> varNameList = utility.generateMachineDesignTemplateNameListRecursivelly(templateItem);
+                    varNameList = utility.generateMachineDesignTemplateNameListRecursivelly(templateItem);
                     for (KeyValueObject obj : varNameList) {
                         
                         // check that all params in template are specified in import params
@@ -412,7 +423,7 @@ public class MachineImportHelperCommon {
 
         }
         
-        return new CreateInfo(templateItem, isValid, validString);
+        return new TemplateInvocationInfo(templateItem, varNameList, isValid, validString);
     }
     
 }

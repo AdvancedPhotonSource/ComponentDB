@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.TemplateInvocationInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
@@ -126,6 +127,7 @@ public class ImportHelperMachineTemplateInstantiation
         boolean isValid = true;
         String validString = "";
         ItemDomainMachineDesign invalidInstance = getEntityController().createEntityInstance();
+        ItemDomainMachineDesign item = null;
         
         // check for and set parent item
         ItemDomainMachineDesign itemParent = (ItemDomainMachineDesign) rowMap.get(MachineImportHelperCommon.KEY_MD_ITEM);
@@ -141,23 +143,34 @@ public class ImportHelperMachineTemplateInstantiation
         UserInfo user = (UserInfo) rowMap.get(KEY_USER);
         UserGroup group = (UserGroup) rowMap.get(KEY_GROUP);
         
-        CreateInfo loadTemplateInfo = MachineImportHelperCommon.loadTemplateAndSetParamValues(rowMap);
-        ItemDomainMachineDesign templateItem = (ItemDomainMachineDesign) loadTemplateInfo.getEntity();
-        if (templateItem == null) {
+        TemplateInvocationInfo loadTemplateInfo = MachineImportHelperCommon.loadTemplateAndSetParamValues(rowMap);
+        if (!loadTemplateInfo.isValid()) {
             return new CreateInfo(invalidInstance, loadTemplateInfo.getValidInfo());
         }
 
-        ItemDomainMachineDesign item = 
-                ItemDomainMachineDesign.importInstantiateTemplateUnderParent(
-                        templateItem, itemParent, user, group);
+        ItemDomainMachineDesign templateItem = loadTemplateInfo.getTemplate();
+        List<KeyValueObject> nameKV = loadTemplateInfo.getVarNameList();
         
-        // update tree view with item and parent
-        updateTreeView(item, itemParent, true);
+        if (templateItem == null) {
+            isValid = false;
+            validString = "Unexpected error loading template";
+            
+        } else if (nameKV == null) {
+            isValid = false;
+            validString = "Unexpected error loading template substituion variables";
 
-        // add entry to name map for new item
-        itemByNameMap.put(item.getName(), item);
-        
-        templateInstantiationCount = templateInstantiationCount + 1;
+        } else {
+            item = ItemDomainMachineDesign.importInstantiateTemplateUnderParent(
+                    templateItem, nameKV, itemParent, user, group);
+
+            // update tree view with item and parent
+            updateTreeView(item, itemParent, true);
+
+            // add entry to name map for new item
+            itemByNameMap.put(item.getName(), item);
+
+            templateInstantiationCount = templateInstantiationCount + 1;
+        }
 
         return new CreateInfo(item, isValid, validString);
     }

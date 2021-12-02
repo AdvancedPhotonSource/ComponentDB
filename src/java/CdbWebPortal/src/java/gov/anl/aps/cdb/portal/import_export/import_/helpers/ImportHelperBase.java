@@ -1385,7 +1385,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (newEntity == null) {
             // helper must return an instance for use in the validation table,
             // even if there is an error creating the entity
-            String msg = "Import helper not properly configured to create items for import operation.";
+            String msg = createInfo.getValidInfo().getValidString();
+            if (msg == null) {
+                msg = "Import helper not properly configured to create items for import operation.";
+            }
             throw new CdbException(msg);
         }
             
