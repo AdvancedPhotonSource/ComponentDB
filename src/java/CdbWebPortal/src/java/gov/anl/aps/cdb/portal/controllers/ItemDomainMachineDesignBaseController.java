@@ -376,7 +376,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             ItemElement ie = (ItemElement) data;
             Item parentItem = ie.getContainedItem();
             if (parentItem != null) {
-                SearchResult search = parentItem.search(searchPattern);
+                SearchResult search = parentItem.createSearchResultInfo(searchPattern);
                 if (search.getObjectAttributeMatchMap().size() > 0) {
                     results.add(parentNode);
                     ie.setRowStyle(SearchResult.SEARCH_RESULT_ROW_STYLE);
