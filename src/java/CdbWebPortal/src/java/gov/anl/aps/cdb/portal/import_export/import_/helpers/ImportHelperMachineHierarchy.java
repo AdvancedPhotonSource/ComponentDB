@@ -4,18 +4,26 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
+import static gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase.KEY_USER;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
 import static gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon.KEY_ASSIGNED_ITEM;
+import static gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon.KEY_ASSEMBLY_PART;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,8 +41,6 @@ public class ImportHelperMachineHierarchy
         extends ImportHelperHierarchyBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
         
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineHierarchy.class.getName());
-    
-    private Map<Integer, ItemDomainMachineDesign> parentIndentMap = new HashMap<>();
     
     private int nonTemplateItemCount = 0;
     private int templateItemCount = 0;
@@ -89,12 +95,14 @@ public class ImportHelperMachineHierarchy
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(MachineImportHelperCommon.existingMachineItemColumnSpec(ColumnModeOptions.oCREATE(), getMachineImportHelperCommon().getRootItem(), null, null));
+        specs.add(MachineImportHelperCommon.existingMachineItemColumnSpec(
+                ColumnModeOptions.oCREATE(), getMachineImportHelperCommon().getRootItem(), null, null));
         specs.add(MachineImportHelperCommon.nameHierarchyColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.altNameColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.descriptionColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.sortOrderColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.assignedItemColumnSpec(ColumnModeOptions.oCREATE()));
+        specs.add(MachineImportHelperCommon.assemblyPartColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.locationColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(locationDetailsColumnSpec());
         specs.add(MachineImportHelperCommon.isTemplateColumnSpec(ColumnModeOptions.rCREATE()));        
@@ -155,11 +163,6 @@ public class ImportHelperMachineHierarchy
     }
             
     @Override
-    protected ItemDomainMachineDesign newInstance_() {
-        return getEntityController().createEntityInstance();
-    }
-    
-    @Override
     protected String getKeyName_() {
         return MachineImportHelperCommon.KEY_NAME;
     }
@@ -175,8 +178,7 @@ public class ImportHelperMachineHierarchy
     }
             
     @Override
-    protected ValidInfo initEntityInstance_(
-            ItemDomainMachineDesign item,
+    protected CreateInfo createEntityInstance_(
             ItemDomainMachineDesign itemParent,
             Map<String, Object> rowMap,
             String itemName,
@@ -185,6 +187,8 @@ public class ImportHelperMachineHierarchy
         
         boolean isValid = true;
         String validString = "";
+        
+        ItemDomainMachineDesign item = getEntityController().createEntityInstance();
 
         // determine sort order
         Float itemSortOrder = (Float) rowMap.get(MachineImportHelperCommon.KEY_SORT_ORDER);
@@ -194,10 +198,10 @@ public class ImportHelperMachineHierarchy
             itemSortOrder = maxSortOrder + 1;
         }
         item.setImportSortOrder(itemSortOrder);
-        
+
         item.setName(itemName);
         item.setImportPath(itemPath);
-        
+
         // set uuid in case there are duplicate names
         String viewUUID = item.getViewUUID();
         item.setItemIdentifier2(viewUUID);
@@ -210,20 +214,20 @@ public class ImportHelperMachineHierarchy
             // return because we need this value to continue
             isValid = false;
             validString = ""; // we don't need a message because this is already flagged as invalid because it is a required column"
-            return new ValidInfo(isValid, validString);
+            return new CreateInfo(item, isValid, validString);
         }
-        
+
         // template items cannot have assigned inventory - only catalog
         Item assignedItem = (Item) rowMap.get(KEY_ASSIGNED_ITEM);
         if ((item.getIsItemTemplate()) && ((assignedItem instanceof ItemDomainInventory))) {
             isValid = false;
             validString = "Template cannot have assigned inventory item, must use catalog item";
-            return new ValidInfo(isValid, validString);
+            return new CreateInfo(item, isValid, validString);
         }
 
         if (item.getIsItemTemplate()) {
             templateItemCount = templateItemCount + 1;
-        } else {            
+        } else {
             nonTemplateItemCount = nonTemplateItemCount + 1;
         }
 
@@ -234,11 +238,121 @@ public class ImportHelperMachineHierarchy
                 String msg = "parent and child must both be templates or both not be templates";
                 validString = appendToString(validString, msg);
                 isValid = false;
-            }            
-            item.setImportChildParentRelationship(itemParent, itemSortOrder);
+                return new CreateInfo(item, isValid, validString);
+            }
         }
         
-        return new ValidInfo(isValid, validString);
+        String assemblyPartName = (String) rowMap.get(KEY_ASSEMBLY_PART);
+        if (assemblyPartName != null) {
+            assemblyPartName = assemblyPartName.trim();
+        }
+        
+        // handling for non-promoted items
+        if (assemblyPartName == null) {
+            
+            item.setImportChildParentRelationship(itemParent, itemSortOrder);
+
+        } else {
+            // create promoted machine item from assembly element if "assembly part" column specified
+            // until we invoke utility to create promoted item, "item" variable is used as a placeholder
+            // for reporting errors so that the entity shows up correctly in the import wizard validation table
+            
+            // can't specify assigned item when using assembly part column
+            if (assignedItem != null) {
+                isValid = false;
+                validString = appendToString(validString, "Assigned item cannot be used with assembly part column");
+                return new CreateInfo(item, isValid, validString);
+            }
+            
+            // parent must be specified
+            if (itemParent == null) {
+                isValid = false;
+                validString = appendToString(validString, "Parent item must be specified to use assembly part column");
+                return new CreateInfo(item, isValid, validString);
+            }
+            
+            // get catalog assembly for parent
+            ItemDomainCatalog parentCatalogItem = null;            
+            ItemElement parentCatalogElement = itemParent.getRepresentsCatalogElement();
+            if (parentCatalogElement != null) {
+                // treat parent as promoted machine item that represents catalog element                
+                parentCatalogItem = (ItemDomainCatalog) parentCatalogElement.getContainedItem();                
+            } else {
+                // otherwise get parent's assigned catalog item            
+                parentCatalogItem = itemParent.getCatalogItem();
+            }
+            
+            // check that parent has assigned catalog item or represents a catalog item
+            if ((parentCatalogItem == null)) {
+                isValid = false;
+                validString = appendToString(validString, "Catalog item assigned to or represented by parent item must be assembly");
+                return new CreateInfo(item, isValid, validString);
+            }
+            
+            // check that parent catalog item is an assembly
+            if (parentCatalogItem.isItemElementDisplayListEmpty()) {
+                isValid = false;
+                validString = appendToString(validString, "Assigned catalog item for parent must be assembly");
+                return new CreateInfo(item, isValid, validString);
+            }
+
+            // check that name not already in use for parent
+            if (nameInUse(itemParent, assemblyPartName)) {
+                isValid = false;
+                validString = appendToString(validString, "Assembly part name: '" + assemblyPartName + "' already in use for another spreadsheet row");
+            } else {
+                addNameInUse(itemParent, assemblyPartName);
+            }
+            
+            // get element for specified part name
+            ItemElement assemblyPartElement = null;
+            for (ItemElement element : parentCatalogItem.getItemElementDisplayList()) {
+                if (element.getName().equals(assemblyPartName)) {
+                    assemblyPartElement = element;
+                    break;
+                }
+            }
+            if (assemblyPartElement == null) {
+                isValid = false;
+                validString = appendToString(validString, "Unable to find element with specified part name: '" + assemblyPartName + "' in parent assembly");
+                return new CreateInfo(item, isValid, validString);
+            }
+            
+            ItemDomainMachineDesignControllerUtility utility = new ItemDomainMachineDesignControllerUtility();
+            UserInfo user = (UserInfo) rowMap.get(KEY_USER);
+            boolean exception = false;
+            String exceptionInfo = "";
+            try {
+                // create new promoted machine item using utility function
+                item = utility.createRepresentingMachineForAssemblyElement(itemParent, assemblyPartElement, user);
+                
+                // added this line to ItemControllerUtility.generateUniqueElementNameForItem() to force it to
+                // rebuild the cached itemElementDisplayList when multiple children are added in sequence to the same parent.
+                // itemParent.resetItemElementDisplayList();
+                
+                // reapply import values to newly created promoted item
+                item.setImportSortOrder(itemSortOrder);
+                item.setName(itemName);
+                item.setImportPath(itemPath);
+                item.setItemIdentifier2(viewUUID);
+                item.setImportIsTemplate(itemIsTemplate);
+                
+            } catch (InvalidArgument ex) {
+                exception = true;
+                exceptionInfo = ex.getMessage();
+            } catch (CdbException ex) {
+                exception = true;
+                exceptionInfo = ex.getMessage();
+            }
+            if (exception) {
+                isValid = false;
+                validString = 
+                        appendToString(validString, "Error creating machine item for assembly element: " 
+                                + assemblyPartName + " details: " + exceptionInfo);
+            }
+        }
+            
+        return new CreateInfo(item, isValid, validString);
     }
 
     protected String getCustomSummaryDetails() {

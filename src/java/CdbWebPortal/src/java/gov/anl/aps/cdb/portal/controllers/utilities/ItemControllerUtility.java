@@ -192,6 +192,12 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
     }
 
     public String generateUniqueElementNameForItem(Item item) {
+        // I'm adding this to force the itemElementDisplayList to be rebuilt from the fullItemElementList
+        // before generating the name, which is based on the number of elements.  Because the display list is cached
+        // and not rebuilt as child items are added, the generated element names were not correct when adding 
+        // multiple children to the same parent sequentially.  The generated name was always "E1".
+        item.resetItemElementDisplayList();
+        
         List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
         int elementNumber = itemElementsDisplayList.size() + 1;
         String elementNameSuffix = "E";

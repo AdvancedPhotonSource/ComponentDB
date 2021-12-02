@@ -21,12 +21,10 @@ public abstract class ImportHelperHierarchyBase<EntityType extends CdbEntity, En
     private Map<Integer, EntityType> parentIndentMap = new HashMap<>();
     private Map<Integer, Integer> childCountMap = new HashMap<>();
     
-    protected abstract EntityType newInstance_();
     protected abstract String getKeyName_();
     protected abstract String getKeyIndent_();
     protected abstract String getKeyParent_();
-    protected abstract ValidInfo initEntityInstance_(
-            EntityType item,
+    protected abstract CreateInfo createEntityInstance_(
             EntityType itemParent,
             Map<String, Object> rowMap,
             String itemName,
@@ -46,17 +44,14 @@ public abstract class ImportHelperHierarchyBase<EntityType extends CdbEntity, En
         boolean isValid = true;
         String validString = "";
 
-        EntityType item = null;
         EntityType itemParent = null;
 
-        item = newInstance_();
-        
         String itemName = (String) rowMap.get(getKeyName_());
         if ((itemName == null) || (itemName.isEmpty())) {
             // didn't find a non-empty name column for this row
             isValid = false;
             validString = "hierarchical name columns are all empty";
-            return new CreateInfo(item, isValid, validString);
+            return new CreateInfo(null, isValid, validString);
         }
 
         // find parent for this item
@@ -65,7 +60,7 @@ public abstract class ImportHelperHierarchyBase<EntityType extends CdbEntity, En
             // return because we need this value to continue
             isValid = false;
             validString = "missing indent level map entry";
-            return new CreateInfo(item, isValid, validString);
+            return new CreateInfo(null, isValid, validString);
         }        
         int itemIndentLevel = (int) rowMap.get(getKeyIndent_());
         
@@ -117,13 +112,18 @@ public abstract class ImportHelperHierarchyBase<EntityType extends CdbEntity, En
             }
         }
         
-        ValidInfo initValidInfo = 
-                initEntityInstance_(item, itemParent, rowMap, itemName, itemPath, itemSiblingNumber);
-        if (!initValidInfo.isValid()) {
+        CreateInfo createValidInfo
+                = createEntityInstance_(itemParent, rowMap, itemName, itemPath, itemSiblingNumber);
+        if (!createValidInfo.getValidInfo().isValid()) {
             isValid = false;
-            validString = appendToString(validString, initValidInfo.getValidString());
+            validString = appendToString(validString, createValidInfo.getValidInfo().getValidString());
         }
-        
+        EntityType item = (EntityType) createValidInfo.getEntity();
+        if (item == null) {
+            isValid = false;
+            validString = appendToString(validString, "Unexpected error creating entity instance");
+        }
+
         // set current item as last parent at its indent level
         parentIndentMap.put(itemIndentLevel, item);
         

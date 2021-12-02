@@ -10,11 +10,11 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.TemplateInvocationInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,20 +126,34 @@ public class ImportHelperMachineAssignTemplate extends ImportHelperBase<ItemDoma
             validString = "Item is already associated with a template.";
             
         } else {
-            CreateInfo loadTemplateInfo = MachineImportHelperCommon.loadTemplateAndSetParamValues(rowMap);
-            ItemDomainMachineDesign templateItem = (ItemDomainMachineDesign) loadTemplateInfo.getEntity();
+            // retrieve template and substituion variable mappings
+            
+            TemplateInvocationInfo loadTemplateInfo = MachineImportHelperCommon.loadTemplateAndSetParamValues(rowMap);            
+            if (!loadTemplateInfo.isValid()) {
+                return loadTemplateInfo.getValidInfo();
+            }
+            
+            ItemDomainMachineDesign templateItem = loadTemplateInfo.getTemplate();
+            List<KeyValueObject> nameKV = loadTemplateInfo.getVarNameList();
+            
             if (templateItem == null) {
                 isValid = false;
-                validString = loadTemplateInfo.getValidInfo().getValidString();
+                validString = "Unexpected error loading template";
+                
+            } else if (nameKV == null) {
+                isValid = false;
+                validString = "Unexpected error loading template substituion variables";
+                
             } else {
-                // TODO Craig - Verify if controller utility used properly. 
+                // assign specified template to machine item with substitution variable mappings
+                
                 ItemDomainMachineDesignControllerUtility utility =  new ItemDomainMachineDesignControllerUtility(); 
-                // TODO Craig - Is this in the spreadsheet? 
-                UserInfo user = SessionUtility.getUser();
-                List<KeyValueObject> nameKV = utility.generateMachineDesignTemplateNameVars(templateItem);
+                
+                // get user from existing item for owner user of any children created by template
+                UserInfo user = item.getOwnerUser();
+                
                 ValidInfo assignValidInfo
                         = utility.assignTemplateToItem(item, templateItem, user, nameKV);
-                // TODO Craig End
                 if (!assignValidInfo.isValid()) {
                     isValid = false;
                     validString = assignValidInfo.getValidString();
