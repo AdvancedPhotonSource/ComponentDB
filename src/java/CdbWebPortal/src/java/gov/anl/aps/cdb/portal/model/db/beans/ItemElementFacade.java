@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -20,6 +21,8 @@ public class ItemElementFacade extends CdbEntityFacade<ItemElement> {
 
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
+    
+    protected final Integer SEARCH_RESULT_LIMIT = 1000;
 
     @Override
     protected EntityManager getEntityManager() {
@@ -42,6 +45,19 @@ public class ItemElementFacade extends CdbEntityFacade<ItemElement> {
     
     public static ItemElementFacade getInstance() {
         return (ItemElementFacade) SessionUtility.findFacade(ItemElementFacade.class.getSimpleName()); 
+    }
+    
+    @Override
+    public List<ItemElement> searchEntities(String searchString) {
+        try {
+            return (List<ItemElement>) em.createNamedStoredProcedureQuery("itemElement.searchItemElements")
+                    .setParameter("search_string", searchString)
+                    .setParameter("limit_row", SEARCH_RESULT_LIMIT)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
     }
     
 }
