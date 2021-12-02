@@ -172,7 +172,7 @@ public class UserGroup extends SettingEntity implements Serializable {
     }
     
     @Override
-    public SearchResult search(Pattern searchPattern) {
+    public SearchResult createSearchResultInfo(Pattern searchPattern) {
         SearchResult searchResult = new SearchResult(this, id, name);
         searchResult.doesValueContainPattern("name", name, searchPattern);
         searchResult.doesValueContainPattern("description", description, searchPattern);
