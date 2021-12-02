@@ -78,6 +78,10 @@ public abstract class CdbEntityFacade<T> {
         cq.select(cq.from(entityClass));
         return getEntityManager().createQuery(cq).getResultList();
     }
+    
+    public List<T> searchEntities(String searchString) {
+        return findAll(); 
+    }
 
     public List<T> findRange(int[] range) {
         javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
