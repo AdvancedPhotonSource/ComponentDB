@@ -10,8 +10,11 @@ See LICENSE file.
 
     <!-- Must provide params "viewId", "valueModel", "selectionModel", "hideOptionalColumns", "hideSearchColumns", "scrollable".-->
 
-    <ui:param name="scrollHeight"
+    <ui:param name="defaultHeight"
               value="#{scrollable ? '65vh' : ''}" />
+    
+    <ui:param name="scrollHeight"
+              value="#{scrollHeight != null ? scrollHeight : defaultHeight}" />
 
     <p:treeTable id='itemMachineDesignListDataTable#{viewId}'
                  widgetVar="itemMachineDesignListDataTable#{viewId}Widget"
