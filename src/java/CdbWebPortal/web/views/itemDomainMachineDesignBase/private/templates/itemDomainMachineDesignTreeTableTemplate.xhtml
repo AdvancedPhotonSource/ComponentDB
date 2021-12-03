@@ -16,13 +16,19 @@ See LICENSE file.
     
     <ui:param name="scrollHeight"
               value="#{scrollHeight != null ? scrollHeight : defaultHeight}" />
+    
+    <ui:param name="resizableColumns"
+              value="#{resizableColumns != null ? resizableColumns : true}" />
+
+    <ui:param name="liveResize"
+              value="#{liveResize != null ? liveResize : true}" />
 
     <p:treeTable id='itemMachineDesignListDataTable#{viewId}'
                  widgetVar="itemMachineDesignListDataTable#{viewId}Widget"
                  rendered="#{rendered}"
                  scrollable="#{scrollable}"
-                 resizableColumns="true"
-                 liveResize="true"
+                 resizableColumns="#{resizableColumns}"
+                 liveResize="#{liveResize}"
                  sortBy="#{itemElementTreeListObject.sortOrder}"
                  scrollHeight="#{scrollHeight}"
                  value="#{valueModel}"
