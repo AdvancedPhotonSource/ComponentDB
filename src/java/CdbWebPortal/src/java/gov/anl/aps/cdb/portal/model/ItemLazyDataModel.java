@@ -24,16 +24,13 @@ import org.primefaces.model.SortOrder;
  *
  * @author darek
  */
-public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuilder extends ItemQueryBuilder> extends LazyDataModel {
+public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuilder extends ItemQueryBuilder> extends CdbLazyDataModel {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemLazyDataModel.class.getName());
 
     List<Item> itemList;
     Facade facade;
     Domain itemDomain;
-
-    Map<Object, Object> lastFilterMap = null;
-    Map<Object, Integer> lastSortMap = null;
 
     public ItemLazyDataModel(Facade facade, Domain itemDomain) {
         this.facade = facade;
@@ -58,7 +55,7 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
             sortOrder = sortMeta.getOrder();
         }
 
-        if (needToReloadLastQuery(sortOrderMap, filterBy)) {
+        if (needToReloadLastQuery(sortOrderMap, filterBy, itemDomain.getName())) {
             QueryBuilder itemQueryBuilder = getQueryBuilder(filterBy, sortField, sortOrder);
 
             List<Item> results = facade.findByDataTableFilterQueryBuilder(itemQueryBuilder);
@@ -68,74 +65,11 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
         return paginate(first, pageSize);
     }
 
-    private boolean needToReloadLastQuery(Map sortOrderMap, Map filterBy) {
-        if (lastFilterMap == null || lastSortMap == null) {
-            LOGGER.debug("Initialize lazy data model filter/sort for: " + itemDomain.getName());
-            copyLastMaps(sortOrderMap, filterBy);
-            return true;
-        }
-
-        Set filterKeySet = filterBy.keySet();
-        Set sortKeySet = sortOrderMap.keySet();
-
-        Set lastFilerKeySet = lastFilterMap.keySet();
-        Set lastSortKeySet = lastSortMap.keySet();
-
-        if (lastFilerKeySet.size() != filterKeySet.size() || lastSortKeySet.size() != sortKeySet.size()) {
-            copyLastMaps(sortOrderMap, filterBy);
-            return true;
-        }
-
-        for (Object key : filterKeySet) {
-            FilterMeta curFilter = (FilterMeta) filterBy.get(key);
-            Object filterValue = curFilter.getFilterValue();
-            Object lastFilterValue = lastFilterMap.get(key);
-
-            if (lastFilterValue == null || lastFilterValue.equals(filterValue) == false) {
-                copyLastMaps(sortOrderMap, filterBy);
-                return true;
-            }
-        }
-
-        for (Object key : sortKeySet) {
-            SortMeta curValue = (SortMeta) sortOrderMap.get(key);
-            SortOrder sortOrder = curValue.getOrder();
-            int intValue = sortOrder.intValue();
-            Integer lastIntValue = lastSortMap.get(key);
-
-            if (intValue != lastIntValue) {
-                copyLastMaps(sortOrderMap, filterBy);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     @Override
     public int count(Map map) {
         return itemList.size();
     }
-
-    private void copyLastMaps(Map sortOrderMap, Map filterBy) {
-        lastFilterMap = new HashMap();
-        lastSortMap = new HashMap();
-
-        for (Object key : filterBy.keySet()) {
-            FilterMeta filterMeta = (FilterMeta) filterBy.get(key);
-            Object filterValue = filterMeta.getFilterValue();
-            lastFilterMap.put(key, filterValue);
-        }
-
-        for (Object key : sortOrderMap.keySet()) {
-            SortMeta curValue = (SortMeta) sortOrderMap.get(key);
-            SortOrder sortOrder = curValue.getOrder();
-
-            int intValue = sortOrder.intValue();
-            lastSortMap.put(key, intValue);
-        }
-    }
-
+    
     private List paginate(int first, int pageSize) {
         int size = itemList.size();
 
