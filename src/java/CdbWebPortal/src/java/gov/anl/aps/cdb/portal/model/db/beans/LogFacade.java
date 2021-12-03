@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.portal.model.db.beans.builder.LogQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.LogLevel;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -11,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
@@ -74,8 +76,33 @@ public class LogFacade extends CdbEntityFacade<Log> {
         
         queryString += " ORDER BY l.id DESC";
         
-        return (List<Log>) em.createQuery(queryString).getResultList();
+        return (List<Log>) em.createQuery(queryString).getResultList();        
+    }
+    
+    public List<Log> findByDataTableFilterQueryBuilder(LogQueryBuilder queryBuilder, Integer start, Integer limit) {
+        String fullQuery = queryBuilder.getQueryForLogs();
+
+        try {
+            return (List<Log>) em.createQuery(fullQuery)
+                    .setMaxResults(limit)
+                    .setFirstResult(start).getResultList();
+        } catch (NoResultException ex) {
+        }
+
+        return null;
+    }
+    
+    public Long getCountForQuery(LogQueryBuilder queryBuilder) {
+        String fullQuery = queryBuilder.getCountQueryForLogs();
         
+        try {
+            Query query = em.createQuery(fullQuery);
+            long count = (long) query.getSingleResult();
+            return count;
+        } catch (NoResultException ex) {            
+        }
+        
+        return Long.MIN_VALUE; 
     }
     
     public static LogFacade getInstance() {
