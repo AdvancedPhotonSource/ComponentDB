@@ -242,7 +242,7 @@ See LICENSE file.
         <ui:param name="itemListObject"
                   value="#{mdTreeListObject}"/> 
         <ui:param name="rendredHousing"
-                  value="#{settingObject.displayHousing}"/> 
+                  value="#{rendredHousing != null ? rendredHousing : settingObject.displayHousing}"/> 
     </ui:include>
 
     <p:column headerText="Project"
