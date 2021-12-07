@@ -31,6 +31,7 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
     
     private static final Logger logger = LogManager.getLogger(ItemQueryBuilder.class.getName());
 
+    private static final String QUERY_COUNT_STRING_START = "SELECT count(DISTINCT(i)) FROM Item i ";    
     private static final String QUERY_STRING_START = "SELECT DISTINCT(i) FROM Item i ";    
     private static final String ITEM_ELEMENTS_LIST_JOIN_NAME = "fiel";
     private static final String ITEM_PROJECT_LIST_JOIN_NAME = "ipl";
@@ -71,14 +72,22 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
         
         this.fiel_included_in_where = false;
     }
+    
+    public String getCountQueryForItems() {
+        return getQuery(QUERY_COUNT_STRING_START);
+    }
 
     public String getQueryForItems() {
+        return getQuery(QUERY_STRING_START);
+    }
+    
+    private String getQuery(String start) {
         generateWhereString();
         generateSortString();
 
         generateJoinString();
 
-        String fullQuery = QUERY_STRING_START + joinPart + wherePart + sortPart;
+        String fullQuery = start + joinPart + wherePart + sortPart;
 
         return fullQuery;
     }

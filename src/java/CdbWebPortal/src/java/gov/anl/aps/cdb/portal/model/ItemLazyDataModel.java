@@ -9,28 +9,27 @@ import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.primefaces.model.FilterMeta;
-import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 
 /**
  *
  * @author darek
+ * @param <Facade>
+ * @param <QueryBuilder>
  */
-public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuilder extends ItemQueryBuilder> extends CdbLazyDataModel {
-
-    private static final Logger LOGGER = LogManager.getLogger(ItemLazyDataModel.class.getName());
+public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuilder extends ItemQueryBuilder> extends CdbLazyDataModel {   
 
     List<Item> itemList;
     Facade facade;
     Domain itemDomain;
+
+    QueryBuilder queryBuilder = null;
+    Integer rowCount = 0;
 
     public ItemLazyDataModel(Facade facade, Domain itemDomain) {
         this.facade = facade;
@@ -40,7 +39,8 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
 
     protected void updateItemList(List<Item> itemList) {
         this.itemList = itemList;
-        setRowCount(itemList.size());
+        rowCount = itemList.size();
+        setRowCount(rowCount);
     }
 
     @Override
@@ -56,10 +56,16 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
         }
 
         if (needToReloadLastQuery(sortOrderMap, filterBy, itemDomain.getName())) {
-            QueryBuilder itemQueryBuilder = getQueryBuilder(filterBy, sortField, sortOrder);
+            queryBuilder = getQueryBuilder(filterBy, sortField, sortOrder);
 
-            List<Item> results = facade.findByDataTableFilterQueryBuilder(itemQueryBuilder);
-            updateItemList(results);
+            if (isPaginationQueryBased()) {
+                Long countForQuery = facade.getCountForQuery(queryBuilder);
+                rowCount = countForQuery.intValue(); 
+                setRowCount(rowCount);
+            } else {
+                List<Item> results = facade.findByDataTableFilterQueryBuilder(queryBuilder);
+                updateItemList(results);
+            }
         }
 
         return paginate(first, pageSize);
@@ -67,10 +73,15 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
 
     @Override
     public int count(Map map) {
-        return itemList.size();
+        return rowCount;
     }
-    
+
     private List paginate(int first, int pageSize) {
+        if (isPaginationQueryBased()) {
+            itemList = facade.findByDataTableFilterQueryBuilderWithPagination(queryBuilder, first, pageSize);
+            return itemList;
+        } 
+        
         int size = itemList.size();
 
         int last = first + pageSize;
@@ -78,10 +89,14 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
             last = size;
         }
 
-        return itemList.subList(first, last);
+        return itemList.subList(first, last);        
     }
 
     protected abstract QueryBuilder getQueryBuilder(Map filterMap, String sortField, SortOrder sortOrder);
+
+    protected boolean isPaginationQueryBased() {
+        return false;
+    }
 
     /**
      * This defeats the purpose of a "lazy" data model, but we need to access
