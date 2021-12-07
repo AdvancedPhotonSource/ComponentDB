@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model;
 
+import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
@@ -11,8 +12,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 
@@ -22,10 +21,11 @@ import org.primefaces.model.SortOrder;
  * @param <Facade>
  * @param <QueryBuilder>
  */
-public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuilder extends ItemQueryBuilder> extends CdbLazyDataModel {   
+public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuilder extends ItemQueryBuilder> extends CdbLazyDataModel {
 
     List<Item> itemList;
     Facade facade;
+    ItemElementFacade itemElementFacade;
     Domain itemDomain;
 
     QueryBuilder queryBuilder = null;
@@ -60,7 +60,7 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
 
             if (isPaginationQueryBased()) {
                 Long countForQuery = facade.getCountForQuery(queryBuilder);
-                rowCount = countForQuery.intValue(); 
+                rowCount = countForQuery.intValue();
                 setRowCount(rowCount);
             } else {
                 List<Item> results = facade.findByDataTableFilterQueryBuilder(queryBuilder);
@@ -79,9 +79,16 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
     private List paginate(int first, int pageSize) {
         if (isPaginationQueryBased()) {
             itemList = facade.findByDataTableFilterQueryBuilderWithPagination(queryBuilder, first, pageSize);
+            
+            // Load self element directly from query
+            for (Item item: itemList) {
+                ItemElementFacade itemElementFacade = getItemElementFacade();
+                item.loadSelfElementFromDb(itemElementFacade);
+            }
+            
             return itemList;
-        } 
-        
+        }
+
         int size = itemList.size();
 
         int last = first + pageSize;
@@ -89,7 +96,7 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
             last = size;
         }
 
-        return itemList.subList(first, last);        
+        return itemList.subList(first, last);
     }
 
     protected abstract QueryBuilder getQueryBuilder(Map filterMap, String sortField, SortOrder sortOrder);
@@ -114,6 +121,13 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
             return ((Item) object).getViewUUID();
         }
         return "";
+    }
+
+    public ItemElementFacade getItemElementFacade() {
+        if (itemElementFacade == null) {
+            itemElementFacade = ItemElementFacade.getInstance();
+        }
+        return itemElementFacade;
     }
 
 }
