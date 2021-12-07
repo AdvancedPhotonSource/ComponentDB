@@ -14,6 +14,8 @@ INSERT INTO allowed_property_value (property_type_id, value) VALUES (@property_t
 ALTER TABLE item_element ADD COLUMN `represents_item_element_id` int(11) unsigned DEFAULT NULL AFTER derived_from_item_element_id;
 ALTER TABLE item_element_history ADD COLUMN `represents_item_element_id` int(11) unsigned DEFAULT NULL AFTER derived_from_item_element_id;
 
+delimiter //
+
 DROP PROCEDURE IF EXISTS search_items;//
 CREATE PROCEDURE `search_items` (IN limit_row int, IN domain_id int, IN search_string VARCHAR(255)) 
 BEGIN
@@ -51,7 +53,7 @@ BEGIN
 	WHERE (
 		ie.name LIKE search_string
 		OR parent_item.name LIKE search_string
-		OR derived_ie.name LIKE search_string		
+		OR derived_ie.name LIKE search_string
 		OR ie.description LIKE search_string
 	)
 	LIMIT limit_row;
