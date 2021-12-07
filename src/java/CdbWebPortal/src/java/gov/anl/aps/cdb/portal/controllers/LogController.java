@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.LogLevel;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.controllers.settings.LogSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.LogControllerUtility;
+import gov.anl.aps.cdb.portal.model.LogLazyDataModel;
 
 import java.io.Serializable;
 import java.util.List;
@@ -35,7 +36,7 @@ public class LogController extends CdbEntityController<LogControllerUtility, Log
     private LogFacade logFacade;
 
     private List<LogLevel> filterViewSelectedLogLevels = null;
-    private List<Log> filterViewListDataModelSystemLogs = null;
+    private LogLazyDataModel filterViewListDataModelSystemLogs = null;
     
     public LogController() {
         super();
@@ -78,11 +79,10 @@ public class LogController extends CdbEntityController<LogControllerUtility, Log
         this.filterViewListDataModelSystemLogs = null;
     }
 
-    public List<Log> getFilterViewListDataModelSystemLogs() {
+    public LogLazyDataModel getFilterViewListDataModelSystemLogs() {
         if (filterViewListDataModelSystemLogs == null) {
             if (filterViewSelectedLogLevels != null && !filterViewSelectedLogLevels.isEmpty()) {
-                // Load in the list data model for system logs
-                filterViewListDataModelSystemLogs = logFacade.findByFilterViewSystemLogAttributes(filterViewSelectedLogLevels);
+                filterViewListDataModelSystemLogs = new LogLazyDataModel(filterViewSelectedLogLevels);
             }
         }
         return filterViewListDataModelSystemLogs;

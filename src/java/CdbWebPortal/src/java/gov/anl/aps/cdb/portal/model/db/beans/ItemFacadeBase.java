@@ -153,6 +153,32 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return null;
 
     }
+    
+    public List<ItemDomainEntity> findByDataTableFilterQueryBuilderWithPagination(ItemQueryBuilder queryBuilder, Integer start, Integer limit) {
+        String fullQuery = queryBuilder.getQueryForItems();
+
+        try {
+            return (List<ItemDomainEntity>) em.createQuery(fullQuery)
+                    .setMaxResults(limit)
+                    .setFirstResult(start).getResultList();
+        } catch (NoResultException ex) {
+        }
+
+        return null;
+    }
+    
+    public Long getCountForQuery(ItemQueryBuilder queryBuilder) {
+        String fullQuery = queryBuilder.getCountQueryForItems();
+        
+        try {
+            Query query = em.createQuery(fullQuery);
+            long count = (long) query.getSingleResult();
+            return count;
+        } catch (NoResultException ex) {            
+        }
+        
+        return Long.MIN_VALUE; 
+    }
 
     public List<ItemDomainEntity> findByDomainAndEntityType(String domainName, String entityTypeName) {
         try {

@@ -13,9 +13,11 @@ See LICENSE file.
     <ui:param name="logSettingObject" value="#{logController.settingObject}" />
 
     <ui:param name="filterable" value="#{filterable != null ? filterable : false}" />
+    <ui:param name="sortable" value="#{sortable != null ? sortable : true}" />
 
     <p:column sortBy="#{logObject.id}" headerText="Id" 
               rendered="#{logSettingObject.displayId}"
+              sortable="#{sortable}"
               filterable="#{filterable}">
         <h:outputText value="#{logObject.id}"/>
     </p:column>
@@ -25,6 +27,7 @@ See LICENSE file.
               filterValue="#{logSettingObject.filterByEnteredOnDateTime}"
               filterStyle="width:60px"
               filterable="#{filterable}"
+              sortable="#{sortable}"
               style="width:85px"
               rendered="#{logSettingObject.displayEnteredOnDateTime}">
         <h:outputText value="#{logObject.shortDisplayEnteredOnDateTime}"/>
@@ -32,7 +35,9 @@ See LICENSE file.
 
     <p:column sortBy="#{logObject.effectiveFromDateTime}"
               filterBy="#{logObject.effectiveFromDateTime}"
-              filterable="#{filterable}" filterMatchMode="contains"
+              filterable="#{filterable}" 
+              sortable="#{sortable}"
+              filterMatchMode="contains"
               headerText="Date"
               rendered="#{logSettingObject.displayEffectiveFromDateTime}">
         <p:cellEditor>
@@ -51,7 +56,9 @@ See LICENSE file.
 
     <p:column sortBy="#{logObject.effectiveToDateTime}"
               filterBy="#{logObject.effectiveToDateTime}"
-              filterable="#{filterable}" filterMatchMode="contains"
+              filterable="#{filterable}" 
+              sortable="#{sortable}"
+              filterMatchMode="contains"
               headerText="End Date"
               rendered="#{logSettingObject.displayEffectiveToDateTime}">
         <p:cellEditor>
@@ -73,6 +80,7 @@ See LICENSE file.
               filterValue="#{logSettingObject.filterByEnteredByUser}"
               filterStyle="width:40px"
               filterable="#{filterable}"
+              sortable="#{sortable}"
               style="width:50px"
               rendered="#{logSettingObject.displayEnteredByUser}">
         <h:outputText value="#{logObject.enteredByUser.username}"/>
@@ -84,6 +92,7 @@ See LICENSE file.
               filterValue="#{logSettingObject.filterByTopic}"
               filterStyle="width:40px"
               filterable="#{filterable}"
+              sortable="#{sortable}"
               style="width:50px"
               rendered="#{logSettingObject.displayTopic}">
         <p:cellEditor>
@@ -105,6 +114,7 @@ See LICENSE file.
               filterValue="#{logSettingObject.filterByText}"
               filterStyle="width:80px"
               filterable="#{filterable}"
+              sortable="#{sortable}"
               style="width:200px">
         <p:cellEditor id="logEntryColumnCellEditor">
             <f:facet name="output">
@@ -121,6 +131,7 @@ See LICENSE file.
               headerText="Attachments"
               rendered="#{logSettingObject.displayAttachments}"
               filterable="#{filterable}"
+              sortable="#{sortable}"
               exportable="false">
         <f:facet name="header">
             <h:graphicImage alt="Attachments" library="images" name="attachment.ico"/>

@@ -27,21 +27,18 @@ import org.primefaces.model.SortOrder;
  *
  * @author Dariusz
  */
-public abstract class ItemQueryBuilder {
+public abstract class ItemQueryBuilder extends CdbQueryBuilder {
     
     private static final Logger logger = LogManager.getLogger(ItemQueryBuilder.class.getName());
 
-    private static final String QUERY_STRING_START = "SELECT DISTINCT(i) FROM Item i ";
-    private static final CharSequence[] ESCAPE_QUERY_CHARACTERS = {"'"};
+    private static final String QUERY_COUNT_STRING_START = "SELECT count(DISTINCT(i)) FROM Item i ";    
+    private static final String QUERY_STRING_START = "SELECT DISTINCT(i) FROM Item i ";    
     private static final String ITEM_ELEMENTS_LIST_JOIN_NAME = "fiel";
     private static final String ITEM_PROJECT_LIST_JOIN_NAME = "ipl";
     private static final String ENTITY_TYPE_LIST_JOIN_NAME = "etl";
     private static final String ITEM_CATEGORY_LIST_JOIN_NAME = "icl"; 
     private static final String ITEM_TYPE_LIST_JOIN_NAME = "itl"; 
-    private static final String CORE_METADATA_PROPERTY_JOIN_NAME = "cmp";
-
-    protected static final String QUERY_LIKE = "LIKE";
-    protected static final String QUERY_EQUALS = "=";
+    private static final String CORE_METADATA_PROPERTY_JOIN_NAME = "cmp";   
     
     private final String METADATA_FIELD_START = "Metadata-"; 
     private final String PROPERTY_FIELD_START = "propertyColumn"; 
@@ -61,13 +58,6 @@ public abstract class ItemQueryBuilder {
     private boolean fiel_included_in_where;
     
     protected Integer domainId;
-    protected Map filterMap;
-    protected String sortField;
-    protected SortOrder sortOrder;
-
-    private String wherePart;
-    private String sortPart;
-    private String joinPart;
     
     public ItemQueryBuilder(Integer domainId, Map filterMap, String sortField, SortOrder sortOrder) {
         this.domainId = domainId; 
@@ -82,14 +72,22 @@ public abstract class ItemQueryBuilder {
         
         this.fiel_included_in_where = false;
     }
+    
+    public String getCountQueryForItems() {
+        return getQuery(QUERY_COUNT_STRING_START);
+    }
 
     public String getQueryForItems() {
+        return getQuery(QUERY_STRING_START);
+    }
+    
+    private String getQuery(String start) {
         generateWhereString();
         generateSortString();
 
         generateJoinString();
 
-        String fullQuery = QUERY_STRING_START + joinPart + wherePart + sortPart;
+        String fullQuery = start + joinPart + wherePart + sortPart;
 
         return fullQuery;
     }
@@ -548,40 +546,7 @@ public abstract class ItemQueryBuilder {
         }
 
         return queryString;
-    }
-
-    protected void appendWhere(String comparator, String key, Object object) {
-        if (wherePart.isEmpty()) {
-            wherePart += " WHERE ";
-        } else {
-            wherePart += "AND ";
-        }
-
-        String value = "NULL";
-        if (object != null) {
-            value = object.toString();
-        }
-
-        if (object != null && object instanceof String) {
-            if (comparator.equalsIgnoreCase(QUERY_LIKE)) {
-                value = ((String)value).replace('*', '%'); 
-                value = "%" + value + "%";
-            }
-
-            value = "'" + escapeCharacters(value) + "'";
-        }
-
-        wherePart += key + " " + comparator + " " + value + " ";
-    }
-
-    private static String escapeCharacters(String queryParameter) {
-        for (CharSequence cs : ESCAPE_QUERY_CHARACTERS) {
-            if (queryParameter.contains(cs)) {
-                queryParameter = queryParameter.replace(cs, "'" + cs);
-            }
-        }
-        return queryParameter;
-    }
+    }           
 
     public enum QueryTranslator {
         item_identifier1("itemIdentifier1", "i"),
