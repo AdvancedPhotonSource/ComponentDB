@@ -43,6 +43,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -51,6 +52,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureParameter;
@@ -491,9 +493,11 @@ public class Item extends CdbDomainEntity implements Serializable {
     private List<ItemElementHistory> historyMemberList;
     @OneToMany(mappedBy = "containedItem2")
     private List<ItemElementHistory> historyMemberList2;
-
-    // Item element representing self 
-    private transient ItemElement selfItemElement = null;
+    @JoinTable(name = "v_item_self_element", joinColumns = {
+        @JoinColumn(name = "item_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "self_element_id", referencedColumnName = "id")})
+    @OneToOne(fetch = FetchType.LAZY)
+    private ItemElement selfItemElement;    
 
     // Descriptors in string format
     private transient String itemTypeString = null;
@@ -1423,6 +1427,11 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public ItemElement getSelfElement() {
+        if (selfItemElement != null) {
+            return selfItemElement; 
+        }
+    
+        // Self element was reset. Fetch from full element list.
         if (this.fullItemElementList == null) {
             return null;
         }
@@ -1434,8 +1443,7 @@ public class Item extends CdbDomainEntity implements Serializable {
                 }
             }
         }
-
-        return selfItemElement;
+        return selfItemElement; 
     }
 
     public boolean isItemElementDisplayListEmpty() {
