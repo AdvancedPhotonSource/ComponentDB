@@ -71,7 +71,7 @@ See LICENSE file.
                 </column>
             </p:panel>
 
-            <p:panel>
+            <p:panel id="connectionDialogMdPanel">
                 <column>
                     <row>
                         <p:outputLabel for="itemMachineDesignListDataTableconnectionDialogTree"
@@ -152,10 +152,23 @@ See LICENSE file.
             
             <p:remoteCommand name="updateCableConnectors"
                              update="cableConnectorMenu"/>
-
+            
+            <p:remoteCommand name="scrollToSelectedNodeCommand"
+                             update="connectionDialogMdPanel"
+                             oncomplete="scrollToSelectedNode();" />
+            
         </p:panel>
 
     </p:dialog>
 
-
+    <script type="text/javascript">
+        function scrollToSelectedNode() {
+            selectedRows = document.getElementsByClassName('ui-state-highlight ui-selected ui-treetable-selectable-node');
+            if (selectedRows.length > 0) {
+                row = selectedRows[0];
+                row.scrollIntoView({'behavior': 'smooth', 'block': 'center'});
+            }
+        }
+    </script>
+  
 </ui:composition>
