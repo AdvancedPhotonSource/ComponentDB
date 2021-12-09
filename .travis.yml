@@ -12,7 +12,7 @@ install:
 
 script: 
   - cd tools/developer_tools/code_testing/CdbWebPortalTest
-  - mvn -q test
+  - mvn test
   - cd ../../../..
   - cd src/python
   - py.test
