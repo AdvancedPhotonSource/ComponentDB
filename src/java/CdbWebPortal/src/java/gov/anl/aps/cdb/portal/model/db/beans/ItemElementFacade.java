@@ -43,6 +43,16 @@ public class ItemElementFacade extends CdbEntityFacade<ItemElement> {
         return null;
     }
     
+    public ItemElement findItemSelfElement(Integer parentItemId) {
+        try {
+            return (ItemElement) em.createNamedQuery("ItemElement.findItemSelfElement")
+                    .setParameter("parentItemId", parentItemId)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+    
     public static ItemElementFacade getInstance() {
         return (ItemElementFacade) SessionUtility.findFacade(ItemElementFacade.class.getSimpleName()); 
     }

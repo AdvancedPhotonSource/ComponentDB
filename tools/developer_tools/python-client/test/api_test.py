@@ -631,7 +631,7 @@ class MyTestCase(unittest.TestCase):
 
             promoted_machine = self.machineDesignApi.promote_assembly_element_to_machine(promote_data)
 
-            self.assertNotEquals(None, promoted_machine, msg="Promoted machine design has not been returned. ")
+            self.assertNotEqual(None, promoted_machine, msg="Promoted machine design has not been returned. ")
 
     def test_user_route(self):
         users = self.userApi.get_all1()

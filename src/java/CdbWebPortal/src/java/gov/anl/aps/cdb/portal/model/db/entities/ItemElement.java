@@ -60,7 +60,9 @@ import org.primefaces.model.TreeNode;
     @NamedQuery(name = "ItemElement.findByDescription",
             query = "SELECT i FROM ItemElement i WHERE i.description = :description"),
     @NamedQuery(name = "ItemElement.findBySortOrder",
-            query = "SELECT i FROM ItemElement i WHERE i.sortOrder = :sortOrder")
+            query = "SELECT i FROM ItemElement i WHERE i.sortOrder = :sortOrder"),
+    @NamedQuery(name = "ItemElement.findItemSelfElement",
+            query = "SELECT i FROM ItemElement i WHERE i.name is NULL and i.derivedFromItemElement is NULL and i.parentItem.id = :parentItemId")
 })
 @NamedStoredProcedureQueries({
     @NamedStoredProcedureQuery(

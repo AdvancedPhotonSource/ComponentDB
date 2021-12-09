@@ -7,7 +7,6 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.constants.CdbRole;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
@@ -25,6 +24,7 @@ import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignBaseTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
@@ -53,7 +53,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
-import java.util.logging.Level;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
@@ -2574,7 +2573,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         }
     }
 
-    public void collectItemsForDeletion(
+    public void collectItemsFromHierarchy(
             ItemDomainMachineDesign parentItem,
             List<ItemDomainMachineDesign> collectedItems,
             List<ItemElement> collectedElements,
@@ -2589,7 +2588,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             Item childItem = ie.getContainedItem();
             if (childItem instanceof ItemDomainMachineDesign) {
                 // depth first ordering is important here, otherwise there are merge errors for deleted items
-                collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false, rootRelationshipOnly);
+                collectItemsFromHierarchy((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false, rootRelationshipOnly);
                 collectedItems.add((ItemDomainMachineDesign) childItem);
                 if (!rootRelationshipOnly) {
                     collectedElements.add(ie);
@@ -2627,7 +2626,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     public TreeNode getMoveToTrashNode() {
         return moveToTrashNode;
-    }
+    }        
 
     /**
      * Prepares dialog for move to trash operation.
@@ -2650,7 +2649,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         // and in moveToTrash for executing the operation
         moveToTrashItemsToUpdate = new ArrayList<>();
         moveToTrashElementsToDelete = new ArrayList<>();
-        collectItemsForDeletion(itemToDelete, moveToTrashItemsToUpdate, moveToTrashElementsToDelete, true, true);
+        collectItemsFromHierarchy(itemToDelete, moveToTrashItemsToUpdate, moveToTrashElementsToDelete, true, true);
 
         // check each item for restriction violations
         moveToTrashAllowed = true;
@@ -2855,5 +2854,63 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         item.setIsDeleted();
     }
 
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Update permission for branch">   
+    
+    public EntityInfo getEntityInfoBranchUpdate() {
+        ItemDomainMachineDesign current = getCurrent();
+        return current.getEntityInfoBranchUpdate(); 
+    }
+    
+    public void prepareUpdatePermissionForBranch() {
+        updateCurrentUsingSelectedItemInTreeTable();
+        
+        ItemDomainMachineDesign current = getCurrent();
+        
+        EntityInfo entityInfo = current.getEntityInfo();
+        EntityInfo mockEi = new EntityInfo(); 
+        
+        mockEi.setOwnerUser(entityInfo.getOwnerUser());
+        mockEi.setOwnerUserGroup(entityInfo.getOwnerUserGroup());
+        mockEi.setIsGroupWriteable(entityInfo.getIsGroupWriteable());
+                
+        current.setEntityInfoBranchUpdate(mockEi);
+    }
+    
+    public void updatePermissionForBranch() {
+        Boolean isAdmin = LoginController.getInstance().isLoggedInAsAdmin();
+        
+        if (!isAdmin) {
+            SessionUtility.addErrorMessage("Insufficient privileges", "Only admins can update permission for a branch.");
+            return;
+        }
+        
+        moveToTrashItemsToUpdate = new ArrayList<>();
+        ItemDomainMachineDesign selectedItem = getCurrent();
+        
+        collectItemsFromHierarchy(selectedItem, moveToTrashItemsToUpdate, new ArrayList<ItemElement>(), true, true);
+        
+        EntityInfo mockEi = selectedItem.getEntityInfoBranchUpdate();
+        
+        for (Item item : moveToTrashItemsToUpdate) {
+            EntityInfo entityInfo = item.getEntityInfo();
+            entityInfo.setOwnerUser(mockEi.getOwnerUser());
+            entityInfo.setOwnerUserGroup(mockEi.getOwnerUserGroup());
+            entityInfo.setIsGroupWriteable(mockEi.getIsGroupWriteable());
+        }
+        
+        try {
+            updateList(moveToTrashItemsToUpdate);
+        } catch (CdbException ex) {
+            SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+            LOGGER.error(ex);
+        } catch (RuntimeException ex) {
+            LOGGER.error(ex);
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+        }
+        expandToSelectedTreeNodeAndSelect();
+    }
+    
     // </editor-fold>
 }
