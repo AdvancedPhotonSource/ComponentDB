@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui">   
+
+    <p:menuitem value="Update Permissions"
+                icon="fa fa-users"
+                action="#{entityController.prepareUpdatePermissionForBranch()}"
+                oncomplete="PF('updatePermissionDialogWidget').show()"
+                disabled="#{!loginController.loggedInAsAdmin}"
+                update="@form:updatePermissionDialog"/>
+
+</ui:composition>
