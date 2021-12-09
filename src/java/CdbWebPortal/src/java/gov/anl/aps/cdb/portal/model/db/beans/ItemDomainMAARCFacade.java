@@ -18,8 +18,8 @@ import javax.ejb.Stateless;
 public class ItemDomainMAARCFacade extends ItemFacadeBase<ItemDomainMAARC> {
     
     @Override
-    public String getDomainName() {
-        return ItemDomainName.maarc.getValue();
+    public ItemDomainName getDomain() {
+        return ItemDomainName.maarc;
     }
     
     public ItemDomainMAARCFacade() {

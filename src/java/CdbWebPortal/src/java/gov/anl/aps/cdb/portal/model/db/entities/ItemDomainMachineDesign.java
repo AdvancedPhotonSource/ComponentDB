@@ -73,6 +73,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
+    private transient EntityInfo entityInfoBranchUpdate = null; 
     private transient List<MachineDesignConnectorListObject> mdConnectorList;
     private transient ItemDomainMachineDesign newMdInventoryItem = null;
 
@@ -445,8 +446,8 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
 
     @Override
-    public SearchResult search(Pattern searchPattern) {
-        SearchResult result = super.search(searchPattern);
+    public SearchResult createSearchResultInfo(Pattern searchPattern) {
+        SearchResult result = super.createSearchResultInfo(searchPattern);
 
         Item assignedItem = getAssignedItem();
         if (assignedItem != null) {
@@ -733,6 +734,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public void setRelatedMAARCRelationshipsForCurrent(List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent) {
         this.relatedMAARCRelationshipsForCurrent = relatedMAARCRelationshipsForCurrent;
+    }
+
+    @JsonIgnore
+    public EntityInfo getEntityInfoBranchUpdate() {
+        return entityInfoBranchUpdate;
+    }
+
+    public void setEntityInfoBranchUpdate(EntityInfo entityInfoBranchUpdate) {
+        this.entityInfoBranchUpdate = entityInfoBranchUpdate;
     }
 
     @JsonIgnore

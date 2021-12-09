@@ -1,7 +1,6 @@
 # Component DB
 
 [![Documentation Status](https://readthedocs.org/projects/componentdb/badge/?version=latest)](http://componentdb.readthedocs.io/en/latest/?badge=latest)
-[![Build Status](https://travis-ci.org/AdvancedPhotonSource/ComponentDB.svg?branch=master)](https://travis-ci.org/AdvancedPhotonSource/ComponentDB)
 
 **Prerequisites:**
 

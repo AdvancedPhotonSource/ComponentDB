@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.EntityTypeControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
@@ -43,6 +44,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -51,6 +53,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureParameter;
@@ -58,6 +61,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
+import jdk.nashorn.internal.ir.annotations.Immutable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.model.TreeNode;
@@ -196,6 +200,28 @@ import org.primefaces.model.TreeNode;
             + "AND i.domain.name = :domainName")
 })
 @NamedStoredProcedureQueries({
+    @NamedStoredProcedureQuery(
+        name = "item.searchItems",
+        procedureName = "search_items",
+        resultClasses = Item.class,
+        parameters = {
+            @StoredProcedureParameter(
+                    name = "limit_row",
+                    mode = ParameterMode.IN,
+                    type = Integer.class
+            ),
+            @StoredProcedureParameter(
+                    name = "domain_id",
+                    mode = ParameterMode.IN,
+                    type = Integer.class
+            ),
+            @StoredProcedureParameter(
+                    name = "search_string",
+                    mode = ParameterMode.IN,
+                    type = String.class
+            )
+        }
+    ),
     @NamedStoredProcedureQuery(
             name = "item.itemWithWritePermissionsForUser",
             procedureName = "items_with_write_permission_for_user",
@@ -470,8 +496,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     @OneToMany(mappedBy = "containedItem2")
     private List<ItemElementHistory> historyMemberList2;
 
-    // Item element representing self 
-    private transient ItemElement selfItemElement = null;
+    private transient ItemElement selfItemElement;
 
     // Descriptors in string format
     private transient String itemTypeString = null;
@@ -518,9 +543,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     protected transient ItemMetadataPropertyInfo coreMetadataPropertyInfo = null;
     protected transient PropertyType coreMetadataPropertyType = null;
     protected transient PropertyValue coreMetadataPropertyValue = null;
-    
+
     private transient List<ItemConnector> syncedConnectorList = null;
-    
+
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
     protected transient ItemElement currentEditItemElement = null;
     protected transient Boolean currentEditItemElementSaveButtonEnabled = false;
@@ -559,7 +584,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         UserGroup firstGroup = userInfo.getUserGroupList().get(0);
         return clone(userInfo, firstGroup);
     }
-    
+
     public Item clone(UserInfo ownerUser, UserGroup ownerGroup) throws CloneNotSupportedException {
         return clone(ownerUser, ownerGroup, false, false, false);
     }
@@ -1178,12 +1203,12 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setItemElementMemberList(List<ItemElement> itemElementMemberList) {
         this.itemElementMemberList = itemElementMemberList;
     }
-    
+
     public void appendItemElementMemberList(ItemElement itemElement) {
         if (itemElementMemberList == null) {
-            itemElementMemberList = new ArrayList<>(); 
+            itemElementMemberList = new ArrayList<>();
         }
-        
+
         itemElementMemberList.add(itemElement);
     }
 
@@ -1195,13 +1220,13 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setItemElementMemberList2(List<ItemElement> itemElementMemberList2) {
         this.itemElementMemberList2 = itemElementMemberList2;
     }
-    
+
     public void appendItemElementMemberList2(ItemElement itemElement) {
         if (itemElementMemberList2 == null) {
-            itemElementMemberList2 = new ArrayList<>(); 
+            itemElementMemberList2 = new ArrayList<>();
         }
-        
-        itemElementMemberList2.add(itemElement);        
+
+        itemElementMemberList2.add(itemElement);
     }
 
     @XmlTransient
@@ -1297,7 +1322,7 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @JsonIgnore
     public List<ItemConnector> getItemConnectorListSorted() {
-        
+
         if (itemConnectorList == null) {
             return new ArrayList<>();
         }
@@ -1316,13 +1341,13 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setItemConnectorList(List<ItemConnector> itemConnectorList) {
         this.itemConnectorList = itemConnectorList;
     }
-    
+
     private ItemConnector findConnectorWithName(String connectorName, List<ItemConnector> itemConnectors) {
-        
+
         if (itemConnectors == null) {
             return null;
         }
-        
+
         for (ItemConnector itemConnector : itemConnectors) {
             Connector connector = itemConnector.getConnector();
             if (connector != null) {
@@ -1332,25 +1357,25 @@ public class Item extends CdbDomainEntity implements Serializable {
                 }
             }
         }
-        
+
         return null;
     }
-    
+
     @JsonIgnore
     public ItemConnector getConnectorNamed(String connectorName) {
-        
+
         // check this item's connector list for specified connector name
         ItemConnector itemConnector = findConnectorWithName(connectorName, getItemConnectorList());
         if (itemConnector != null) {
             return itemConnector;
         }
-        
+
         // check the list of inherited connectors for specified name
         ItemConnector inheritedConnector = findConnectorWithName(connectorName, getSyncedConnectorList());
         if (inheritedConnector != null) {
             return inheritedConnector;
         }
-        
+
         return null;
     }
 
@@ -1401,19 +1426,24 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public ItemElement getSelfElement() {
-        if (this.fullItemElementList == null) {
-            return null;
-        }
-        if (selfItemElement == null) {
-            for (ItemElement ie : this.fullItemElementList) {
-                if (ie.getName() == null && ie.getDerivedFromItemElement() == null) {
-                    selfItemElement = ie;
-                    break;
+        if (selfItemElement == null) {            
+            if (this.fullItemElementList == null) {
+                return null;
+            }
+            if (selfItemElement == null) {
+                for (ItemElement ie : this.fullItemElementList) {
+                    if (ie.getName() == null && ie.getDerivedFromItemElement() == null) {
+                        selfItemElement = ie;
+                        break;
+                    }
                 }
             }
         }
-
         return selfItemElement;
+    }
+
+    public void loadSelfElementFromDb(ItemElementFacade ieFacade) {
+        selfItemElement = ieFacade.findItemSelfElement(this.id);
     }
 
     public boolean isItemElementDisplayListEmpty() {
@@ -1609,15 +1639,23 @@ public class Item extends CdbDomainEntity implements Serializable {
         return null;
     }
 
+    @JsonIgnore
+    protected String getDerivedFromLabel() {
+        return "derived from";
+    }
+
     @Override
-    public SearchResult search(Pattern searchPattern) {
+    public SearchResult createSearchResultInfo(Pattern searchPattern) {
         SearchResult searchResult;
 
         if (name != null) {
+            String itemIdentifier1Label = domain.getItemIdentifier1Label();
+            String itemIdentifier2Label = domain.getItemIdentifier2Label();
+
             searchResult = new SearchResult(this, id, name);
             searchResult.doesValueContainPattern("name", name, searchPattern);
-            searchResult.doesValueContainPattern("item identifier 1", itemIdentifier1, searchPattern);
-            searchResult.doesValueContainPattern("item identifier 2", itemIdentifier2, searchPattern);
+            searchResult.doesValueContainPattern(itemIdentifier1Label, itemIdentifier1, searchPattern);
+            searchResult.doesValueContainPattern(itemIdentifier2Label, itemIdentifier2, searchPattern);
         } else if (derivedFromItem != null && derivedFromItem.getName() != null) {
             String title = "Derived from: " + derivedFromItem.getName();
             if (qrId != null) {
@@ -1629,7 +1667,9 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
 
         if (derivedFromItem != null) {
-            searchResult.doesValueContainPattern("derived from name", derivedFromItem.getName(), searchPattern);
+            String derivedLabel = getDerivedFromLabel();
+            derivedLabel += " name";
+            searchResult.doesValueContainPattern(derivedLabel, derivedFromItem.getName(), searchPattern);
         }
         searchResult.doesValueContainPattern("QrId", getQrIdFilter(), searchPattern);
         searchResult.doesValueContainPattern("created by", getEntityInfo().getCreatedByUser().getUsername(), searchPattern);
@@ -1708,11 +1748,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         return isItemDeleted;
     }
-    
+
     public boolean isItemControl() {
-        return isItemControl(this); 
+        return isItemControl(this);
     }
-    
+
     public static boolean isItemControl(Item item) {
         return isItemEntityType(item, EntityTypeName.control.getValue());
     }
@@ -1897,13 +1937,13 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         return syncedConnectorList;
     }
-    
+
     /**
-     * Returns list of cloned inherited connectors that are not currently in use 
+     * Returns list of cloned inherited connectors that are not currently in use
      * for this item.
      */
     private List<ItemConnector> syncUnusedInheritedItemConnectors() {
-        
+
         // get inherited connectors
         List<ItemConnector> inheritedConnectors = getInheritedItemConnectors();
         if (inheritedConnectors == null) {
@@ -1933,15 +1973,15 @@ public class Item extends CdbDomainEntity implements Serializable {
                 syncedConnectors.add(syncedConnector);
             }
         }
-        
+
         return syncedConnectors;
     }
-    
+
     @JsonIgnore
     private List<ItemConnector> getInheritedItemConnectors() {
 
         Item assignedItem = getInheritedItemConnectorParent();
-        
+
         if (assignedItem == null) {
             return new ArrayList<>();
         }
@@ -1957,35 +1997,35 @@ public class Item extends CdbDomainEntity implements Serializable {
         if (catalogItem != null) {
             result = catalogItem.getItemConnectorList();
         }
-        
+
         if (result == null) {
             result = new ArrayList<>();
         }
-        
+
         return result;
     }
 
     /**
      * Get item to inherit connectors from, default implementation returns null.
-     * Subclasses override to customize, e.g., machine/cable design items return their
-     * assigned catalog/inventory item.
+     * Subclasses override to customize, e.g., machine/cable design items return
+     * their assigned catalog/inventory item.
      */
     @JsonIgnore
     protected Item getInheritedItemConnectorParent() {
         return null;
     }
-    
+
     private ItemConnector cloneInheritedConnector(ItemConnector inheritedConnector) {
-        
+
         ItemConnector clone = new ItemConnector();
 
         Connector connector = inheritedConnector.getConnector();
         clone.setConnector(connector);
         clone.setItem(this);
-        
-       return clone;
+
+        return clone;
     }
-    
+
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
     @JsonIgnore
     public ItemElement getCurrentEditItemElement() {

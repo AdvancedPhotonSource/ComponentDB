@@ -355,6 +355,10 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
         return getEntityDbFacade().findAll();
     }
     
+    public List<EntityType> searchEntities(String searchString) {
+        return getEntityDbFacade().searchEntities(searchString); 
+    }
+    
     /**
      * Search all entities for a given string.
      *
@@ -375,10 +379,10 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
         } else {
             searchPattern = Pattern.compile(Pattern.quote(searchString));
         }
-        List<EntityType> allObjectList = getAllEntities();
+        List<EntityType> allObjectList = searchEntities(searchString);
         for (EntityType entity : allObjectList) {
             try {
-                SearchResult searchResult = entity.search(searchPattern);
+                SearchResult searchResult = entity.createSearchResultInfo(searchPattern);
                 if (!searchResult.isEmpty()) {
                     searchResultList.add(searchResult);
                 }

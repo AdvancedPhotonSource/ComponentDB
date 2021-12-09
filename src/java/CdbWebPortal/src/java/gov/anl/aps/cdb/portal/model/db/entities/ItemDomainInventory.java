@@ -58,6 +58,11 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
         return ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
     }
 
+    @Override
+    protected String getDerivedFromLabel() {
+        return "Catalog"; 
+    }
+
     public static String generatePaddedUnitName(int itemNumber) {
         return String.format("Unit: %04d", itemNumber);
     }

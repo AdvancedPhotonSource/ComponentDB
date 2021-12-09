@@ -24,4 +24,9 @@ public class ItemDomainMAARCLazyDataModel extends ItemLazyDataModel<ItemDomainMA
     protected ItemDomainMaarcQueryBuilder getQueryBuilder(Map filterMap, String sortField, SortOrder sortOrder) {
         return new ItemDomainMaarcQueryBuilder(itemDomain.getId(), filterMap, sortField, sortOrder); 
     }
+
+    @Override
+    protected boolean isPaginationQueryBased() {
+        return true; 
+    }
 }

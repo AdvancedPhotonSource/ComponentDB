@@ -18,8 +18,8 @@ import javax.ejb.Stateless;
 public class ItemDomainCableInventoryFacade extends ItemFacadeBase<ItemDomainCableInventory> {
     
     @Override
-    public String getDomainName() {
-        return ItemDomainName.cableInventory.getValue();
+    public ItemDomainName getDomain() {
+        return ItemDomainName.cableInventory;
     }
     
     public ItemDomainCableInventoryFacade() {

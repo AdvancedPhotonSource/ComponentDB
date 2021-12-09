@@ -176,7 +176,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         // collect list of items to restore
         List<ItemDomainMachineDesign> itemsToRestore = new ArrayList<>();
         List<ItemElement> elementsToRestore = new ArrayList<>();
-        collectItemsForDeletion(itemToRestore, itemsToRestore, elementsToRestore, true, true);
+        collectItemsFromHierarchy(itemToRestore, itemsToRestore, elementsToRestore, true, true);
 
         // check permissions for all items
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
@@ -267,7 +267,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         // collect list of items to delete
         List<ItemDomainMachineDesign> itemsToDelete = new ArrayList<>();
         List<ItemElement> elementsToDelete = new ArrayList<>();
-        collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true, false);
+        collectItemsFromHierarchy(rootItemToDelete, itemsToDelete, elementsToDelete, true, false);
 
         // admin permission required
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();

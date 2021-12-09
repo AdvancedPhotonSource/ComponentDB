@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
@@ -38,11 +39,22 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     protected EntityManager em;
 
     List<ItemDomainEntity> itemsToAdd;
-
+    
+    protected final Integer SEARCH_RESULT_LIMIT = 1000;
+    
     /**
      * Returns Item domain for subclass implementation.
+     * @return 
      */
-    public abstract String getDomainName();
+    public abstract ItemDomainName getDomain(); 
+    
+    public final String getDomainName() {
+        ItemDomainName domain = getDomain();
+        if (domain != null) {
+            return domain.getValue(); 
+        }
+        return "";
+    }
 
     public ItemFacadeBase(Class<ItemDomainEntity> entityClass) {
         super(entityClass);
@@ -140,6 +152,32 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
         return null;
 
+    }
+    
+    public List<ItemDomainEntity> findByDataTableFilterQueryBuilderWithPagination(ItemQueryBuilder queryBuilder, Integer start, Integer limit) {
+        String fullQuery = queryBuilder.getQueryForItems();
+
+        try {
+            return (List<ItemDomainEntity>) em.createQuery(fullQuery)
+                    .setMaxResults(limit)
+                    .setFirstResult(start).getResultList();
+        } catch (NoResultException ex) {
+        }
+
+        return null;
+    }
+    
+    public Long getCountForQuery(ItemQueryBuilder queryBuilder) {
+        String fullQuery = queryBuilder.getCountQueryForItems();
+        
+        try {
+            Query query = em.createQuery(fullQuery);
+            long count = (long) query.getSingleResult();
+            return count;
+        } catch (NoResultException ex) {            
+        }
+        
+        return Long.MIN_VALUE; 
     }
 
     public List<ItemDomainEntity> findByDomainAndEntityType(String domainName, String entityTypeName) {
@@ -877,4 +915,18 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return null;
     }
 
+    @Override
+    public List<ItemDomainEntity> searchEntities(String searchString) {
+        try {
+            ItemDomainName domain = getDomain();
+            return (List<ItemDomainEntity>) em.createNamedStoredProcedureQuery("item.searchItems")
+                    .setParameter("domain_id", domain.getId())
+                    .setParameter("search_string", searchString)
+                    .setParameter("limit_row", SEARCH_RESULT_LIMIT)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
 }

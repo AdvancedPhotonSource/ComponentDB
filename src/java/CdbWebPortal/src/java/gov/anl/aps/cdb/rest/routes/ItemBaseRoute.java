@@ -4,12 +4,9 @@
  */
 package gov.anl.aps.cdb.rest.routes;
 
-import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import javax.ejb.EJB;
 import javax.ws.rs.PathParam;
 import org.apache.logging.log4j.LogManager;

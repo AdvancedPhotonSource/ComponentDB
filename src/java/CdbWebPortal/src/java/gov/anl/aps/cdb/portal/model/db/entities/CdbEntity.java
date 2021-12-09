@@ -87,7 +87,7 @@ public class CdbEntity implements Serializable, Cloneable {
         return null;
     }
     
-    public SearchResult search(Pattern searchPattern) {
+    public SearchResult createSearchResultInfo(Pattern searchPattern) {
         return null;
     }        
     

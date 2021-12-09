@@ -21,8 +21,8 @@ import javax.ejb.Stateless;
 public class ItemDomainMachineDesignFacade extends ItemFacadeBase<ItemDomainMachineDesign> {
     
     @Override
-    public String getDomainName() {
-        return ItemDomainName.machineDesign.getValue();
+    public ItemDomainName getDomain() {
+        return ItemDomainName.machineDesign;
     }
     
     public ItemDomainMachineDesignFacade() {
