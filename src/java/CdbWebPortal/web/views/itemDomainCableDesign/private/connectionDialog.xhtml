@@ -87,6 +87,9 @@ See LICENSE file.
                             <ui:param name="rendered" value="#{true}" />
                             <ui:param name="scrollable" value="#{true}" />
                             <ui:param name="scrollHeight" value="50vh" />
+                            <ui:param name="resizableColumns" value="#{false}" />
+                            <ui:param name="liveResize" value="#{false}" />
+                            <ui:param name="rendredHousing" value="#{false}" />
                             <ui:define name="treeTableEvents">
                                 <p:ajax event="select"
                                         listener="#{itemDomainCableDesignController.dialogConnection.selectListenerEndpoint}"
