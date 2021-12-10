@@ -6,7 +6,7 @@ import base64
 import os
 
 from cdbApi import ApiException, DomainApi, FileUploadObject, LocationItemsApi, LogApi, PropertyValueApi, \
-	ComponentCatalogItemsApi, ComponentInventoryItemsApi
+	ComponentCatalogItemsApi, ComponentInventoryItemsApi, ApiExceptionMessage
 from cdbApi.api.item_api import ItemApi
 from cdbApi.api.downloads_api import DownloadsApi
 from cdbApi.api.property_type_api import PropertyTypeApi
@@ -108,6 +108,11 @@ class CdbApiFactory:
 
 		fileName = os.path.basename(filePath)
 		return FileUploadObject(file_name=fileName, base64_binary=b64String)
+
+	def parseApiException(self, openApiException):
+		responseType = ApiExceptionMessage.__name__
+		openApiException.data = openApiException.body
+		return self.apiClient.deserialize(openApiException, responseType)
 
 def run_command():
 	# Example
