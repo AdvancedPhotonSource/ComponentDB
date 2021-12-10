@@ -55,33 +55,27 @@ h1 {
         display: inline-block;
         vertical-align: top;        
     }    
-    
+
     .listConfigurationLeftPanel {
         padding-right: .5%; 
     }
-    
+
     .listConfigurationRightPanel {
         padding-left: .5%; 
     }
 }
 
-.machineDesignListTreeTable .ui-blockui-content  {
-    background: #d5ebf5c7;
+.ui-blockui-content {
+    background: rgb(250 250 250 / 70%);    
+    color: rgb(100 100 100);
     left: 10%;
     right: 10%;
     top: 50px !important;
 }
 
-.machineDesignListTreeTable .ui-blockui-content .ui-outputpanel {
-    display: inline-block; 
-}
-
-.machineDesignListTreeTable .ui-blockui-content .ui-outputpanel .ui-outputpanel {
+.ui-blockui-content .ui-outputpanel {
     width: 100%; 
-}
-
-.machineDesignListTreeTable .ui-blockui-content .ui-outputpanel div {
-    display: table;   
+    display: inline-block;     
 }
 
 .machineDesignListTreeTable .ui-blockui-content .ui-outputpanel div span {
@@ -118,7 +112,7 @@ h1 {
     text-align: center;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.8);
 }
-     
+
 .wiringDiagram .ui-diagram-element:hover {
     background-color: #C7C6C4;
 }
