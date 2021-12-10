@@ -49,9 +49,16 @@ See LICENSE file.
               value="#{itemListObject.createdFromTemplate}" /> 
 
     <ui:param name="filterable"
-              value="#{itemDomainMachineDesignController.filtersLoaded}"/>        
+              value="#{itemDomainMachineDesignController.filtersLoaded}"/>  
+    
+    <ui:param name="onCompleteCommandName"
+              value="onCompleteMdFilter#{viewId}" />
+    
+    <ui:param name="onCompleteCommand"
+              value="#{onCompleteCommandName}()" />
 
     <p:column headerText="Machine Element Name" styleClass="draggableTreeTableDataCell"
+              id="machineElementNameColumn#{viewId}"
               filterBy="#{itemTreeListObject.name}"
               filterMatchMode="contains"
               filterable="#{filterable}"
@@ -60,19 +67,19 @@ See LICENSE file.
             Machine Element Name
             <ui:fragment>
                 <br/>
-                <p:inputText id="nameMdFilter"                             
+                <p:inputText id="nameMdFilter#{viewId}"                             
                              value="#{valueModel.nameFilter}" 
                              onchange="onChangeNameMdFilter()"
                              rendered="#{includeSearchFields}"
-                             onkeyup="if (event.keyCode === 13) { this.blur(); PF('loadingDialog').show(); onChangeNameMdFilter() }"/>                
+                             onkeyup="if (event.keyCode === 13) { this.blur(); PF('loadingDialog').show(); onChangeNameMdFilter#{viewId}() }"/>                
                 
-                <p:remoteCommand name="onChangeNameMdFilter"
+                <p:remoteCommand name="onChangeNameMdFilter#{viewId}"
                                  onstart="PF('loadingDialog').show()"
                                  oncomplete="PF('loadingDialog').hide();"
                                  rendered="#{includeSearchFields}"
-                                 action="#{valueModel.filterChangeEvent('onCompleteMdFilter()')}"
-                                 update="nameMdFilter" /> 
-                <p:remoteCommand name="onCompleteMdFilter"
+                                 action="#{valueModel.filterChangeEvent(onCompleteCommand)}"
+                                 update="nameMdFilter#{viewId}" /> 
+                <p:remoteCommand name="#{onCompleteCommandName}"
                                  onstart="PF('loadingDialog').show()"
                                  oncomplete="PF('loadingDialog').hide()"
                                  action="#{valueModel.finishFiltering()}"
@@ -133,19 +140,19 @@ See LICENSE file.
     </p:column>
     
     <p:column styleClass="narrowColumn"
-              id="searchAllMachineNodesBooleanColumn"
+              id="searchAllMachineNodesBooleanColumn#{viewId}"
               rendered="#{includeSearchFields}">
         <f:facet name="header">
             <span class="ui-icon fa fa-search" />
             <br/>
-            <p:selectBooleanCheckbox id="searchAllMachineNodesBooleanCheckbox"
+            <p:selectBooleanCheckbox id="searchAllMachineNodesBooleanCheckbox#{viewId}"
                                      style="margin-right: 0px;"                                      
                                      value="#{valueModel.filterAllNodes}"                                     
-                                     onchange="updateSearchAllMachineNodesBooleanCheckbox()"/>
-            <p:remoteCommand name="updateSearchAllMachineNodesBooleanCheckbox"
+                                     onchange="updateSearchAllMachineNodesBooleanCheckbox#{viewId}()"/>
+            <p:remoteCommand name="updateSearchAllMachineNodesBooleanCheckbox#{viewId}"
                              onstart="PF('loadingDialog').show()"
                              oncomplete="PF('loadingDialog').hide()"
-                             update="searchAllMachineNodesBooleanCheckbox itemMachineDesignListDataTable#{viewId}" /> 
+                             update="searchAllMachineNodesBooleanCheckbox#{viewId} itemMachineDesignListDataTable#{viewId}" /> 
         </f:facet>
         
         <p:selectBooleanCheckbox value="#{mdTreeListObject.filterMachineNode}"                                                                       
@@ -207,7 +214,7 @@ See LICENSE file.
               filterBy="#{assignedItem.name}"
               filterable="#{filterable}"
               filterMatchMode="contains">            
-        <p:commandLink id="#{entityTypeName}AssignedItemHistory" 
+        <p:commandLink id="#{entityTypeName}AssignedItemHistory#{viewId}" 
                        onstart="PF('loadingDialog').show();"
                        oncomplete="PF('loadingDialog').hide();
                        PF('itemDomainMachineDesignAssignedItemHistoryDialogWidget').show()"
@@ -217,7 +224,7 @@ See LICENSE file.
                        update="@form:itemDomainMachineDesignAssignedItemHistoryDialog">
             <f:setPropertyActionListener target="#{itemElementController.current}" 
                                          value="#{itemElementListObject}"/>
-            <p:tooltip for="#{entityTypeName}AssignedItemHistory" value="View assigned item history."/>
+            <p:tooltip for="#{entityTypeName}AssignedItemHistory#{viewId}" value="View assigned item history."/>
         </p:commandLink>
 
         <!-- Inventory element without assigned inventory item -->
@@ -242,7 +249,7 @@ See LICENSE file.
         <ui:param name="itemListObject"
                   value="#{mdTreeListObject}"/> 
         <ui:param name="rendredHousing"
-                  value="#{settingObject.displayHousing}"/> 
+                  value="#{rendredHousing != null ? rendredHousing : settingObject.displayHousing}"/> 
     </ui:include>
 
     <p:column headerText="Project"
@@ -272,11 +279,11 @@ See LICENSE file.
     <p:column styleClass="narrowColumnNoPad"
               rendered="#{hideOptionalColumns 
                           and hideSearchColumns}">
-        <p:commandLink id="#{entityTypeName}ListViewLink" 
+        <p:commandLink id="#{entityTypeName}ListViewLink#{viewId}" 
                        action="#{entityController.prepareView(itemListObject)}" 
                        styleClass="fa fa-link-icon fa-info" 
                        title="View">
-            <p:tooltip for="#{entityTypeName}ListViewLink" value="View item details."/>
+            <p:tooltip for="#{entityTypeName}ListViewLink#{viewId}" value="View item details."/>
         </p:commandLink>
         <ui:include src="../../../common/private/reusedParts/listActionLinksFavoritesLink.xhtml" >
             <ui:param name="renderFavorites" value="#{settingController.userHaveUpdateFavoritesPermission and hideSearchColumns}" />

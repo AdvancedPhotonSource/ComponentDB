@@ -111,8 +111,9 @@ See LICENSE file.
         
             <p:commandLink id="editEndpointLink"
                            styleClass="fa-link-icon fa-icon fa fa-pencil"
+                           ajax="true"
                            onstart="PF('loadingDialog').show()"
-                           oncomplete="PF('loadingDialog').hide();PF('connectionDialog').show();"
+                           oncomplete="PF('loadingDialog').hide(); PF('connectionDialog').show(); scrollToSelectedNodeCommand();"
                            action='#{entityController.prepareEditConnection(connection)}'
                            rendered="#{isEntityWriteable and entityController.renderEditLinkForConnection(connection)}"
                            update="@form">

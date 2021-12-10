@@ -6,24 +6,32 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
-                xmlns:p="http://primefaces.org/ui">   
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">   
 
     <!-- Must provide params "viewId", "valueModel", "selectionModel", "hideOptionalColumns", "hideSearchColumns", "scrollable".-->
 
-    <ui:param name="scrollHeight"
+    <ui:param name="defaultHeight"
               value="#{scrollable ? '65vh' : ''}" />
+    
+    <ui:param name="scrollHeight"
+              value="#{scrollHeight != null ? scrollHeight : defaultHeight}" />
+    
+    <ui:param name="resizableColumns"
+              value="#{resizableColumns != null ? resizableColumns : true}" />
+
+    <ui:param name="liveResize"
+              value="#{liveResize != null ? liveResize : true}" />
 
     <p:treeTable id='itemMachineDesignListDataTable#{viewId}'
                  widgetVar="itemMachineDesignListDataTable#{viewId}Widget"
                  rendered="#{rendered}"
-                 styleClass="machineDesignListTreeTable"
                  scrollable="#{scrollable}"
-                 resizableColumns="true"
-                 liveResize="true"
+                 resizableColumns="#{resizableColumns}"
+                 liveResize="#{liveResize}"
                  sortBy="#{itemElementTreeListObject.sortOrder}"
                  scrollHeight="#{scrollHeight}"
                  value="#{valueModel}"
-                 rowStyleClass="#{itemElementTreeListObject.rowStyle}"
                  selectionMode="single"
                  selection="#{selectionModel}"
                  var="itemElementTreeListObject"
