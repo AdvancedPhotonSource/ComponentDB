@@ -29,6 +29,17 @@ See LICENSE file.
             <f:setPropertyActionListener target="#{travelerDomainInstanceController.currentTravelerInstance}"
                                          value="#{travelerObject}" />
         </p:commandLink>
+                
+        <p:commandLink id="#{entityTypeName}TravelerDiscrepancyButton"
+                       styleClass="fa-link-icon fa fa-list" title="Display Discrepancy log"
+                       rendered="#{travelerObject.traveler}"
+                       onclick="PF('loadingDialog').show()"
+                       action="#{travelerDomainInstanceController.loadDiscrepancyLog(travelerObject)}"
+                       update="@form:travelerDiscrepancyLogListDialog"
+                       oncomplete="PF('loadingDialog').hide();
+                       PF('travelerDiscrepancyLogListDialogWidget').show()">
+            <p:tooltip for="#{entityTypeName}TravelerDiscrepancyButton" value="Display traveler discrepancy log."/>
+        </p:commandLink>
 
         <p:commandLink id="#{entityTypeName}TravelerMoveToBinder"
                        styleClass="fa-link-icon fa fa-suitcase"
