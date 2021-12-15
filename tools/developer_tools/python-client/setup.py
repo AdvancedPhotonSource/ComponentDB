@@ -16,7 +16,7 @@ from setuptools import setup
 from setuptools import find_packages
 
 setup(name='ComponentDB-API',
-      version='3.12.3',
+      version='3.12.4',
       packages=find_packages(),
       py_modules=["CdbApiFactory"],
       install_requires=['python-dateutil', 
