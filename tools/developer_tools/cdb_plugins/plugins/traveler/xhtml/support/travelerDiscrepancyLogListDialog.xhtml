@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null
+                       ? travelerDomainInstanceController
+                       : itemTravelerDomainInventoryController}" />
+
+    <p:dialog id="travelerDiscrepancyLogListDialog"
+              widgetVar="travelerDiscrepancyLogListDialogWidget" 
+              header="Traveler Discrepancy Log"
+              modal="true"
+              resizable="false"
+              styleClass="viewTransparentBackgroundDialog">
+
+        <ui:param name="discrepancyLog"
+                  value="#{travelerDomainInstanceController.discrepancyLog}" /> 
+
+        <p:outputPanel rendered="#{discrepancyLog != null}" >
+            <p:dataTable value="#{discrepancyLog.discrepancyLogs}"
+                         var="log"
+                         rows="5"
+                         paginator="true">
+
+                <p:column headerText="Input By">
+                    #{log.inputBy}
+                </p:column>
+                
+                <p:column headerText="Input On">
+                    #{log.inputOn}
+                </p:column>
+                
+                <p:columns value="#{discrepancyLog.columns}"
+                           var="col"
+                           headerText="#{col.header}">
+                    
+                    #{log.getRecordByKey(col.value)}
+                </p:columns>
+
+            </p:dataTable>
+        </p:outputPanel>
+
+        <f:facet name="footer" class="dialog">            
+            <p:commandButton value="Close" alt="Close" 
+                             oncomplete="PF('travelerDiscrepancyLogListDialogWidget').hide()" 
+                             icon="fa fa-close"/>
+        </f:facet>
+
+    </p:dialog>
+
+</ui:composition>
+
