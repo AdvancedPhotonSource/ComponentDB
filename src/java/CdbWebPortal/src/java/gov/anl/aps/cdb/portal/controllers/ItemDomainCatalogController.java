@@ -169,7 +169,7 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
         formatInfo.add(new ImportExportFormatInfo(
                 "Basic Catalog Create/Update Format", ImportHelperCatalog.class));
         formatInfo.add(new ImportExportFormatInfo(
-                "Catalog Assembly Create Format", ImportHelperCatalogAssembly.class));
+                "Catalog Assembly Create/Update/Delete Format", ImportHelperCatalogAssembly.class));
         formatInfo.add(new ImportExportFormatInfo(
                 "Catalog Ports Create/Update/Delete Format", ImportHelperCatalogPorts.class));
 
@@ -191,6 +191,8 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
         formatInfo.add(
                 new ImportExportFormatInfo(
                         "Basic Catalog Create/Update Format",  ImportHelperCatalog.class));
+        formatInfo.add(new ImportExportFormatInfo(
+                "Catalog Assembly Create/Update/Delete Format", ImportHelperCatalogAssembly.class));
         formatInfo.add(new ImportExportFormatInfo(
                 "Catalog Ports Create/Update/Delete Format", ImportHelperCatalogPorts.class));
         
