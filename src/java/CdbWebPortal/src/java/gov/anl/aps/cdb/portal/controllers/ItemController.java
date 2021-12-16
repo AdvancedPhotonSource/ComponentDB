@@ -310,19 +310,21 @@ public abstract class ItemController<
     public final String getEntityEntityCategoryName() {
         return getItemItemCategoryTitle();
     }
-    
+
     /**
-     * Returns name to use for ItemConnectors in UI.  Subclasses override to customize.
-     * @return 
+     * Returns name to use for ItemConnectors in UI. Subclasses override to
+     * customize.
+     *
+     * @return
      */
     public String getDisplayItemConnectorName() {
         return "connector";
     }
-    
+
     public String getDisplayItemConnectorLabel() {
         return StringUtility.capitalize(getDisplayItemConnectorName());
     }
-    
+
     public String getDisplayItemConnectorsLabel() {
         String labelString = StringUtility.capitalize(getDisplayItemConnectorName());
         return labelString + "s";
@@ -1180,7 +1182,8 @@ public abstract class ItemController<
     }
 
     /**
-     * Initializes new instance of ItemConnector. Subclasses override to customize.
+     * Initializes new instance of ItemConnector. Subclasses override to
+     * customize.
      */
     protected void initializeItemConnector(ItemConnector itemConnector) {
     }
@@ -1479,9 +1482,9 @@ public abstract class ItemController<
     protected ItemDomainEntity cloneCreateItemElements(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, boolean addContained, boolean assignDerivedFromItemElement) {
         ControllerUtility controllerUtility = getControllerUtility();
         UserInfo user = SessionUtility.getUser();
-        
+
         return controllerUtility.cloneCreateItemElements(clonedItem, cloningFrom, user, addContained, assignDerivedFromItemElement, false);
-    }      
+    }
 
     public boolean isShowCloneCreateItemElementsPlaceholdersOption() {
         if (itemToClone != null) {
@@ -1522,16 +1525,16 @@ public abstract class ItemController<
         }
 
         return "";
-    } 
+    }
 
     @Override
     public ItemDomainEntity cloneEntityInstance(ItemDomainEntity entity) {
         ItemDomainEntity clonedItem;
-        
+
         try {
-            UserInfo user = SessionUtility.getUser();        
-            UserGroup firstGroup = user.getUserGroupList().get(0);      
-            
+            UserInfo user = SessionUtility.getUser();
+            UserGroup firstGroup = user.getUserGroupList().get(0);
+
             clonedItem = (ItemDomainEntity) (entity.clone(user, firstGroup, cloneProperties, cloneSources, cloneCreateItemElementPlaceholders));
         } catch (CloneNotSupportedException ex) {
             LOGGER.error("Object cannot be cloned: " + ex);
@@ -1696,15 +1699,15 @@ public abstract class ItemController<
 
         List<Item> itemList = new ArrayList<>();
         List<ItemElement> itemElementList = new ArrayList<>();
-        
+
         if (itemEntity.getItemElementMemberList() != null) {
             itemElementList.addAll(itemEntity.getItemElementMemberList());
         }
-        
+
         if (itemEntity.getItemElementMemberList2() != null) {
             itemElementList.addAll(itemEntity.getItemElementMemberList2());
         }
-        
+
         // Remove currently being viewed item. 
         for (ItemElement itemElement : itemElementList) {
             Item memberItem = itemElement.getParentItem();
@@ -2041,7 +2044,7 @@ public abstract class ItemController<
                 loadCurrentFromFlash();
                 ItemDomainEntity current = getCurrent();
                 if (current != null) {
-                    reloadCurrent();                    
+                    reloadCurrent();
                 }
             }
 
@@ -2133,21 +2136,21 @@ public abstract class ItemController<
         if (this.templateToCreateNewItem != null) {
             current.setItemCategoryList(templateToCreateNewItem.getItemCategoryList());
             current.setItemTypeList(templateToCreateNewItem.getItemTypeList());
-            
+
             ControllerUtility controllerUtility = getControllerUtility();
             UserInfo user = SessionUtility.getUser();
-            
+
             current = controllerUtility.cloneProperties(current, templateToCreateNewItem, user);
             current = controllerUtility.cloneSources(current, templateToCreateNewItem);
             addCreatedFromTemplateRelationshipToItem(current);
         }
-    }   
+    }
 
     public void addCreatedFromTemplateRelationshipToItem(ItemDomainEntity item) {
         ControllerUtility controllerUtility = getControllerUtility();
         controllerUtility.addCreatedFromTemplateRelationshipToItem(item, templateToCreateNewItem);
     }
-    
+
     public Item getCreatedFromTemplateForCurrentItem() {
         ItemDomainEntity current = getCurrent();
         return current.getCreatedFromTemplate();
@@ -2160,7 +2163,7 @@ public abstract class ItemController<
 
     public List<Item> getItemsCreatedFromTemplateItem(Item templateItem) {
         if (templateItem == null) {
-            return null; 
+            return null;
         }
         return templateItem.getItemsCreatedFromThisTemplateItem();
     }
@@ -2229,7 +2232,11 @@ public abstract class ItemController<
 
     @Override
     public ItemDomainEntity findByQrId(Integer qrId) {
-        return getEntityDbFacade().findByQrIdAndDomain(qrId, getDefaultDomain().getName());
+        if (getDefaultDomain() == null) {
+            return getEntityDbFacade().findByQrId(qrId); 
+        } else {
+            return getEntityDbFacade().findByQrIdAndDomain(qrId, getDefaultDomain().getName());
+        }
     }
 
     public String getItemElementContainedItemText(ItemElement itemElement) {

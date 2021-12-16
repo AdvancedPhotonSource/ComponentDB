@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Binder;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.BinderTraveler;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Traveler;
+import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.TravelerDiscrepancyLog;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,18 +28,20 @@ import org.apache.logging.log4j.Logger;
  * @author craig
  */
 public abstract class ItemTravelerDomainInstanceControllerBase extends ItemTravelerController {
-    
+
     private static final Logger logger = LogManager.getLogger(ItemTravelerDomainInstanceControllerBase.class.getName());
-    
-    public static final double TRAVELER_COMPLETED_STATUS = 2.0; 
-    
-    private boolean isDisplayMultiEditTravelerInstance = false; 
+
+    public static final double TRAVELER_COMPLETED_STATUS = 2.0;
+
+    private boolean isDisplayMultiEditTravelerInstance = false;
     private boolean renderArchivedTravelerListDialog;
 
     private boolean renderMoveTravelerContents;
 
     private List<BinderTraveler> activeTravelersForCurrent;
     private List<Traveler> archivedTravelersForCurrent;
+
+    private TravelerDiscrepancyLog discrepancyLog;
 
     private Item itemToMoveCurrentTraveler;
 
@@ -275,11 +278,11 @@ public abstract class ItemTravelerDomainInstanceControllerBase extends ItemTrave
         String description = currentTravelerInstance.getDescription();
         Date deadline = getCurrentTravelerDeadline();
         double status = currentTravelerInstance.getStatus();
-        
+
         UserInfo currentUser = (UserInfo) SessionUtility.getUser();
         String userName = currentUser.getUsername();
 
-        try {            
+        try {
             travelerApi.updateTraveler(id, userName, title, description, deadline, status, deviceName);
         } catch (CdbException ex) {
             logger.error(ex);
@@ -352,6 +355,16 @@ public abstract class ItemTravelerDomainInstanceControllerBase extends ItemTrave
         SessionUtility.executeRemoteCommand(onSuccessCommand);
     }
 
+    public void loadDiscrepancyLog(Traveler traveler) {
+        try {
+            String travelerId = traveler.getId();
+            discrepancyLog = travelerApi.getTravelerDiscrepancyLog(travelerId);
+        } catch (CdbException ex) {
+            logger.error(ex);
+            SessionUtility.addErrorMessage("Error", ex.getErrorMessage());            
+        }
+    }
+
     public boolean isRenderArchivedTravelerListDialog() {
         return renderArchivedTravelerListDialog;
     }
@@ -364,11 +377,15 @@ public abstract class ItemTravelerDomainInstanceControllerBase extends ItemTrave
         this.itemToMoveCurrentTraveler = itemToMoveCurrentTraveler;
     }
 
+    public TravelerDiscrepancyLog getDiscrepancyLog() {
+        return discrepancyLog;
+    }
+
     public boolean isRenderMoveTravelerContents() {
         return renderMoveTravelerContents;
     }
-    
+
     public boolean isRenderMoveTraveler() {
-        return true; 
+        return true;
     }
 }

@@ -19,10 +19,10 @@ import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Binder;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Binders;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Form;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Forms;
-import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.ReleasedForm;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.ReleasedForms;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.TravelerData;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.TravelerDatum;
+import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.TravelerDiscrepancyLog;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.TravelerNotes;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,7 +48,7 @@ public class TravelerApi extends TravelerRestApi  {
     }
     
     public Traveler getTraveler(String travelerId) throws InvalidArgument, ObjectNotFound, ExternalServiceError, CdbException {
-        ArgumentUtility.verifyNonEmptyString("Traveler ID", travelerId);
+        ArgumentUtility.verifyNonEmptyString("Traveler ID", travelerId);        
         String requestUrl = "/apis/travelers/"+travelerId+"/"; 
         String jsonString = invokeGetRequest(requestUrl);
         Traveler traveler = (Traveler) TravelerObjectFactory.createObject(jsonString, Traveler.class); 
@@ -70,6 +70,14 @@ public class TravelerApi extends TravelerRestApi  {
         String jsonString = invokeGetRequest(requestUrl);
         jsonString = "{\"notes\": " + jsonString + "}";
         TravelerNotes travelerNotes = (TravelerNotes) TravelerObjectFactory.createObject(jsonString, TravelerNotes.class); 
+        return travelerNotes; 
+    }
+    
+    public TravelerDiscrepancyLog getTravelerDiscrepancyLog(String travelerId) throws InvalidArgument, ObjectNotFound, ExternalServiceError, CdbException {
+        ArgumentUtility.verifyNonEmptyString("Traveler ID", travelerId);
+        String requestUrl = "/apis/travelers/"+travelerId+"/log/"; 
+        String jsonString = invokeGetRequest(requestUrl);       
+        TravelerDiscrepancyLog travelerNotes = (TravelerDiscrepancyLog) TravelerObjectFactory.createObject(jsonString, TravelerDiscrepancyLog.class); 
         return travelerNotes; 
     }
     
