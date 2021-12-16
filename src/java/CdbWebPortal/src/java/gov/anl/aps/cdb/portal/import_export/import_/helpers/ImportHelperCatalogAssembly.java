@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
@@ -26,8 +27,11 @@ import java.util.Map;
  */
 public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, ItemElementController> {
 
+    private static final String LABEL_PARENT_ITEM = "Catalog Item";
+
     private static final String KEY_PART_NAME = "importPartName";
     private static final String KEY_PARENT_ITEM = "importParentItem";
+    private static final String KEY_CHILD_ITEM = "importChildItem";
     private static final String KEY_SORT_ORDER = "sortOrder";
 
     private static final String HEADER_SORT_ORDER = "Sort Order";
@@ -36,13 +40,17 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
         
         List<ColumnSpec> specs = new ArrayList<>();
         
+        specs.add(existingItemIdColumnSpec());
+        specs.add(deleteExistingItemColumnSpec());
+
         specs.add(new IdOrNameRefColumnSpec(
-                "Catalog Item", 
+                LABEL_PARENT_ITEM, 
                 KEY_PARENT_ITEM, 
                 "", 
                 "ID or name of parent catalog item. Name must be unique and prefixed with '#'.", 
-                null, null,
-                ColumnModeOptions.rCREATE(), 
+                "getParentItem", 
+                null,
+                ColumnModeOptions.rCREATErUPDATE(), 
                 ItemDomainCatalogController.getInstance(), 
                 Item.class, 
                 null));   
@@ -52,8 +60,8 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
                 KEY_PART_NAME, 
                 "setImportPartName", 
                 "Part name for assembly member.", 
-                null,
-                ColumnModeOptions.rCREATE(), 
+                "getName",
+                ColumnModeOptions.rCREATErUPDATE(), 
                 128));
         
         specs.add(new StringColumnSpec(
@@ -61,8 +69,8 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
                 "importPartDescription", 
                 "setImportPartDescription", 
                 "Part description for assembly member.", 
-                null,
-                ColumnModeOptions.oCREATE(), 
+                "getDescription",
+                ColumnModeOptions.oCREATEoUPDATE(), 
                 128));
         
         specs.add(new FloatColumnSpec(
@@ -70,17 +78,17 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
                 KEY_SORT_ORDER, 
                 "setSortOrder", 
                 "Sort order within parent catalog item (as decimal), defaults to order in input sheet.", 
+                "getSortOrder",
                 null,
-                null,
-                ColumnModeOptions.oCREATE()));
+                ColumnModeOptions.oCREATEoUPDATE()));
         
         specs.add(new BooleanColumnSpec(
                 "Part Required", 
                 "importPartRequired", 
                 "setImportPartRequired", 
                 "True/yes if part is required.", 
-                null,
-                ColumnModeOptions.oCREATE()));
+                "getIsRequired",
+                ColumnModeOptions.oCREATEoUPDATE()));
         
         specs.add(new StringColumnSpec(
                 "Part Catalog Item Name (optional)", 
@@ -88,16 +96,17 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
                 "setImportChildItemName", 
                 "Catalog item name for part (for documentation purposes only, ignored by import).", 
                 null,
-                ColumnModeOptions.oCREATE(), 
+                ColumnModeOptions.oCREATEoUPDATE(), 
                 128));
         
         specs.add(new IdOrNameRefColumnSpec(
                 "Part Catalog Item ID", 
-                "importChildItem", 
+                KEY_CHILD_ITEM, 
                 "setImportChildItem", 
                 "ID or name of catalog item for part. Name must be unique and prefixed with '#'.", 
-                null, null,
-                ColumnModeOptions.rCREATE(), 
+                "getContainedItem", 
+                null,
+                ColumnModeOptions.rCREATErUPDATE(), 
                 ItemDomainCatalogController.getInstance(), 
                 Item.class, 
                 null));        
@@ -113,6 +122,71 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
     @Override
     public String getFilenameBase() {
         return "Catalog Assembly";
+    }
+    
+    @Override
+    public boolean supportsModeUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsModeDelete() {
+        return true;
+    }
+
+    @Override
+    protected String getCreateMessageTypeName() {
+        return "catalog element";
+    }
+    
+    @Override
+    protected List<ItemElement> generateExportEntityList_() {
+        List<ItemElement> entityList = new ArrayList<>();
+        ItemDomainCatalogController controller = ItemDomainCatalogController.getInstance();
+        List<ItemDomainCatalog> catalogList = controller.getExportEntityList();
+        for (ItemDomainCatalog catalog : catalogList) {
+            catalog = controller.reloadEntity(catalog);
+            entityList.addAll(catalog.getItemElementDisplayList());
+        }
+        return entityList;
+    }
+    
+    private ValidInfo validateElementInfo(
+            ItemDomainCatalog parentItem, String name, Float sortOrder, Integer id, ItemDomainCatalog childItem) {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        if (parentItem == null || childItem == null) {
+            isValid = false;
+            validString = "Parent and child catalog items must be specified";
+            return new ValidInfo(isValid, validString);
+        }
+        
+        // check that parent and child are different catalog items
+        if (parentItem.getId().equals(childItem.getId())) {
+            isValid = false;
+            validString = appendToString(validString, "Parent and child catalog items must be different");
+        }
+        
+        List<ItemElement> ieList = parentItem.getItemElementDisplayList();
+        for (ItemElement ie : ieList) {
+            if (ie.getId() != null && ie.getId().equals(id)) {
+                // this is the same child element
+                continue;
+            }
+            if ((ie.getSortOrder() != null) && (ie.getSortOrder().equals(sortOrder))) {
+                String msg = "Duplicate sort order for existing child element";
+                validString = appendToString(validString, msg);
+                isValid = false;
+            }
+            if ((ie.getName() != null) && (ie.getName().equals(name))) {
+                isValid = false;
+                String msg = "Duplicate part name for existing child element";
+                validString = appendToString(validString, msg);
+            }
+        }
+        return new ValidInfo(isValid, validString);
     }
     
     @Override
@@ -134,27 +208,54 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
         }
         itemElement.setSortOrder(itemSortOrder);
         
-        // validate name and sort order unique for specified parent item
-        String itemName = (String) rowMap.get(KEY_PART_NAME);
         if (itemParentCatalogItem != null) {
-            // check for duplicate part name
-            List<ItemElement> ieList = itemParentCatalogItem.getFullItemElementList();
-            for (ItemElement ie : ieList) {
-                if ((ie.getSortOrder() != null) && (ie.getSortOrder().equals(itemSortOrder))) {
-                    String msg = "duplicate sort order for existing child location";
-                    validString = appendToString(validString, msg);
-                    isValid = false;
-                }
-                if ((ie.getName() != null) && (ie.getName().equals(itemName))) {
-                    isValid = false;
-                    String msg = "duplicate part name for existing item element";
-                    validString = appendToString(validString, msg);
-                }
+            
+            // validate child element (name, sort order, catalog item)
+            String itemName = (String) rowMap.get(KEY_PART_NAME);
+            ItemDomainCatalog itemPartCatalogItem = (ItemDomainCatalog) rowMap.get(KEY_CHILD_ITEM);
+            ValidInfo validElementInfo = 
+                    validateElementInfo(itemParentCatalogItem, itemName, itemSortOrder, null, itemPartCatalogItem);
+            if (!validElementInfo.isValid()) {
+                isValid = false;
+                validString = appendToString(validString, validElementInfo.getValidString());
             }
+            
             itemElement.setImportParentItem(itemParentCatalogItem, itemSortOrder, null, null);
         }
             
         return new CreateInfo(itemElement, isValid, validString);
     }
     
+    @Override
+    protected ValidInfo updateEntityInstance(ItemElement entity, Map<String, Object> rowMap) {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        ItemDomainCatalog itemParentCatalogItem = (ItemDomainCatalog) rowMap.get(KEY_PARENT_ITEM);
+
+        if (itemParentCatalogItem != null) {
+            
+            if (!itemParentCatalogItem.equals(entity.getParentItem())) {
+                // catalog item cannot be changed in update
+                isValid = false;
+                validString = LABEL_PARENT_ITEM + " cannot be modified in update operation.";
+            }
+        
+            // validate name and sort order unique for parent item
+            Integer itemId = (Integer) rowMap.get(KEY_EXISTING_ITEM_ID);
+            Float itemSortOrder = (Float) rowMap.get(KEY_SORT_ORDER);
+            String itemName = (String) rowMap.get(KEY_PART_NAME);
+            ItemDomainCatalog itemPartCatalogItem = (ItemDomainCatalog) rowMap.get(KEY_CHILD_ITEM);
+            ValidInfo validElementInfo = 
+                    validateElementInfo(itemParentCatalogItem, itemName, itemSortOrder, itemId, itemPartCatalogItem);
+            if (!validElementInfo.isValid()) {
+                isValid = false;
+                validString = appendToString(validString, validElementInfo.getValidString());
+            }
+        }
+        
+        return new ValidInfo(isValid, validString);
+    }
+
 }
