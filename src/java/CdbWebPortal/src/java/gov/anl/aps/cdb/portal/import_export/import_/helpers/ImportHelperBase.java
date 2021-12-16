@@ -865,7 +865,17 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
         }
         
-        int itemCount = rows.size();        
+        int itemCount = 0;
+        if (getImportMode() == ImportMode.DELETE) {
+            for (EntityType entity : rows) {
+                if (entity.getImportDeleteExistingItem()) {
+                    itemCount = itemCount + 1;
+                }
+            }
+        } else {
+            itemCount = rows.size();
+        }
+                
         if (itemCount == 0) {
             // nothing to import, this will disable the "next" button
             validationMessage = appendToString(
@@ -1213,7 +1223,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             diffString = diffString + "'" + value + "'";
             diffString = diffString + "</span>";
         }
-        entity.setImportDiffs(diffString);
+
+        if (entity.getImportDeleteExistingItem()) {
+            entity.setImportDiffs(diffString);
+        } else {
+            entity.setImportDiffs("Item not specified for deletion.");
+        }
 
         return new CreateInfo(entity, isValid, validString);
     }
@@ -1739,8 +1754,18 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
      * custom behavior.
      */
     protected void deleteList() throws CdbException, RuntimeException {
+        
+        List<EntityType> deleteEntities = new ArrayList<>();
+        for (EntityType entity : rows) {
+            if (entity.getImportDeleteExistingItem()) {
+                deleteEntities.add(entity);
+            }
+        }                
+        
         EntityControllerType controller = this.getEntityController();
-        controller.destroyList(rows, null, getCreateMessageTypeName());
+        if (!deleteEntities.isEmpty()) {
+            controller.destroyList(deleteEntities, null, getCreateMessageTypeName());
+        }
     }
     
     public String getExportFilename() {
