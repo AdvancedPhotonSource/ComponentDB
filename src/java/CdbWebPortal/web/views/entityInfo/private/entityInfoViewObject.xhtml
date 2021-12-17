@@ -11,7 +11,7 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <h:outputLabel for="ownerUser" value="Owner User" styleClass="entityDataLabel"/>
-    <p:inplace id="ownerUser" 
+    <p:inplace id="ownerUserInplace" 
                widgetVar="ownerUserWidget"
                editor="#{isEntityWriteable}" 
                toggleable="false">
@@ -46,7 +46,7 @@ See LICENSE file.
     </p:inplace>
 
     <h:outputLabel for="ownerGroup" value="Owner Group" styleClass="entityDataLabel"/>
-    <p:inplace id="ownerGroup" 
+    <p:inplace id="ownerGroupInplace" 
                widgetVar="ownerGroupWidget"
                editor="#{isEntityWriteable}" 
                toggleable="false"
@@ -97,7 +97,7 @@ See LICENSE file.
     <h:outputText id="obsoletedOn" value="#{entityInfoObject.obsoletedOnDateTime}" rendered="#{entityInfoObject.obsoletedByUser != null}" title="Obsoleted On" styleClass="entityDataText"/>
 
     <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
-    <p:inplace id="groupWriteable" 
+    <p:inplace id="groupWriteableInplace" 
                widgetVar="groupWriteableWidget"
                editor="#{isEntityWriteable}" 
                toggleable="false"
