@@ -197,8 +197,11 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
             List<ItemConnector> connectorList = item.getItemConnectorList();
             boolean isDuplicate = false;
             for (ItemConnector otherConnector : connectorList) {
-                if ((otherConnector.getId() != null)
-                        && (otherConnector.getConnector().getName().equals(itemConnector.getConnector().getName()))) {
+                if (isUpdate && otherConnector.equals(itemConnector)) {
+                    // in edit mode, don't compare updated item to itself
+                    continue;
+                }
+                if (otherConnector.getConnector().getName().equals(itemConnector.getConnector().getName())){
                     isDuplicate = true;
                     break;
                 }
@@ -227,7 +230,7 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         ItemConnectorController controller = ItemConnectorController.getInstance();
         ItemConnector newConnector = controller.getCurrent();
         
-        // validate new item
+        // validate new connector
         ValidInfo validateInfo = validateItemConnector(false, newConnector);
         if (!validateInfo.isValid()) {
             this.revertItemConnectorListForCurrent();
@@ -300,6 +303,15 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         UserInfo user = SessionUtility.getUser();
         ItemConnector object = (ItemConnector) event.getObject();
         Connector connector = object.getConnector();
+        
+        // validate udpated connector
+        ValidInfo validateInfo = validateItemConnector(true, object);
+        if (!validateInfo.isValid()) {
+            reloadCurrent();
+            SessionUtility.addErrorMessage("Error", "Unable to update connector. "
+                    + validateInfo.getValidString() + ".");
+            return;
+        }
         
         try {
             utility.update(connector, user);
