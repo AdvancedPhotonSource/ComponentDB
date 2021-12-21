@@ -184,8 +184,15 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
             return new ValidInfo(isValid, validStr);
         } 
         
-        // validate that name is unique if specified
-        if (itemConnector.getConnectorName() != null && (!itemConnector.getConnectorName().isBlank())) {
+        // validate that name is specified and unique
+        if (itemConnector.getConnectorName() == null || (itemConnector.getConnectorName().isBlank())) {
+            // name must be specified
+            isValid = false;
+            validStr = "Connector name must be specified";
+            return new ValidInfo(isValid, validStr);
+            
+        } else {
+            // specified name must be unique
             Item item = itemConnector.getItem();
             List<ItemConnector> connectorList = item.getItemConnectorList();
             boolean isDuplicate = false;
@@ -198,7 +205,7 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
             }
             if (isDuplicate) {
                 isValid = false;
-                validStr = "Connector name is not unique for item.";
+                validStr = "Connector name is not unique for item";
                 return new ValidInfo(isValid, validStr);
             }
         }
