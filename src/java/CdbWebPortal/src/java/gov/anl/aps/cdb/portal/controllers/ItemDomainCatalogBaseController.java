@@ -177,20 +177,36 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         boolean isValid = true;
         String validStr = "";
         
-        ValidInfo validateInfo = validateItemConnector_(isUpdate, itemConnector);
-        if (!validateInfo.isValid()) {
-            isValid = false;
-            validStr = validateInfo.getValidString();
-        }
-        
+        // validate that child connector is not null
         if (itemConnector.getConnector() == null) {
             isValid = false;
             validStr = validStr + "ItemConnector is missing child Connector object";
-        } else {
-            if (itemConnector.getConnectorName() == null || itemConnector.getConnectorName().isBlank()) {
-                isValid = false;
-                validStr = validStr + "Connector name must be specified";
+            return new ValidInfo(isValid, validStr);
+        } 
+        
+        // validate that name is unique if specified
+        if (itemConnector.getConnectorName() != null && (!itemConnector.getConnectorName().isBlank())) {
+            Item item = itemConnector.getItem();
+            List<ItemConnector> connectorList = item.getItemConnectorList();
+            boolean isDuplicate = false;
+            for (ItemConnector otherConnector : connectorList) {
+                if ((otherConnector.getId() != null)
+                        && (otherConnector.getConnector().getName().equals(itemConnector.getConnector().getName()))) {
+                    isDuplicate = true;
+                    break;
+                }
             }
+            if (isDuplicate) {
+                isValid = false;
+                validStr = "Connector name is not unique for item.";
+                return new ValidInfo(isValid, validStr);
+            }
+        }
+        
+        // allow subclass to perform custom validation
+        ValidInfo validateInfo = validateItemConnector_(isUpdate, itemConnector);
+        if (!validateInfo.isValid()) {
+            return validateInfo;
         }
         
         return new ValidInfo(isValid, validStr);
@@ -201,32 +217,15 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
      */
     public void saveItemConnectorDialog() {
         
-        // check if new connector name is duplicate to existing
         ItemConnectorController controller = ItemConnectorController.getInstance();
         ItemConnector newConnector = controller.getCurrent();
-        Item item = newConnector.getItem();
-        List<ItemConnector> connectorList = item.getItemConnectorList();   
         
-        // check to see if new item is duplicate
-        boolean isDuplicate = false;
-        for (ItemConnector itemConnector : connectorList) {
-            if ((itemConnector.getId() != null) 
-                    && (itemConnector.getConnector().getName().equals(newConnector.getConnector().getName()))) {
-                isDuplicate = true;
-                break;
-            }
-        }        
-        if (isDuplicate) {
-            this.revertItemConnectorListForCurrent();
-            SessionUtility.addErrorMessage("Error", "Unable to create connector. Please use unique name.");
-            return;
-        }
-        
-        // allow subclass to validate new item
+        // validate new item
         ValidInfo validateInfo = validateItemConnector(false, newConnector);
         if (!validateInfo.isValid()) {
             this.revertItemConnectorListForCurrent();
-            SessionUtility.addErrorMessage("Error", "Unable to create connector. " + validateInfo.getValidString() + ".");
+            SessionUtility.addErrorMessage("Error", "Unable to create connector. " 
+                    + validateInfo.getValidString() + ".");
             return;
         }
         

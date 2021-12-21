@@ -10,8 +10,8 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <h:outputLabel for="ownerUser" value="Owner User" styleClass="entityDataLabel"/>
-    <p:inplace id="ownerUser" 
+    <h:outputLabel for="ownerUserInplace" value="Owner User" styleClass="entityDataLabel"/>
+    <p:inplace id="ownerUserInplace" 
                widgetVar="ownerUserWidget"
                editor="#{isEntityWriteable}" 
                toggleable="false">
@@ -31,7 +31,7 @@ See LICENSE file.
         <f:facet name="input">
             <p:remoteCommand name="reloadEntityInfoOwnerUser"
                              action="#{entityController.reloadCurrent()}"
-                             update="ownerUser"
+                             update="ownerUserInplace"
                              />
             <p:selectOneMenu rendered="#{entityInfoObject != null}" 
                              value="#{entityInfoObject.ownerUser}" 
@@ -40,13 +40,13 @@ See LICENSE file.
                 <f:selectItem itemLabel="Select" itemValue="#{null}"/>
                 <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
             </p:selectOneMenu>
-            <p:message for="ownerUser"/>
-            <p:tooltip for="ownerUser" value="Owner user has the ability to modify this entity."/>
+            <p:message for="ownerUserInplace"/>
+            <p:tooltip for="ownerUserInplace" value="Owner user has the ability to modify this entity."/>
         </f:facet>
     </p:inplace>
 
-    <h:outputLabel for="ownerGroup" value="Owner Group" styleClass="entityDataLabel"/>
-    <p:inplace id="ownerGroup" 
+    <h:outputLabel for="ownerGroupInplace" value="Owner Group" styleClass="entityDataLabel"/>
+    <p:inplace id="ownerGroupInplace" 
                widgetVar="ownerGroupWidget"
                editor="#{isEntityWriteable}" 
                toggleable="false"
@@ -67,14 +67,14 @@ See LICENSE file.
         <f:facet name="input">
             <p:remoteCommand name="reloadEntityInfoOwnerGroup"
                              action="#{entityController.reloadCurrent()}"
-                             update="ownerGroup"
+                             update="ownerGroupInplace"
                              />
             <p:selectOneMenu  value="#{entityInfoObject.ownerUserGroup}" converter="userGroupConverter" styleClass="entityDataText">
                 <f:selectItem itemLabel="Select" itemValue="#{null}"/>
                 <f:selectItems var="ownerGroup" value="#{userGroupController.availableItems}" itemLabel="#{ownerUserGroup.name}" itemValue="#{ownerGroup}"/>
             </p:selectOneMenu>
-            <p:message for="ownerGroup"/> 
-            <p:tooltip for="ownerGroup" value="Any user who is a member of the owner group has the ability to modify this entity if the group-writeable flag is set."/>
+            <p:message for="ownerGroupInplace"/> 
+            <p:tooltip for="ownerGroupInplace" value="Any user who is a member of the owner group has the ability to modify this entity if the group-writeable flag is set."/>
         </f:facet>
     </p:inplace>
 
@@ -96,8 +96,8 @@ See LICENSE file.
     <h:outputLabel for="obsoletedOn" value="Obsoleted On" rendered="#{entityInfoObject.obsoletedByUser != null}" styleClass="entityDataLabel"/>
     <h:outputText id="obsoletedOn" value="#{entityInfoObject.obsoletedOnDateTime}" rendered="#{entityInfoObject.obsoletedByUser != null}" title="Obsoleted On" styleClass="entityDataText"/>
 
-    <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
-    <p:inplace id="groupWriteable" 
+    <h:outputLabel for="groupWriteableInplace" value="Group Writeable" styleClass="entityDataLabel"/>
+    <p:inplace id="groupWriteableInplace" 
                widgetVar="groupWriteableWidget"
                editor="#{isEntityWriteable}" 
                toggleable="false"
@@ -116,8 +116,8 @@ See LICENSE file.
 
         <f:facet name="input">
             <p:selectBooleanCheckbox value="#{entityInfoObject.isGroupWriteable}" styleClass="entityDataText"/>
-            <p:message for="groupWriteable"/> 
-            <p:tooltip for="groupWriteable" value="This flag determines whether owner group members can modify this entity."/>
+            <p:message for="groupWriteableInplace"/> 
+            <p:tooltip for="groupWriteableInplace" value="This flag determines whether owner group members can modify this entity."/>
         </f:facet>
 
     </p:inplace>
