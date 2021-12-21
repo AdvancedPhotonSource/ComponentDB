@@ -201,6 +201,10 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
                     // in edit mode, don't compare updated item to itself
                     continue;
                 }
+                if (!isUpdate && otherConnector == itemConnector) {
+                    // in create mode, don't compare updated item to itself
+                    continue;
+                }
                 if (otherConnector.getConnector().getName().equals(itemConnector.getConnector().getName())){
                     isDuplicate = true;
                     break;
@@ -240,6 +244,8 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         }
         
         controller.createWithoutRedirect();
+        
+        reloadCurrent();
     }
 
     public void deleteItemConnector(ItemConnector itemConnector) {
@@ -307,9 +313,9 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         // validate udpated connector
         ValidInfo validateInfo = validateItemConnector(true, object);
         if (!validateInfo.isValid()) {
-            reloadCurrent();
             SessionUtility.addErrorMessage("Error", "Unable to update connector. "
                     + validateInfo.getValidString() + ".");
+            reloadCurrent();
             return;
         }
         
@@ -319,9 +325,11 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         } catch (CdbException ex) {
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getErrorMessage(), true);
+            reloadCurrent();
         } catch (RuntimeException ex) {
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getMessage(), true);
+            reloadCurrent();
         }
     }
     

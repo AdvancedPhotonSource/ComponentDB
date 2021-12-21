@@ -545,6 +545,8 @@ public class Item extends CdbDomainEntity implements Serializable {
     protected transient PropertyValue coreMetadataPropertyValue = null;
 
     private transient List<ItemConnector> syncedConnectorList = null;
+    
+    private transient List<ItemConnector> itemConnectorListSorted = null;
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
     protected transient ItemElement currentEditItemElement = null;
@@ -1322,20 +1324,26 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @JsonIgnore
     public List<ItemConnector> getItemConnectorListSorted() {
+        
+        if (itemConnectorListSorted == null) {
+            
+            if (itemConnectorList == null) {
+                itemConnectorListSorted = new ArrayList<>();
 
-        if (itemConnectorList == null) {
-            return new ArrayList<>();
+            } else {
+                // return sorted itemConnectorList
+                Comparator<ItemConnector> comparator
+                        = Comparator
+                                .comparing((ItemConnector c) -> c.getConnectorCableEndDesignation())
+                                .thenComparing(c -> c.getConnectorName().toLowerCase());
+                itemConnectorListSorted = itemConnectorList
+                        .stream()
+                        .sorted(comparator)
+                        .collect(Collectors.toList());
+            }
         }
-
-        // return sorted itemConnectorList
-        Comparator<ItemConnector> comparator
-                = Comparator
-                        .comparing((ItemConnector c) -> c.getConnectorCableEndDesignation())
-                        .thenComparing(c -> c.getConnectorName().toLowerCase());
-        return itemConnectorList
-                .stream()
-                .sorted(comparator)
-                .collect(Collectors.toList());
+        
+        return itemConnectorListSorted;
     }
 
     public void setItemConnectorList(List<ItemConnector> itemConnectorList) {
