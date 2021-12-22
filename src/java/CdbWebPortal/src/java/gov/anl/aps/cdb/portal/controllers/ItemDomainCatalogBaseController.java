@@ -180,7 +180,7 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         // validate that child connector is not null
         if (itemConnector.getConnector() == null) {
             isValid = false;
-            validStr = validStr + "ItemConnector is missing child Connector object";
+            validStr = getDisplayItemConnectorLabel() + " must contain child Connector object";
             return new ValidInfo(isValid, validStr);
         } 
         
@@ -188,7 +188,7 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         if (itemConnector.getConnectorName() == null || (itemConnector.getConnectorName().isBlank())) {
             // name must be specified
             isValid = false;
-            validStr = "Connector name must be specified";
+            validStr = getDisplayItemConnectorLabel() + " name must be specified";
             return new ValidInfo(isValid, validStr);
             
         } else {
@@ -212,7 +212,7 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
             }
             if (isDuplicate) {
                 isValid = false;
-                validStr = "Connector name is not unique for item";
+                validStr = getDisplayItemConnectorLabel() + " name is not unique for item";
                 return new ValidInfo(isValid, validStr);
             }
         }
@@ -238,7 +238,7 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         ValidInfo validateInfo = validateItemConnector(false, newConnector);
         if (!validateInfo.isValid()) {
             this.revertItemConnectorListForCurrent();
-            SessionUtility.addErrorMessage("Error", "Unable to create connector. " 
+            SessionUtility.addErrorMessage("Error", "Unable to create " + getDisplayItemConnectorName() + ". " 
                     + validateInfo.getValidString() + ".");
             return;
         }
@@ -313,7 +313,7 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         // validate udpated connector
         ValidInfo validateInfo = validateItemConnector(true, object);
         if (!validateInfo.isValid()) {
-            SessionUtility.addErrorMessage("Error", "Unable to update connector. "
+            SessionUtility.addErrorMessage("Error", "Unable to update " + getDisplayItemConnectorName() + ". "
                     + validateInfo.getValidString() + ".");
             reloadCurrent();
             return;
@@ -321,7 +321,10 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         
         try {
             utility.update(connector, user);
-            SessionUtility.addInfoMessage("Updated Connector", "Update connector: " + connector, true);
+            SessionUtility.addInfoMessage(
+                    "Updated " + getDisplayItemConnectorLabel(), 
+                    "Updated " + getDisplayItemConnectorName() + ": " + connector, 
+                    true);
         } catch (CdbException ex) {
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getErrorMessage(), true);
