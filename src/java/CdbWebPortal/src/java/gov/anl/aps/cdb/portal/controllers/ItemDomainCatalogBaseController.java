@@ -249,41 +249,38 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
     }
 
     public void deleteItemConnector(ItemConnector itemConnector) {
+        
         Item item = getCurrent();
-
         ConnectorControllerUtility connectorControllerUtility = new ConnectorControllerUtility();
         itemConnector = itemConnectorFacade.find(itemConnector.getId());
         Connector connector = itemConnector.getConnector();
+        
         if (connectorControllerUtility.verifySafeRemovalOfConnector(connector)) {
+            // underlying Connector is not inherited by design items and can be removed
             completeDeleteItemConnector(itemConnector);
+            
         } else {
-            // Generate a userfull message
-            String message = "";
+            // Display error message identifying items sharing inherited connector
+            String message = 
+                    getDisplayItemConnectorLabel() 
+                    + " cannot be removed because it is used for connections in the following design items: ";
+            boolean first = true;
             List<ItemConnector> itemConnectorList = connector.getItemConnectorList();
-            List<ItemConnector> connectorDeleteList = new ArrayList<>();
             for (ItemConnector ittrConnector : itemConnectorList) {
                 Item ittrItem = ittrConnector.getItem();
                 if (ittrItem.equals(item) == false) {
-                    if (ittrItem.getDomain().getName().equals(ItemDomainName.machineDesign.getValue())) {
-                        if (ittrConnector.getItemElementRelationshipList().size() == 0) {
-                            connectorDeleteList.add(ittrConnector);
-                        } else {
-                            message = "Please check connections on machine design item: " + ittrItem.toString();
-                            SessionUtility.addErrorMessage("Error", "Cannot remove connector, check if it is used for connections in machine design. " + message);
-                        }
+                    String inheritingItemName = ittrItem.getName();
+                    if (first) {
+                        first = false;
+                    } else {
+                        message = message + ", ";
                     }
-                } else {
-                    connectorDeleteList.add(ittrConnector);
+                    message = message + inheritingItemName;
                 }
             }
-
-            if (itemConnectorList.size() == connectorDeleteList.size()) {
-                // All save. 
-                for (ItemConnector relatedConnector : connectorDeleteList) {
-                    completeDeleteItemConnector(relatedConnector);
-                }
-            }
+            SessionUtility.addErrorMessage("Error", message);
         }
+        
         reloadCurrent();
     }
 
