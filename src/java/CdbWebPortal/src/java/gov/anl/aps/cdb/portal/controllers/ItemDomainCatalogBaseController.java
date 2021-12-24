@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogBaseControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -177,6 +178,25 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         boolean isValid = true;
         String validStr = "";
         
+        if (isUpdate) {
+            
+            // Retrieve original object from database for comparison.  Will this change other views of the same item?
+            ItemConnector origItemConnector = ItemConnectorFacade.getInstance().find(itemConnector.getId());
+            
+            // only allow changing cable end if there are no design items using this connector
+            boolean changedCableEnd = 
+                    (!itemConnector.getCableEndDesignation().equals(origItemConnector.getCableEndDesignation()));
+            if (changedCableEnd) {
+                List<Item> sharingItems = itemConnector.otherItemsUsingConnector();
+                if (!sharingItems.isEmpty()) {
+                    isValid = false;
+                    validStr = "Can't change cable end for " + getDisplayItemConnectorName() 
+                            + " because it is shared with design items using it for cable connections.";
+                    return new ValidInfo(isValid, validStr);
+                }
+            }
+        }
+        
         // validate that child connector is not null
         if (itemConnector.getConnector() == null) {
             isValid = false;
@@ -255,19 +275,21 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         itemConnector = itemConnectorFacade.find(itemConnector.getId());
         Connector connector = itemConnector.getConnector();
         
-        if (connectorControllerUtility.verifySafeRemovalOfConnector(connector)) {
+        // check if it is safe to delete the connector
+        List<Item> inheritingItems = connector.otherItemsUsingConnector(item);
+        if (inheritingItems.isEmpty()) {
             // underlying Connector is not inherited by design items and can be removed
             completeDeleteItemConnector(itemConnector);
             
         } else {
-            // Display error message identifying items sharing inherited connector
+            // display error message identifying items sharing inherited connector
             String message = 
                     getDisplayItemConnectorLabel() 
                     + " cannot be removed because it is used for connections in the following design items: ";
             boolean first = true;
+            int count = 0;
             List<ItemConnector> itemConnectorList = connector.getItemConnectorList();
-            for (ItemConnector ittrConnector : itemConnectorList) {
-                Item ittrItem = ittrConnector.getItem();
+            for (Item ittrItem : inheritingItems) {
                 if (ittrItem.equals(item) == false) {
                     String inheritingItemName = ittrItem.getName();
                     if (first) {
@@ -276,6 +298,12 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
                         message = message + ", ";
                     }
                     message = message + inheritingItemName;
+                    count = count + 1;
+                    if (count == 3) {
+                        // only print 3 item names in case there are many of them
+                        message = message + ", ...";
+                        break;
+                    }
                 }
             }
             SessionUtility.addErrorMessage("Error", message);

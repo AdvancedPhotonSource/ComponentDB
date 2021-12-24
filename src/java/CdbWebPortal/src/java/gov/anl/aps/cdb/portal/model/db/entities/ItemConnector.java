@@ -418,6 +418,11 @@ public class ItemConnector extends CdbEntity implements Serializable {
     }
     
     @JsonIgnore
+    public List<Item> otherItemsUsingConnector() {
+        return this.otherItemsUsingConnector(this.getItem());
+    }
+    
+    @JsonIgnore
     public List<Item> otherItemsUsingConnector(Item item) {
         if (getConnector() == null) {
             return new ArrayList<>();

@@ -206,19 +206,15 @@ public class Connector extends CdbEntity implements Serializable {
         propertyValueList.add(0, propertyValue);
     }
     
-    public List<Item> otherItemsUsingConnector(Item item) {
-        
+    public List<Item> otherItemsUsingConnector(Item item) {        
         List<Item> result = new ArrayList<>();
-        
         List<ItemConnector> itemConnectorList = getItemConnectorList();
-        if (itemConnectorList == null || itemConnectorList.isEmpty()) {
-            return result;
-        }
-        
-        for (ItemConnector itemConnector : itemConnectorList) {
-            if (item == null 
-                    || (itemConnector.getItem() != null && !itemConnector.getItem().getId().equals(item.getId()))) {
-                result.add(itemConnector.getItem());
+        if (itemConnectorList != null && (!itemConnectorList.isEmpty())) {
+            for (ItemConnector itemConnector : itemConnectorList) {
+                if (item == null
+                        || (itemConnector.getItem() != null && !itemConnector.getItem().getId().equals(item.getId()))) {
+                    result.add(itemConnector.getItem());
+                }
             }
         }
         return result;
