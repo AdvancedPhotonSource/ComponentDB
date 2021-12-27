@@ -180,23 +180,35 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         
         if (isUpdate) {
             
-            // Retrieve original object from database for comparison.  Will this change other views of the same item?
+            // Retrieve original object from database for comparison.
             ItemConnector origItemConnector = ItemConnectorFacade.getInstance().find(itemConnector.getId());
             
-            // only allow changing cable and connector type end if there are no design items using this connector
+            // get list of inheriting items
+            List<Item> sharingItems = itemConnector.otherItemsUsingConnector();
+            
+            // only allow changing cable end if there are no design items using this connector
             boolean changedCableEnd = 
                     (!itemConnector.getCableEndDesignation().equals(origItemConnector.getCableEndDesignation()));
-            boolean changedConnectorType
-                    = (!itemConnector.getConnectorType().equals(origItemConnector.getConnectorType()));
-            if (changedCableEnd || changedConnectorType) {
-                List<Item> sharingItems = itemConnector.otherItemsUsingConnector();
+            if (changedCableEnd) {
                 if (!sharingItems.isEmpty()) {
                     isValid = false;
-                    validStr = "Can't change cable end or connector type for " + getDisplayItemConnectorName() 
+                    validStr = "Can't change cable end for " + getDisplayItemConnectorName() 
+                            + " because it is shared with design items using it for cable connections.";
+                }
+            }         
+            
+            // only allow changing connector type if there are no design items using this connector
+            boolean changedConnectorType
+                    = (!itemConnector.getConnectorType().equals(origItemConnector.getConnectorType()));
+            if (changedConnectorType) {
+                if (!sharingItems.isEmpty()) {
+                    isValid = false;
+                    validStr = validStr + "Can't change connector type for " + getDisplayItemConnectorName()
                             + " because it is shared with design items using it for cable connections.";
                     return new ValidInfo(isValid, validStr);
                 }
-            }            
+            }
+
         }
         
         // validate that child connector is not null
