@@ -183,18 +183,20 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
             // Retrieve original object from database for comparison.  Will this change other views of the same item?
             ItemConnector origItemConnector = ItemConnectorFacade.getInstance().find(itemConnector.getId());
             
-            // only allow changing cable end if there are no design items using this connector
+            // only allow changing cable and connector type end if there are no design items using this connector
             boolean changedCableEnd = 
                     (!itemConnector.getCableEndDesignation().equals(origItemConnector.getCableEndDesignation()));
-            if (changedCableEnd) {
+            boolean changedConnectorType
+                    = (!itemConnector.getConnectorType().equals(origItemConnector.getConnectorType()));
+            if (changedCableEnd || changedConnectorType) {
                 List<Item> sharingItems = itemConnector.otherItemsUsingConnector();
                 if (!sharingItems.isEmpty()) {
                     isValid = false;
-                    validStr = "Can't change cable end for " + getDisplayItemConnectorName() 
+                    validStr = "Can't change cable end or connector type for " + getDisplayItemConnectorName() 
                             + " because it is shared with design items using it for cable connections.";
                     return new ValidInfo(isValid, validStr);
                 }
-            }
+            }            
         }
         
         // validate that child connector is not null
