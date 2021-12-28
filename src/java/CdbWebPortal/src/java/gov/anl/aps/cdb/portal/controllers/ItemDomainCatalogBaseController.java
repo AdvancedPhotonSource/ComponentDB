@@ -290,8 +290,9 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         Connector connector = itemConnector.getConnector();
         
         // check if it is safe to delete the connector
-        List<Item> inheritingItems = connector.otherItemsUsingConnector(item);
-        if (inheritingItems.isEmpty()) {
+        ValidInfo deleteValidInfo = itemConnector.isDeleteAllowed();
+        
+        if (deleteValidInfo.isValid()) {
             // underlying Connector is not inherited by design items and can be removed
             completeDeleteItemConnector(itemConnector);
             
@@ -299,27 +300,7 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
             // display error message identifying items sharing inherited connector
             String message = 
                     getDisplayItemConnectorLabel() 
-                    + " cannot be removed because it is used for connections in the following design items: ";
-            boolean first = true;
-            int count = 0;
-            List<ItemConnector> itemConnectorList = connector.getItemConnectorList();
-            for (Item ittrItem : inheritingItems) {
-                if (ittrItem.equals(item) == false) {
-                    String inheritingItemName = ittrItem.getName();
-                    if (first) {
-                        first = false;
-                    } else {
-                        message = message + ", ";
-                    }
-                    message = message + inheritingItemName;
-                    count = count + 1;
-                    if (count == 3) {
-                        // only print 3 item names in case there are many of them
-                        message = message + ", ...";
-                        break;
-                    }
-                }
-            }
+                    + " cannot be removed. " + deleteValidInfo.getValidString();            
             SessionUtility.addErrorMessage("Error", message);
         }
         

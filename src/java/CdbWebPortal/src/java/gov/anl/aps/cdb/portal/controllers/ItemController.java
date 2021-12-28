@@ -318,16 +318,15 @@ public abstract class ItemController<
      * @return
      */
     public String getDisplayItemConnectorName() {
-        return "connector";
+        return getControllerUtility().getDisplayItemConnectorName();
     }
 
     public String getDisplayItemConnectorLabel() {
-        return StringUtility.capitalize(getDisplayItemConnectorName());
+        return getControllerUtility().getDisplayItemConnectorLabel();
     }
 
     public String getDisplayItemConnectorsLabel() {
-        String labelString = StringUtility.capitalize(getDisplayItemConnectorName());
-        return labelString + "s";
+        return getControllerUtility().getDisplayItemConnectorsLabel();
     }
 
     public List<ItemDomainEntity> getItemListWithProject(ItemProject itemProject) {

@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
 import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
@@ -449,4 +450,23 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
         return propertyType;
     }
 
+    /**
+     * Returns name to use for ItemConnectors in UI. Subclasses override to
+     * customize.
+     *
+     * @return
+     */
+    public String getDisplayItemConnectorName() {
+        return "connector";
+    }
+
+    public String getDisplayItemConnectorLabel() {
+        return StringUtility.capitalize(getDisplayItemConnectorName());
+    }
+
+    public String getDisplayItemConnectorsLabel() {
+        String labelString = StringUtility.capitalize(getDisplayItemConnectorName());
+        return labelString + "s";
+    }
+    
 }
