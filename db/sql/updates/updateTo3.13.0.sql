@@ -58,3 +58,15 @@ BEGIN
 	)
 	LIMIT limit_row;
 END //
+
+DROP PROCEDURE IF EXISTS fetch_items_with_property_value;//
+CREATE PROCEDURE `fetch_items_with_property_value` (IN property_value_id int) 
+BEGIN
+	SELECT item.* 
+	FROM v_item_self_element v_item 
+	INNER JOIN item_element_property iep ON iep.item_element_id = v_item.self_element_id 
+	INNER JOIN item ON v_item.item_id = item.id
+	WHERE iep.property_value_id = property_value_id;
+END //
+
+delimiter ;
