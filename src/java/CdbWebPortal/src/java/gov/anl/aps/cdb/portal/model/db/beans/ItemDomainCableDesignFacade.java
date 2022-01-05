@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 
 /**
  *
@@ -47,6 +48,19 @@ public class ItemDomainCableDesignFacade extends ItemFacadeBase<ItemDomainCableD
         entity.clearDeletedIerList();
         
         return result;
+    } 
+
+    @Override
+    public List<ItemDomainCableDesign> searchEntities(String searchString) {
+        try {            
+            return (List<ItemDomainCableDesign>) em.createNamedStoredProcedureQuery("itemCableDesign.searchItems")                    
+                    .setParameter("search_string", searchString)
+                    .setParameter("limit_row", SEARCH_RESULT_LIMIT)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
     }
 
     public List<ItemDomainCableDesign> findByName(String name) {
