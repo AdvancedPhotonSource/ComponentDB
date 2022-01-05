@@ -168,7 +168,7 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         
         formatInfo.add(
-                new ImportExportFormatInfo("Basic Cable Catalog Create/Update Format", 
+                new ImportExportFormatInfo("Basic Cable Catalog Create/Update/Delete Format", 
                         ImportHelperCableCatalog.class));
         
         formatInfo.add(new ImportExportFormatInfo(
