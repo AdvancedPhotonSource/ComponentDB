@@ -63,7 +63,8 @@ See LICENSE file.
     </p:column>
     
     <p:column headerText="Version">
-        <h:outputText value="#{travelerObject.referenceReleasedFormVer}"/> 
+        <h:outputText rendered="#{travelerObject.traveler}"
+                      value="#{travelerObject.referenceReleasedFormVer}"/> 
     </p:column>
 
 </ui:composition>

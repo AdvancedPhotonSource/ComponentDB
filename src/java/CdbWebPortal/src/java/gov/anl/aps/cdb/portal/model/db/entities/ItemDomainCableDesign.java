@@ -13,13 +13,19 @@ import gov.anl.aps.cdb.portal.controllers.utilities.RelationshipTypeControllerUt
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,6 +35,25 @@ import org.apache.logging.log4j.Logger;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_DESIGN_ID + "")
+@NamedStoredProcedureQueries({
+    @NamedStoredProcedureQuery(
+        name = "itemCableDesign.searchItems",
+        procedureName = "search_cable_design_items",
+        resultClasses = ItemDomainCableDesign.class,
+        parameters = {
+            @StoredProcedureParameter(
+                    name = "limit_row",
+                    mode = ParameterMode.IN,
+                    type = Integer.class
+            ),
+            @StoredProcedureParameter(
+                    name = "search_string",
+                    mode = ParameterMode.IN,
+                    type = String.class
+            )
+        }
+    )
+})
 public class ItemDomainCableDesign extends Item {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainCableDesign.class.getName());
@@ -1268,6 +1293,22 @@ public class ItemDomainCableDesign extends Item {
     public void setEndpoint2Drawing(String drawing) throws CdbException {
         endpoint2Drawing = drawing;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_DRAWING_KEY, drawing);
+    }
+
+    @Override
+    public SearchResult createSearchResultInfo(Pattern searchPattern) {
+        SearchResult searchResult = super.createSearchResultInfo(searchPattern);
+        
+        List<ItemElementRelationship> cableRelationshipList = this.getCableRelationshipList();
+        
+        for (int i =0; i < cableRelationshipList.size(); i++) {
+            ItemElementRelationship cableRelationship = cableRelationshipList.get(i);
+            Item firstItem = cableRelationship.getFirstItem();
+            String cableEndName = firstItem.getName();
+            searchResult.doesValueContainPattern("endpoint " + (i +1), cableEndName, searchPattern);
+        }
+        
+        return searchResult; 
     }
     
 }

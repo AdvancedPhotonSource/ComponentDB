@@ -84,13 +84,24 @@ public class SearchController implements Serializable {
     public void search() {
         if (performSearch) {
             for (CdbEntityController controller : searchableControllers) {                                                                                
-                // Check if controller needs to be skipped.                 
-                //TODO add machine design
+                // Check if controller needs to be skipped.                               
                 if (controller instanceof ItemDomainCatalogController) {
                     if (!searchSettings.getDisplayCatalogItems()) continue;
                 }
                 else if (controller instanceof ItemDomainInventoryController) {
                     if (!searchSettings.getDisplayInventoryItems()) continue;
+                } 
+                else if (controller instanceof ItemDomainMachineDesignController) {
+                    if (!searchSettings.getDisplayMachineDesignItems()) continue;
+                }
+                else if (controller instanceof ItemDomainCableCatalogController) {
+                    if (!searchSettings.getDisplayCableCatalogItems()) continue;
+                } 
+                else if (controller instanceof ItemDomainCableInventoryController) {
+                    if (!searchSettings.getDisplayCableInventoryItems()) continue; 
+                } 
+                else if (controller instanceof ItemDomainCableDesignController) {
+                    if(!searchSettings.getDisplayCableDesignItems()) continue;
                 }
                 else if (controller instanceof ItemTypeController) {
                     if (!searchSettings.getDisplayItemTypes()) continue;
@@ -117,7 +128,7 @@ public class SearchController implements Serializable {
                     if (!searchSettings.getDisplayUsers()) continue;                    
                 } else if (controller instanceof ItemElementController) {
                     if (!searchSettings.getDisplayItemElements()) continue;
-                }
+                } 
                 
                 controller.performEntitySearch(searchString, searchSettings.getCaseInsensitive());                
             }
