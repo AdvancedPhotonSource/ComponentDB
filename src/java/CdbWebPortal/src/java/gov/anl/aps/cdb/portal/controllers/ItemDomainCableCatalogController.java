@@ -73,11 +73,6 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     }
 
     @Override
-    public boolean getEntityDisplayItemMemberships() {
-        return false; 
-    }
-
-    @Override
     public String getItemsDerivedFromItemTitle() {
         return "Cable Inventory";
     }
