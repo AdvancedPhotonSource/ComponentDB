@@ -4,13 +4,14 @@
  */
 package gov.anl.aps.cdb.portal.model;
 
-import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode.MachineTreeConfiguration;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -115,6 +116,12 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
                                 skipElementIds.add(derivedFromItemElement.getId());
                             }
                         }
+                        continue;
+                    } else if (containedItem1 instanceof ItemDomainCableCatalog) {
+                        // Do not show cable assembly elements in machine
+                        continue;
+                    } else if (containedItem1 instanceof ItemDomainCableInventory) {
+                        // Do not show cable assembly elements in machine
                         continue;
                     }
                 }
