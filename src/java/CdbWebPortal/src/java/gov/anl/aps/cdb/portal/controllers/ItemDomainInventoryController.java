@@ -20,7 +20,9 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
@@ -437,8 +439,8 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
             currentItemBOMTreeHasOptionalItems = itemHasOptionalsInBOM(current);
             if (!currentItemBOMTreeHasOptionalItems) {
                 InventoryBillOfMaterialItem containedInBOM = current.getContainedInBOM();
-                List<ItemDomainInventory> newItemsToAdd = containedInBOM.getNewItemsToAdd();
-                for (ItemDomainInventory item : newItemsToAdd) {
+                List<ItemDomainInventoryBase> newItemsToAdd = containedInBOM.getNewItemsToAdd();
+                for (ItemDomainInventoryBase item : newItemsToAdd) {
                     currentItemBOMTreeHasOptionalItems = itemHasOptionalsInBOM(item);
                     if (currentItemBOMTreeHasOptionalItems) {
                         return true;
@@ -450,7 +452,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         return currentItemBOMTreeHasOptionalItems;
     }
 
-    private boolean itemHasOptionalsInBOM(ItemDomainInventory item) {
+    private boolean itemHasOptionalsInBOM(ItemDomainInventoryBase item) {
         List<InventoryBillOfMaterialItem> iBomiList = item.getInventoryDomainBillOfMaterialList();
         for (InventoryBillOfMaterialItem iBomi : iBomiList) {
             if (iBomi.isOptional()) {
@@ -497,7 +499,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
 
                 bomItem.setInventoryItem(null);
 
-                ItemDomainCatalog catalogItem = bomItem.getCatalogItem();
+                ItemDomainCatalogBase catalogItem = bomItem.getCatalogItem();
                 if (catalogItem.getFullItemElementList().size() > 1) {
                     // Assembly may have optionals
                     currentItemBOMTreeHasOptionalItems = null;
@@ -556,11 +558,11 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     public String getInventoryItemElementDisplayString(ItemElement itemElement) {
         if (itemElement != null) {
             if (itemElement.getContainedItem() != null) {
-                ItemDomainInventory inventoryItem = (ItemDomainInventory) itemElement.getContainedItem();
+                Item inventoryItem = itemElement.getContainedItem();
                 return getItemDisplayString(inventoryItem);
             }
 
-            ItemDomainCatalog catalogItem = getCatalogItemForInventoryItemElement(itemElement);
+            ItemDomainCatalogBase catalogItem = getCatalogItemForInventoryItemElement(itemElement);
             if (catalogItem != null) {
                 return catalogItem.getName() + "- [ ]";
             } else {
@@ -570,11 +572,11 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         return null;
     }
 
-    public ItemDomainCatalog getCatalogItemForInventoryItemElement(ItemElement inventoryItemElement) {
+    public ItemDomainCatalogBase getCatalogItemForInventoryItemElement(ItemElement inventoryItemElement) {
         if (inventoryItemElement != null) {
             ItemElement derivedFromItemElement = inventoryItemElement.getDerivedFromItemElement();
             if (derivedFromItemElement.getContainedItem() != null) {
-                return (ItemDomainCatalog) derivedFromItemElement.getContainedItem();
+                return (ItemDomainCatalogBase) derivedFromItemElement.getContainedItem();
             }
         }
         return null;
