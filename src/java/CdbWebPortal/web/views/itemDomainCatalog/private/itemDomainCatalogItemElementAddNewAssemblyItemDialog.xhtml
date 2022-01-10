@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../../itemElement/private/templates/itemElementAddNewAssemblyItemDialogTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="selectionControllerToggle">
+        <p:outputPanel id="itemElementSelectionControllerSelectionOutputPanel"
+                       styleClass="inlineFlexOutputPanel">
+            <h2>
+                Select
+                <p:selectOneMenu value="#{entityController.itemElementSelectionControllerString}"
+                                   onchange="selectionControllerToggleChange()"
+                                   id="itemElementSelectionControllerSelectOneButton">
+                    <f:selectItem itemLabel="Component Catalog Item" itemValue="#{entityController.controllerName}"/>
+                    <f:selectItem itemLabel="Cable Catalog Item" itemValue="#{itemDomainCableCatalogController.controllerName}"/>
+                </p:selectOneMenu>
+            </h2>
+
+            <ui:param name="itemElementSelectionController"
+                      value="#{entityController.itemElementSelectionController}"/>        
+        </p:outputPanel>
+
+
+
+        <p:remoteCommand name="selectionControllerToggleChange"
+                         update="itemElementSelectionControllerSelectionOutputPanel"
+                         onstart="PF('loadingDialog').show()"
+                         oncomplete="selectionControllerToggleComplete()"/>
+        <p:remoteCommand name="selectionControllerToggleComplete"
+                         update="addNewAssemblyItemDialogSelectItemPanel"
+                         oncomplete="PF('loadingDialog').hide()" />
+    </ui:define>
+
+</ui:composition>
+
+
