@@ -14,7 +14,6 @@ import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableCat
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -46,6 +45,11 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
             // TODO add apiInstance
             return null;
         }
+    } 
+
+    @Override
+    public String getControllerName() {
+        return CONTROLLER_NAMED;
     }
     
     @Override
