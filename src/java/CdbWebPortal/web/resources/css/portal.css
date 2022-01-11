@@ -1521,3 +1521,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
 .wideMenuItem > ul > li {
     width: 250px !important;     
 }
+
+.ui-datatable-resizable thead th, .ui-datatable-resizable tbody td, .ui-datatable-resizable tfoot td {
+    white-space: normal;
+}

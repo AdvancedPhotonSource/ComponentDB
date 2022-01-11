@@ -41,7 +41,9 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
     private final String DOMAIN_TYPE_NAME = ItemDomainName.catalog.getValue();
     private final String DERIVED_DOMAIN_NAME = "Inventory";        
     
-    private static final Logger logger = LogManager.getLogger(ItemDomainCatalogBaseController.class.getName());                                       
+    private static final Logger logger = LogManager.getLogger(ItemDomainCatalogBaseController.class.getName());      
+    
+    public abstract String getControllerName();
 
     @Override
     protected ItemCreateWizardController getItemCreateWizardController() {

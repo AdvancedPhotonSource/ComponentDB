@@ -45,6 +45,11 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
             // TODO add apiInstance
             return null;
         }
+    } 
+
+    @Override
+    public String getControllerName() {
+        return CONTROLLER_NAMED;
     }
     
     @Override

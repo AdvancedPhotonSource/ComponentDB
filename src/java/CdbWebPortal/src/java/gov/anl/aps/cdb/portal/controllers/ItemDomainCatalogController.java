@@ -53,6 +53,11 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
     public static ItemDomainCatalogController getInstance() {
         return (ItemDomainCatalogController) SessionUtility.findBean(ItemDomainCatalogController.CONTROLLER_NAMED);
     }
+    
+    @Override
+    public String getControllerName() {
+        return CONTROLLER_NAMED;
+    }
 
     @Override
     protected ItemDomainCatalogFacade getEntityDbFacade() {
@@ -148,6 +153,33 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
     @Override
     protected ItemDomainCatalogControllerUtility createControllerUtilityInstance() {
         return new ItemDomainCatalogControllerUtility();
+    } 
+
+    @Override
+    public void prepareCreateSingleItemElementSimpleDialog() {
+        super.prepareCreateSingleItemElementSimpleDialog(); 
+        
+        setItemElementSelectionController(this);
+    }
+    
+    public ItemDomainCatalogBaseController getItemElementSelectionController() {
+        ItemDomainCatalog current = getCurrent();
+        return current.getItemElementSelectionController();
+    }
+
+    public void setItemElementSelectionController(ItemDomainCatalogBaseController itemElementSelectionController) {
+        ItemDomainCatalog current = getCurrent();
+        current.setItemElementSelectionController(itemElementSelectionController);        
+    }
+    
+    public String getItemElementSelectionControllerString() {
+        String controllerName = getItemElementSelectionController().getControllerName();
+        return controllerName; 
+    }
+
+    public void setItemElementSelectionControllerString(String controllerName) {
+        ItemDomainCatalogBaseController controller = (ItemDomainCatalogBaseController) SessionUtility.findBean(controllerName); 
+        setItemElementSelectionController(controller);
     }
 
     // <editor-fold defaultstate="collapsed" desc="import/export support">   

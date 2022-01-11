@@ -10,14 +10,14 @@ See LICENSE file.
                 template="../../common/private/commonChildListActionButtons.xhtml">
 
     <ui:define name="variables">
-        <!-- showAddButton param specifies if a simple assambly item should be shown --> 
-        <ui:param name="showAddButton" value="#{showAddButton != null ? showAddButton : true}" />
+        <!-- defaultAddButton param specifies if a simple assambly item should be shown --> 
+        <ui:param name="defaultAddButton" value="#{defaultAddButton != null ? defaultAddButton : true}" />
 
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="listCustomizeOnStartCommand" value="itemElementCustomizeOnStartCommand()" />
         <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
         <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}"/>
-        <ui:param name="onCompleteAddButtonCommand" value="#{showAddButton ? 'showAddNewAssemblyItemDialog()' : null}" /> 
+        <ui:param name="onCompleteAddButtonCommand" value="#{defaultAddButton ? 'showAddNewAssemblyItemDialog()' : onCompleteAddButtonCommand}" /> 
     </ui:define>
 
     <ui:define name="additionalButtons">        
@@ -46,7 +46,7 @@ See LICENSE file.
 
 
     <ui:define name="additionalContent">
-        <ui:include src="#{showAddButton ? 'itemElementAddNewAssemblyItemDialog.xhtml' : '../../common/private/commonEmptyPage.xhtml' }" />
+        <ui:include src="#{defaultAddButton ? 'itemElementAddNewAssemblyItemDialog.xhtml' : '../../common/private/commonEmptyPage.xhtml' }" />
 
         <p:remoteCommand name="itemElementCustomizeOnStartCommand"
                          action="#{itemElementController.setCurrentSettingsItemController(currentItemController)}"/>

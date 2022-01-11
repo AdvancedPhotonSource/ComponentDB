@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogBaseController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogControllerUtility;
@@ -32,6 +33,7 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
     private transient List<ItemDomainInventory> inventorySparesList = null;
     private transient List<ItemDomainInventory> inventoryNonSparesList = null;
     private transient Boolean displayInventorySpares = null;
+    private transient ItemDomainCatalogBaseController itemElementSelectionController; 
     // </editor-fold>
 
     @Override
@@ -93,6 +95,15 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
     public void setDisplayInventorySpares(Boolean displayInventorySpares) {
         this.displayInventorySpares = displayInventorySpares;
     }
-    // </editor-fold>
     
+    @JsonIgnore
+    public ItemDomainCatalogBaseController getItemElementSelectionController() {
+        return itemElementSelectionController;
+    }
+
+    public void setItemElementSelectionController(ItemDomainCatalogBaseController itemElementSelectionController) {
+        this.itemElementSelectionController = itemElementSelectionController;
+    }            
+    // </editor-fold>
+
 }

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+
+    <p:remoteCommand name="showAddNewAssemblyItemDialog"
+                     onstart="PF('loadingDialog').show()"
+                     update="addNewAssemblyItemDialog"
+                     oncomplete="PF('loadingDialog').hide(); 
+                     PF('addNewAssemblyItemDialogWidget').show()">
+        <f:actionListener binding="#{currentItemController.prepareCreateSingleItemElementSimpleDialog()}" />
+        <f:actionListener binding="#{simpleCreateItemElementDialogUtility.resetToggleConfigurationToStep1Defaults()}" />
+    </p:remoteCommand>
+
+    <p:dialog id="addNewAssemblyItemDialog"
+              widgetVar="addNewAssemblyItemDialogWidget"
+              resizable="false"
+              closable="false"
+              styleClass="viewTransparentBackgroundDialog"
+              header="Add New Item Element">
+
+        <ui:param name="newItemElement"
+                  value="#{currentItemController.currentEditItemElement}"
+                  />
+
+        <ui:param name="updateAddNewAssemblyItemDialogIds"
+                  value="addNewAssemblyItemOutputPanel addNewAssemblyItemDialogFooterOutputPanel"
+                  />
+        <p:outputPanel id="addNewAssemblyItemOutputPanel"
+                       rendered="#{newItemElement != null}">
+
+
+            <ui:param name="simpleElementsView" value="#{currentItemController.settingObject.displayItemElementSimpleView}" />
+            <ui:param name="displayPartName" value="#{itemElementController.settingObject.displayPartName}"/> 
+            <ui:param name="displayPartDescription" value="#{itemElementController.settingObject.displayPartDescription}"/> 
+
+            <ui:param name="itemElementNameLabel" value="#{simpleElementsView ? 'Part Name' : 'Item Element Name'}"/> 
+            <ui:param name="itemElementDescriptionLabel" value="#{simpleElementsView ? 'Part Description' : 'Item Element Description'}"/> 
+
+            <p:remoteCommand name="toggleAddNewAssemblyItemPanels"
+                             onstart="PF('loadingDialog').show();
+                             PF('addNewAssemblyItemSelectValuePanelWidget').toggle();
+                             PF('addNewAssemblyItemOptionsPanelWidget').toggle();"
+                             oncomplete="PF('loadingDialog').hide();
+                             PF('addNewAssemblyItemDialogWidget').initPosition();"/>
+
+            <p:panel id="addNewAssemblyItemDialogSelectItemPanel"
+                     toggleable="true"
+                     binding="#{simpleCreateItemElementDialogUtility.selectItemPanel}" 
+                     widgetVar="addNewAssemblyItemSelectValuePanelWidget"> 
+
+                <ui:insert name="selectionControllerToggle">
+                    <h2>Select Item</h2>
+                    <ui:param name="itemElementSelectionController"
+                              value="#{entityController}"/>
+                </ui:insert>
+
+                <ui:include src="../../../item/private/itemSelectDataTable.xhtml">
+                    <ui:param name="entityController" value="#{itemElementSelectionController}" />
+                    <ui:param name="viewName" value="travelerInstanceMoveDialog"/>
+                    <ui:param name="updateTarget" value="#{updateAddNewAssemblyItemDialogIds}" />
+                    <ui:param name="overrideSelectionValue" value="#{true}" /> 
+                    <ui:param name="selectionValue" value="#{newItemElement.containedItem}" />                    
+                    <ui:param name="additionalSelectionMadeRemoteCommands" value="addNewAssemblyItemSelected();" /> 
+                </ui:include>
+
+                <p:remoteCommand name="addNewAssemblyItemSelected"
+                                 onstart="PF('loadingDialog').show();"
+                                 action="#{currentItemController.validateCreateSingleItemElementSimpleDialog('addNewAssemblyItemSelectedSucesfully()', 'Error Selecting Item')}"
+                                 oncomplete="PF('loadingDialog').hide();"
+                                 /> 
+
+                <p:remoteCommand name="addNewAssemblyItemSelectedSucesfully"
+                                 onstart="toggleAddNewAssemblyItemPanels()"
+                                 update="#{updateAddNewAssemblyItemDialogIds}"
+                                 action="#{simpleCreateItemElementDialogUtility.resetToggleConfigurationToStep1Defaults()}" />
+
+            </p:panel>
+
+            <p:panel id="addNewAssemblyItemDialogSelectOptionsPanel"
+                     binding="#{simpleCreateItemElementDialogUtility.selectOptionsPanel}"
+                     toggleable="true"
+                     widgetVar="addNewAssemblyItemOptionsPanelWidget"
+                     collapsed="true">                
+                <p:outputPanel rendered="#{newItemElement.containedItem != null}">
+                    <p:panelGrid columns="3">
+                        <h:outputLabel value="Selected Item" 
+                                       styleClass="entityDataEmphasizedLabel"/>
+                        <h:outputText value="#{newItemElement.containedItem}"
+                                      styleClass="entityDataEmphasizedText"/>
+
+                        <p:commandButton value="Change Item"
+                                         onstart="toggleAddNewAssemblyItemPanels()"
+                                         update="#{updateAddNewAssemblyItemDialogIds}">                            
+                            <f:actionListener binding="#{simpleCreateItemElementDialogUtility.resetToggleConfigurationToStep2Defaults()}" />
+                            <f:actionListener binding="#{currentItemController.changeItemCreateSingleItemElementSimpleDialog()}" />
+                        </p:commandButton>
+
+                        <h:outputLabel value="Required in all assamblies" 
+                                       styleClass="entityDataEmphasizedLabel"/>
+                        <ui:include src="../itemElementEditIsRequiredValueObject.xhtml" >
+                            <ui:param name="itemElementObject"
+                                      value="#{newItemElement}" />
+                        </ui:include>
+
+                        <h:outputText id="addNewAssemblyItemDialogItemElementName"
+                                      value="#{itemElementNameLabel}"
+                                      styleClass="entityDataEmphasizedLabel"
+                                      rendered="#{!simpleElementsView or displayPartName}"/>
+                        <h:inputText value="#{newItemElement.name}"
+                                     rendered="#{!simpleElementsView or displayPartName}"/> 
+                        <p:tooltip for="addNewAssemblyItemDialogItemElementName" 
+                                   value="Name of the new element."
+                                   rendered="#{!simpleElementsView or displayPartName}"/>
+
+                        <h:outputText id="addNewAssemblyItemDialogItemElementDescription"
+                                      value="#{itemElementDescriptionLabel}"
+                                      styleClass="entityDataEmphasizedLabel"
+                                      rendered="#{!simpleElementsView or displayPartDescription}"/>
+                        <h:inputText value="#{newItemElement.description}"
+                                     rendered="#{!simpleElementsView or displayPartDescription}"/> 
+                        <p:tooltip for="addNewAssemblyItemDialogItemElementDescription" 
+                                   value="Description of the new element."
+                                   rendered="#{!simpleElementsView or displayPartDescription}"/>
+                    </p:panelGrid>                   
+                </p:outputPanel>                
+            </p:panel>
+
+        </p:outputPanel>
+        <f:facet name="footer">
+            <p:outputPanel id="addNewAssemblyItemDialogFooterOutputPanel">
+                <p:commandButton value="Add" alt="Add" 
+                                 update="addNewAssemblyItemDialogSelectOptionsPanel @this"
+                                 onstart="PF('loadingDialog').show()"
+                                 oncomplete="PF('loadingDialog').hide()"
+                                 disabled="#{!currentItemController.currentEditItemElementSaveButtonEnabled}" 
+                                 action="#{currentItemController.validateCreateSingleItemElementSimpleDialog('onSuccessDialogAddItemElementValidation()', 'Error Adding Assembly Item')}"                                 
+                                 icon="fa fa-plus"/>
+
+                <p:commandButton value="Close" 
+                                 icon="fa fa-close"
+                                 oncomplete="PF('addNewAssemblyItemDialogWidget').hide()"
+                                 action="#{entityController.cancelCreateSingleItemElementSimpleDialog()}"
+                                 />
+
+                <p:remoteCommand name="onSuccessDialogAddItemElementValidation"
+                                 action="#{entityController.saveCreateSingleItemElementSimpleDialog()}"
+                                 update="@form"
+                                 onstart="PF('loadingDialog').show()"
+                                 oncomplete="PF('loadingDialog').hide();
+                                 PF('addNewAssemblyItemDialogWidget').hide()"/>
+            </p:outputPanel>
+        </f:facet>
+    </p:dialog>
+
+</ui:composition>
+
+

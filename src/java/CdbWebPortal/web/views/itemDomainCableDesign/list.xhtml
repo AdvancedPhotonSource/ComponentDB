@@ -11,23 +11,23 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="../item/private/templates/itemListTemplate.xhtml">
-    
+
     <ui:param name="entityController" value="#{itemDomainCableDesignController}" />        
-    
+
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainCableDesignController.processPreRenderList()}" />
     </f:metadata>
-    
+
     <ui:define name="domainEntityListExtraColumns">
-        
+
         <p:column headerText="Endpoints"
                   filterable="#{true}"
                   filterBy="#{itemListObject.endpointsString}" 
                   filterMatchMode="contains">
             <h:outputText value="#{itemListObject.endpointsString}" /> 
         </p:column>   
-        
+
         <p:column headerText="Catalog Item"
                   filterable="#{true}"
                   filterBy="#{itemListObject.catalogItemString}" 
@@ -68,17 +68,21 @@ See LICENSE file.
         </ui:decorate>
 
     </ui:define>
-    
+
     <ui:define name="domainEntityListDataTableParameters">
         <ui:param name="itemListDataTableLazy"
                   value="#{entityController.dataTableNotScoped}"/> 
-        
+
+        <ui:param name="itemListDataTableValue" value="#{itemListDataTableValue != null 
+                                                         ? itemListDataTableValue 
+                                                         : itemDomainCableDesignController.scopedListDataModel}" />
+
         <ui:param name="itemListDataTablePaginatorAlwaysVisible"
                   value="#{true}"/>                
     </ui:define>
-    
+
     <ui:define name="domainEntityExtraTabs">
-        
+
         <p:tab title="Connection Details">
             <p:panelGrid columns="2">
                 <ui:decorate template="private/templates/listCustomizeOptionEndpointDevice.xhtml">
@@ -107,9 +111,13 @@ See LICENSE file.
                 </ui:decorate>
             </p:panelGrid>
         </p:tab>
-        
+
     </ui:define>
-    
+
+    <ui:define name="itemListPageEmphasizedContentBelowTitle">
+        <ui:include src="../item/private/templateDefaults/customizeDisplayAddons/itemListDataTableDisplayModeSelectionDialogButton.xhtml" />
+    </ui:define>
+
     <ui:define name="rowExpansionCustomizeOptionsTab"/>
 
 </ui:composition>

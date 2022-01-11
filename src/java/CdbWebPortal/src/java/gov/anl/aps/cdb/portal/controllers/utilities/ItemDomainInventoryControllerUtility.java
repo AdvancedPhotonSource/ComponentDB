@@ -11,8 +11,11 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -45,11 +48,11 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
         item.getFullItemElementList().clear();
         item.getFullItemElementList().add(itemSelfElement);
 
-        List<ItemDomainInventory> newItemsToAdd = getNewItemsToAdd(item);
+        List<ItemDomainInventoryBase> newItemsToAdd = getNewItemsToAdd(item);
 
         if (newItemsToAdd != null) {
             // Clear new item elements for new items. In case a previous insert failed. 
-            for (ItemDomainInventory itemToAdd : newItemsToAdd) {
+            for (ItemDomainInventoryBase itemToAdd : newItemsToAdd) {
                 if (isItemExistInDb(itemToAdd) == false) {
                     //Make sure newest version of display list is fetched.
                     ItemElement selfElement = itemToAdd.getSelfElement();
@@ -68,9 +71,9 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
         checkNewItemsToAdd(item, newItemsToAdd, userInfo);
     }
 
-    private List<ItemDomainInventory> getNewItemsToAdd(ItemDomainInventory item) {
+    private List<ItemDomainInventoryBase> getNewItemsToAdd(ItemDomainInventory item) {
         InventoryBillOfMaterialItem bom = item.getContainedInBOM();
-        List<ItemDomainInventory> newItemsToAdd = null;
+        List<ItemDomainInventoryBase> newItemsToAdd = null;
         if (bom != null) {
             newItemsToAdd = bom.getNewItemsToAdd();
         }
@@ -79,15 +82,15 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
 
     @Override
     public void prepareEntityUpdate(ItemDomainInventory item, UserInfo userInfo) throws CdbException {
-        List<ItemDomainInventory> newItemsToAdd = getNewItemsToAdd(item);
+        List<ItemDomainInventoryBase> newItemsToAdd = getNewItemsToAdd(item);
         checkNewItemsToAdd(item, newItemsToAdd, userInfo);
         addItemElementsFromBillOfMaterials(item, userInfo);
         super.prepareEntityUpdate(item, userInfo);
     }
 
-    public void updatePermissionOnAllNewPartsIfNeeded(List<ItemDomainInventory> newItemsToAdd, ItemDomainInventory item) {
+    public void updatePermissionOnAllNewPartsIfNeeded(List<ItemDomainInventoryBase> newItemsToAdd, ItemDomainInventory item) {
         if (isApplyPermissionToAllNewPartsForItem(item)) {
-            for (ItemDomainInventory newItem : newItemsToAdd) {
+            for (ItemDomainInventoryBase newItem : newItemsToAdd) {
                 setPermissionsForItemToCurrentItem(newItem, item);
             }
         }
@@ -100,7 +103,7 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
         return false;
     }
 
-    private void setPermissionsForItemToCurrentItem(ItemDomainInventory inventoryItem, ItemDomainInventory currentItem) {
+    private void setPermissionsForItemToCurrentItem(ItemDomainInventoryBase inventoryItem, ItemDomainInventory currentItem) {
         if (inventoryItem != currentItem) {
             // Set the permissions to equal. 
             EntityInfo entityInfo = currentItem.getEntityInfo();
@@ -110,12 +113,17 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
         }
     }
 
-    private void checkNewItemsToAdd(ItemDomainInventory parent, List<ItemDomainInventory> newItemsToAdd, UserInfo userInfo) throws CdbException {
+    private void checkNewItemsToAdd(ItemDomainInventory parent, List<ItemDomainInventoryBase> newItemsToAdd, UserInfo userInfo) throws CdbException {
         if (newItemsToAdd != null && !newItemsToAdd.isEmpty()) {
-            for (ItemDomainInventory newItem : newItemsToAdd) {
+            for (ItemDomainInventoryBase newItem : newItemsToAdd) {
                 // item is checked by default. 
                 if (parent != newItem) {
-                    checkItem(newItem);
+                    if (newItem instanceof ItemDomainInventory) {
+                        checkItem((ItemDomainInventory) newItem);                        
+                    } else if (newItem instanceof ItemDomainCableInventory) {
+                        ItemDomainCableInventoryControllerUtility util = new ItemDomainCableInventoryControllerUtility(); 
+                        util.checkItem((ItemDomainCableInventory) newItem);
+                    }
                     performPrepareEntityInsertUpdate(newItem, userInfo);
                 }                
             }
@@ -134,14 +142,14 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
         item.resetItemElementDisplayList();
     }
 
-    private void checkUniquenessBetweenNewItemsToAdd(List<ItemDomainInventory> newItemsToAdd) throws CdbException {
+    private void checkUniquenessBetweenNewItemsToAdd(List<ItemDomainInventoryBase> newItemsToAdd) throws CdbException {
         for (int i = 0; i < newItemsToAdd.size(); i++) {
             for (int j = newItemsToAdd.size() - 1; j > -1; j--) {
                 if (i == j) {
                     break;
                 }
-                ItemDomainInventory itemA = newItemsToAdd.get(i);
-                ItemDomainInventory itemB = newItemsToAdd.get(j);
+                ItemDomainInventoryBase itemA = newItemsToAdd.get(i);
+                ItemDomainInventoryBase itemB = newItemsToAdd.get(j);
 
                 String itemCompareString = itemA.getContainedInBOM().toString() + " and " + itemB.getContainedInBOM().toString();
 
@@ -171,7 +179,7 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
         }
     }
 
-    public void addItemElementsFromBillOfMaterials(ItemDomainInventory item, UserInfo sessionUser) throws CdbException {
+    public void addItemElementsFromBillOfMaterials(ItemDomainInventoryBase item, UserInfo sessionUser) throws CdbException {
         // Bill of materials list.
         List<InventoryBillOfMaterialItem> bomItems = item.getInventoryDomainBillOfMaterialList();
 
@@ -245,7 +253,7 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
                         throw new CdbException("An item for: " + bomItem.getCatalogItemElement().getName() + " is not " + actionWord + ".");
                     }
 
-                    ItemDomainInventory inventoryItem = bomItem.getInventoryItem();
+                    ItemDomainInventoryBase inventoryItem = bomItem.getInventoryItem();
 
                     // No need to do that for existing items. 
                     if (currentBomState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
@@ -253,7 +261,14 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
                         updateContainedItemForElement(currentInventoryItemElement, inventoryItem);
                     } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
                         if (currentInventoryItemElement.getContainedItem() == inventoryItem == false) {
-                            updateContainedItemForElement(currentInventoryItemElement, findById(inventoryItem.getId()));
+                            ItemDomainInventoryBase dbItem = null;
+                            if (inventoryItem instanceof ItemDomainCableInventory) {
+                                ItemDomainCableInventoryControllerUtility util = new ItemDomainCableInventoryControllerUtility();
+                                dbItem = util.findById(inventoryItem.getId());
+                            } else {
+                                dbItem = findById(inventoryItem.getId());
+                            }
+                            updateContainedItemForElement(currentInventoryItemElement, dbItem);
                         }
                     }
                 } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.placeholder.getValue())) {
@@ -267,11 +282,11 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
 
     }
 
-    public void updateContainedItemForElement(ItemElement ie, ItemDomainInventory containedItem) throws CdbException {
+    public void updateContainedItemForElement(ItemElement ie, ItemDomainInventoryBase containedItem) throws CdbException {
         ItemElement derivedFromItemElement = ie.getDerivedFromItemElement();
         Item derivedContainedItem = derivedFromItemElement.getContainedItem();
 
-        ItemDomainCatalog catalogItem = containedItem.getCatalogItem();
+        ItemDomainCatalogBase catalogItem = containedItem.getCatalogItem();
 
         if (catalogItem.equals(derivedContainedItem)) {
             ie.setContainedItem(containedItem);
@@ -280,7 +295,7 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
         }
     }
 
-    public void updateItemElementPermissionsToItem(ItemElement itemElement, ItemDomainInventory item) {
+    public void updateItemElementPermissionsToItem(ItemElement itemElement, ItemDomainInventoryBase item) {
         EntityInfo entityInfo = item.getEntityInfo();
 
         itemElement.getEntityInfo().setOwnerUser(entityInfo.getOwnerUser());
@@ -288,7 +303,7 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
         itemElement.getEntityInfo().setIsGroupWriteable(entityInfo.getIsGroupWriteable());
     }
 
-    public void prepareBillOfMaterialsForItem(ItemDomainInventory item) {
+    public void prepareBillOfMaterialsForItem(ItemDomainInventoryBase item) {
         // Prepare bill of materials if not yet done so.         
         InventoryBillOfMaterialItem iBom = new InventoryBillOfMaterialItem(item);
         InventoryBillOfMaterialItem.setBillOfMaterialsListForItem(item, iBom);

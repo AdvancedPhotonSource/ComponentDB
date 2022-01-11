@@ -28,13 +28,9 @@ import org.primefaces.model.TreeNode;
 public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatalog> {
 
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status";
-    public static final String ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE = "Spare";
-    
-    private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
+    public static final String ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE = "Spare";        
 
-    private transient TreeNode itemElementAssemblyRootTreeNode = null;
-
-    private transient InventoryBillOfMaterialItem containedInBOM;
+    private transient TreeNode itemElementAssemblyRootTreeNode = null;   
 
     private transient SparePartsBean sparePartsBean = null;
     
@@ -75,15 +71,6 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
     }
 
     @JsonIgnore
-    public List<InventoryBillOfMaterialItem> getInventoryDomainBillOfMaterialList() {
-        return inventoryDomainBillOfMaterialList;
-    }
-
-    public void setInventoryDomainBillOfMaterialList(List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList) {
-        this.inventoryDomainBillOfMaterialList = inventoryDomainBillOfMaterialList;
-    }
-
-    @JsonIgnore
     public TreeNode getItemElementAssemblyRootTreeNode() throws CdbException {
         if (itemElementAssemblyRootTreeNode == null) {
             if (getItemElementDisplayList().size() > 0) {
@@ -91,15 +78,6 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
             }
         }
         return itemElementAssemblyRootTreeNode;
-    }
-
-    @JsonIgnore
-    public InventoryBillOfMaterialItem getContainedInBOM() {
-        return containedInBOM;
-    }
-
-    public void setContainedInBOM(InventoryBillOfMaterialItem containedInBOM) {
-        this.containedInBOM = containedInBOM;
     }
 
     @JsonIgnore
