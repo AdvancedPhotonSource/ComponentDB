@@ -176,6 +176,9 @@ public class CdbEntity implements Serializable, Cloneable {
     
     @JsonIgnore
     public Boolean getImportDeleteExistingItem() {
+        if (importDeleteExistingItem == null) {
+            return false;
+        }
         return importDeleteExistingItem;
     }
     

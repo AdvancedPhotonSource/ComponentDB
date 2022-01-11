@@ -10,8 +10,10 @@ See LICENSE file.
     
     <ui:param name="itemListDataTableValue" value="#{itemListDataTableValue != null 
                                                      ? itemListDataTableValue 
-                                                     : itemDomainCableCatalogController.scopedListDataModel}" />             
+                                                     : itemDomainCableCatalogController.scopedListDataModel}" />                 
+    
+    <ui:define name="rowExpansionObject">
+        <ui:include src="itemDomainCableCatalogListDataTableRowExpansionObject.xhtml" />
+    </ui:define>
     
 </ui:composition>
-
-

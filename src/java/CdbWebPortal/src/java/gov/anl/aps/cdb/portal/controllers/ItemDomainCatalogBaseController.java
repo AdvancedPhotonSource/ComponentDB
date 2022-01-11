@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogBaseControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -179,28 +180,75 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         boolean isValid = true;
         String validStr = "";
         
+        if (isUpdate) {
+            
+            // Retrieve original object from database for comparison.
+            ItemConnector origItemConnector = ItemConnectorFacade.getInstance().find(itemConnector.getId());
+            
+            // get list of inheriting items
+            List<Item> sharingItems = itemConnector.otherItemsUsingConnector();
+            
+            // only allow changing cable end if there are no design items using this connector
+            boolean changedCableEnd = 
+                    (!itemConnector.getCableEndDesignation().equals(origItemConnector.getCableEndDesignation()));
+            if (changedCableEnd) {
+                if (!sharingItems.isEmpty()) {
+                    isValid = false;
+                    validStr = "Can't change cable end for " + getDisplayItemConnectorName() 
+                            + " because it is shared with design items using it for cable connections.";
+                }
+            }         
+            
+            // only allow changing connector type if there are no design items using this connector
+            boolean changedConnectorType
+                    = (!itemConnector.getConnectorType().equals(origItemConnector.getConnectorType()));
+            if (changedConnectorType) {
+                if (!sharingItems.isEmpty()) {
+                    isValid = false;
+                    validStr = validStr + "Can't change connector type for " + getDisplayItemConnectorName()
+                            + " because it is shared with design items using it for cable connections.";
+                    return new ValidInfo(isValid, validStr);
+                }
+            }
+
+        }
+        
         // validate that child connector is not null
         if (itemConnector.getConnector() == null) {
             isValid = false;
-            validStr = validStr + "ItemConnector is missing child Connector object";
+            validStr = getDisplayItemConnectorLabel() + " must contain child Connector object";
             return new ValidInfo(isValid, validStr);
         } 
         
-        // validate that name is unique if specified
-        if (itemConnector.getConnectorName() != null && (!itemConnector.getConnectorName().isBlank())) {
+        // validate that name is specified and unique
+        if (itemConnector.getConnectorName() == null || (itemConnector.getConnectorName().isBlank())) {
+            // name must be specified
+            isValid = false;
+            validStr = getDisplayItemConnectorLabel() + " name must be specified";
+            return new ValidInfo(isValid, validStr);
+            
+        } else {
+            // specified name must be unique
             Item item = itemConnector.getItem();
             List<ItemConnector> connectorList = item.getItemConnectorList();
             boolean isDuplicate = false;
             for (ItemConnector otherConnector : connectorList) {
-                if ((otherConnector.getId() != null)
-                        && (otherConnector.getConnector().getName().equals(itemConnector.getConnector().getName()))) {
+                if (isUpdate && otherConnector.equals(itemConnector)) {
+                    // in edit mode, don't compare updated item to itself
+                    continue;
+                }
+                if (!isUpdate && otherConnector == itemConnector) {
+                    // in create mode, don't compare updated item to itself
+                    continue;
+                }
+                if (otherConnector.getConnector().getName().equals(itemConnector.getConnector().getName())){
                     isDuplicate = true;
                     break;
                 }
             }
             if (isDuplicate) {
                 isValid = false;
-                validStr = "Connector name is not unique for item.";
+                validStr = getDisplayItemConnectorLabel() + " name is not unique for item";
                 return new ValidInfo(isValid, validStr);
             }
         }
@@ -222,54 +270,42 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         ItemConnectorController controller = ItemConnectorController.getInstance();
         ItemConnector newConnector = controller.getCurrent();
         
-        // validate new item
+        // validate new connector
         ValidInfo validateInfo = validateItemConnector(false, newConnector);
         if (!validateInfo.isValid()) {
             this.revertItemConnectorListForCurrent();
-            SessionUtility.addErrorMessage("Error", "Unable to create connector. " 
+            SessionUtility.addErrorMessage("Error", "Unable to create " + getDisplayItemConnectorName() + ". " 
                     + validateInfo.getValidString() + ".");
             return;
         }
         
         controller.createWithoutRedirect();
+        
+        reloadCurrent();
     }
 
     public void deleteItemConnector(ItemConnector itemConnector) {
+        
         Item item = getCurrent();
-
         ConnectorControllerUtility connectorControllerUtility = new ConnectorControllerUtility();
         itemConnector = itemConnectorFacade.find(itemConnector.getId());
         Connector connector = itemConnector.getConnector();
-        if (connectorControllerUtility.verifySafeRemovalOfConnector(connector)) {
+        
+        // check if it is safe to delete the connector
+        ValidInfo deleteValidInfo = itemConnector.isDeleteAllowed();
+        
+        if (deleteValidInfo.isValid()) {
+            // underlying Connector is not inherited by design items and can be removed
             completeDeleteItemConnector(itemConnector);
+            
         } else {
-            // Generate a userfull message
-            String message = "";
-            List<ItemConnector> itemConnectorList = connector.getItemConnectorList();
-            List<ItemConnector> connectorDeleteList = new ArrayList<>();
-            for (ItemConnector ittrConnector : itemConnectorList) {
-                Item ittrItem = ittrConnector.getItem();
-                if (ittrItem.equals(item) == false) {
-                    if (ittrItem.getDomain().getName().equals(ItemDomainName.machineDesign.getValue())) {
-                        if (ittrConnector.getItemElementRelationshipList().size() == 0) {
-                            connectorDeleteList.add(ittrConnector);
-                        } else {
-                            message = "Please check connections on machine design item: " + ittrItem.toString();
-                            SessionUtility.addErrorMessage("Error", "Cannot remove connector, check if it is used for connections in machine design. " + message);
-                        }
-                    }
-                } else {
-                    connectorDeleteList.add(ittrConnector);
-                }
-            }
-
-            if (itemConnectorList.size() == connectorDeleteList.size()) {
-                // All save. 
-                for (ItemConnector relatedConnector : connectorDeleteList) {
-                    completeDeleteItemConnector(relatedConnector);
-                }
-            }
+            // display error message identifying items sharing inherited connector
+            String message = 
+                    getDisplayItemConnectorLabel() 
+                    + " cannot be removed. " + deleteValidInfo.getValidString();            
+            SessionUtility.addErrorMessage("Error", message);
         }
+        
         reloadCurrent();
     }
 
@@ -296,15 +332,29 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         ItemConnector object = (ItemConnector) event.getObject();
         Connector connector = object.getConnector();
         
+        // validate udpated connector
+        ValidInfo validateInfo = validateItemConnector(true, object);
+        if (!validateInfo.isValid()) {
+            SessionUtility.addErrorMessage("Error", "Unable to update " + getDisplayItemConnectorName() + ". "
+                    + validateInfo.getValidString() + ".");
+            reloadCurrent();
+            return;
+        }
+        
         try {
             utility.update(connector, user);
-            SessionUtility.addInfoMessage("Updated Connector", "Update connector: " + connector, true);
+            SessionUtility.addInfoMessage(
+                    "Updated " + getDisplayItemConnectorLabel(), 
+                    "Updated " + getDisplayItemConnectorName() + ": " + connector, 
+                    true);
         } catch (CdbException ex) {
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getErrorMessage(), true);
+            reloadCurrent();
         } catch (RuntimeException ex) {
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getMessage(), true);
+            reloadCurrent();
         }
     }
     

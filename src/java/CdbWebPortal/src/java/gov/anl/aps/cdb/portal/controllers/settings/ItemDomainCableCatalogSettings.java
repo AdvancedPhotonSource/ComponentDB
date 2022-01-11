@@ -450,6 +450,8 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         displayItemProject = Boolean.parseBoolean(settingTypeMap.get(DisplayItemProjectSettingTypeKey).getDefaultValue());
         displayItemSources = Boolean.parseBoolean(settingTypeMap.get(DisplayItemSourcesSettingTypeKey).getDefaultValue());
 
+        displayRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayRowExpansionSettingTypeKey).getDefaultValue());
+
         displayPropertyTypeId1 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId1SettingTypeKey).getDefaultValue());
         displayPropertyTypeId2 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId2SettingTypeKey).getDefaultValue());
         displayPropertyTypeId3 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId3SettingTypeKey).getDefaultValue());
@@ -537,6 +539,8 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         displayItemProject = settingEntity.getSettingValueAsBoolean(DisplayItemProjectSettingTypeKey, displayItemProject);
         displayItemSources = settingEntity.getSettingValueAsBoolean(DisplayItemSourcesSettingTypeKey, displayItemSources);
 
+        displayRowExpansion = settingEntity.getSettingValueAsBoolean(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
+
         displayPropertyTypeId1 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         displayPropertyTypeId2 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
         displayPropertyTypeId3 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
@@ -606,7 +610,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         parentController.resetDomainEntityPropertyTypeIdIndexMappings();
     }
     
-        @Override
+    @Override
     public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
         super.saveSettingsForSessionSettingEntity(settingEntity);       
 
@@ -623,6 +627,8 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         settingEntity.setSettingValue(DisplayItemProjectSettingTypeKey, displayItemProject);
         settingEntity.setSettingValue(DisplayItemSourcesSettingTypeKey, displayItemSources);
         settingEntity.setSettingValue(DisplayTechnicalSystemSettingTypeKey, displayItemCategory);
+
+        settingEntity.setSettingValue(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
 
         settingEntity.setSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         settingEntity.setSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);

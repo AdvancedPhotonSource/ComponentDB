@@ -74,12 +74,7 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
 
     @Override
     public boolean getEntityDisplayItemElements() {
-        return false; 
-    }
-
-    @Override
-    public boolean getEntityDisplayItemMemberships() {
-        return false; 
+        return true; 
     }
 
     @Override
@@ -172,7 +167,7 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         
         formatInfo.add(
-                new ImportExportFormatInfo("Basic Cable Catalog Create/Update Format", 
+                new ImportExportFormatInfo("Basic Cable Catalog Create/Update/Delete Format", 
                         ImportHelperCableCatalog.class));
         
         formatInfo.add(new ImportExportFormatInfo(

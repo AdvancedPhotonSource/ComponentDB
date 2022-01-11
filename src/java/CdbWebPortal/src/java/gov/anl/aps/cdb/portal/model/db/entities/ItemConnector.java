@@ -6,6 +6,8 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.common.utilities.StringUtility;
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemConnectorControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import java.io.Serializable;
@@ -418,11 +420,34 @@ public class ItemConnector extends CdbEntity implements Serializable {
     }
     
     @JsonIgnore
+    public List<Item> otherItemsUsingConnector() {
+        return this.otherItemsUsingConnector(this.getItem());
+    }
+    
+    @JsonIgnore
     public List<Item> otherItemsUsingConnector(Item item) {
         if (getConnector() == null) {
             return new ArrayList<>();
         }
         return getConnector().otherItemsUsingConnector(item);
+    }
+    
+    @JsonIgnore
+    public String getDisplayItemConnectorName() {
+        Item owningItem = getItem();
+        return owningItem.getControllerUtility().getDisplayItemConnectorName();
+    }
+    
+    @JsonIgnore
+    public String getDisplayItemConnectorLabel() {
+        Item owningItem = getItem();
+        return owningItem.getControllerUtility().getDisplayItemConnectorLabel();
+    }
+    
+    @JsonIgnore
+    public String getDisplayItemConnectorsLabel() {
+        Item owningItem = getItem();
+        return owningItem.getControllerUtility().getDisplayItemConnectorsLabel();
     }
     
     @JsonIgnore
@@ -432,10 +457,12 @@ public class ItemConnector extends CdbEntity implements Serializable {
         boolean isValid = true;
         String validStr = "";
         
+        
         List<Item> itemsUsingConnector = otherItemsUsingConnector(getItem());
         if (!itemsUsingConnector.isEmpty()) {
             String itemString = "";
             boolean first = true;
+            int count = 0;
             for (Item item : itemsUsingConnector) {
                 if (!first) {
                     itemString = itemString + ", ";
@@ -443,9 +470,15 @@ public class ItemConnector extends CdbEntity implements Serializable {
                     first = false;
                 }
                 itemString = itemString + item.getName();
+                count = count + 1;
+                if (count == 3) {
+                    // only print 3 item names in case there are many
+                    itemString = itemString + ", ...";
+                    break;
+                }
             }
             isValid = false;
-            validStr = "Child Connector is in use by other items: " + itemString;
+            validStr = getDisplayItemConnectorLabel() + " is inherited and used in cable connections by design items: " + itemString;
         }
         
         return new ValidInfo(isValid, validStr);

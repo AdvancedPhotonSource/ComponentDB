@@ -34,4 +34,9 @@ public class ItemDomainCatalogControllerUtility extends ItemDomainCatalogBaseCon
         return "Catalog Item";
     }
         
+    @Override
+    public String getDisplayItemConnectorName() {
+        return "port";
+    }
+    
 }
