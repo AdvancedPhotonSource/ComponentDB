@@ -28,9 +28,17 @@ See LICENSE file.
         <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
             <ui:param name="displayString" value="#{itemDomainInventoryController.getItemDisplayString(node)}" />
             <ui:param name="itemObject" value="#{node}"/> 
+            <ui:param name="viewName" value="locationInventoryLink" />
         </ui:include>        
     </p:treeNode>
 
+    <p:treeNode type="Cable Inventory" icon="ui-icon-inventory">
+        <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+            <ui:param name="displayString" value="#{itemDomainCableInventoryController.getItemDisplayString(node)}" />
+            <ui:param name="itemObject" value="#{node}"/> 
+            <ui:param name="viewName" value="locationCableInventoryLink" />
+        </ui:include>        
+    </p:treeNode>
 
 </ui:composition>
 

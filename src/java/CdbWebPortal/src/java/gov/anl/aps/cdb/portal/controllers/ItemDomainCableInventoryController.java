@@ -101,12 +101,12 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
 
     @Override
     public boolean getEntityDisplayItemElements() {
-        return false; 
+        return true; 
     }
 
     @Override
     public boolean getEntityDisplayItemMemberships() {
-        return false; 
+        return true; 
     }
 
     @Override
