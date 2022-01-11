@@ -28,7 +28,6 @@ import gov.anl.aps.cdb.portal.controllers.settings.ICdbSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.export.wizard.ItemDomainExportWizard;
 import gov.anl.aps.cdb.portal.model.ItemLazyDataModel;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import java.io.IOException;

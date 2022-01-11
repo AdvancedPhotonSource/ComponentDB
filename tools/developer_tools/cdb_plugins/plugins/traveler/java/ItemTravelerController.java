@@ -220,7 +220,6 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         PropertyType travelerBinderPropertyType = getTravelerBinderPropertyType();
 
         if (travelerBinderPropertyType != null) {
-            propertyValue = getItemController().preparePropertyTypeValueAdd(travelerBinderPropertyType);
             newBinder = new Binder();
             newBinderTemplateSelection = new ArrayList<>();
             loadEntityAvailableTemplateList(getCurrent());
@@ -391,6 +390,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             String newBinderId = newBinder.getId();
             travelerApi.addWorkToBinder(newBinderId, travelerIds, username);
 
+            propertyValue = getItemController().preparePropertyTypeValueAdd(travelerBinderPropertyType);
             propertyValue.setValue(newBinderId);
             this.savePropertyList();
 
@@ -445,7 +445,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         List<Item> selectedItemsToEdit = getItemController().getItemMultiEditController().getSelectedItemsToEdit();
         multiEditAvailableTemplateForApplyAll = null;
         currentSequenceStartValueToColumn = null;
-        currentPostfixValueToColumn = null; 
+        currentPostfixValueToColumn = null;
         setSelectedTravelerInstanceTemplate(null);
 
         for (Item item : selectedItemsToEdit) {
@@ -494,8 +494,8 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
                 List<Item> selectedItemsToEdit = getItemController().getItemMultiEditController().getSelectedItemsToEdit();
                 for (int i = 0; i < selectedItemsToEdit.size(); i++) {
                     if (prefix != null) {
-                        travelerInstanceTitle = prefix + currentSequence + currentPostfixValueToColumn; 
-                        currentSequence += 1; 
+                        travelerInstanceTitle = prefix + currentSequence + currentPostfixValueToColumn;
+                        currentSequence += 1;
                     }
                     Item item = selectedItemsToEdit.get(i);
                     setCurrent(item);
@@ -503,7 +503,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
                 }
 
                 if (prefix != null) {
-                    travelerInstanceTitle = prefix; 
+                    travelerInstanceTitle = prefix;
                 }
             } else {
                 SessionUtility.addWarningMessage("e-Traveler title empty", "Please provide a traveler instance title before proceeding.");
@@ -1271,7 +1271,9 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
         for (PropertyValue curPropertyValue : propertyValueList) {
             String binderId = curPropertyValue.getValue();
-            addBinderFromBinderId(binderId, binderList);
+            if (binderId != null && binderId.isEmpty() == false) {
+                addBinderFromBinderId(binderId, binderList);
+            }
         }
     }
 

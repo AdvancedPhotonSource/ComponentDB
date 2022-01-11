@@ -40,6 +40,39 @@ See LICENSE file.
         
         <ui:include src="searchResultLimitDisclaimer.xhtml" />
     </p:panel>
+    
+    <p:panel header="#{itemDomainCableCatalogController.displayEntityTypeName}s"
+             rendered="#{entitySettingObject.displayCableCatalogItems}"
+             collapsed="#{!itemDomainCableCatalogController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../item/private/itemSearchDataTable.xhtml">
+            <ui:param name="itemDomainController" value="#{itemDomainCableCatalogController}" />
+        </ui:include>
+        
+        <ui:include src="searchResultLimitDisclaimer.xhtml" />
+    </p:panel>
+    
+    <p:panel header="#{itemDomainCableInventoryController.displayEntityTypeName}s"
+             rendered="#{entitySettingObject.displayCableInventoryItems}"
+             collapsed="#{!itemDomainCableInventoryController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../item/private/itemSearchDataTable.xhtml">
+            <ui:param name="itemDomainController" value="#{itemDomainCableInventoryController}" />
+        </ui:include>
+        
+        <ui:include src="searchResultLimitDisclaimer.xhtml" />
+    </p:panel>
+    
+    <p:panel header="#{itemDomainCableDesignController.displayEntityTypeName}s"
+             rendered="#{entitySettingObject.displayCableDesignItems}"
+             collapsed="#{!itemDomainCableDesignController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../item/private/itemSearchDataTable.xhtml">
+            <ui:param name="itemDomainController" value="#{itemDomainCableDesignController}" />
+        </ui:include>
+        
+        <ui:include src="searchResultLimitDisclaimer.xhtml" />
+    </p:panel>
 
     <p:panel header="Item Elements" 
              rendered="#{entitySettingObject.displayItemElements}"

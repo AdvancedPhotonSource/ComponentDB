@@ -14,6 +14,11 @@ INSERT INTO allowed_property_value (property_type_id, value) VALUES (@property_t
 ALTER TABLE item_element ADD COLUMN `represents_item_element_id` int(11) unsigned DEFAULT NULL AFTER derived_from_item_element_id;
 ALTER TABLE item_element_history ADD COLUMN `represents_item_element_id` int(11) unsigned DEFAULT NULL AFTER derived_from_item_element_id;
 
+INSERT INTO `setting_type` VALUES
+(15014,'Search.Display.ItemDomainCableCatalog','Display search result for cable catalog items.','true'),
+(15015,'Search.Display.ItemDomainCableInventory','Display search result for cable inventory items.','true'),
+(15016,'Search.Display.ItemDomainCableDesign','Display search result for cable design items.','true');
+
 delimiter //
 
 DROP PROCEDURE IF EXISTS search_items;//
@@ -43,6 +48,42 @@ BEGIN
 	LIMIT limit_row;
 END //
 
+DROP PROCEDURE IF EXISTS search_cable_design_items;//
+CREATE PROCEDURE `search_cable_design_items` (IN limit_row int, IN search_string VARCHAR(255)) 
+BEGIN
+	DECLARE cable_relationship_id INT;
+	DECLARE cable_design_domain_id INT;
+
+	SET cable_relationship_id = 4; 
+	SET cable_design_domain_id = 9;
+
+	SET search_string = CONCAT('%', search_string, '%'); 
+	SELECT DISTINCT item.* from item 
+	INNER JOIN v_item_self_element ise ON item.id = ise.item_id 
+	INNER JOIN item_element ie ON ise.self_element_id = ie.id
+	INNER JOIN entity_info ei ON ise.entity_info_id = ei.id
+	INNER JOIN user_info owneru ON ei.owner_user_id = owneru.id
+	INNER JOIN user_info creatoru ON ei.created_by_user_id = creatoru.id
+	INNER JOIN user_info updateu ON ei.last_modified_by_user_id = updateu.id
+	LEFT OUTER JOIN item derived_item ON derived_item.id = item.derived_from_item_id 
+	LEFT OUTER JOIN item_element_relationship iercable on iercable.second_item_element_id = ise.self_element_id
+	INNER JOIN v_item_extras icon on icon.self_element_id = iercable.first_item_element_id
+	WHERE item.domain_id = cable_design_domain_id and iercable.relationship_type_id = cable_relationship_id
+	AND (
+		item.name LIKE search_string
+		OR item.qr_id LIKE search_string
+		OR item.item_identifier1 LIKE search_string
+		OR item.item_identifier2 LIKE search_string
+		OR ie.description LIKE search_string
+		OR derived_item.name LIKE search_string
+		OR owneru.username LIKE search_string
+		OR creatoru.username LIKE search_string
+		OR updateu.username LIKE search_string
+		OR icon.name LIKE search_string
+	)
+	LIMIT limit_row;
+END //
+
 DROP PROCEDURE IF EXISTS search_item_elements;//
 CREATE PROCEDURE `search_item_elements` (IN limit_row int, IN search_string VARCHAR(255)) 
 BEGIN
@@ -58,3 +99,15 @@ BEGIN
 	)
 	LIMIT limit_row;
 END //
+
+DROP PROCEDURE IF EXISTS fetch_items_with_property_value;//
+CREATE PROCEDURE `fetch_items_with_property_value` (IN property_value_id int) 
+BEGIN
+	SELECT item.* 
+	FROM v_item_self_element v_item 
+	INNER JOIN item_element_property iep ON iep.item_element_id = v_item.self_element_id 
+	INNER JOIN item ON v_item.item_id = item.id
+	WHERE iep.property_value_id = property_value_id;
+END //
+
+delimiter ;

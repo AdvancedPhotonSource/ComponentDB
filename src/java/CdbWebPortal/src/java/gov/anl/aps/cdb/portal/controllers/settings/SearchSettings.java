@@ -5,11 +5,8 @@
 package gov.anl.aps.cdb.portal.controllers.settings;
 
 import gov.anl.aps.cdb.portal.controllers.SearchController;
-import gov.anl.aps.cdb.portal.controllers.SettingController;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import java.util.Date;
 import java.util.Map;
 import org.primefaces.component.datatable.DataTable;
 
@@ -31,6 +28,9 @@ public class SearchSettings<EntityController extends SearchController> extends S
     private static final String DisplayCatalogItemsSettingTypeKey = "Search.Display.ItemDomainCatalog";
     private static final String DisplayInventoryItemsSettingTypeKey = "Search.Display.ItemDomainInventory";
     private static final String DisplayMachineDesignItemsSettingTypeKey = "Search.DisplayItemDomainMachineDesign"; 
+    private static final String DisplayCableCatalogItemsSettingTypeKey = "Search.Display.ItemDomainCableCatalog";
+    private static final String DisplayCableInventoryItemsSettingTypeKey = "Search.Display.ItemDomainCableInventory";
+    private static final String DisplayCableDesignItemsSettingTypeKey = "Search.Display.ItemDomainCableDesign"; 
     private static final String DisplayPropertyTypesSettingTypeKey = "Search.Display.PropertyTypes";
     private static final String DisplayPropertyTypeCategoriesSettingTypeKey = "Search.Display.PropertyTypeCategories";
     private static final String DisplaySourcesSettingTypeKey = "Search.Display.Sources";
@@ -42,6 +42,9 @@ public class SearchSettings<EntityController extends SearchController> extends S
     protected Boolean displayMachineDesignItems = null;
     protected Boolean displayCatalogItems = null;
     protected Boolean displayInventoryItems = null;
+    protected Boolean displayCableCatalogItems = null;
+    protected Boolean displayCableInventoryItems = null;
+    protected Boolean displayCableDesignItems = null;
     protected Boolean displayLocationItems = null;
     protected Boolean displayItemTypes = null;
     protected Boolean displayItemCategories = null;
@@ -66,6 +69,9 @@ public class SearchSettings<EntityController extends SearchController> extends S
         displayCatalogItems = Boolean.parseBoolean(settingTypeMap.get(DisplayCatalogItemsSettingTypeKey).getDefaultValue());
         displayInventoryItems = Boolean.parseBoolean(settingTypeMap.get(DisplayInventoryItemsSettingTypeKey).getDefaultValue());
         displayMachineDesignItems = Boolean.parseBoolean(settingTypeMap.get(DisplayMachineDesignItemsSettingTypeKey).getDefaultValue()); 
+        displayCableCatalogItems = Boolean.parseBoolean(settingTypeMap.get(DisplayCableCatalogItemsSettingTypeKey).getDefaultValue());
+        displayCableInventoryItems = Boolean.parseBoolean(settingTypeMap.get(DisplayCableInventoryItemsSettingTypeKey).getDefaultValue()); 
+        displayCableDesignItems = Boolean.parseBoolean(settingTypeMap.get(DisplayCableDesignItemsSettingTypeKey).getDefaultValue());
         displayItemTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayItemTypesSettingTypeKey).getDefaultValue());
         displayItemCategories = Boolean.parseBoolean(settingTypeMap.get(DisplayItemCategoriesSettingTypeKey).getDefaultValue());
         displayItemElements = Boolean.parseBoolean(settingTypeMap.get(DisplayItemElementsSettingTypeKey).getDefaultValue());
@@ -87,6 +93,9 @@ public class SearchSettings<EntityController extends SearchController> extends S
         displayCatalogItems = settingEntity.getSettingValueAsBoolean(DisplayCatalogItemsSettingTypeKey, displayCatalogItems);
         displayInventoryItems = settingEntity.getSettingValueAsBoolean(DisplayInventoryItemsSettingTypeKey, displayInventoryItems);
         displayMachineDesignItems = settingEntity.getSettingValueAsBoolean(DisplayMachineDesignItemsSettingTypeKey, displayMachineDesignItems); 
+        displayCableCatalogItems = settingEntity.getSettingValueAsBoolean(DisplayCableCatalogItemsSettingTypeKey, displayCableCatalogItems); 
+        displayCableInventoryItems = settingEntity.getSettingValueAsBoolean(DisplayCableInventoryItemsSettingTypeKey, displayCableInventoryItems);
+        displayCableDesignItems = settingEntity.getSettingValueAsBoolean(DisplayCableDesignItemsSettingTypeKey, displayCableDesignItems);
         displayItemTypes = settingEntity.getSettingValueAsBoolean(DisplayItemTypesSettingTypeKey, displayItemTypes);
         displayItemCategories = settingEntity.getSettingValueAsBoolean(DisplayItemCategoriesSettingTypeKey, displayItemCategories);
         displayItemElements = settingEntity.getSettingValueAsBoolean(DisplayItemElementsSettingTypeKey, displayItemElements);
@@ -109,6 +118,9 @@ public class SearchSettings<EntityController extends SearchController> extends S
         settingEntity.setSettingValue(DisplayInventoryItemsSettingTypeKey, displayCatalogItems);
         settingEntity.setSettingValue(DisplayCatalogItemsSettingTypeKey, displayInventoryItems);
         settingEntity.setSettingValue(DisplayMachineDesignItemsSettingTypeKey, displayMachineDesignItems);
+        settingEntity.setSettingValue(DisplayCableCatalogItemsSettingTypeKey, displayCableCatalogItems); 
+        settingEntity.setSettingValue(DisplayCableInventoryItemsSettingTypeKey, displayCableInventoryItems);
+        settingEntity.setSettingValue(DisplayCableDesignItemsSettingTypeKey, displayCableDesignItems);
         settingEntity.setSettingValue(DisplayItemTypesSettingTypeKey, displayItemTypes);
         settingEntity.setSettingValue(DisplayItemCategoriesSettingTypeKey, displayItemCategories);
         settingEntity.setSettingValue(DisplayItemElementsSettingTypeKey, displayItemElements);
@@ -136,7 +148,6 @@ public class SearchSettings<EntityController extends SearchController> extends S
         this.displayNumberOfItemsPerPage = displayNumberOfItemsPerPage;
     }
 
-    //TODO add db settings
     public Boolean getDisplayMachineDesignItems() {
         return displayMachineDesignItems;
     }
@@ -167,6 +178,30 @@ public class SearchSettings<EntityController extends SearchController> extends S
 
     public void setDisplayLocationItems(Boolean displayLocationItems) {
         this.displayLocationItems = displayLocationItems;
+    }
+
+    public Boolean getDisplayCableCatalogItems() {
+        return displayCableCatalogItems;
+    }
+
+    public void setDisplayCableCatalogItems(Boolean displayCableCatalogItems) {
+        this.displayCableCatalogItems = displayCableCatalogItems;
+    }
+
+    public Boolean getDisplayCableInventoryItems() {
+        return displayCableInventoryItems;
+    }
+
+    public void setDisplayCableInventoryItems(Boolean displayCableInventoryItems) {
+        this.displayCableInventoryItems = displayCableInventoryItems;
+    }
+
+    public Boolean getDisplayCableDesignItems() {
+        return displayCableDesignItems;
+    }
+
+    public void setDisplayCableDesignItems(Boolean displayCableDesignItems) {
+        this.displayCableDesignItems = displayCableDesignItems;
     }
 
     public Boolean getDisplayItemTypes() {
