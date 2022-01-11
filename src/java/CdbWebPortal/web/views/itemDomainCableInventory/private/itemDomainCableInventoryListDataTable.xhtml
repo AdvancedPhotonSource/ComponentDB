@@ -18,10 +18,8 @@ See LICENSE file.
         <ui:include src="itemDomainCableInventoryListObject.xhtml" />
     </ui:define>
     
-    <!-- Add empty ui:define for rowExpansionObject so that the row grouping for 
-    cable inventory by catalog item functions correctly.  For some reason, 
-    including itemListDataTableRowExpansionObjectTemplate.xhtml, specifically
-    the column tag that it contains, breaks row grouping.-->
-    <ui:define name="rowExpansionObject"/>
+    <ui:define name="itemRowExpansion">
+        <ui:include src="../../itemDomainInventory/private/itemDomainInventoryListDataTableRowExpansion.xhtml"/>
+    </ui:define>
 
 </ui:composition>
