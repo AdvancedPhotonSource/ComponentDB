@@ -14,7 +14,6 @@ import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableCat
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -70,12 +69,7 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
 
     @Override
     public boolean getEntityDisplayItemElements() {
-        return false; 
-    }
-
-    @Override
-    public boolean getEntityDisplayItemMemberships() {
-        return false; 
+        return true; 
     }
 
     @Override
@@ -168,7 +162,7 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         
         formatInfo.add(
-                new ImportExportFormatInfo("Basic Cable Catalog Create/Update Format", 
+                new ImportExportFormatInfo("Basic Cable Catalog Create/Update/Delete Format", 
                         ImportHelperCableCatalog.class));
         
         formatInfo.add(new ImportExportFormatInfo(

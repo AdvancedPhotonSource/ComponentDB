@@ -28,7 +28,21 @@ See LICENSE file.
 
     <p:column headerText="Cable End"
               rendered="#{entityController.entityDisplayConnectorCableEndDesignation}">
-        #{itemConnectorObject.connector.cableEndDesignation}
+        <p:cellEditor>
+            <f:facet name="output">
+                #{itemConnectorObject.connector.cableEndDesignation}                
+            </f:facet>
+            <f:facet name="input">
+                <p:selectOneMenu value="#{itemConnectorObject.connector.cableEndDesignation}"
+                                 disabled="false">            
+                    <f:selectItem itemValue="#{entityController.menuValueCableEnd1}" 
+                                  itemLabel="#{entityController.menuLabelCableEnd1}"/>
+                    <f:selectItem itemValue="#{entityController.menuValueCableEnd2}" 
+                                  itemLabel="#{entityController.menuLabelCableEnd2}"/>
+                </p:selectOneMenu>    
+            </f:facet>
+        </p:cellEditor>
+        
     </p:column>
 
     <p:column headerText="Type"

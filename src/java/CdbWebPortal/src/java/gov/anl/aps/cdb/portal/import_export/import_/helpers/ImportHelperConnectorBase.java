@@ -195,19 +195,13 @@ public abstract class ImportHelperConnectorBase extends ImportHelperBase<ItemCon
         boolean isUpdate = true;
         
         if (existingConnector == null) { // create new ItemConnector
+            
             isUpdate = false;
             itemConnector = new ItemConnector();
-            
-            // create mode validation
-            
-            if (catalogItem.getConnectorNamed(connectorName) != null) {
-                // name already in use for catalog item
-                isValid = false;
-                validStr = appendToString(validStr, getLabelName() + " already in use for " + getLabelItem());
-            }
-
+            itemConnector.setItem(catalogItem);
             
         } else { // update existing ItemConnector
+            
             isUpdate = true;
             itemConnector = existingConnector;
             
@@ -219,36 +213,7 @@ public abstract class ImportHelperConnectorBase extends ImportHelperBase<ItemCon
                     // can't change catalog item in update
                     isValid = false;
                     validStr = appendToString(validStr, getLabelItem() + " cannot be changed in update mode");
-                }
-                
-                if ((!connectorName.equals(itemConnector.getConnectorName())) 
-                        && (catalogItem.getConnectorNamed(connectorName) != null)) {
-                    // changing name but name already in use
-                    isValid = false;
-                    validStr = appendToString(validStr, getLabelName() + " already in use for " + getLabelItem());
-                }
-
-            }
-            
-            if (cableEnd != null && (!cableEnd.equals(itemConnector.getCableEndDesignation()))) {
-                // can't change cable end if connector in use for other connections
-                List<Item> itemsUsingConnector = itemConnector.otherItemsUsingConnector(catalogItem);
-                if (!itemsUsingConnector.isEmpty()) {
-                    String itemString = "";
-                    boolean first = true;
-                    for (Item item : itemsUsingConnector) {
-                        if (!first) {
-                            itemString = itemString + ", ";
-                        } else {
-                            first = false;
-                        }
-                        itemString = itemString + item.getName();
-                    }
-                    isValid = false;
-                    validStr = appendToString(
-                            validStr, 
-                            "Cable end cannot be changed because connector is in use by other items: " + itemString);
-                }
+                }                
             }
         }
 

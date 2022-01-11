@@ -868,7 +868,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         int itemCount = 0;
         if (getImportMode() == ImportMode.DELETE) {
             for (EntityType entity : rows) {
-                if (entity.getImportDeleteExistingItem()) {
+                if ((entity.getImportDeleteExistingItem() != null) && (entity.getImportDeleteExistingItem())) {
                     itemCount = itemCount + 1;
                 }
             }
