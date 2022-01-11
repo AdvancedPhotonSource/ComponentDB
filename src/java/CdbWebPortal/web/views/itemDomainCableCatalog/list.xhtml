@@ -16,4 +16,12 @@ See LICENSE file.
         <f:viewAction action="#{itemDomainCableCatalogController.processPreRenderList()}" />
     </f:metadata>
     
+    <ui:define name="listDataTable">
+        <ui:include src="private/itemDomainCableCatalogListDataTable.xhtml"/> 
+    </ui:define>
+    
+    <ui:define name="itemListPageEmphasizedContentBelowTitle">
+        <ui:include src="../item/private/templateDefaults/customizeDisplayAddons/itemListDataTableDisplayModeSelectionDialogButton.xhtml" />
+    </ui:define>
+    
 </ui:composition>
