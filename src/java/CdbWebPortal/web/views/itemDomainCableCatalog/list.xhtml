@@ -20,7 +20,9 @@ See LICENSE file.
     </ui:define>
     
     <ui:define name="listDataTable">
-        <ui:include src="private/itemDomainCableCatalogListDataTable.xhtml"/>
+        <ui:include src="../itemDomainCatalogBase/private/itemDomainCatalogBaseListDataTable.xhtml">
+            <ui:param name="itemListDataTableValue" value="#{itemDomainCableCatalogController.scopedListDataModel}" />
+        </ui:include>
     </ui:define>   
 
     <ui:define name="itemListPageEmphasizedContentBelowTitle">
