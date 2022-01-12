@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import java.util.List;
 import javax.faces.model.DataModel;
 import javax.faces.model.SelectItem;
+import org.primefaces.event.ToggleEvent;
 
 /**
  * Interface specifies all necessary functions for item controllers. 
@@ -618,6 +619,8 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      * @return 
      */
     public ItemEnforcedPropertiesController getItemEnforcedPropertiesController();
+    
+    public void dataTableRowToggleListener(ToggleEvent event);
         
     public String prepareView(Item item);
 }

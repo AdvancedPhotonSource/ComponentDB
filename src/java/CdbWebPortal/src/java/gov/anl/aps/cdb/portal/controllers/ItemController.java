@@ -2308,6 +2308,7 @@ public abstract class ItemController<
         return itemElementController;
     }
 
+    @Override
     public void dataTableRowToggleListener(ToggleEvent event) {
         Item data = (Item) event.getData();
 

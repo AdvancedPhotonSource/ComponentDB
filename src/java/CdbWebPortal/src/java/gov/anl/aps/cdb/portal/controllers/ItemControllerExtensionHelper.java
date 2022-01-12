@@ -18,6 +18,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueBase;
 import javax.faces.model.DataModel;
 import javax.faces.model.SelectItem;
+import org.primefaces.event.ToggleEvent;
 
 /**
  * The extension helper exposes item controller functionality and allows for lightweight controllers to add additional features for items. 
@@ -570,6 +571,11 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     
     public void deleteProperty(PropertyValue cdbDomainEntityProperty) {
         getItemController().deleteProperty(cdbDomainEntityProperty);
+    }
+       
+    @Override
+    public void dataTableRowToggleListener(ToggleEvent event) {
+        getItemController().dataTableRowToggleListener(event);
     }
     
     @Override
