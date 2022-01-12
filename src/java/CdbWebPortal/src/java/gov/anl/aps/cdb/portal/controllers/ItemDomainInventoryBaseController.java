@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableStatusItem;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
@@ -17,6 +18,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
+import java.util.List;
 
 /**
  *
@@ -99,6 +101,33 @@ public abstract class ItemDomainInventoryBaseController
 
     } 
 
+    public String getInventoryItemElementDisplayString(ItemElement itemElement) {
+        if (itemElement != null) {
+            if (itemElement.getContainedItem() != null) {
+                Item inventoryItem = itemElement.getContainedItem();
+                return getItemDisplayString(inventoryItem);
+            }
+
+            ItemDomainCatalogBase catalogItem = getCatalogItemForInventoryItemElement(itemElement);
+            if (catalogItem != null) {
+                return catalogItem.getName() + "- [ ]";
+            } else {
+                return "Undefined Part: " + itemElement.getDerivedFromItemElement().getName();
+            }
+        }
+        return null;
+    }
+
+    public ItemDomainCatalogBase getCatalogItemForInventoryItemElement(ItemElement inventoryItemElement) {
+        if (inventoryItemElement != null) {
+            ItemElement derivedFromItemElement = inventoryItemElement.getDerivedFromItemElement();
+            if (derivedFromItemElement.getContainedItem() != null) {
+                return (ItemDomainCatalogBase) derivedFromItemElement.getContainedItem();
+            }
+        }
+        return null;
+    }
+    
     @Override
     public ItemInventoryBaseDomainEntity createEntityInstance() {
         return super.createEntityInstance(); //To change body of generated methods, choose Tools | Templates.
@@ -208,4 +237,18 @@ public abstract class ItemDomainInventoryBaseController
     public String getDefaultDomainDerivedToDomainName() {
         return null;
     }
+
+    public Boolean displayBOMEditButton() {
+        ItemDomainInventoryBase current = getCurrent();
+        if (current != null) {
+            List<ItemElement> catalogItemElementDisplayList;
+            if (current.getDerivedFromItem() != null) {
+                catalogItemElementDisplayList = current.getDerivedFromItem().getItemElementDisplayList();
+                return catalogItemElementDisplayList != null && catalogItemElementDisplayList.isEmpty() == false;
+            }
+        }
+
+        return false;
+    }
+
 }
