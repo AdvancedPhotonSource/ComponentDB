@@ -24,10 +24,10 @@ See LICENSE file.
                      rendered="#{selectElementToUpdate != null}">                
             <ui:include src="../../item/private/itemSelectDataTable.xhtml">
                 <ui:param name="overrideSelectionDataModel" value="#{true}" /> 
-                <ui:param name="selectDataModel" value="#{itemDomainInventoryController.selectionListForSelectedItemElementForUpdate}" />
+                <ui:param name="selectDataModel" value="#{entityController.selectionListForSelectedItemElementForUpdate}" />
                 <ui:param name="overrideSelectionValue" value="#{true}" />
                 <ui:param name="selectionValue" value="#{selectElementToUpdate.containedItem}" />
-                <ui:param name="selectionController" value="#{itemDomainInventoryController}" />
+                <ui:param name="selectionController" value="#{entityController}" />
                 <ui:param name="updateTarget" value="updateAssignedInventoryItemDialogOutputPanel" />
             </ui:include>
 
@@ -39,12 +39,12 @@ See LICENSE file.
                              onclick="PF('loadingDialog').show();
                                      PF('updateAssignedInventoryItemDialogWidget').hide();"
                              oncomplete="PF('loadingDialog').hide()"
-                             action="#{itemDomainInventoryController.updateWithoutRedirect()}"                             
-                             update="componentInstanceViewElementsPanel"/>
+                             action="#{entityController.updateWithoutRedirect()}"                             
+                             update="#{entityTypeName}ViewElementsPanel"/>
             <p:commandButton value="Cancel"
                              icon="fa fa-close"
                              onclick="PF('updateAssignedInventoryItemDialogWidget').hide();"
-                             action="#{itemDomainInventoryController.reloadCurrent()}"/>
+                             action="#{entityController.reloadCurrent()}"/>
         </f:facet>
     </p:dialog>
 </ui:composition>

@@ -20,6 +20,8 @@ public abstract class ItemDomainInventoryBase<CatalogItemType extends ItemDomain
     private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
 
     private transient InventoryBillOfMaterialItem containedInBOM;
+    
+    private transient ItemElement selectedItemElementForUpdate = null;    
 
     private transient TreeNode itemElementAssemblyRootTreeNode = null;   
 
@@ -50,6 +52,15 @@ public abstract class ItemDomainInventoryBase<CatalogItemType extends ItemDomain
     }
     
     @JsonIgnore
+    public ItemElement getSelectedItemElementForUpdate() {
+        return selectedItemElementForUpdate;
+    }
+
+    public void setSelectedItemElementForUpdate(ItemElement selectedItemElementForUpdate) {
+        this.selectedItemElementForUpdate = selectedItemElementForUpdate;
+    }
+  
+    @JsonIgnore
     public TreeNode getItemElementAssemblyRootTreeNode() throws CdbException {
         if (itemElementAssemblyRootTreeNode == null) {
             if (getItemElementDisplayList().size() > 0) {
@@ -58,5 +69,4 @@ public abstract class ItemDomainInventoryBase<CatalogItemType extends ItemDomain
         }
         return itemElementAssemblyRootTreeNode;
     }
-
 }

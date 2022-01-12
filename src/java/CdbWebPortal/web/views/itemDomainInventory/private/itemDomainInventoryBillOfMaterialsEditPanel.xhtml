@@ -16,7 +16,7 @@ See LICENSE file.
             </div>
         </p:outputPanel>
 
-        <p:outputPanel rendered="#{!itemDomainInventoryController.isRenderBomOptionalUnspecified(billOfMaterialItem)}" >
+        <p:outputPanel rendered="#{!entityController.isRenderBomOptionalUnspecified(billOfMaterialItem)}" >
             <!-- Temp disabled... prior rendered.. billOfMaterialItem.partItem and loginController.loggedInAsAdmin -->
             <p:panelGrid columns="2" rendered="#{false}">   
                 <p:selectOneButton id="newInstanceAddOptions#{viewName}"
@@ -34,8 +34,8 @@ See LICENSE file.
             </p:panelGrid>
             <p/>
 
-            <p:outputPanel rendered="#{(itemDomainInventoryController.isRenderBomExisting(billOfMaterialItem) 
-                                       or itemDomainInventoryController.isRenderBomPlaceholder(billOfMaterialItem)) 
+            <p:outputPanel rendered="#{(entityController.isRenderBomExisting(billOfMaterialItem) 
+                                       or entityController.isRenderBomPlaceholder(billOfMaterialItem)) 
                                        and billOfMaterialItem.partItem}">
                 <p:panel>
                     <ui:include src="../../item/private/itemSelectDataTable.xhtml">
@@ -43,7 +43,7 @@ See LICENSE file.
                         <ui:param name="selectDataModel" value="#{billOfMaterialItem.existingInventoryItemSelectDataModel}" />
                         <ui:param name="overrideSelectionValue" value="#{true}" />
                         <ui:param name="selectionValue" value="#{billOfMaterialItem.inventoryItem}" />                        
-                        <ui:param name="selectionController" value="#{itemDomainInventoryController}" />
+                        <ui:param name="selectionController" value="#{entityController}" />
                         <ui:param name="updateTarget" value="#{fullUpateTarget}" />
                     </ui:include>
                 </p:panel>
@@ -54,7 +54,7 @@ See LICENSE file.
                 </p:commandButton>
             </p:outputPanel>
 
-            <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomEdit(billOfMaterialItem) or !billOfMaterialItem.partItem}">
+            <p:outputPanel rendered="#{entityController.isRenderBomEdit(billOfMaterialItem) or !billOfMaterialItem.partItem}">
                 <ui:include src="itemBillOfMaterialsNewItemEditPanel.xhtml">
                     <ui:param name="itemObject" value="#{billOfMaterialItem.inventoryItem}"/>            
                 </ui:include>
@@ -62,18 +62,18 @@ See LICENSE file.
         </p:outputPanel>
 
         <p:outputPanel rendered="#{billOfMaterialItem.optional}">
-            <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomOptionalUnspecified(billOfMaterialItem)}">
+            <p:outputPanel rendered="#{entityController.isRenderBomOptionalUnspecified(billOfMaterialItem)}">
                 <div>
                     <h1 style="color: #4e80b6;">This part is optional for the assembly.</h1>
                 </div>
                 <p:commandButton value="Assign Optional Part"
-                                 action="#{itemDomainInventoryController.createOptionalBillOfMaterialsPart(billOfMaterialItem)}"
+                                 action="#{entityController.createOptionalBillOfMaterialsPart(billOfMaterialItem)}"
                                  update="#{fullUpateTarget}"
                                  />
             </p:outputPanel>
-            <p:outputPanel rendered="#{!itemDomainInventoryController.isRenderBomOptionalUnspecified(billOfMaterialItem)}">                
+            <p:outputPanel rendered="#{!entityController.isRenderBomOptionalUnspecified(billOfMaterialItem)}">                
                 <ui:param name="selectedBOMItemElementInDb"
-                          value="#{itemDomainInventoryController.isBOMInventoryItemElementInDB(billOfMaterialItem)}" />
+                          value="#{entityController.isBOMInventoryItemElementInDB(billOfMaterialItem)}" />
                 <p:commandButton value="Remove Optional Part" icon="fa fa-close"
                                  onclick="removeOptionalPart()"
                                  rendered="#{!selectedBOMItemElementInDb}"/>
@@ -84,7 +84,7 @@ See LICENSE file.
                 
                 <p:remoteCommand name="removeOptionalPart"
                                  update="#{fullUpateTarget}"
-                                 action="#{itemDomainInventoryController.removeOptionalBillOfMaterialsPart(billOfMaterialItem)}" />
+                                 action="#{entityController.removeOptionalBillOfMaterialsPart(billOfMaterialItem)}" />
 
             </p:outputPanel>
 

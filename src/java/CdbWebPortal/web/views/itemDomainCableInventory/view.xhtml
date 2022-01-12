@@ -51,12 +51,18 @@ See LICENSE file.
             </ui:include>            
         </p:panel>
     </ui:define>
+    
+    <ui:define name="itemElements">
+        <ui:include src="../itemDomainInventory/private/itemDomainInventoryItemElementList.xhtml" />
+    </ui:define>
 
     <ui:define name="itemElements">
         <ui:include src="../itemDomainInventoryBase/private/itemDomainInventoryBaseItemElementList.xhtml" />
     </ui:define>
 
     <ui:define name="additionalViewItemContent">
+        <ui:include src="../itemDomainInventory/private/itemDomainInventoryBillOfMaterialsEditDialog.xhtml" />             
+        <ui:include src="../itemDomainInventory/private/itemDomainInventoryUpdateAssignedInventoryItemDialog.xhtml"/>
         <ui:include src="../locatableItem/private/locatableItemLocationHistoryDialog.xhtml" /> 
         <ui:include src="../itemStatus/private/itemStatusHistoryDialog.xhtml" />
     </ui:define>
