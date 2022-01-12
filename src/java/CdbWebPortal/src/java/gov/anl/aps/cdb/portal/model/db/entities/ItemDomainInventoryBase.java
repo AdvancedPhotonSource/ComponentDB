@@ -17,6 +17,8 @@ public abstract class ItemDomainInventoryBase<CatalogItemType extends ItemDomain
     private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
 
     private transient InventoryBillOfMaterialItem containedInBOM;
+    
+    private transient ItemElement selectedItemElementForUpdate = null;    
 
     public CatalogItemType getCatalogItem() {
         return (CatalogItemType) getDerivedFromItem();
@@ -42,5 +44,14 @@ public abstract class ItemDomainInventoryBase<CatalogItemType extends ItemDomain
 
     public void setInventoryDomainBillOfMaterialList(List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList) {
         this.inventoryDomainBillOfMaterialList = inventoryDomainBillOfMaterialList;
+    }
+    
+    @JsonIgnore
+    public ItemElement getSelectedItemElementForUpdate() {
+        return selectedItemElementForUpdate;
+    }
+
+    public void setSelectedItemElementForUpdate(ItemElement selectedItemElementForUpdate) {
+        this.selectedItemElementForUpdate = selectedItemElementForUpdate;
     }
 }

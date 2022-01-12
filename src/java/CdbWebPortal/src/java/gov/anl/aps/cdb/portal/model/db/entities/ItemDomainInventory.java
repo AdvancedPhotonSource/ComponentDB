@@ -13,7 +13,6 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
-import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -35,8 +34,7 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
     private transient SparePartsBean sparePartsBean = null;
     
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
-    private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;   
-    private transient ItemElement selectedItemElementForUpdate = null;
+    private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;       
     // </editor-fold>
     
     @Override
@@ -139,14 +137,6 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
         this.relatedMAARCRelationshipsForCurrent = relatedMAARCRelationshipsForCurrent;
     }
     
-    @JsonIgnore
-    public ItemElement getSelectedItemElementForUpdate() {
-        return selectedItemElementForUpdate;
-    }
-
-    public void setSelectedItemElementForUpdate(ItemElement selectedItemElementForUpdate) {
-        this.selectedItemElementForUpdate = selectedItemElementForUpdate;
-    }
     // </editor-fold>
     
 }
