@@ -17,28 +17,28 @@ See LICENSE file.
         <p:ajax event="select" update="#{fullUpateTarget}"/>
 
         <p:treeNode type="newItem" icon="fa fa-plus">
-            <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
+            <ui:include src="itemDomainInventoryBaseBillOfMaterialsTreeNode.xhtml">
                 <ui:param name="viewName" value="newItem"/>
             </ui:include>
         </p:treeNode>
         <p:treeNode type="existingItem" icon="fa fa-check">
-            <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
+            <ui:include src="itemDomainInventoryBaseBillOfMaterialsTreeNode.xhtml">
                 <ui:param name="viewName" value="existingItem"/>
             </ui:include>
         </p:treeNode>
         <p:treeNode type="placeholder" icon="fa fa-close">
-            <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
+            <ui:include src="itemDomainInventoryBaseBillOfMaterialsTreeNode.xhtml">
                 <ui:param name="viewName" value="placeholder"/>
             </ui:include>
         </p:treeNode>
         <p:treeNode rendered="#{entityController.showOptionalPartsInBom}"
                     type="unspecifiedOptional" icon="fa fa-circle" >
-            <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
+            <ui:include src="itemDomainInventoryBaseBillOfMaterialsTreeNode.xhtml">
                 <ui:param name="viewName" value="unspecifiedOptional"/>
             </ui:include>
         </p:treeNode>
         <p:treeNode>
-            <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml"/>
+            <ui:include src="itemDomainInventoryBaseBillOfMaterialsTreeNode.xhtml"/>
         </p:treeNode>
     </p:tree>
 

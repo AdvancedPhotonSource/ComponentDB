@@ -32,7 +32,10 @@ See LICENSE file.
         <p:tab id="itemElementInstantiation"
                title="Bill of Materials">
             <p:panel styleClass="createWizardPanel">
-                <ui:include src="private/itemDomainInventoryBillOfMaterialsEditView.xhtml" />
+                <ui:include src="private/itemDomainInventoryBaseBillOfMaterialsEditView.xhtml" >
+                    <ui:param name="entityController"
+                              value="#{itemDomainInventoryController}" /> 
+                </ui:include>
             </p:panel>
         </p:tab>
     </ui:define>

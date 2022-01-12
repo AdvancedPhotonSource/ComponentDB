@@ -37,14 +37,14 @@ See LICENSE file.
                         <p:scrollPanel style="height: 600px;" 
                                        rendered="#{showTreeInScrollPanel}">
                             <ui:param name="treeSrc" value="#{showTreeInScrollPanel ? 
-                                                              'itemDomainInventoryBillOfMaterialsEditViewTree.xhtml' 
+                                                              'itemDomainInventoryBaseBillOfMaterialsEditViewTree.xhtml' 
                                                               : '../../common/private/commonEmptyPage.xhtml'}" />
                             
                             <ui:include src="#{treeSrc}"/> 
                         </p:scrollPanel>
                         <p:outputPanel rendered="#{!showTreeInScrollPanel}">
                             <ui:param name="treeSrc" value="#{!showTreeInScrollPanel ? 
-                                                              'itemDomainInventoryBillOfMaterialsEditViewTree.xhtml' 
+                                                              'itemDomainInventoryBaseBillOfMaterialsEditViewTree.xhtml' 
                                                               : '../../common/private/commonEmptyPage.xhtml'}" />
                             <ui:include src="#{treeSrc}"/> 
                         </p:outputPanel>
@@ -61,7 +61,7 @@ See LICENSE file.
 
                 <p:outputPanel>
                     <p:outputPanel rendered="#{entityController.selectedItemBOMTreeNode != null}">                       
-                        <ui:include src="itemDomainInventoryBillOfMaterialsEditPanel.xhtml">
+                        <ui:include src="itemDomainInventoryBaseBillOfMaterialsEditPanel.xhtml">
                             <ui:param name="billOfMaterialItem" value="#{entityController.selectedItemBOMTreeNode.data}" />
                             <ui:param name="viewName" value="BOMTreeView" />
                         </ui:include>
@@ -83,7 +83,7 @@ See LICENSE file.
         </p:outputPanel>
 
         <p:outputPanel rendered="#{entityController.currentHasPartsToDisplay == false}">
-            <ui:include src="itemDomainInventoryBillOfMaterialsEditPanel.xhtml">
+            <ui:include src="itemDomainInventoryBaseBillOfMaterialsEditPanel.xhtml">
                 <ui:param name="billOfMaterialItem" value="#{entityController.current.containedInBOM}" />
                 <ui:param name="viewName" value="BOMSingleView" />
                 <ui:param name="renderEditPanelHeader" value="#{renderEditPanelHeader != null ? renderEditPanelHeader : true}" />

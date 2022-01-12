@@ -55,7 +55,7 @@ See LICENSE file.
             </p:outputPanel>
 
             <p:outputPanel rendered="#{entityController.isRenderBomEdit(billOfMaterialItem) or !billOfMaterialItem.partItem}">
-                <ui:include src="itemBillOfMaterialsNewItemEditPanel.xhtml">
+                <ui:include src="itemDomainInventoryBaseBillOfMaterialsNewItemEditPanel.xhtml">
                     <ui:param name="itemObject" value="#{billOfMaterialItem.inventoryItem}"/>            
                 </ui:include>
             </p:outputPanel>

@@ -8,9 +8,7 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog widgetVar="addInventoryItemDialogWidget"
               header="Add Inventory Item"
@@ -18,7 +16,7 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog"
               closable="false">
         <p:outputPanel rendered="#{itemDomainInventoryController.current != null}" >
-            <ui:include src="../../itemDomainInventory/private/itemDomainInventoryBillOfMaterialsEditView.xhtml">
+            <ui:include src="../../itemDomainInventoryBase/private/itemDomainInventoryBaseBillOfMaterialsEditView.xhtml">
                 <ui:param name="entityController" value="#{itemDomainInventoryController}" />
                 <ui:param name="displayLocationSelectionTieredMenu" value="#{false}" />
             </ui:include>
