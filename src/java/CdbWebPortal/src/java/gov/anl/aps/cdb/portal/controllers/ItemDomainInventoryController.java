@@ -228,19 +228,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         }
     }
 
-    public Boolean displayBOMEditButton() {
-        ItemDomainInventory current = getCurrent();
-        if (current != null) {
-            List<ItemElement> catalogItemElementDisplayList;
-            if (current.getDerivedFromItem() != null) {
-                catalogItemElementDisplayList = current.getDerivedFromItem().getItemElementDisplayList();
-                return catalogItemElementDisplayList != null && catalogItemElementDisplayList.isEmpty() == false;
-            }
-        }
-
-        return false;
-    }
-
     public String saveEditBOMList() {
         return this.update();
     }
@@ -555,33 +542,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         return false;
     }
 
-    public String getInventoryItemElementDisplayString(ItemElement itemElement) {
-        if (itemElement != null) {
-            if (itemElement.getContainedItem() != null) {
-                Item inventoryItem = itemElement.getContainedItem();
-                return getItemDisplayString(inventoryItem);
-            }
-
-            ItemDomainCatalogBase catalogItem = getCatalogItemForInventoryItemElement(itemElement);
-            if (catalogItem != null) {
-                return catalogItem.getName() + "- [ ]";
-            } else {
-                return "Undefined Part: " + itemElement.getDerivedFromItemElement().getName();
-            }
-        }
-        return null;
-    }
-
-    public ItemDomainCatalogBase getCatalogItemForInventoryItemElement(ItemElement inventoryItemElement) {
-        if (inventoryItemElement != null) {
-            ItemElement derivedFromItemElement = inventoryItemElement.getDerivedFromItemElement();
-            if (derivedFromItemElement.getContainedItem() != null) {
-                return (ItemDomainCatalogBase) derivedFromItemElement.getContainedItem();
-            }
-        }
-        return null;
-    }
-    
     public List<Item> getSelectionListForSelectedItemElementForUpdate() {
         ItemDomainInventory current = getCurrent();
         ItemElement selectedItemElementForUpdate = current.getSelectedItemElementForUpdate();

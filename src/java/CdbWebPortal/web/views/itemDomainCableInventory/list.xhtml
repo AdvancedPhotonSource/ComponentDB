@@ -26,7 +26,8 @@ See LICENSE file.
     </ui:define>
     
     <ui:define name="listDataTable">
-        <ui:include src="private/itemDomainCableInventoryListDataTable.xhtml">
+        <ui:include src="../itemDomainInventoryBase/private/itemDomainInventoryBaseListDataTable.xhtml">
+            <ui:param name="itemListDataTableValue" value="#{itemDomainCableInventoryController.scopedListDataModel}" />
         </ui:include>
     </ui:define>
     
@@ -39,5 +40,3 @@ See LICENSE file.
     </ui:define>
 
 </ui:composition>
-
-

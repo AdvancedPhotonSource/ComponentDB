@@ -17,7 +17,7 @@ See LICENSE file.
         <h:outputText value="#{itemElementListObject.derivedFromItemElement.name}" />
     </p:column>
 
-    <ui:include src="../itemDomainInventoryListCustomIdentifierObject.xhtml">
+    <ui:include src="../itemDomainInventoryBaseListCustomIdentifierObject.xhtml">
         <ui:param name="partNameString"
                   value="#{itemDomainInventoryController.getInventoryItemElementDisplayString(itemElementListObject)}" />
     </ui:include>
