@@ -8,9 +8,7 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog widgetVar="editInventoryItemDialogWidget"
               header="Edit Inventory Item"
@@ -18,7 +16,7 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog"
               resizable="false">
         <p:outputPanel rendered="#{entityController.current != null}" >
-            <ui:include src="itemDomainInventoryBillOfMaterialsEditView.xhtml">
+            <ui:include src="itemDomainInventoryBaseBillOfMaterialsEditView.xhtml">
                 <ui:param name="displayLocationSelectionTieredMenu" value="#{false}" />
             </ui:include>
         </p:outputPanel>
@@ -39,7 +37,7 @@ See LICENSE file.
         <ui:param name="updateTarget" value="@form:inventoryItemEditBOMViewPanelGrid" />
     </ui:include>
     
-    <ui:include src="itemDomainInventoryBillOfMaterialsOptionalRemovalConfirmDialog.xhtml" />
+    <ui:include src="itemDomainInventoryBaseBillOfMaterialsOptionalRemovalConfirmDialog.xhtml" />
 
     <p:remoteCommand name="prepareEditInventoryItem"
                      onstart="PF('loadingDialog').show()"
