@@ -110,6 +110,33 @@ public abstract class ItemDomainInventoryBaseController<
 
     }
 
+    public String getInventoryItemElementDisplayString(ItemElement itemElement) {
+        if (itemElement != null) {
+            if (itemElement.getContainedItem() != null) {
+                Item inventoryItem = itemElement.getContainedItem();
+                return getItemDisplayString(inventoryItem);
+            }
+
+            ItemDomainCatalogBase catalogItem = getCatalogItemForInventoryItemElement(itemElement);
+            if (catalogItem != null) {
+                return catalogItem.getName() + "- [ ]";
+            } else {
+                return "Undefined Part: " + itemElement.getDerivedFromItemElement().getName();
+            }
+        }
+        return null;
+    }
+
+    public ItemDomainCatalogBase getCatalogItemForInventoryItemElement(ItemElement inventoryItemElement) {
+        if (inventoryItemElement != null) {
+            ItemElement derivedFromItemElement = inventoryItemElement.getDerivedFromItemElement();
+            if (derivedFromItemElement.getContainedItem() != null) {
+                return (ItemDomainCatalogBase) derivedFromItemElement.getContainedItem();
+            }
+        }
+        return null;
+    }
+    
     @Override
     public ItemInventoryBaseDomainEntity createEntityInstance() {
         return super.createEntityInstance(); //To change body of generated methods, choose Tools | Templates.

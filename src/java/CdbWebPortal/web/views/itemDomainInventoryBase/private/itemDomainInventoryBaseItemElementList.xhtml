@@ -27,7 +27,7 @@ See LICENSE file.
 
     <!-- simple view list object overrides --> 
     <ui:define name="customItemIdentifierColumn">        
-        <ui:decorate template="itemDomainInventoryListCustomIdentifierObject.xhtml" >
+        <ui:decorate template="../../itemDomainInventoryBase/private/itemDomainInventoryBaseListCustomIdentifierObject.xhtml" >
             <ui:define name="identifierObjectPrefix">
                 <ui:fragment rendered="#{isEntityWriteable}">
                     <p:commandLink id="#{entityTypeName}AssignedItemEditActionButton" 
@@ -45,8 +45,8 @@ See LICENSE file.
             </ui:define>
             <ui:param name="partNameString"
                       value="#{itemListObject != null 
-                               ? itemDomainInventoryController.getItemDisplayString(itemListObject) 
-                               : itemDomainInventoryController.getInventoryItemElementDisplayString(itemElementObject)}" />
+                               ? entityController.getItemDisplayString(itemListObject) 
+                               : entityController.getInventoryItemElementDisplayString(itemElementObject)}" />
         </ui:decorate>        
     </ui:define>
 

@@ -5,8 +5,11 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import java.util.List;
+import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -19,6 +22,8 @@ public abstract class ItemDomainInventoryBase<CatalogItemType extends ItemDomain
     private transient InventoryBillOfMaterialItem containedInBOM;
     
     private transient ItemElement selectedItemElementForUpdate = null;    
+
+    private transient TreeNode itemElementAssemblyRootTreeNode = null;   
 
     public CatalogItemType getCatalogItem() {
         return (CatalogItemType) getDerivedFromItem();
@@ -53,5 +58,15 @@ public abstract class ItemDomainInventoryBase<CatalogItemType extends ItemDomain
 
     public void setSelectedItemElementForUpdate(ItemElement selectedItemElementForUpdate) {
         this.selectedItemElementForUpdate = selectedItemElementForUpdate;
+    }
+  
+    @JsonIgnore
+    public TreeNode getItemElementAssemblyRootTreeNode() throws CdbException {
+        if (itemElementAssemblyRootTreeNode == null) {
+            if (getItemElementDisplayList().size() > 0) {
+                itemElementAssemblyRootTreeNode = ItemElementUtility.createItemElementRoot(this);
+            }
+        }
+        return itemElementAssemblyRootTreeNode;
     }
 }

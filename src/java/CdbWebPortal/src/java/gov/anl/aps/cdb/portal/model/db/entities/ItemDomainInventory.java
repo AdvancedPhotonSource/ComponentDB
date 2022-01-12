@@ -5,18 +5,15 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControllerUtility;
-import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -28,8 +25,6 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
 
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status";
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE = "Spare";        
-
-    private transient TreeNode itemElementAssemblyRootTreeNode = null;   
 
     private transient SparePartsBean sparePartsBean = null;
     
@@ -66,16 +61,6 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
     //@JsonIgnore
     public Item getDerivedFromItem() {
         return super.getDerivedFromItem(); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @JsonIgnore
-    public TreeNode getItemElementAssemblyRootTreeNode() throws CdbException {
-        if (itemElementAssemblyRootTreeNode == null) {
-            if (getItemElementDisplayList().size() > 0) {
-                itemElementAssemblyRootTreeNode = ItemElementUtility.createItemElementRoot(this);
-            }
-        }
-        return itemElementAssemblyRootTreeNode;
     }
 
     @JsonIgnore

@@ -13,7 +13,7 @@ See LICENSE file.
     <ui:param name="itemListDisplayDerivedFromItem" value="#{false}" />
 
     <ui:define name="customItemIdentifierColumn">
-        <ui:include src="itemDomainInventoryListCustomIdentifierObject.xhtml" />
+        <ui:include src="../../itemDomainInventoryBase/private/itemDomainInventoryBaseListCustomIdentifierObject.xhtml" />
     </ui:define>
         
     <ui:define name="additonalItemColumns">
@@ -21,7 +21,7 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="itemRowExpansion">
-        <ui:include src="itemDomainInventoryListDataTableRowExpansion.xhtml"/>
+        <ui:include src="../../itemDomainInventoryBase/private/itemDomainInventoryBaseListDataTableRowExpansion.xhtml"/>
     </ui:define>
     
 </ui:composition>

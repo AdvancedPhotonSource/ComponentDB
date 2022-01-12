@@ -36,6 +36,8 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
     private static final String DisplaySerialNumberSettingTypeKey = "ItemDomainCableInventory.List.Display.SerialNumber";
     private static final String DisplayItemProjectSettingTypeKey = "ItemDomainCableInventory.List.Display.Project";   
     private static final String DisplayLengthSettingTypeKey = "ItemDomainCableInventory.List.Display.Length";
+    private static final String DisplayRowExpansionSettingTypeKey = "ItemDomainCableInventory.List.Display.RowExpansion";
+    private static final String LoadRowExpansionPropertyValueSettingTypeKey = "ItemDomainCableInventory.List.Load.RowExpansionPropertyValue";
     private static final String AutoLoadListFilterValuesSettingTypeKey = "ItemDomainCableInventory.List.Load.FilterDataTable"; 
     private static final String FilterByCreatedByUserSettingTypeKey = "ItemDomainCableInventory.List.FilterBy.CreatedByUser";
     private static final String FilterByCreatedOnDateTimeSettingTypeKey = "ItemDomainCableInventory.List.FilterBy.CreatedOnDateTime";
@@ -227,6 +229,9 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
         displaySerialNumber = Boolean.parseBoolean(settingTypeMap.get(DisplaySerialNumberSettingTypeKey).getDefaultValue());
         displayItemProject = Boolean.parseBoolean(settingTypeMap.get(DisplayItemProjectSettingTypeKey).getDefaultValue());
 
+        displayRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayRowExpansionSettingTypeKey).getDefaultValue());
+        loadRowExpansionPropertyValues = Boolean.parseBoolean(settingTypeMap.get(LoadRowExpansionPropertyValueSettingTypeKey).getDefaultValue());
+
         displayPropertyTypeId1 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId1SettingTypeKey).getDefaultValue());
         displayPropertyTypeId2 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId2SettingTypeKey).getDefaultValue());
         displayPropertyTypeId3 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId3SettingTypeKey).getDefaultValue());
@@ -284,6 +289,9 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
         displayQrId = settingEntity.getSettingValueAsBoolean(DisplayQrIdSettingTypeKey, displayQrId);
         displaySerialNumber = settingEntity.getSettingValueAsBoolean(DisplaySerialNumberSettingTypeKey, displaySerialNumber);
         displayItemProject = settingEntity.getSettingValueAsBoolean(DisplayItemProjectSettingTypeKey, displayItemProject);
+
+        displayRowExpansion = settingEntity.getSettingValueAsBoolean(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
+        loadRowExpansionPropertyValues = settingEntity.getSettingValueAsBoolean(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
 
         displayPropertyTypeId1 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         displayPropertyTypeId2 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
@@ -343,6 +351,9 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
         settingEntity.setSettingValue(DisplaySerialNumberSettingTypeKey, displaySerialNumber);
         settingEntity.setSettingValue(DisplayItemProjectSettingTypeKey, displayItemProject);
         //settingEntity.setSettingValue(DisplayItemEntityTypeSettingTypeKey, displayItemEntityTypes);
+
+        settingEntity.setSettingValue(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
+        settingEntity.setSettingValue(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
 
         settingEntity.setSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         settingEntity.setSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);

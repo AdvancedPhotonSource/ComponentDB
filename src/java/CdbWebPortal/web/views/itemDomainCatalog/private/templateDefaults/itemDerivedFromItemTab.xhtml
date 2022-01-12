@@ -8,7 +8,7 @@ See LICENSE file.
                 template="../../../item/private/templateDefaults/itemListRowExpansion/itemDerivedFromItemTab.xhtml">
 
     <ui:define name="itemDerivedFromItemListObject">
-        <ui:include src="../../../itemDomainInventory/private/itemDomainInventoryListObject.xhtml">
+        <ui:include src="../../../itemDomainInventoryBase/private/itemDomainInventoryBaseListObject.xhtml">
             <ui:param name="itemListObject" value="#{derivedFromItemObject}" />
             <ui:param name="entityController" value="#{derivedDomainController}" />
             <ui:param name="filterable" value="#{false}" />
@@ -16,7 +16,7 @@ See LICENSE file.
     </ui:define>
     
     <ui:define name="assemblyTab">
-        <ui:include src="../../../itemDomainInventory/private/templateDefaults/itemDomainInventoryAssemblyTab.xhtml">
+        <ui:include src="../../../itemDomainInventoryBase/private/templateDefaults/itemDomainInventoryBaseAssemblyTab.xhtml">
             <ui:param name="entityController" value="#{derivedDomainController}" />
         </ui:include>
     </ui:define>
