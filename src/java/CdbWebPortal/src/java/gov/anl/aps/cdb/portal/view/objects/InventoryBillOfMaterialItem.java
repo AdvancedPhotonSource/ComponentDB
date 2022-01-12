@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
 import gov.anl.aps.cdb.portal.controllers.ItemElementController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableInventoryControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryBaseControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
@@ -112,13 +113,21 @@ public class InventoryBillOfMaterialItem {
         setDefaultValuesForInventoryItem();
     }
     
-    private boolean isItemExistInDb(ItemDomainInventoryBase inventoryItem) {
+    private ItemDomainInventoryBaseControllerUtility getControllerForInventoryItem(ItemDomainInventoryBase inventoryItem) {
         this.loadItemDomainInventoryController();
         if (inventoryItem instanceof ItemDomainInventory) {
-            return itemDomainInventoryController.isItemExistInDb(inventoryItem); 
+            return itemDomainInventoryController;
         } else if (inventoryItem instanceof ItemDomainCableInventory) {
-            return itemDomainCableInventoryController.isItemExistInDb(inventoryItem); 
+            return itemDomainCableInventoryController;
         }
+        return null; 
+    }
+    
+    private boolean isItemExistInDb(ItemDomainInventoryBase inventoryItem) {
+        ItemDomainInventoryBaseControllerUtility controller = getControllerForInventoryItem(inventoryItem);
+        if (controller != null) {
+            return controller.isItemExistInDb(inventoryItem); 
+        }        
         
         return false;
     }
@@ -241,8 +250,8 @@ public class InventoryBillOfMaterialItem {
         }
 
         this.state = state;
-        this.loadItemDomainInventoryController();
-        itemDomainInventoryController.changeBillOfMaterialsState(this, prevState);
+        ItemDomainInventoryBaseControllerUtility controller = getControllerForInventoryItem(this.parentItemInstance); 
+        controller.changeBillOfMaterialsState(this, prevState);
 
         // Restore prev inventory item.
         if (prevState.equals(state) == false) {
@@ -378,8 +387,7 @@ public class InventoryBillOfMaterialItem {
                 return;
             }
             setState(InventoryBillOfMaterialItemStates.placeholder.toString());
-        } else {
-            loadItemDomainInventoryController();
+        } else {            
             if (isItemExistInDb(inventoryItem)) {
                 setState(InventoryBillOfMaterialItemStates.existingItem.toString());
             } else {
@@ -406,9 +414,8 @@ public class InventoryBillOfMaterialItem {
                 List<ItemDomainInventoryBase> ItemInventoryItemList = getCatalogItem().getInventoryItemList();
                 // Copy list to not update actual derived from item list. 
                 List<ItemDomainInventoryBase> inventoryItemList = new ArrayList<>(ItemInventoryItemList);
-                if (inventoryItem != null) {
-                    loadItemDomainInventoryController();
-                    if (itemDomainInventoryController.isItemExistInDb(inventoryItem) == false) {
+                if (inventoryItem != null) {                    
+                    if (isItemExistInDb(inventoryItem) == false) {
                         if (inventoryItemList.contains(inventoryItem)) {
                             // Remove since it is not yet existing. 
                             inventoryItemList.remove(inventoryItem);
