@@ -17,13 +17,13 @@ See LICENSE file.
               modal="true"
               styleClass="viewTransparentBackgroundDialog"
               resizable="false">
-        <p:outputPanel rendered="#{itemDomainInventoryController.current != null}" >
+        <p:outputPanel rendered="#{entityController.current != null}" >
             <ui:include src="itemDomainInventoryBillOfMaterialsEditView.xhtml">
                 <ui:param name="displayLocationSelectionTieredMenu" value="#{false}" />
             </ui:include>
         </p:outputPanel>
         <f:facet name="footer">
-            <p:commandButton  action="#{itemDomainInventoryController.saveEditBOMList()}"
+            <p:commandButton  action="#{entityController.saveEditBOMList()}"
                               value="Save" alt="Save" icon="fa fa-save"/>
 
             <p:commandButton immediate="true" 
@@ -34,7 +34,7 @@ See LICENSE file.
     </p:dialog>
 
     <ui:include src="../../locatableItem/private/locatableItemLocationSelectDialog.xhtml">
-        <ui:param name="itemObject" value="#{itemDomainInventoryController.selectedItemBOMTreeNode.data.inventoryItem}" />
+        <ui:param name="itemObject" value="#{entityController.selectedItemBOMTreeNode.data.inventoryItem}" />
         <ui:param name="viewName" value="BOMEdit"/>
         <ui:param name="updateTarget" value="@form:inventoryItemEditBOMViewPanelGrid" />
     </ui:include>
@@ -43,7 +43,7 @@ See LICENSE file.
 
     <p:remoteCommand name="prepareEditInventoryItem"
                      onstart="PF('loadingDialog').show()"
-                     action="#{itemDomainInventoryController.prepareEditBOMForCurrent()}"
+                     action="#{entityController.prepareEditBOMForCurrent()}"
                      oncomplete="PF('loadingDialog').hide();
                      PF('editInventoryItemDialogWidget').show();" 
                      update="@form"

@@ -12,7 +12,7 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
     <p:outputPanel id="inventoryItemEditBOMViewOutputPanel">
         <ui:param name="fullUpateTarget" value="@form:inventoryItemEditBOMViewOutputPanel" />
-        <p:outputPanel rendered="#{itemDomainInventoryController.currentHasPartsToDisplay}">      
+        <p:outputPanel rendered="#{entityController.currentHasPartsToDisplay}">      
             <!-- TODO: Remove columns option and render header and row in primefaces 6.2 --> 
 
             <p:panelGrid id="inventoryItemEditBOMViewPanelGrid"
@@ -32,7 +32,7 @@ See LICENSE file.
                     -->
                     <p:panel>
                         <ui:param name="showTreeInScrollPanel"
-                                  value="#{itemDomainInventoryController.isDisplayBomTreeInScrollpanel}" /> 
+                                  value="#{entityController.isDisplayBomTreeInScrollpanel}" /> 
 
                         <p:scrollPanel style="height: 600px;" 
                                        rendered="#{showTreeInScrollPanel}">
@@ -49,10 +49,10 @@ See LICENSE file.
                             <ui:include src="#{treeSrc}"/> 
                         </p:outputPanel>
                     </p:panel>
-                    <p:commandButton value="#{itemDomainInventoryController.showOptionalPartsInBom ? 'Hide' : 'Show'} Optional"
+                    <p:commandButton value="#{entityController.showOptionalPartsInBom ? 'Hide' : 'Show'} Optional"
                                      update="#{fullUpateTarget}"
-                                     action="#{itemDomainInventoryController.toggleShowOptionalItems()}"
-                                     rendered="#{itemDomainInventoryController.currentItemBOMTreeHasOptionalItems}"/>
+                                     action="#{entityController.toggleShowOptionalItems()}"
+                                     rendered="#{entityController.currentItemBOMTreeHasOptionalItems}"/>
                     <!-- Removed until primefaces 6.2  
                     </p:column>
                     <p:column styleClass="panelGridBorderedCell">               
@@ -60,14 +60,14 @@ See LICENSE file.
                 </p:outputPanel>
 
                 <p:outputPanel>
-                    <p:outputPanel rendered="#{itemDomainInventoryController.selectedItemBOMTreeNode != null}">                       
+                    <p:outputPanel rendered="#{entityController.selectedItemBOMTreeNode != null}">                       
                         <ui:include src="itemDomainInventoryBillOfMaterialsEditPanel.xhtml">
-                            <ui:param name="billOfMaterialItem" value="#{itemDomainInventoryController.selectedItemBOMTreeNode.data}" />
+                            <ui:param name="billOfMaterialItem" value="#{entityController.selectedItemBOMTreeNode.data}" />
                             <ui:param name="viewName" value="BOMTreeView" />
                         </ui:include>
 
                     </p:outputPanel>
-                    <p:outputPanel rendered="#{itemDomainInventoryController.selectedItemBOMTreeNode == null}">
+                    <p:outputPanel rendered="#{entityController.selectedItemBOMTreeNode == null}">
                         <div class="viewColors">
                             <h1>Please Select a part from parts list to begin.</h1>
                         </div>
@@ -82,9 +82,9 @@ See LICENSE file.
             </p:panelGrid>                       
         </p:outputPanel>
 
-        <p:outputPanel rendered="#{itemDomainInventoryController.currentHasPartsToDisplay == false}">
+        <p:outputPanel rendered="#{entityController.currentHasPartsToDisplay == false}">
             <ui:include src="itemDomainInventoryBillOfMaterialsEditPanel.xhtml">
-                <ui:param name="billOfMaterialItem" value="#{itemDomainInventoryController.current.containedInBOM}" />
+                <ui:param name="billOfMaterialItem" value="#{entityController.current.containedInBOM}" />
                 <ui:param name="viewName" value="BOMSingleView" />
                 <ui:param name="renderEditPanelHeader" value="#{renderEditPanelHeader != null ? renderEditPanelHeader : true}" />
             </ui:include>

@@ -66,10 +66,10 @@ See LICENSE file.
              toggleable="true"
              binding="#{facesUtility.autoCollapsePanel}">
         <p:outputPanel id="permissionsEditPanelUnlock#{viewName}" 
-                       rendered="#{!billOfMaterialItem.partItem or !itemDomainInventoryController.applyPermissionToAllNewPartsForCurrent}">
+                       rendered="#{!billOfMaterialItem.partItem or !entityController.applyPermissionToAllNewPartsForCurrent}">
 
             <ui:param name="renderedPermissionsEditPanelApplyAll"
-                      value="#{!billOfMaterialItem.partItem and itemDomainInventoryController.currentHasPartsToDisplay}"
+                      value="#{!billOfMaterialItem.partItem and entityController.currentHasPartsToDisplay}"
                       />
 
             <p:panelGrid columns="3">
@@ -102,7 +102,7 @@ See LICENSE file.
             </p:panelGrid>
         </p:outputPanel>
         <p:outputPanel id="permissionsEditPanelLock#{viewName}" 
-                       rendered="#{billOfMaterialItem.partItem and itemDomainInventoryController.applyPermissionToAllNewPartsForCurrent}">
+                       rendered="#{billOfMaterialItem.partItem and entityController.applyPermissionToAllNewPartsForCurrent}">
             <div>
                 <h:outputText value="Permissions will be applied from the topmost parent of assembly."/>          
                 <br/>
