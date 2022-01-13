@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesDomainCatalogController;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCatalogBaseSettings;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogBaseControllerUtility;
@@ -36,7 +37,7 @@ import org.primefaces.event.RowEditEvent;
  *
  * @author djarosz
  */
-public abstract class ItemDomainCatalogBaseController<ControllerUtility extends ItemDomainCatalogBaseControllerUtility<ItemCatalogBaseDomainEntity, ItemDomainCatalogEntityBaseFacade>, ItemCatalogBaseDomainEntity extends ItemDomainCatalogBase, ItemDomainCatalogEntityBaseFacade extends ItemFacadeBase<ItemCatalogBaseDomainEntity>, ItemCatalogEntityBaseSettingsObject extends ItemSettings> extends ItemController<ControllerUtility, ItemCatalogBaseDomainEntity, ItemDomainCatalogEntityBaseFacade, ItemCatalogEntityBaseSettingsObject>  {
+public abstract class ItemDomainCatalogBaseController<ControllerUtility extends ItemDomainCatalogBaseControllerUtility<ItemCatalogBaseDomainEntity, ItemDomainCatalogEntityBaseFacade>, ItemCatalogBaseDomainEntity extends ItemDomainCatalogBase, ItemDomainCatalogEntityBaseFacade extends ItemFacadeBase<ItemCatalogBaseDomainEntity>, ItemCatalogEntityBaseSettingsObject extends ItemDomainCatalogBaseSettings> extends ItemController<ControllerUtility, ItemCatalogBaseDomainEntity, ItemDomainCatalogEntityBaseFacade, ItemCatalogEntityBaseSettingsObject>  {
 
     private final String DOMAIN_TYPE_NAME = ItemDomainName.catalog.getValue();
     private final String DERIVED_DOMAIN_NAME = "Inventory";        
@@ -164,6 +165,18 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
     @Override
     public boolean getEntityDisplayItemConnectors() {
         return true; 
+    }
+    
+    @Override
+    public boolean isDisplayRowExpansionItemsDerivedFromItem(Item item) {
+        ItemCatalogEntityBaseSettingsObject settingObject = getSettingObject();
+        Boolean displayInventorySetting = settingObject.getDisplayComponentInstanceRowExpansion();
+        
+        if (displayInventorySetting) {
+            return super.isDisplayRowExpansionItemsDerivedFromItem(item); 
+        }
+        
+        return displayInventorySetting; 
     }
     
     /**

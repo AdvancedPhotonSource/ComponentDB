@@ -181,19 +181,7 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
     public void setItemElementSelectionControllerString(String controllerName) {
         ItemDomainCatalogBaseController controller = (ItemDomainCatalogBaseController) SessionUtility.findBean(controllerName); 
         setItemElementSelectionController(controller);
-    } 
-
-    @Override
-    public boolean isDisplayRowExpansionItemsDerivedFromItem(Item item) {
-        ItemDomainCatalogSettings settingObject = getSettingObject();
-        Boolean displayInventorySetting = settingObject.getDisplayComponentInstanceRowExpansion();
-        
-        if (displayInventorySetting) {
-            return super.isDisplayRowExpansionItemsDerivedFromItem(item); 
-        }
-        
-        return displayInventorySetting; 
-    }
+    }     
 
     // <editor-fold defaultstate="collapsed" desc="import/export support">   
 
