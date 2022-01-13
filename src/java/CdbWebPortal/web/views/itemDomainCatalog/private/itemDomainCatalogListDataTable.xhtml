@@ -6,31 +6,13 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
                 template="../../item/private/templates/itemListDataTableTemplate.xhtml">
     
     <ui:param name="itemListDataTableValue" value="#{itemDomainCatalogController.scopedListDataModel}" />
     
     <ui:define name="rowExpansionObject">
         <ui:include src="itemDomainCatalogListDataTableRowExpansionObject.xhtml" />
-    </ui:define>
-    
-    <ui:remove>
-        <ui:define name="itemRowExpansionExtras">
-            <ui:param name="itemDomainCatalogSettingObject" value="#{itemDomainCatalogController.settingObject}" />
-            <p:outputPanel styleClass="domainEntityRowExpansionDetails" rendered="#{itemDomainCatalogSettingObject.displayComponentInstanceRowExpansion}">
-                <p:accordionPanel activeIndex="">
-                    <p:tab title="Component Instances">
-                        <ui:include src="componentComponentInstanceListDataTable.xhtml">
-                            <ui:param name="viewMode" value="rowExpansion" />
-                            <ui:param name="loadPropertyValues" value="#{itemDomainCatalogSettingObject.loadComponentInstanceRowExpansionPropertyValues}" />
-                            <ui:param name="childEntityController" value="#{itemDomainInventoryController}" />
-                        </ui:include>
-                    </p:tab>
-                </p:accordionPanel>
-            </p:outputPanel>
-        </ui:define>
-    </ui:remove>
+    </ui:define>   
     
 </ui:composition>
 
