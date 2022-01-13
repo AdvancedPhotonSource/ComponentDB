@@ -15,7 +15,7 @@ import org.primefaces.model.FilterMeta;
  *
  * @author djarosz
  */
-public class ItemDomainCatalogSettings extends ItemSettings<ItemDomainCatalogController> {
+public class ItemDomainCatalogSettings extends ItemDomainCatalogBaseSettings<ItemDomainCatalogController> {
     
     private static final String DisplayItemElementListItemIdentifier1SettingTypeKey = "ItemDomainCatalog.ItemElementList.Display.ItemIdentifier1";  
     private static final String DisplayItemElementListItemIdentifier2SettingTypeKey = "ItemDomainCatalog.ItemElementList.Display.ItemIdentifier2";
@@ -74,24 +74,6 @@ public class ItemDomainCatalogSettings extends ItemSettings<ItemDomainCatalogCon
     private static final String DisplayListDataModelScopeSettingTypeKey = "ItemDomainCatalog.List.Scope.Display";
     private static final String DisplayListDataModelScopePropertyTypeIdSettingTypeKey = "ItemDomainCatalog.List.Scope.Display.PropertyTypeId";
 
-    
-    private Boolean displayModelNumber = null;
-    private Boolean displayAlternateName = null;
-
-    private String filterByType = null;
-    private String filterByCategory = null;
-    private String filterByModelNumber = null;
-
-    private Boolean selectDisplayType = true;
-    private Boolean selectDisplayCategory = true;
-    private Boolean selectDisplayModelNumber = true;
-
-    private String selectFilterByType = null;
-    private String selectFilterByCategory = null;
-    private String selectFilterByModelNumber = null;
-
-    private Boolean loadComponentInstanceRowExpansionPropertyValues = null;
-    private Boolean displayComponentInstanceRowExpansion = null;     
     
     public ItemDomainCatalogSettings(ItemDomainCatalogController parentController) {
         super(parentController);
@@ -304,81 +286,38 @@ public class ItemDomainCatalogSettings extends ItemSettings<ItemDomainCatalogCon
     }
     
     @Override
-    public String getDisplayListPageHelpFragmentSettingTypeKey() {
-        // No help fragment yet exists for cdb 3.0 catalog
-        return null;
-        //return DisplayListPageHelpFragmentSettingTypeKey;
-    } 
-    
-    public Boolean getLoadComponentInstanceRowExpansionPropertyValues() {
-        return loadComponentInstanceRowExpansionPropertyValues;
-    }
-    
-    public void setLoadComponentInstanceRowExpansionPropertyValues(Boolean loadComponentInstanceRowExpansionPropertyValues) {
-        this.loadComponentInstanceRowExpansionPropertyValues = loadComponentInstanceRowExpansionPropertyValues;
-    }
-
-    public Boolean getDisplayComponentInstanceRowExpansion() {
-        return displayComponentInstanceRowExpansion;
-    }
-
-    public void setDisplayComponentInstanceRowExpansion(Boolean displayComponentInstanceRowExpansion) {
-        this.displayComponentInstanceRowExpansion = displayComponentInstanceRowExpansion;
-    }
-
-    @Override
-    public Boolean getDisplayItemIdentifier1() {
-        return displayModelNumber;
-    }
-
-    @Override
-    public void setDisplayItemIdentifier1(Boolean displayItemIdentifier1) {
-        this.displayModelNumber = displayItemIdentifier1;
-    }
-
-    @Override
-    public Boolean getDisplayItemIdentifier2() {
-        return this.displayAlternateName;
-    }
-
-    @Override
-    public void setDisplayItemIdentifier2(Boolean displayItemIdentifier2) {
-        this.displayAlternateName = displayItemIdentifier2;
-    }
-    
-    @Override
     public String getDisplayItemElementListItemIdentifier1Key() {
-        return DisplayItemElementListItemIdentifier1SettingTypeKey; 
+        return DisplayItemElementListItemIdentifier1SettingTypeKey;
     }
-    
+
     @Override
     public String getDisplayItemElementListItemIdentifier2Key() {
         return DisplayItemElementListItemIdentifier2SettingTypeKey;
-    } 
+    }
 
     @Override
     public String getDisplayItemElementListItemTypeKey() {
-        return DisplayItemElementListItemTypeSettingTypeKey; 
+        return DisplayItemElementListItemTypeSettingTypeKey;
     }
 
     @Override
     public String getDisplayItemElementListItemCategoryKey() {
-        return DisplayItemElementListItemCategorySettingTypeKey; 
-    } 
+        return DisplayItemElementListItemCategorySettingTypeKey;
+    }
 
     @Override
     public String getDisplayItemElementListSourceKey() {
-        return DisplayItemElementListSourceSettingTypeKey; 
-    } 
+        return DisplayItemElementListSourceSettingTypeKey;
+    }
 
     @Override
     public String getDisplayItemElementListProjectKey() {
-        return DisplayItemElementListProjectSettingTypeKey; 
-    } 
+        return DisplayItemElementListProjectSettingTypeKey;
+    }
 
     @Override
     public String getDisplayItemElementListDescriptionKey() {
-        return DisplayItemElementListDescriptionSettingTypeKey; 
+        return DisplayItemElementListDescriptionSettingTypeKey;
     }
-    
+
 }
