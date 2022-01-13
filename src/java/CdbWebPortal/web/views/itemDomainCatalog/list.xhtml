@@ -21,16 +21,17 @@ See LICENSE file.
         <ui:include src="private/itemDomainCatalogListActionButtons.xhtml"/>
     </ui:define>
     
-    <ui:define name="helpFragment">
-        
+    <ui:define name="helpFragment">        
     </ui:define>
     
     <ui:define name="customizeDisplayDialog">
-        <ui:include src="private/itemDomainCatalogListCustomizeDisplayDialog.xhtml"/>
+        <ui:include src="../itemDomainCatalogBase/private/itemDomainCatalogBaseListCustomizeDisplayDialog.xhtml"/>
     </ui:define>
     
     <ui:define name="listDataTable">
-        <ui:include src="private/itemDomainCatalogListDataTable.xhtml"/>
+        <ui:include src="../itemDomainCatalogBase/private/itemDomainCatalogBaseListDataTable.xhtml">
+            <ui:param name="itemListDataTableValue" value="#{itemDomainCatalogController.scopedListDataModel}" />
+        </ui:include>
     </ui:define>   
     
     <ui:define name="domainSpecificAddionalDialogs">
