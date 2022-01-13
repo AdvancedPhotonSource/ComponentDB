@@ -105,6 +105,10 @@ public class ItemDomainCableCatalogSettings extends ItemDomainCatalogBaseSetting
     private static final String DisplayProcurementStatusSettingTypeKey = "ItemDomainCableCatalog.List.Display.ProcurementStatus";
     private static final String FilterByProcurementStatusSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.ProcurementStatus";
 
+    private static final String DisplayListPageHelpFragmentSettingTypeKey = "ItemDomainCableCatalog.Help.ListPage.Display.Fragment";
+
+    private static final String DisplayListDataModelScopeSettingTypeKey = "ItemDomainCableCatalog.List.Scope.Display";
+    private static final String DisplayListDataModelScopePropertyTypeIdSettingTypeKey = "ItemDomainCableCatalog.List.Scope.Display.PropertyTypeId";
 
     protected boolean heatLimitDisplay;
     protected boolean insulationDisplay;
@@ -494,6 +498,9 @@ public class ItemDomainCableCatalogSettings extends ItemDomainCatalogBaseSetting
         displayItemSources = Boolean.parseBoolean(settingTypeMap.get(DisplayItemSourcesSettingTypeKey).getDefaultValue());
 
         displayRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayRowExpansionSettingTypeKey).getDefaultValue());
+        displayComponentInstanceRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentInstanceRowExpansionSettingTypeKey).getDefaultValue());
+        loadRowExpansionPropertyValues = Boolean.parseBoolean(settingTypeMap.get(LoadRowExpansionPropertyValueSettingTypeKey).getDefaultValue());
+        loadComponentInstanceRowExpansionPropertyValues = Boolean.parseBoolean(settingTypeMap.get(LoadComponentInstanceRowExpansionPropertyValueSettingTypeKey).getDefaultValue());
 
         displayPropertyTypeId1 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId1SettingTypeKey).getDefaultValue());
         displayPropertyTypeId2 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId2SettingTypeKey).getDefaultValue());
@@ -559,6 +566,11 @@ public class ItemDomainCableCatalogSettings extends ItemDomainCatalogBaseSetting
         procurementStatusDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayProcurementStatusSettingTypeKey).getDefaultValue());
         procurementStatusFilter = settingTypeMap.get(FilterByProcurementStatusSettingTypeKey).getDefaultValue();
 
+        displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue());
+
+        displayListDataModelScope = settingTypeMap.get(DisplayListDataModelScopeSettingTypeKey).getDefaultValue();
+        displayListDataModelScopePropertyTypeId = parseSettingValueAsInteger(settingTypeMap.get(DisplayListDataModelScopePropertyTypeIdSettingTypeKey).getDefaultValue());
+                
         autoLoadListFilterValues = Boolean.parseBoolean(settingTypeMap.get(AutoLoadListFilterValuesSettingTypeKey).getDefaultValue()); 
 
         parentController.resetDomainEntityPropertyTypeIdIndexMappings();
@@ -583,6 +595,9 @@ public class ItemDomainCableCatalogSettings extends ItemDomainCatalogBaseSetting
         displayItemSources = settingEntity.getSettingValueAsBoolean(DisplayItemSourcesSettingTypeKey, displayItemSources);
 
         displayRowExpansion = settingEntity.getSettingValueAsBoolean(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
+        displayComponentInstanceRowExpansion = settingEntity.getSettingValueAsBoolean(DisplayComponentInstanceRowExpansionSettingTypeKey, displayComponentInstanceRowExpansion);
+        loadRowExpansionPropertyValues = settingEntity.getSettingValueAsBoolean(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
+        loadComponentInstanceRowExpansionPropertyValues = settingEntity.getSettingValueAsBoolean(LoadRowExpansionPropertyValueSettingTypeKey, loadComponentInstanceRowExpansionPropertyValues);
 
         displayPropertyTypeId1 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         displayPropertyTypeId2 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
@@ -648,6 +663,11 @@ public class ItemDomainCableCatalogSettings extends ItemDomainCatalogBaseSetting
         procurementStatusDisplay = settingEntity.getSettingValueAsBoolean(DisplayProcurementStatusSettingTypeKey, procurementStatusDisplay);
         procurementStatusFilter = settingEntity.getSettingValueAsString(FilterByProcurementStatusSettingTypeKey, procurementStatusFilter);
 
+        displayListPageHelpFragment = settingEntity.getSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
+
+        displayListDataModelScope = settingEntity.getSettingValueAsString(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
+        displayListDataModelScopePropertyTypeId = settingEntity.getSettingValueAsInteger(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
+                
         autoLoadListFilterValues = settingEntity.getSettingValueAsBoolean(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues); 
 
         parentController.resetDomainEntityPropertyTypeIdIndexMappings();
@@ -672,6 +692,9 @@ public class ItemDomainCableCatalogSettings extends ItemDomainCatalogBaseSetting
         settingEntity.setSettingValue(DisplayTechnicalSystemSettingTypeKey, displayItemCategory);
 
         settingEntity.setSettingValue(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
+        settingEntity.setSettingValue(DisplayComponentInstanceRowExpansionSettingTypeKey, displayComponentInstanceRowExpansion);
+        settingEntity.setSettingValue(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
+        settingEntity.setSettingValue(LoadComponentInstanceRowExpansionPropertyValueSettingTypeKey, loadComponentInstanceRowExpansionPropertyValues);
 
         settingEntity.setSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         settingEntity.setSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
@@ -738,6 +761,11 @@ public class ItemDomainCableCatalogSettings extends ItemDomainCatalogBaseSetting
         settingEntity.setSettingValue(DisplayProcurementStatusSettingTypeKey, radToleranceDisplay);
         settingEntity.setSettingValue(FilterByProcurementStatusSettingTypeKey, radToleranceFilter);
 
+        settingEntity.setSettingValue(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
+
+        settingEntity.setSettingValue(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
+        settingEntity.setSettingValue(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
+        
         settingEntity.setSettingValue(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);
 
     }

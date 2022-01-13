@@ -19,6 +19,16 @@ INSERT INTO `setting_type` VALUES
 (15015,'Search.Display.ItemDomainCableInventory','Display search result for cable inventory items.','true'),
 (15016,'Search.Display.ItemDomainCableDesign','Display search result for cable design items.','true');
 
+UPDATE domain SET item_identifier1_label = 'Serial Number' where id = 8;
+
+INSERT INTO `setting_type` VALUES
+(24085,'ItemDomainCableCatalog.List.Display.ComponentInstance.RowExpansion','Display Component Instance row expansion.','true'),
+(24086,'ItemDomainCableCatalog.List.Load.ComponentInstance.RowExpansionPropertyValue','Load property values for component instance row expansions.','false'),
+(24087,'ItemDomainCableCatalog.Help.ListPage.Display.Fragment','Display Help guide to the user on the main list page of the Component entity.','true'),
+(24088,'ItemDomainCableCatalog.List.Scope.Display','Show list page with a scope applied.','All'),
+(24089,'ItemDomainCableCatalog.List.Scope.Display.PropertyTypeId','Setting used along side a display scope of property type.',NULL),
+(24090,'ItemDomainCableCatalog.List.Load.RowExpansionPropertyValue','Load property values for row expansions.','false');
+
 delimiter //
 
 DROP PROCEDURE IF EXISTS search_items;//
