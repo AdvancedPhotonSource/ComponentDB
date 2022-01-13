@@ -19,6 +19,10 @@ See LICENSE file.
     <ui:define name="helpFragment">
     </ui:define>
     
+    <ui:define name="customizeDisplayDialog">
+        <ui:include src="../itemDomainCatalogBase/private/itemDomainCatalogBaseListCustomizeDisplayDialog.xhtml"/>
+    </ui:define>
+    
     <ui:define name="listDataTable">
         <ui:include src="../itemDomainCatalogBase/private/itemDomainCatalogBaseListDataTable.xhtml">
             <ui:param name="itemListDataTableValue" value="#{itemDomainCableCatalogController.scopedListDataModel}" />

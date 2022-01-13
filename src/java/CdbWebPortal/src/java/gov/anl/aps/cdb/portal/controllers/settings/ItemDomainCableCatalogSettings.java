@@ -14,7 +14,15 @@ import java.util.Map;
  *
  * @author djarosz
  */
-public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCableCatalogController> {
+public class ItemDomainCableCatalogSettings extends ItemDomainCatalogBaseSettings<ItemDomainCableCatalogController> {
+    
+    private static final String DisplayItemElementListItemIdentifier1SettingTypeKey = "ItemDomainCableCatalog.ItemElementList.Display.ItemIdentifier1";  
+    private static final String DisplayItemElementListItemIdentifier2SettingTypeKey = "ItemDomainCableCatalog.ItemElementList.Display.ItemIdentifier2";
+    private static final String DisplayItemElementListItemTypeSettingTypeKey = "ItemDomainCableCatalog.ItemElementList.Display.ItemType"; 
+    private static final String DisplayItemElementListItemCategorySettingTypeKey = "ItemDomainCableCatalog.ItemElementList.Display.ItemCategory";
+    private static final String DisplayItemElementListSourceSettingTypeKey = "ItemDomainCableCatalog.ItemElementList.Display.Source";
+    private static final String DisplayItemElementListProjectSettingTypeKey = "ItemDomainCableCatalog.ItemElementList.Display.Project";
+    private static final String DisplayItemElementListDescriptionSettingTypeKey = "ItemDomainCableCatalog.ItemElementList.Display.Description";               
     
     private static final String DisplayTechnicalSystemSettingTypeKey = "ItemDomainCableCatalog.List.Display.ItemCategory";
     private static final String DisplayCreatedByUserSettingTypeKey = "ItemDomainCableCatalog.List.Display.CreatedByUser";
@@ -430,6 +438,41 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
 
     public void setProcurementStatusFilter(String procurementStatusFilter) {
         this.procurementStatusFilter = procurementStatusFilter;
+    }
+
+    @Override
+    public String getDisplayItemElementListItemIdentifier1Key() {
+        return DisplayItemElementListItemIdentifier1SettingTypeKey;
+    }
+
+    @Override
+    public String getDisplayItemElementListItemIdentifier2Key() {
+        return DisplayItemElementListItemIdentifier2SettingTypeKey;
+    }
+
+    @Override
+    public String getDisplayItemElementListItemTypeKey() {
+        return DisplayItemElementListItemTypeSettingTypeKey;
+    }
+
+    @Override
+    public String getDisplayItemElementListItemCategoryKey() {
+        return DisplayItemElementListItemCategorySettingTypeKey;
+    }
+
+    @Override
+    public String getDisplayItemElementListSourceKey() {
+        return DisplayItemElementListSourceSettingTypeKey;
+    }
+
+    @Override
+    public String getDisplayItemElementListProjectKey() {
+        return DisplayItemElementListProjectSettingTypeKey;
+    }
+
+    @Override
+    public String getDisplayItemElementListDescriptionKey() {
+        return DisplayItemElementListDescriptionSettingTypeKey;
     }
 
     @Override
