@@ -14,7 +14,7 @@ See LICENSE file.
 
     <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(entityController.selected.entityInfo)}"/>
 
-    <ui:param name="itemDerivedController" value="#{itemDomainInventoryController}" />
+    <ui:param name="itemDerivedController" value="#{inventoryController}" />
 
     <ui:param name="childEntityTypeName" value="#{entityController.entityTypeName}#{itemDerivedController.entityTypeName}"/>
     
@@ -28,7 +28,7 @@ See LICENSE file.
 
     <ui:include src="../../item/private/itemDerivedEditListDataTable.xhtml"/>
     
-    <ui:include src="itemDomainCatalogInventoryEditListCustomizeDisplayDialog.xhtml"/>
+    <ui:include src="itemDomainCatalogBaseInventoryEditListCustomizeDisplayDialog.xhtml"/>
 
 </ui:composition>
 

@@ -12,7 +12,6 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCatalogSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCatalogPorts;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCatalogFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;

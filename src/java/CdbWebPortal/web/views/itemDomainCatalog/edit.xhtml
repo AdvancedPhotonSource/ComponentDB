@@ -25,12 +25,21 @@ See LICENSE file.
     </f:metadata>
 
     <ui:define name="itemsDerivedFromItem">
-        <ui:include src="private/itemDomainCatalogInventoryEditList.xhtml" />
+        <ui:include src="../itemDomainCatalogBase/private/itemDomainCatalogBaseInventoryEditList.xhtml">
+            <ui:param name="inventoryController"
+                      value="#{itemDomainInventoryController}" />
+            <ui:param name="catalogController"
+                      value="#{itemDomainCatalogController}" />
+        </ui:include>
     </ui:define>
 
-
     <ui:define name="additionalEditItemContent" >
-        <ui:include src="private/itemDomainCatalogInventoryCreateDialog.xhtml" />
+        <ui:include src="../itemDomainCatalogBase/private/itemDomainCatalogBaseInventoryCreateDialog.xhtml">
+            <ui:param name="inventoryController"
+                      value="#{itemDomainInventoryController}" />
+            <ui:param name="catalogController"
+                      value="#{itemDomainCatalogController}" />
+        </ui:include>
     </ui:define>
     
     <ui:define name="itemElementsContent">

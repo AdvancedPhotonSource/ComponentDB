@@ -245,6 +245,23 @@ public abstract class ItemDomainInventoryBaseController<
         return null;
     }   
 
+    public void createSaveFromDialog(String onSuccessCommand) {
+        String result = create();
+        if (result != null) {
+            SessionUtility.executeRemoteCommand(onSuccessCommand);
+        }
+    }
+
+    public void createCancelFromDialog() {
+        if (getCurrent() != null) {
+            ItemDomainCatalogBase catalogItem = getCurrent().getCatalogItem();
+            if (catalogItem != null) {
+                catalogItem.getDerivedFromItemList().remove(getCurrent());
+            }
+            setCurrent(null);
+        }
+    }   
+
     public List<Item> getSelectionListForSelectedItemElementForUpdate() {
         ItemDomainInventoryBase current = getCurrent();
         ItemElement selectedItemElementForUpdate = current.getSelectedItemElementForUpdate();

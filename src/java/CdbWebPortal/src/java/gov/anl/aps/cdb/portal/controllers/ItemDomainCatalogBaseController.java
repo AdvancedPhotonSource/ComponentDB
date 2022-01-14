@@ -11,7 +11,6 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainCatal
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCatalogBaseSettings;
-import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogBaseControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
