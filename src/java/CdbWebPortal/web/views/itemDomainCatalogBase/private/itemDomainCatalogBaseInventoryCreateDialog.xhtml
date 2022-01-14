@@ -15,40 +15,40 @@ See LICENSE file.
               modal="true"
               styleClass="viewTransparentBackgroundDialog"
               closable="false">
-        <p:outputPanel rendered="#{itemDomainInventoryController.current != null}" >
+        <p:outputPanel rendered="#{inventoryController.current != null}" >
             <ui:include src="../../itemDomainInventoryBase/private/itemDomainInventoryBaseBillOfMaterialsEditView.xhtml">
-                <ui:param name="entityController" value="#{itemDomainInventoryController}" />
+                <ui:param name="entityController" value="#{inventoryController}" />
                 <ui:param name="displayLocationSelectionTieredMenu" value="#{false}" />
             </ui:include>
         </p:outputPanel>
         <f:facet name="footer" class="dialog">
-            <p:commandButton  action="#{itemDomainInventoryController.createSaveFromDialog('addInventoryItemSuccess()')}"
+            <p:commandButton  action="#{inventoryController.createSaveFromDialog('addInventoryItemSuccess()')}"
                               id="addInventoryItemDialogWidgetSaveButton"
                               value="Save" alt="Save" icon="fa fa-save"/>
 
-            <p:commandButton action="#{itemDomainInventoryController.createCancelFromDialog()}" 
+            <p:commandButton action="#{inventoryController.createCancelFromDialog()}" 
                              immediate="true" 
                              value="Cancel" alt="Cancel" 
                              update="@form"
                              icon="fa fa-close" />
 
             <p:remoteCommand name="addInventoryItemSuccess"                             
-                             actionListener="#{itemDomainCatalogController.completeSucessfulDerivedFromItemCreation()}"
+                             actionListener="#{catalogController.completeSucessfulDerivedFromItemCreation()}"
                              update="@form"
                              onstart="PF('addInventoryItemDialogWidget').hide()" />
         </f:facet>
     </p:dialog>
 
     <ui:include src="../../locatableItem/private/locatableItemLocationSelectDialog.xhtml">
-        <ui:param name="itemObject" value="#{itemDomainInventoryController.selectedItemBOMTreeNode.data.inventoryItem}" />
+        <ui:param name="itemObject" value="#{inventoryController.selectedItemBOMTreeNode.data.inventoryItem}" />
         <ui:param name="viewName" value="BOMEdit"/>
         <ui:param name="updateTarget" value="@form:inventoryItemEditBOMViewOutputPanel" />
-        <ui:param name="entityController" value="#{itemDomainInventoryController}" />
+        <ui:param name="entityController" value="#{inventoryController}" />
     </ui:include>
 
     <p:remoteCommand name="prepareAddInventoryItem"
                      onstart="PF('loadingDialog').show()"
-                     action="#{itemDomainInventoryController.prepareAddItemDerivedFromItem(entityController.current)}"
+                     action="#{inventoryController.prepareAddItemDerivedFromItem(entityController.current)}"
                      oncomplete="PF('loadingDialog').hide();
                      PF('addInventoryItemDialogWidget').show();" 
                      update="@form"

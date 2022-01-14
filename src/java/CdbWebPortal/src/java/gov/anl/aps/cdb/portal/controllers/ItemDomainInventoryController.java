@@ -153,23 +153,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         return item.getDomain().getName().equals(getDefaultDomainName());
     }
 
-    public void createSaveFromDialog(String onSuccessCommand) {
-        String result = create();
-        if (result != null) {
-            SessionUtility.executeRemoteCommand(onSuccessCommand);
-        }
-    }
-
-    public void createCancelFromDialog() {
-        if (getCurrent() != null) {
-            ItemDomainCatalog catalogItem = getCurrent().getCatalogItem();
-            if (catalogItem != null) {
-                catalogItem.getDerivedFromItemList().remove(getCurrent());
-            }
-            setCurrent(null);
-        }
-    }   
-
     @Override
     public String prepareView(ItemDomainInventory item) {
         resetBOMSupportVariables();

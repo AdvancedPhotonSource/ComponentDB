@@ -32,4 +32,13 @@ See LICENSE file.
         <ui:include src="../plugins/private/cableCatalogDetailsViewSections.xhtml"/> 
     </ui:define>
 
+    <ui:define name="additionalViewItemContent">
+        <ui:include src="../itemDomainCatalogBase/private/itemDomainCatalogBaseInventoryCreateDialog.xhtml">
+            <ui:param name="inventoryController"
+                      value="#{itemDomainCableInventoryController}" />
+            <ui:param name="catalogController"
+                      value="#{itemDomainCableCatalogController}" />
+        </ui:include>
+    </ui:define>
+
 </ui:composition>

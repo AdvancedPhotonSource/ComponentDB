@@ -16,7 +16,7 @@ See LICENSE file.
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
         <ui:param name="displayAddButton" value="#{loginController.loggedIn}" />
-        <ui:param name="onCompleteAddButtonCommand" value="prepareAddCableInventoryItem()" />
+        <ui:param name="onCompleteAddButtonCommand" value="prepareAddInventoryItem()" />
     </ui:include>    
     
     <ui:include src="itemDomainCableCatalogInventoryListDataTable.xhtml"/>
