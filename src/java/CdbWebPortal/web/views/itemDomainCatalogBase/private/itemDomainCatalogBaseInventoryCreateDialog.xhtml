@@ -9,9 +9,11 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <ui:param name="headerItem" value="#{inventoryController.displayEntityTypeName}" />
 
     <p:dialog widgetVar="addInventoryItemDialogWidget"
-              header="Add Inventory Item"
+              header="Add #{headerItem}"
               modal="true"
               styleClass="viewTransparentBackgroundDialog"
               closable="false">

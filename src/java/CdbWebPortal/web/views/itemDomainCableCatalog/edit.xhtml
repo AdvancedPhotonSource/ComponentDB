@@ -23,6 +23,15 @@ See LICENSE file.
         <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
     </f:metadata>
 
+    <ui:define name="itemsDerivedFromItem">
+        <ui:include src="../itemDomainCatalogBase/private/itemDomainCatalogBaseInventoryEditList.xhtml">
+            <ui:param name="inventoryController"
+                      value="#{itemDomainCableInventoryController}" />
+            <ui:param name="catalogController"
+                      value="#{itemDomainCableCatalogController}" />
+        </ui:include>
+    </ui:define>
+
     <ui:define name="additionalEditItemContent" >
         <ui:include src="../itemDomainCatalogBase/private/itemDomainCatalogBaseInventoryCreateDialog.xhtml">
             <ui:param name="inventoryController"
