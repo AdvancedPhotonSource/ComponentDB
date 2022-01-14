@@ -13,16 +13,12 @@ See LICENSE file.
     <ui:define name="additionalItemSpecificColumns">
         
         <ui:include src="../../locatableItem/private/locatableItemListCustomizeObject.xhtml" >
-            <ui:param name="settingObject" value="#{itemDomainCableInventoryController.settingObject}" /> 
+            <ui:param name="settingObject" value="#{entityController.settingObject}" /> 
         </ui:include>
         
         <ui:include src="../../itemStatus/private/itemStatusListCustomizeObject.xhtml">
-            <ui:param name="settingObject" value="#{itemDomainCableInventoryController.settingObject}" />             
+            <ui:param name="settingObject" value="#{entityController.settingObject}" />             
         </ui:include>
         
     </ui:define>
-    
-    <!--    define blank section so the row expansion options are not added to customize dialog-->
-    <ui:define name="rowExpansionCustomizeOptionsTab"/>
-    
 </ui:composition>
