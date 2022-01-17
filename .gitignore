@@ -15,7 +15,8 @@ tools/developer_tools/portal_testing/CdbFunctionalTester/nbproject/private/
 !/tools/developer_tools/python-client/CdbApiFactory.py
 !/tools/developer_tools/python-client/ClientApiConfig.yml
 !/tools/developer_tools/python-client/cdbCli
-!/tools/developer_tools/python-client/setup.py
+!/tools/developer_tools/python-client/setup-cli.py
+!/tools/developer_tools/python-client/setup-api.py
 !/tools/developer_tools/python-client/test
 
 # Generated deployment specific config files 
