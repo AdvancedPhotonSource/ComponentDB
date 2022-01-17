@@ -23,6 +23,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.CatalogItemElementConstraintInformation;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
@@ -178,6 +179,16 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         return displayInventorySetting; 
     }
     
+    public Boolean getDisplayInventorySpares() {
+        ItemCatalogBaseDomainEntity current = getCurrent();
+        Boolean displayInventorySpares = current.getDisplayInventorySpares();
+        if (displayInventorySpares == null) {
+            displayInventorySpares = SparePartsBean.isItemContainSparePartConfiguration(getCurrent());
+            current.setDisplayInventorySpares(displayInventorySpares);
+        }
+        return displayInventorySpares;
+    }
+
     /**
      * Allows subclasses to perform custom validation of a new ItemConnector instance.
      * @param itemConnector

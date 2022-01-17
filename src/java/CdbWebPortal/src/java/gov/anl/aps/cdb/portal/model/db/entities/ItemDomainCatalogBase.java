@@ -15,6 +15,7 @@ import java.util.List;
 public abstract class ItemDomainCatalogBase<InventoryItem extends Item> extends Item {
 
     private transient String sourceString = null;
+    private transient Boolean displayInventorySpares = null;
 
     @JsonIgnore
     public List<InventoryItem> getInventoryItemList() {
@@ -139,4 +140,13 @@ public abstract class ItemDomainCatalogBase<InventoryItem extends Item> extends 
         this.setItemIdentifier1(n);
     }
 
+    @JsonIgnore
+    public Boolean getDisplayInventorySpares() {
+        return displayInventorySpares;
+    }
+
+    public void setDisplayInventorySpares(Boolean displayInventorySpares) {
+        this.displayInventorySpares = displayInventorySpares;
+    }
+    
 }

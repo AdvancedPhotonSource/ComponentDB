@@ -32,7 +32,6 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemDomainInventory> inventorySparesList = null;
     private transient List<ItemDomainInventory> inventoryNonSparesList = null;
-    private transient Boolean displayInventorySpares = null;
     private transient ItemDomainCatalogBaseController itemElementSelectionController; 
     // </editor-fold>
 
@@ -87,15 +86,6 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
         this.inventoryNonSparesList = inventoryNonSparesList;
     }
 
-    @JsonIgnore
-    public Boolean getDisplayInventorySpares() {
-        return displayInventorySpares;
-    }
-
-    public void setDisplayInventorySpares(Boolean displayInventorySpares) {
-        this.displayInventorySpares = displayInventorySpares;
-    }
-    
     @JsonIgnore
     public ItemDomainCatalogBaseController getItemElementSelectionController() {
         return itemElementSelectionController;

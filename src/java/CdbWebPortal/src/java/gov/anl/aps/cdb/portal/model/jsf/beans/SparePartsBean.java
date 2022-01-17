@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
@@ -154,7 +155,7 @@ public class SparePartsBean implements Serializable {
      * @param catalogItem
      * @return
      */
-    public static boolean isItemContainSparePartConfiguration(ItemDomainCatalog catalogItem) {
+    public static boolean isItemContainSparePartConfiguration(ItemDomainCatalogBase catalogItem) {
         if (catalogItem != null) {
             return getStoredSparePartsConfigrationPropertyValue(catalogItem) != null;
         }
@@ -213,7 +214,7 @@ public class SparePartsBean implements Serializable {
 
     }
 
-    private static PropertyValue getStoredSparePartsConfigrationPropertyValue(ItemDomainCatalog item) {
+    private static PropertyValue getStoredSparePartsConfigrationPropertyValue(ItemDomainCatalogBase item) {
         return getPropertyValueByType(item, SPARE_PARTS_CONFIGURATION_PROPERTY_TYPE_NAME);
     }
 

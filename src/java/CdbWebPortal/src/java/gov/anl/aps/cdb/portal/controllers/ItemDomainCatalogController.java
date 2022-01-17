@@ -140,16 +140,6 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
         return 0;
     }
 
-    public Boolean getDisplayInventorySpares() {
-        ItemDomainCatalog current = getCurrent();
-        Boolean displayInventorySpares = current.getDisplayInventorySpares();
-        if (displayInventorySpares == null) {
-            displayInventorySpares = SparePartsBean.isItemContainSparePartConfiguration(getCurrent());
-            current.setDisplayInventorySpares(displayInventorySpares);
-        }
-        return displayInventorySpares;
-    }
-
     @Override
     protected ItemDomainCatalogControllerUtility createControllerUtilityInstance() {
         return new ItemDomainCatalogControllerUtility();
