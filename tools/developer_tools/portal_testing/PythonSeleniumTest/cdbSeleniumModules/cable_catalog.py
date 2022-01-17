@@ -14,7 +14,7 @@ class CableCatalog(ItemBase):
         self._navigate_to_dropdown('catalogDropdownButton', 'cableCatalogButton', '%s/list' % self.VIEW_BASE_NAME)
 
     def test_cable_catalog_pages(self):
-        dataTableXpathFormula = '//*[@id="%s:%sListDataTable_data"]/tr[1]/td[1]/a'
+        dataTableXpathFormula = '//*[@id="%s:%sListDataTable_data"]/tr[1]/td[2]/a'
         self._click_on_xpath(dataTableXpathFormula % (self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME))
         self._wait_for_url_contains('%s/view' % self.VIEW_BASE_NAME)
 
