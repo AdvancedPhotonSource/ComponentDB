@@ -56,6 +56,10 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
         return String.format("Unit: %04d", itemNumber);
     }
     
+    public String generateUnitName(int itemNumber) {
+        return ItemDomainInventory.generatePaddedUnitName(itemNumber);
+    }
+    
     @Override
     // TODO API Change back to json ignore and utilize the catalog item 
     //@JsonIgnore

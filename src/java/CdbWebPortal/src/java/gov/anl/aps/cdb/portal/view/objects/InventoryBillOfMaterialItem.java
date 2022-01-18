@@ -177,7 +177,7 @@ public class InventoryBillOfMaterialItem {
 
                 // Add one for user readability. No use of 0 for first item.
                 int itemNumber = getExistingInventoryItemSelectDataModel().getRowCount() + newItemCount + 1;
-                inventoryItem.setName(ItemDomainInventory.generatePaddedUnitName(itemNumber));
+                inventoryItem.setName(inventoryItem.generateUnitName(itemNumber));
             }
         }
     }

@@ -52,6 +52,9 @@ public abstract class ItemDomainInventoryBase<CatalogItemType extends ItemDomain
     }
     
     @JsonIgnore
+    public abstract String generateUnitName(int itemNumber);
+    
+    @JsonIgnore
     public ItemElement getSelectedItemElementForUpdate() {
         return selectedItemElementForUpdate;
     }
