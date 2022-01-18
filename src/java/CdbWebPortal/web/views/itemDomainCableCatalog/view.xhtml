@@ -25,7 +25,12 @@ See LICENSE file.
     </f:metadata>
 
     <ui:define name="derivedFromItems">
-        <ui:include src="private/itemDomainCableCatalogInventoryList.xhtml"/>
+        <ui:include src="../itemDomainCatalogBase/private/itemDomainCatalogBaseInventoryList.xhtml">
+            <ui:param name="inventoryController"
+                      value="#{itemDomainCableInventoryController}" />
+            <ui:param name="catalogController"
+                      value="#{itemDomainCableCatalogController}" />
+        </ui:include>
     </ui:define>
 
     <ui:define name="additonalPluginSections" >
@@ -38,6 +43,12 @@ See LICENSE file.
                       value="#{itemDomainCableInventoryController}" />
             <ui:param name="catalogController"
                       value="#{itemDomainCableCatalogController}" />
+        </ui:include>
+        <ui:include src="../itemMultiEdit/private/itemMultiCreateConfigurationDialog.xhtml">
+            <ui:param name="entityController"
+                      value="#{itemMultiEditDomainCableInventoryController}" />
+            <ui:param name="entityTypeName"
+                      value="#{itemDomainCableInventoryController.entityTypeName}"/>
         </ui:include>
     </ui:define>
 
