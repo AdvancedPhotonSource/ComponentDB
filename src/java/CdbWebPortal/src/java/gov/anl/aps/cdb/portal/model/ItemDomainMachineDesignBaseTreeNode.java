@@ -18,9 +18,11 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.comparator.ItemElementSortBase;
 import gov.anl.aps.cdb.portal.model.db.entities.comparator.ItemSelfElementSortOrderComparator;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,11 +160,39 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
     }
 
     protected <T extends ItemDomainMachineDesignBaseTreeNode> T createChildNode(ItemElement itemElement, boolean childrenLoaded, boolean setType) {
+        return createChildNode(itemElement, childrenLoaded, setType, false);
+    }
+
+    protected <T extends ItemDomainMachineDesignBaseTreeNode> T createChildNode(ItemElement itemElement, boolean childrenLoaded, boolean setType, boolean verifySort) {
         T machine = createTreeNodeObject(itemElement, config, this, setType);
         if (childrenLoaded) {
             machine.childrenLoaded = childrenLoaded;
         }
-        super.getChildren().add(machine);
+        if (!verifySort) {
+            super.getChildren().add(machine);
+        } else {                        
+            List<TreeNode> currentChildren = super.getChildren();
+            Float newSort = itemElement.getSortOrder();            
+            boolean added = false;
+
+            if (newSort != null || currentChildren.size() == 0) {
+                for (int i = 0; i < currentChildren.size(); i++) {
+                    TreeNode child = currentChildren.get(i);
+                    ItemElement data = (ItemElement) child.getData();                    
+                    Float currentSort = data.getSortOrder();                    
+                    
+                    if (currentSort == null || currentSort > newSort || currentSort.equals(newSort)) {
+                        super.getChildren().add(i, machine);
+                        added = true; 
+                        break;
+                    }
+                }
+            }
+
+            if (!added) {
+                super.getChildren().add(machine);
+            }
+        }
 
         return machine;
     }
@@ -417,7 +447,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
     }
 
     protected <T extends ItemDomainMachineDesignBaseTreeNode> T createSearchResultChildNode(ItemDomainMachineDesignBaseTreeNode parentNode, ItemElement ie, boolean childrenLoaded) {
-        return (T) parentNode.createChildNode(ie, childrenLoaded);
+        return (T) parentNode.createChildNode(ie, childrenLoaded, true, true);
     }
 
     private ItemDomainMachineDesignBaseTreeNode createTreeFromFilter(ItemDomainMachineDesign item, boolean searchResultNode, Integer[] displayedNodes) {
