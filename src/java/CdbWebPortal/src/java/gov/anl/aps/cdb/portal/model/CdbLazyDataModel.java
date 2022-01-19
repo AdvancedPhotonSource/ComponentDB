@@ -60,7 +60,7 @@ public abstract class CdbLazyDataModel extends LazyDataModel {
             int intValue = sortOrder.intValue();
             Integer lastIntValue = lastSortMap.get(key);
 
-            if (intValue != lastIntValue) {
+            if (lastIntValue == null || intValue != lastIntValue) {
                 copyLastMaps(sortOrderMap, filterBy);
                 return true;
             }
