@@ -5,7 +5,7 @@ class CableInventory(ItemBase):
 
     VIEW_BASE_NAME = 'itemDomainCableInventory'
     ENTITY_TYPE_NAME = 'cableInventory'
-    COLUMN_IDX = 2
+    COLUMN_IDX = 3
     FORM_NAME = ENTITY_TYPE_NAME + '%sForm'
     LIST_FORM_NAME = FORM_NAME % 'List'
     VIEW_FORM_NAME = FORM_NAME % 'View'
