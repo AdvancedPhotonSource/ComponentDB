@@ -10,7 +10,7 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
     
     <p:outputPanel rendered="#{!showSparesSplitView}">
-        <ui:include src="itemDomainCatalogInventoryListBasicView.xhtml">
+        <ui:include src="itemDomainCatalogBaseInventoryListBasicView.xhtml">
             <ui:param name="displaySpareColumn" value="#{showSparesSplitView}" />
         </ui:include>
     </p:outputPanel>
@@ -22,18 +22,18 @@ See LICENSE file.
         <ui:param name="updateTarget" value="@form:sparesSplitViewAccordionPanel" />
         
         <p:tab title="All Items">
-            <ui:include src="itemDomainCatalogInventoryListBasicView.xhtml"/>
+            <ui:include src="itemDomainCatalogBaseInventoryListBasicView.xhtml"/>
         </p:tab>
-        <p:tab title="Non-Spares: #{itemDomainCatalogController.inventoryNonSparesCount}">
-            <ui:include src="itemDomainCatalogInventoryListDataTable.xhtml">
+        <p:tab title="Non-Spares: #{catalogController.inventoryNonSparesCount}">
+            <ui:include src="itemDomainCatalogBaseInventoryListDataTable.xhtml">
                 <ui:param name="viewName" value="NonSpares" />
-                <ui:param name="itemListDataTableValue" value="#{itemDomainCatalogController.inventoryNonSparesList}" />
+                <ui:param name="itemListDataTableValue" value="#{catalogController.inventoryNonSparesList}" />
             </ui:include>
         </p:tab>
-        <p:tab title="Spares: #{itemDomainCatalogController.inventorySparesCount}">
-            <ui:include src="itemDomainCatalogInventoryListDataTable.xhtml">
+        <p:tab title="Spares: #{catalogController.inventorySparesCount}">
+            <ui:include src="itemDomainCatalogBaseInventoryListDataTable.xhtml">
                 <ui:param name="viewName" value="Spares" />
-                <ui:param name="itemListDataTableValue" value="#{itemDomainCatalogController.inventorySparesList}" />
+                <ui:param name="itemListDataTableValue" value="#{catalogController.inventorySparesList}" />
             </ui:include>
         </p:tab>
     </p:accordionPanel>

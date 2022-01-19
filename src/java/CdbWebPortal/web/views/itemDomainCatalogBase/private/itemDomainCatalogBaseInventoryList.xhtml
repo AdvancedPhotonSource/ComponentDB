@@ -9,14 +9,19 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <ui:param name="childEntityController" value="#{itemDomainCableInventoryController}"/>
+    <ui:param name="childEntityController" value="#{inventoryController}"/>
     <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}" />
 
-    <ui:include src="itemDomainCableCatalogInventoryListView.xhtml">
+    <ui:param name="showSparesSplitView"
+              value="#{catalogController.displayInventorySpares}" />
+
+    <ui:include src="itemDomainCatalogBaseInventoryListView.xhtml">
         <ui:param name="itemListDisplayDerivedFromItem"
                   value="#{false}"/>
     </ui:include>
     
-    <ui:include src="itemDomainCableCatalogInventoryListCustomizeDisplayDialog.xhtml"/>
+    <ui:include src="itemDomainCatalogBaseInventoryListCustomizeDisplayDialog.xhtml"/>
 
 </ui:composition>
+
+

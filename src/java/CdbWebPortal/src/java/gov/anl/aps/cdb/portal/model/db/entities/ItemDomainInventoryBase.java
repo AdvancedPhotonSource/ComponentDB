@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
+import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import java.util.List;
 import org.primefaces.model.TreeNode;
@@ -17,6 +18,8 @@ import org.primefaces.model.TreeNode;
  */
 public abstract class ItemDomainInventoryBase<CatalogItemType extends ItemDomainCatalogBase> extends LocatableStatusItem {
 
+    public static final String ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE = "Spare";        
+
     private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
 
     private transient InventoryBillOfMaterialItem containedInBOM;
@@ -25,6 +28,8 @@ public abstract class ItemDomainInventoryBase<CatalogItemType extends ItemDomain
 
     private transient TreeNode itemElementAssemblyRootTreeNode = null;   
 
+    private transient SparePartsBean sparePartsBean = null;
+    
     public CatalogItemType getCatalogItem() {
         return (CatalogItemType) getDerivedFromItem();
     }
@@ -52,6 +57,9 @@ public abstract class ItemDomainInventoryBase<CatalogItemType extends ItemDomain
     }
     
     @JsonIgnore
+    public abstract String generateUnitName(int itemNumber);
+    
+    @JsonIgnore
     public ItemElement getSelectedItemElementForUpdate() {
         return selectedItemElementForUpdate;
     }
@@ -69,4 +77,22 @@ public abstract class ItemDomainInventoryBase<CatalogItemType extends ItemDomain
         }
         return itemElementAssemblyRootTreeNode;
     }
+
+    @JsonIgnore
+    public Boolean getSparePartIndicator() {
+        if (sparePartIndicator == null) {
+            boolean spare = getInventoryStatusValue().equals(ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE);
+            sparePartIndicator = spare;
+        }
+        return sparePartIndicator;
+    }
+
+    @JsonIgnore
+    public SparePartsBean getSparePartsBean() {
+        if (sparePartsBean == null) {
+            sparePartsBean = SparePartsBean.getInstance();
+        }
+        return sparePartsBean;
+    }
+
 }

@@ -12,11 +12,11 @@ See LICENSE file.
                 template="../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml">
 
     <ui:define name="defineCustomizeDisplayDialogVariables">
-        <ui:param name="entityController" value="#{itemDomainInventoryController}" />
+        <ui:param name="entityController" value="#{inventoryController}" />
     </ui:define>
 
     <ui:define name="customizeDisplayDialogConent">
-        <ui:param name="itemDomainInventorySettingObject" value="#{itemDomainInventoryController.settingObject}" />
+        <ui:param name="itemDomainInventorySettingObject" value="#{inventoryController.settingObject}" />
         <p:panelGrid columns="2">
             
             <p:selectBooleanCheckbox id="componentInstanceDisplayDescription" value="#{itemDomainInventorySettingObject.displayDescription}"/>  
