@@ -30,8 +30,6 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
     private transient String machineDesignPlaceholderName = null;   
     
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
-    private transient List<ItemDomainInventory> inventorySparesList = null;
-    private transient List<ItemDomainInventory> inventoryNonSparesList = null;
     private transient ItemDomainCatalogBaseController itemElementSelectionController; 
     // </editor-fold>
 
@@ -68,24 +66,6 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
     }
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
-    @JsonIgnore
-    public List<ItemDomainInventory> getInventorySparesList() {
-        return inventorySparesList;
-    }
-
-    public void setInventorySparesList(List<ItemDomainInventory> inventorySparesList) {
-        this.inventorySparesList = inventorySparesList;
-    }
-
-    @JsonIgnore
-    public List<ItemDomainInventory> getInventoryNonSparesList() {
-        return inventoryNonSparesList;
-    }
-
-    public void setInventoryNonSparesList(List<ItemDomainInventory> inventoryNonSparesList) {
-        this.inventoryNonSparesList = inventoryNonSparesList;
-    }
-
     @JsonIgnore
     public ItemDomainCatalogBaseController getItemElementSelectionController() {
         return itemElementSelectionController;

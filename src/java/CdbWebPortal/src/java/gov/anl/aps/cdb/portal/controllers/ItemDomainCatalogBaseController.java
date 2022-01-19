@@ -20,6 +20,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -187,6 +188,78 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
             current.setDisplayInventorySpares(displayInventorySpares);
         }
         return displayInventorySpares;
+    }
+
+    public List<ItemDomainInventoryBase> getInventorySparesList() {
+        ItemDomainCatalogBase current = getCurrent();
+        List<ItemDomainInventoryBase> inventorySparesList = current.getInventorySparesList();
+        if (inventorySparesList == null) {
+            inventorySparesList = new ArrayList<>();
+            for (Object item : current.getInventoryItemList()) {
+                ItemDomainInventoryBase inventoryItem = (ItemDomainInventoryBase) item;
+                if (inventoryItem.getSparePartIndicator()) {
+                    inventorySparesList.add(inventoryItem);
+                }
+            }
+            current.setInventorySparesList(inventorySparesList);
+        }
+        return inventorySparesList;
+    }
+
+    public List<ItemDomainInventoryBase> getInventoryNonSparesList() {
+        ItemDomainCatalogBase current = getCurrent();
+        List<ItemDomainInventoryBase> inventoryNonSparesList = current.getInventoryNonSparesList();
+        if (inventoryNonSparesList == null) {
+            ItemDomainCatalogBase currentItem = getCurrent();
+            if (currentItem != null) {
+                List<ItemDomainInventoryBase> spareItems = getInventorySparesList();
+                List<ItemDomainInventoryBase> allInventoryItems = getCurrent().getInventoryItemList();
+                inventoryNonSparesList = new ArrayList<>(allInventoryItems);
+                inventoryNonSparesList.removeAll(spareItems);
+            }
+            current.setInventoryNonSparesList(inventoryNonSparesList);
+        }
+        return inventoryNonSparesList;
+    }
+
+    public int getInventorySparesCount() {
+        List<ItemDomainInventoryBase> sparesList = getInventorySparesList();
+        if (sparesList != null) {
+            return sparesList.size();
+        }
+        return 0;
+    }
+
+    public void notifyUserIfMinimumSparesReachedForCurrent() {
+        int sparesMin = SparePartsBean.getSparePartsMinimumForItem(getCurrent());
+        if (sparesMin == -1) {
+            // Either an error occured or no spare parts configuration was found.
+            return;
+        } else {
+            int sparesCount = getInventorySparesCount();
+            if (sparesCount < sparesMin) {
+                String sparesMessage;
+                sparesMessage = "You now have " + sparesCount;
+                if (sparesCount == 1) {
+                    sparesMessage += " spare";
+                } else {
+                    sparesMessage += " spares";
+                }
+
+                sparesMessage += " but require a minumum of " + sparesMin;
+
+                SessionUtility.addWarningMessage("Spares Warning", sparesMessage);
+            }
+        }
+
+    }
+
+    public int getInventoryNonSparesCount() {
+        List<ItemDomainInventoryBase> nonSparesList = getInventoryNonSparesList();
+        if (nonSparesList != null) {
+            return nonSparesList.size();
+        }
+        return 0;
     }
 
     /**

@@ -24,11 +24,7 @@ import javax.persistence.Entity;
 public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatalog> {
 
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status";
-    public static final String ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE = "Spare";        
-
-    private transient SparePartsBean sparePartsBean = null;
-    
-    // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
+   // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;       
     // </editor-fold>
     
@@ -65,23 +61,6 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
     //@JsonIgnore
     public Item getDerivedFromItem() {
         return super.getDerivedFromItem(); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @JsonIgnore
-    public Boolean getSparePartIndicator() {
-        if (sparePartIndicator == null) {
-            boolean spare = getInventoryStatusValue().equals(ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE);
-            sparePartIndicator = spare;
-        }
-        return sparePartIndicator;
-    }
-
-    @JsonIgnore
-    public SparePartsBean getSparePartsBean() {
-        if (sparePartsBean == null) {
-            sparePartsBean = SparePartsBean.getInstance();
-        }
-        return sparePartsBean;
     }
 
     @Override
