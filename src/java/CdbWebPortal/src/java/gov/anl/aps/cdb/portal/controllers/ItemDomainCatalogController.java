@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCatalogC
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCatalogSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCatalogPorts;
+import gov.anl.aps.cdb.portal.model.ItemDomainCatalogLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.model.DataModel;
 import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,6 +39,8 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
     private static final Logger logger = LogManager.getLogger(ItemDomainCatalogController.class.getName());
 
     public final static String CONTROLLER_NAMED = "itemDomainCatalogController";
+    
+    private ItemDomainCatalogLazyDataModel itemDomainCatalogLazyDataModel;
 
     @EJB
     ItemDomainCatalogFacade itemDomainCatalogFacade;
@@ -62,6 +66,24 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
     @Override
     protected ItemDomainCatalogFacade getEntityDbFacade() {
         return itemDomainCatalogFacade;
+    }
+
+    @Override
+    public void resetListDataModel() {
+        super.resetListDataModel();
+        itemDomainCatalogLazyDataModel = null; 
+    } 
+
+    @Override
+    public DataModel getListDataModel() {
+        return getItemDomainCatalogLazyDataModel();        
+    }
+
+    public ItemDomainCatalogLazyDataModel getItemDomainCatalogLazyDataModel() {
+        if (itemDomainCatalogLazyDataModel == null) {
+            itemDomainCatalogLazyDataModel = new ItemDomainCatalogLazyDataModel(itemDomainCatalogFacade, getDefaultDomain()); 
+        }
+        return itemDomainCatalogLazyDataModel;
     }
 
     @Override
