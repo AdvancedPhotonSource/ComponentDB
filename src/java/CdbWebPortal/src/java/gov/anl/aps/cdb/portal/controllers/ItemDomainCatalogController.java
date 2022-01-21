@@ -14,8 +14,6 @@ import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCatalogP
 import gov.anl.aps.cdb.portal.model.ItemDomainCatalogLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
-import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
@@ -89,87 +87,6 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
     @Override
     protected ItemDomainCatalogSettings createNewSettingObject() {
         return new ItemDomainCatalogSettings(this);
-    }
-
-    public List<ItemDomainInventory> getInventorySparesList() {
-        ItemDomainCatalog current = getCurrent();
-        List<ItemDomainInventory> inventorySparesList = current.getInventorySparesList();
-        if (inventorySparesList == null) {
-            inventorySparesList = new ArrayList<>();
-            for (ItemDomainInventory inventoryItem : current.getInventoryItemList()) {
-                if (inventoryItem.getSparePartIndicator()) {
-                    inventorySparesList.add(inventoryItem);
-                }
-            }
-            current.setInventorySparesList(inventorySparesList);
-        }
-        return inventorySparesList;
-    }
-
-    public List<ItemDomainInventory> getInventoryNonSparesList() {
-        ItemDomainCatalog current = getCurrent();
-        List<ItemDomainInventory> inventoryNonSparesList = current.getInventoryNonSparesList();
-        if (inventoryNonSparesList == null) {
-            ItemDomainCatalog currentItem = getCurrent();
-            if (currentItem != null) {
-                List<ItemDomainInventory> spareItems = getInventorySparesList();
-                List<ItemDomainInventory> allInventoryItems = getCurrent().getInventoryItemList();
-                inventoryNonSparesList = new ArrayList<>(allInventoryItems);
-                inventoryNonSparesList.removeAll(spareItems);
-            }
-            current.setInventoryNonSparesList(inventoryNonSparesList);
-        }
-        return inventoryNonSparesList;
-    }
-
-    public int getInventorySparesCount() {
-        List<ItemDomainInventory> sparesList = getInventorySparesList();
-        if (sparesList != null) {
-            return sparesList.size();
-        }
-        return 0;
-    }
-
-    public void notifyUserIfMinimumSparesReachedForCurrent() {
-        int sparesMin = SparePartsBean.getSparePartsMinimumForItem(getCurrent());
-        if (sparesMin == -1) {
-            // Either an error occured or no spare parts configuration was found.
-            return;
-        } else {
-            int sparesCount = getInventorySparesCount();
-            if (sparesCount < sparesMin) {
-                String sparesMessage;
-                sparesMessage = "You now have " + sparesCount;
-                if (sparesCount == 1) {
-                    sparesMessage += " spare";
-                } else {
-                    sparesMessage += " spares";
-                }
-
-                sparesMessage += " but require a minumum of " + sparesMin;
-
-                SessionUtility.addWarningMessage("Spares Warning", sparesMessage);
-            }
-        }
-
-    }
-
-    public int getInventoryNonSparesCount() {
-        List<ItemDomainInventory> nonSparesList = getInventoryNonSparesList();
-        if (nonSparesList != null) {
-            return nonSparesList.size();
-        }
-        return 0;
-    }
-
-    public Boolean getDisplayInventorySpares() {
-        ItemDomainCatalog current = getCurrent();
-        Boolean displayInventorySpares = current.getDisplayInventorySpares();
-        if (displayInventorySpares == null) {
-            displayInventorySpares = SparePartsBean.isItemContainSparePartConfiguration(getCurrent());
-            current.setDisplayInventorySpares(displayInventorySpares);
-        }
-        return displayInventorySpares;
     }
 
     @Override

@@ -8,6 +8,10 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableInventory;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainCableInventoryController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesDomainCableInventoryController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCableInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableInventorySettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainCableInventoryLazyDataModel;
@@ -84,6 +88,16 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     protected ItemCreateWizardController getItemCreateWizardController() {
         return ItemCreateWizardDomainCableInventoryController.getInstance();
     }
+
+    @Override
+    public ItemMultiEditController getItemMultiEditController() {
+        return ItemMultiEditDomainCableInventoryController.getInstance();
+    }
+
+    @Override
+    public ItemEnforcedPropertiesController getItemEnforcedPropertiesController() {
+        return ItemEnforcedPropertiesDomainCableInventoryController.getInstance();
+    } 
 
     public void setDefaultValuesForCurrentItem() {
         

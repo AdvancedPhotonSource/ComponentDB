@@ -8,17 +8,23 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets">
     
-    <ui:param name="childEntityController" value="#{itemDomainCableInventoryController}"/>
+    <ui:param name="childEntityController" value="#{inventoryController}"/>
     <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}" />
     
 
-    <ui:include src="itemDomainCableCatalogInventoryChildListActionButtons.xhtml">
+    <ui:include src="itemDomainCatalogBaseInventoryChildListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
         <ui:param name="displayAddButton" value="#{loginController.loggedIn}" />
         <ui:param name="onCompleteAddButtonCommand" value="prepareAddInventoryItem()" />
     </ui:include>    
     
-    <ui:include src="itemDomainCableCatalogInventoryListDataTable.xhtml"/>
+    <ui:param name="showSparesSplitView"
+              value="#{itemDomainCatalogController.displayInventorySpares}" />
+    
+    
+    <ui:include src="itemDomainCatalogBaseInventoryListDataTable.xhtml"/>
 
 </ui:composition>
+
+

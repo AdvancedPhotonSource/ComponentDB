@@ -46,6 +46,10 @@ public class ItemDomainCableInventory extends ItemDomainInventoryBase<ItemDomain
         return String.format("Unit: %09d", itemNumber);
     }
 
+    public String generateUnitName(int itemNumber) {
+        return ItemDomainCableInventory.generatePaddedUnitName(itemNumber);
+    }
+    
     /**
      * This method is redundant to the generic method defined in the superclass,
      * ItemDomainInventoryBase.  It is needed here because the import wizard
