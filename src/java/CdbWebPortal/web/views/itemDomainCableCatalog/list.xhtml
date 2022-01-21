@@ -33,4 +33,13 @@ See LICENSE file.
         <ui:include src="../item/private/templateDefaults/customizeDisplayAddons/itemListDataTableDisplayModeSelectionDialogButton.xhtml" />
     </ui:define>
     
+    <ui:define name="domainEntityListDataTableParameters">
+        <ui:param name="itemListDataTableLazy"
+                  value="#{entityController.dataTableNotScoped}"/> 
+        
+        <ui:param name="itemListDataTablePaginatorAlwaysVisible"
+                  value="#{true}"/>                
+    </ui:define>
+
+    
 </ui:composition>
