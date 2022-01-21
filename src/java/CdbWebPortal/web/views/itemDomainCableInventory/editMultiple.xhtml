@@ -8,9 +8,9 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../itemMultiEdit/private/templates/itemEditMultipleTemplate.xhtml">
     
-    <ui:param name="singleTabViewKey" value="createEditMultipleInventory" /> 
+    <ui:param name="singleTabViewKey" value="createEditMultipleCableInventory" /> 
 
-    <ui:param name="entityController" value="#{itemMultiEditDomainInventoryController}" />
+    <ui:param name="entityController" value="#{itemMultiEditDomainCableInventoryController}" />
 
     <ui:define name="itemMulitEditSelectionListDataTable">
         <ui:include src="../itemDomainInventoryBase/private/itemDomainInventoryBaseMultiEditListDataTable.xhtml" />
@@ -41,5 +41,3 @@ See LICENSE file.
     </ui:define>
 
 </ui:composition>
-
-

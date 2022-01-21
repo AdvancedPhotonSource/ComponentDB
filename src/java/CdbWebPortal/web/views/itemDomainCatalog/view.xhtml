@@ -25,7 +25,12 @@ See LICENSE file.
     </f:metadata>
     
     <ui:define name="derivedFromItems">
-        <ui:include src="private/itemDomainCatalogInventoryList.xhtml"/>
+        <ui:include src="../itemDomainCatalogBase/private/itemDomainCatalogBaseInventoryList.xhtml">
+            <ui:param name="inventoryController"
+                      value="#{itemDomainInventoryController}" />
+            <ui:param name="catalogController"
+                      value="#{itemDomainCatalogController}" />
+        </ui:include>
     </ui:define>
     
     <ui:define name="additonalPluginSections" >

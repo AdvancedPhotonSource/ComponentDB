@@ -29,7 +29,7 @@ See LICENSE file.
                          value="Edit Many"
                          icon="fa fa-object-group"
                          rendered="#{loginController.loggedIn}"
-                         action="#{itemMultiEditDomainInventoryController.editAllItemsDerivedFromItem(itemObject)}">
+                         action="#{childEntityMultiEditController.editAllItemsDerivedFromItem(itemObject)}">
             <p:tooltip for="#{childEntityTypeName}#{viewName}EditAllButton"
                        value="Edit many #{childEntityTypeName} items for which current user has permissions"/>
         </p:commandButton>
