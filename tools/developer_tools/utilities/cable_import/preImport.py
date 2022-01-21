@@ -781,16 +781,16 @@ class EndpointHandler(InputHandler):
         id = self.rack_manager.get_endpoint_id_for_rack(rack_name, endpoint_name)
         if id == 0:
             is_valid = False
-            valid_string = "no endpoint item found with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
+            valid_string = "no endpoint item found in CDB with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
             logging.error(valid_string)
             self.missing_endpoints.add(rack_name + " + " + endpoint_name)
         elif id == -1:
             is_valid = False
-            valid_string = "duplicate endpoint items found with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
+            valid_string = "duplicate endpoint items found in CDB with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
             logging.error(valid_string)
             self.nonunique_endpoints.add(rack_name + " + " + endpoint_name)
         else:
-            logging.debug("found machine design item with name: %s, id: %s" % (endpoint_name, id))
+            logging.debug("found machine design item in CDB with name: %s, id: %s" % (endpoint_name, id))
 
         return is_valid, valid_string
 
@@ -846,9 +846,9 @@ class CableTypeIdHandler(InputHandler):
         cable_type_id = self.id_manager.get_id_for_name(cable_type_name)
         if cable_type_id == 0:
             self.missing_cable_type_list.add(cable_type_name)
-            return False, "no cable type found for name: %s" % cable_type_name
+            return False, "no cable type found in CDB for name: %s" % cable_type_name
         elif cable_type_id == -1:
-            return False, "found multiple cable types for name: %s" % cable_type_name
+            return False, "found multiple cable types in CDB for name: %s" % cable_type_name
         else:
             return True, ""
 
