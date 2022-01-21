@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainCableInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableInventorySettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableInventoryControllerUtility;
+import gov.anl.aps.cdb.portal.model.ItemDomainCableInventoryLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.model.DataModel;
 import javax.inject.Named;
 
 /**
@@ -36,6 +38,8 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "CableCatalog";                        
     private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.cableInventory.getValue();      
     
+    private ItemDomainCableInventoryLazyDataModel itemDomainCableInventoryLazyDataModel; 
+            
     @EJB
     ItemDomainCableInventoryFacade itemDomainCableInventoryFacade; 
 
@@ -51,7 +55,25 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     @Override
     protected ItemDomainCableInventoryFacade getEntityDbFacade() {
         return itemDomainCableInventoryFacade; 
-    }   
+    }
+
+    @Override
+    public void resetListDataModel() {
+        super.resetListDataModel(); 
+        itemDomainCableInventoryLazyDataModel = null; 
+    }
+
+    @Override
+    public DataModel getListDataModel() {
+        return getItemDomainCableInventoryLazyDataModel(); 
+    }
+
+    public ItemDomainCableInventoryLazyDataModel getItemDomainCableInventoryLazyDataModel() {
+        if (itemDomainCableInventoryLazyDataModel == null) {
+            itemDomainCableInventoryLazyDataModel = new ItemDomainCableInventoryLazyDataModel(itemDomainCableInventoryFacade, getDefaultDomain()); 
+        }
+        return itemDomainCableInventoryLazyDataModel;
+    }
             
     @Override
     protected String generatePaddedUnitName(int itemNumber) {
