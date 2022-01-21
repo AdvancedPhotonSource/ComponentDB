@@ -12,11 +12,7 @@ import org.primefaces.model.SortOrder;
  * @author darek
  */
 public class ItemDomainCatalogQueryBuilder extends ItemQueryBuilder {
-    
-    public ItemDomainCatalogQueryBuilder(Integer domainId, Map filterMap) {
-        super(domainId, filterMap, null, null); 
-    }
-    
+   
     public ItemDomainCatalogQueryBuilder(Integer domainId, Map filterMap, String sortField, SortOrder sortOrder) {
         super(domainId, filterMap, sortField, sortOrder);
     }

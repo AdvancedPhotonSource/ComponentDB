@@ -6,7 +6,6 @@ package gov.anl.aps.cdb.portal.model.db.beans.builder;
 
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import java.util.Map;
 import org.primefaces.model.SortOrder;
