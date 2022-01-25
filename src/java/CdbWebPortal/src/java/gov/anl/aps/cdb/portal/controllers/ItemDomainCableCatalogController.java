@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableCatalogContro
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableCatalogConnectors;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainCableCatalogLazyDataModel;
+import gov.anl.aps.cdb.portal.model.ItemLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
@@ -33,11 +34,9 @@ import javax.inject.Named;
  */
 @Named(ItemDomainCableCatalogController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseController<ItemDomainCableCatalogControllerUtility, ItemDomainCableCatalog, ItemDomainCableCatalogFacade, ItemDomainCableCatalogSettings> {
+public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseController<ItemDomainCableCatalogControllerUtility, ItemDomainCableCatalog, ItemDomainCableCatalogFacade, ItemDomainCableCatalogSettings, ItemDomainCableCatalogLazyDataModel> {
     
-    public static final String CONTROLLER_NAMED = "itemDomainCableCatalogController";
-    
-    private ItemDomainCableCatalogLazyDataModel itemDomainCableCatalogLazyDataModel;
+    public static final String CONTROLLER_NAMED = "itemDomainCableCatalogController";        
     
     @EJB
     ItemDomainCableCatalogFacade itemDomainCableCatalogFacade;
@@ -69,24 +68,11 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     @Override
     protected ItemDomainCableCatalogFacade getEntityDbFacade() {
         return itemDomainCableCatalogFacade; 
-    } 
-
-    @Override
-    public void resetListDataModel() {
-        super.resetListDataModel();
-        itemDomainCableCatalogLazyDataModel = null; 
     }
 
     @Override
-    public DataModel getListDataModel() {
-        return getItemDomainCableCatalogLazyDataModel();
-    }
-
-    public ItemDomainCableCatalogLazyDataModel getItemDomainCableCatalogLazyDataModel() {
-        if (itemDomainCableCatalogLazyDataModel == null) {
-            itemDomainCableCatalogLazyDataModel = new ItemDomainCableCatalogLazyDataModel(itemDomainCableCatalogFacade, getDefaultDomain()); 
-        }
-        return itemDomainCableCatalogLazyDataModel;
+    public ItemDomainCableCatalogLazyDataModel createItemLazyDataModel() {
+        return new ItemDomainCableCatalogLazyDataModel(itemDomainCableCatalogFacade, getDefaultDomain()); 
     }
 
     @Override

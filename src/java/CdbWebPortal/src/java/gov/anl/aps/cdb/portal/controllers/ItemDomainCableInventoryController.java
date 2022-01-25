@@ -34,15 +34,13 @@ import javax.inject.Named;
  */
 @Named(ItemDomainCableInventoryController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseController<ItemDomainCableInventoryControllerUtility, ItemDomainCableInventory, ItemDomainCableInventoryFacade, ItemDomainCableInventorySettings> {
+public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseController<ItemDomainCableInventoryControllerUtility, ItemDomainCableInventory, ItemDomainCableInventoryFacade, ItemDomainCableInventorySettings, ItemDomainCableInventoryLazyDataModel> {
     
     public static final String ITEM_DOMAIN_CABLE_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Cable Instance Status";
     public static final String CABLE_INVENTORY_INTERNAL_PROPERTY_TYPE = "cable_inventory_internal_property_type";
     public static final String CONTROLLER_NAMED = "itemDomainCableInventoryController";
     private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "CableCatalog";                        
-    private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.cableInventory.getValue();      
-    
-    private ItemDomainCableInventoryLazyDataModel itemDomainCableInventoryLazyDataModel; 
+    private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.cableInventory.getValue();         
             
     @EJB
     ItemDomainCableInventoryFacade itemDomainCableInventoryFacade; 
@@ -59,24 +57,11 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     @Override
     protected ItemDomainCableInventoryFacade getEntityDbFacade() {
         return itemDomainCableInventoryFacade; 
-    }
+    } 
 
     @Override
-    public void resetListDataModel() {
-        super.resetListDataModel(); 
-        itemDomainCableInventoryLazyDataModel = null; 
-    }
-
-    @Override
-    public DataModel getListDataModel() {
-        return getItemDomainCableInventoryLazyDataModel(); 
-    }
-
-    public ItemDomainCableInventoryLazyDataModel getItemDomainCableInventoryLazyDataModel() {
-        if (itemDomainCableInventoryLazyDataModel == null) {
-            itemDomainCableInventoryLazyDataModel = new ItemDomainCableInventoryLazyDataModel(itemDomainCableInventoryFacade, getDefaultDomain()); 
-        }
-        return itemDomainCableInventoryLazyDataModel;
+    public ItemDomainCableInventoryLazyDataModel createItemLazyDataModel() {
+        return new ItemDomainCableInventoryLazyDataModel(itemDomainCableInventoryFacade, getDefaultDomain()); 
     }
             
     @Override

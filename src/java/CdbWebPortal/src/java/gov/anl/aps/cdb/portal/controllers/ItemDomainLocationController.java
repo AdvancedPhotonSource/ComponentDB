@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainLocationSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperLocation;
+import gov.anl.aps.cdb.portal.model.ItemGenericLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -38,7 +39,7 @@ import org.primefaces.model.menu.DefaultSubMenu;
 
 @Named(ItemDomainLocationController.controllerNamed)
 @SessionScoped
-public class ItemDomainLocationController extends ItemController<ItemDomainLocationControllerUtility, ItemDomainLocation, ItemDomainLocationFacade, ItemDomainLocationSettings> {
+public class ItemDomainLocationController extends ItemController<ItemDomainLocationControllerUtility, ItemDomainLocation, ItemDomainLocationFacade, ItemDomainLocationSettings, ItemGenericLazyDataModel> {
 
     private final String DOMAIN_TYPE_NAME = ItemDomainName.location.getValue();
     private static final String DOMAIN_NAME = "Location";
@@ -83,6 +84,11 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
         return current.getInventoryLocatedHere();
 
     }
+    
+    @Override
+    public ItemGenericLazyDataModel createItemLazyDataModel() {
+        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain()); 
+    }   
 
     @Override
     public void resetListDataModel() {

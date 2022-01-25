@@ -38,6 +38,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.model.DataModel;
 import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,7 +51,7 @@ import org.primefaces.model.StreamedContent;
  */
 @Named("itemDomainMAARCController")
 @SessionScoped
-public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCControllerUtility, ItemDomainMAARC, ItemDomainMAARCFacade, ItemDomainMAARCSettings> {
+public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCControllerUtility, ItemDomainMAARC, ItemDomainMAARCFacade, ItemDomainMAARCSettings, ItemDomainMAARCLazyDataModel> {
 
     public static final String MAARC_CONNECTION_RELATIONSHIP_TYPE_NAME = "MAARC Connection";
     protected final String FILE_PROPERTY_TYPE_NAME = "File";
@@ -65,8 +66,6 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
     private boolean attemptedFetchFilePropertyType = false;
 
     private String currentViewableUUIDToDownload = null;
-
-    private ItemDomainMAARCLazyDataModel maarcListDataModel;
 
     @EJB
     ItemDomainMAARCFacade itemDomainMAARCFacade;
@@ -522,25 +521,16 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
         }
 
         return null;
-    }
+    } 
 
-    public ItemDomainMAARCLazyDataModel getMAARCListDataModel() {
-        if (maarcListDataModel == null) {
-            maarcListDataModel = new ItemDomainMAARCLazyDataModel(itemDomainMAARCFacade, getDefaultDomain());
-        }
-
-        return maarcListDataModel;
+    @Override
+    public ItemDomainMAARCLazyDataModel createItemLazyDataModel() {
+        return new ItemDomainMAARCLazyDataModel(itemDomainMAARCFacade, getDefaultDomain());
     }
 
     @Override
     protected Boolean fetchFilterablePropertyValue(Integer propertyTypeId) {
         return true;
-    }
-
-    @Override
-    public void resetListDataModel() {
-        super.resetListDataModel();
-        maarcListDataModel = null;
     }
 
     @Override
