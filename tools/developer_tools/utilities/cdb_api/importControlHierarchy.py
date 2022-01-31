@@ -2,10 +2,8 @@ import csv
 import json
 
 from CdbApiFactory import CdbApiFactory
-from boto.dynamodb.item import Item
 from cdbApi import NewMachinePlaceholderOptions, NewControlRelationshipInformation, ApiException
 from cdbApi.models.item_permissions import ItemPermissions
-from pkg_resources import empty_provider
 
 INTERFACE_KEY = "Interface"
 LEVEL_PREFIX_KEY = "Level "
