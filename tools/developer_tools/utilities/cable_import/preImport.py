@@ -855,10 +855,9 @@ class CableTypeIdHandler(InputHandler):
 
 class CableTypeExistenceHandler(InputHandler):
 
-    def __init__(self, column_key, column_index, ignore_existing, api, existing_cable_types):
+    def __init__(self, column_key, column_index, api, existing_cable_types):
         super().__init__(column_key)
         self.column_index = column_index
-        self.ignore_existing = ignore_existing
         self.existing_cable_types = existing_cable_types
         self.api = api
         self.id_mgr = IdManager()
@@ -883,11 +882,8 @@ class CableTypeExistenceHandler(InputHandler):
             return False, "unexpected error in id map for cable type existence check"
         if cable_type_id != 0:
             # cable type already exists
-            if self.ignore_existing:
-                self.existing_cable_types.append(cable_type_name)
-                return True, ""
-            else:
-                return False, "cable type already exists in CDB"
+            self.existing_cable_types.append(cable_type_name)
+            return True, ""
         else:
             return True, ""
 
@@ -1394,7 +1390,7 @@ class CableTypeHelper(PreImportHelper):
         ]
 
         if not self.validate_only:
-            handler_list.append(CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, CABLE_TYPE_NAME_INDEX+1, self.ignore_existing, self.api, self.existing_cable_types))
+            handler_list.append(CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, CABLE_TYPE_NAME_INDEX+1, self.api, self.existing_cable_types))
             handler_list.append(SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, CABLE_TYPE_MANUFACTURER_INDEX+1, self.source_id_manager, self.api, self.missing_source_list))
 
         return handler_list
