@@ -1,4 +1,7 @@
 #
+# User documentation: https://github.com/AdvancedPhotonSource/ComponentDB/wiki/cable-preimport-script
+#
+#
 # This file contains a pre-import framework for various CDB object types.  It supports reading an input spreadsheet
 # file, and then creating an output spreadsheet file that contains the standard columns for CDB import.  It is intended
 # to support the cable data collection process, which uses an Excel workbook to collect cable type and cable data from
