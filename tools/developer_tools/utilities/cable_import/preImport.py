@@ -303,19 +303,8 @@ class PreImportHelper(ABC):
         pass
 
     def set_config_group(self, config, section):
-
-        config_value = get_config_resource(config, section, 'validateOnly', False)
-        if config_value in ("True", "TRUE", "true", "Yes", "YES", "yes", "On", "ON", "on", "1"):
-            self.validate_only = True
-        else:
-            self.validate_only = False
-
-        config_value = get_config_resource(config, section, 'ignoreExisting', False)
-        if config_value in ("True", "TRUE", "true", "Yes", "YES", "yes", "On", "ON", "on", "1"):
-            self.ignore_existing = True
-        else:
-            self.ignore_existing = False
-
+        self.validate_only = get_config_resource_boolean(config, section, 'validateOnly', False)
+        self.ignore_existing = get_config_resource_boolean(config, section, 'ignoreExisting', False)
         self.first_data_row = int(get_config_resource(config, section, 'firstDataRow', False))
         self.last_data_row = int(get_config_resource(config, section, 'lastDataRow', False))
 
@@ -978,6 +967,24 @@ class CableDesignExistenceHandler(InputHandler):
             return True, ""
 
 
+class DevicePortHandler(InputHandler):
+
+    def __init__(self, column_key, ignore_port_values, values):
+        super().__init__(column_key)
+        self.ignore_port_values = ignore_port_values
+        self.values = values
+
+    def initialize(self, api, sheet, first_row, last_row):
+        pass
+
+    def handle_input(self, input_dict):
+        cell_value = input_dict[self.column_key]
+        if self.ignore_port_values:
+            if cell_value is not None and cell_value != "":
+                self.values.append(cell_value)
+        return True, ""
+
+
 class SourceHandler(InputHandler):
 
     def __init__(self, column_key, column_index, id_manager, api, missing_source_list):
@@ -1400,7 +1407,7 @@ class CableTypeHelper(PreImportHelper):
         name = input_dict[CABLE_TYPE_NAME_KEY]
         if name in self.existing_cable_types:
             # cable type already exists with this name, skip
-            logging.debug("cable type already exists in CDB for: %s, skipping" % input_dict[CABLE_TYPE_NAME_KEY])
+            logging.debug(": %s, skipping" % input_dict[CABLE_TYPE_NAME_KEY])
             return None
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
@@ -1723,10 +1730,13 @@ class CableDesignHelper(PreImportHelper):
         self.nonunique_endpoints = set()
         self.existing_cable_designs = []
         self.cable_design_names = []
+        self.from_port_values = []
+        self.to_port_values = []
         self.project_id = None
         self.tech_system_id = None
         self.owner_user_id = None
         self.owner_group_id = None
+        self.ignore_port_columns = False
 
     def get_project_id(self):
         return self.project_id
@@ -1755,6 +1765,7 @@ class CableDesignHelper(PreImportHelper):
     def set_config_group(self, config, section):
         super().set_config_group(config, section)
         self.tech_system_id = get_config_resource(config, section, 'techSystemId', True)
+        self.ignore_port_columns = get_config_resource_boolean(config, section, 'ignorePortColumns', False)
 
     @staticmethod
     def tag():
@@ -1793,6 +1804,14 @@ class CableDesignHelper(PreImportHelper):
         return column_list
 
     def generate_output_column_list(self):
+
+        if not self.ignore_port_columns:
+            endpoint1_port_method = "get_endpoint1_port"
+            endpoint2_port_method = "get_endpoint2_port"
+        else:
+            endpoint1_port_method = "empty_column"
+            endpoint2_port_method = "empty_column"
+
         column_list = [
             OutputColumnModel(col_index=0, method="empty_column", label="Existing Item ID"),
             OutputColumnModel(col_index=1, method="empty_column", label="Delete Existing Item"),
@@ -1809,7 +1828,7 @@ class CableDesignHelper(PreImportHelper):
             OutputColumnModel(col_index=12, method="empty_column", label="Notes"),
             OutputColumnModel(col_index=13, method="get_cable_type_id", label="Type"),
             OutputColumnModel(col_index=14, method="get_endpoint1_id", label="Endpoint1"),
-            OutputColumnModel(col_index=15, method="get_endpoint1_port", label="Endpoint1 Port"),
+            OutputColumnModel(col_index=15, method=endpoint1_port_method, label="Endpoint1 Port"),
             OutputColumnModel(col_index=16, method="empty_column", label="Endpoint1 Connector"),
             OutputColumnModel(col_index=17, method="get_endpoint1_description", label="Endpoint1 Desc"),
             OutputColumnModel(col_index=18, method="get_endpoint1_route", label="Endpoint1 Route"),
@@ -1819,7 +1838,7 @@ class CableDesignHelper(PreImportHelper):
             OutputColumnModel(col_index=22, method="empty_column", label="Endpoint1 Notes"),
             OutputColumnModel(col_index=23, method="empty_column", label="Endpoint1 Drawing"),
             OutputColumnModel(col_index=24, method="get_endpoint2_id", label="Endpoint2"),
-            OutputColumnModel(col_index=25, method="get_endpoint2_port", label="Endpoint2 Port"),
+            OutputColumnModel(col_index=25, method=endpoint2_port_method, label="Endpoint2 Port"),
             OutputColumnModel(col_index=26, method="empty_column", label="Endpoint2 Connector"),
             OutputColumnModel(col_index=27, method="get_endpoint2_description", label="Endpoint2 Desc"),
             OutputColumnModel(col_index=28, method="get_endpoint2_route", label="Endpoint2 Route"),
@@ -1857,10 +1876,11 @@ class CableDesignHelper(PreImportHelper):
             handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.existing_cable_designs, CABLE_DESIGN_IMPORT_ID_INDEX+1, self.ignore_existing))
             handler_list.append(CableTypeIdHandler(CABLE_DESIGN_TYPE_INDEX+1, CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.missing_cable_types))
             handler_list.append(EndpointHandler(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_FROM_DEVICE_NAME_INDEX+1, CABLE_DESIGN_SRC_ETPM_INDEX+1, "source endpoints"))
+            handler_list.append(DevicePortHandler(CABLE_DESIGN_FROM_PORT_NAME_KEY, self.ignore_port_columns, self.from_port_values))
             handler_list.append(EndpointHandler(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_TO_DEVICE_NAME_INDEX+1, CABLE_DESIGN_DEST_ETPM_INDEX+1, "destination endpoints"))
+            handler_list.append(DevicePortHandler(CABLE_DESIGN_TO_PORT_NAME_KEY, self.ignore_port_columns, self.to_port_values))
 
         return handler_list
-
 
     def get_md_root(self):
         return self.md_root
@@ -1940,10 +1960,19 @@ class CableDesignHelper(PreImportHelper):
 
     # Returns processing summary message.
     def get_processing_summary(self):
+
+        processing_summary = ""
+
         if len(self.existing_cable_designs) > 0:
-            return "DETAILS: number of cable designs that already exist in CDB (not written to output file): %d" % (len(self.existing_cable_designs))
-        else:
-            return ""
+            processing_summary = processing_summary + "DETAILS: number of cable designs that already exist in CDB (not written to output file): %d" % (len(self.existing_cable_designs))
+
+        num_port_values = len(self.from_port_values) + len(self.to_port_values)
+        if num_port_values > 0:
+            if processing_summary != "":
+                processing_summary = processing_summary + "\n"
+            processing_summary = processing_summary + "WARNING: ignored %d non-empty values in from/to device port columns (ignorePortColumns config resource set to true)" % num_port_values
+
+        return processing_summary
 
 
 class CableDesignOutputObject(OutputObject):
@@ -2122,6 +2151,14 @@ def get_config_resource(config, section, key, is_required, print_value=True, pri
                     print_obj = print_mask
         print("[%s] %s: %s" % (section, key, print_obj))
     return value
+
+
+def get_config_resource_boolean(config, section, key, is_required, print_value=True, print_mask=None):
+    config_value = get_config_resource(config, section, key, is_required)
+    if config_value in ("True", "TRUE", "true", "Yes", "YES", "yes", "On", "ON", "on", "1"):
+        return True
+    else:
+        return False
 
 
 def main():
