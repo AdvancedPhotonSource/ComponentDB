@@ -46,6 +46,7 @@ See LICENSE file.
                         widgetVar="travelerTemplateListing#{itemObject.viewUUID}Widget">
             <p:dataTable value="#{travelerDomainTemplateController.getTemplatesForMultiEditItem(itemObject)}"
                          sortMode="single"
+                         lazy="false"
                          stripedRows="true"
                          var="templateObject">
                 <ui:include src="../support/travelerTemplateListObject.xhtml" />
