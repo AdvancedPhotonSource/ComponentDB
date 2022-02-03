@@ -34,10 +34,9 @@ See LICENSE file.
                        styleClass="fa-link-icon fa fa-list" title="Display Discrepancy log"
                        rendered="#{travelerObject.traveler}"
                        onclick="PF('loadingDialog').show()"
-                       action="#{travelerDomainInstanceController.loadDiscrepancyLog(travelerObject)}"
+                       action="#{travelerDomainInstanceController.loadDiscrepancyLog(travelerObject, 'PF(\'travelerDiscrepancyLogListDialogWidget\').show()')}"
                        update="@form:travelerDiscrepancyLogListDialog"
-                       oncomplete="PF('loadingDialog').hide();
-                       PF('travelerDiscrepancyLogListDialogWidget').show()">
+                       oncomplete="PF('loadingDialog').hide();">
             <p:tooltip for="#{entityTypeName}TravelerDiscrepancyButton" value="Display traveler discrepancy log."/>
         </p:commandLink>
 

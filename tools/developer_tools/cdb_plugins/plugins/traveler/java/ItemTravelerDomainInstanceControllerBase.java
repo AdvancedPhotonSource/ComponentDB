@@ -355,14 +355,23 @@ public abstract class ItemTravelerDomainInstanceControllerBase extends ItemTrave
         SessionUtility.executeRemoteCommand(onSuccessCommand);
     }
 
-    public void loadDiscrepancyLog(Traveler traveler) {
+    public void loadDiscrepancyLog(Traveler traveler, String onSuccessCommand) {
         try {
             String travelerId = traveler.getId();
             discrepancyLog = travelerApi.getTravelerDiscrepancyLog(travelerId);
         } catch (CdbException ex) {
             logger.error(ex);
-            SessionUtility.addErrorMessage("Error", ex.getErrorMessage());            
+            SessionUtility.addErrorMessage("Error", ex.getErrorMessage(), true);
+            return;
         }
+
+        if (discrepancyLog.getDiscrepancyForm() == null) {
+            SessionUtility.addWarningMessage("No discrepancy form to display", "Selected traveler has no discrepancy log.", true);
+            discrepancyLog = null; 
+            return;
+        }
+        
+        SessionUtility.executeRemoteCommand(onSuccessCommand);
     }
 
     public boolean isRenderArchivedTravelerListDialog() {
