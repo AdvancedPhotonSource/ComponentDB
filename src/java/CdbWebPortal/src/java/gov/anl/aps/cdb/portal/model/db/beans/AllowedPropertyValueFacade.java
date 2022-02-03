@@ -37,7 +37,7 @@ public class AllowedPropertyValueFacade extends CdbEntityFacade<AllowedPropertyV
     }
     
     public static AllowedPropertyValueFacade getInstance() {
-        return (AllowedPropertyValueFacade) SessionUtility.findBean(AllowedPropertyValueFacade.class.getSimpleName()); 
+        return (AllowedPropertyValueFacade) SessionUtility.findFacade(AllowedPropertyValueFacade.class.getSimpleName()); 
     }
     
 }
