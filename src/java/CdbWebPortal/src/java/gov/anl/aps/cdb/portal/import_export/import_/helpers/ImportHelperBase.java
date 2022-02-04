@@ -107,6 +107,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     protected static final String KEY_GROUP = "ownerUserGroupName";
     protected static final String KEY_EXISTING_ITEM_ID = "importExistingItemId";
     protected static final String KEY_DELETE_EXISTING_ITEM = "importDeleteExistingItem";
+    protected static final String KEY_IS_VALID = "isValid";
     
     
     private static final String INDICATOR_COMMENT = "//";
@@ -1059,11 +1060,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
         // invoke each input handler to populate row dictionary (String key -> object)
         Map<String, Object> rowDict = new HashMap<>();
+        rowDict.put(KEY_IS_VALID, true);
         for (InputHandler handler : getHandlersForCurrentMode()) {
             ValidInfo validInfo = handler.handleInput(row, cellValueMap, rowDict);
             if (!validInfo.isValid()) {
                 validString = appendToString(validString, validInfo.getValidString());
                 isValid = false;
+                rowDict.put(KEY_IS_VALID, false);
             }
         }
         

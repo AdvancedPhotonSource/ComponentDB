@@ -54,8 +54,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient String importPath = null;
     private transient String importParentPath = null;
     private transient String importAssemblyPart = null;
-//    private transient ItemDomainLocation importLocationItem = null;
-//    private transient String importLocationItemString = null;
     private transient String importTemplateAndParameters = null;
     private transient Float importSortOrder = null;
     private transient String moveToTrashErrorMsg = null;
@@ -609,35 +607,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public String getImportAssemblyPart() {
         return importAssemblyPart;
     }
-
-//    public void setImportLocationItem(ItemDomainLocation locationItem) {
-//        if (locationItem != null) {
-//            LocatableItemController.getInstance().setItemLocationInfo(this);
-//            LocatableItemController.getInstance().updateLocationForItem(
-//                    this, locationItem, null);
-//            importLocationItemString = getLocationString();
-//            importLocationItem = locationItem;
-//        }
-//    }
-//
-//    @JsonIgnore
-//    public ItemDomainLocation getImportLocationItem() {
-//        return importLocationItem;
-//    }
-//
-//    @JsonIgnore
-//    public String getImportLocationItemString() {
-//        if ((importLocationItemString == null)
-//                && (getId() != null)
-//                && (this.getExportLocation() != null)) {
-//            return this.getExportLocation().getName();
-//        }
-//        return importLocationItemString;
-//    }
-//
-//    public void setImportLocationItemString(String str) {
-//        importLocationItemString = str;
-//    }
 
     @JsonIgnore
     public String getImportTemplateAndParameters() {
