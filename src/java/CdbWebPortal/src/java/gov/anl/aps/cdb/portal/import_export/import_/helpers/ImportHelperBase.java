@@ -135,6 +135,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private String summaryMessage = "";
     protected TreeNode rootTreeNode = new DefaultTreeNode("Root", null);
     private int numExpectedColumns = 0;
+    private int itemCountForCurrentMode = -1;
     private List<HelperWizardOption> wizardOptions = null;
     
     private final Map<CdbEntity, Set<String>> itemNameMap = new HashMap<>();
@@ -815,6 +816,33 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return true;
     }
     
+    private int getItemCountForCurrentMode() {
+        
+        if (itemCountForCurrentMode == -1) {
+            int itemCount = 0;
+            if (getImportMode() == ImportMode.DELETE) {
+                for (EntityType entity : rows) {
+                    if ((entity.getImportDeleteExistingItem() != null) && (entity.getImportDeleteExistingItem())) {
+                        itemCount = itemCount + 1;
+                    }
+                }
+
+            } else if (getImportMode() == ImportMode.UPDATE) {
+                for (EntityType entity : rows) {
+                    if (entity.hasImportUpdates()) {
+                        itemCount = itemCount + 1;
+                    }
+                }
+
+            } else {
+                itemCount = rows.size();
+            }
+            itemCountForCurrentMode = itemCount;
+        }
+        
+        return itemCountForCurrentMode;
+    }
+    
     protected void parseSheet(
             XSSFSheet sheet,
             int rowNumberHeader,
@@ -866,17 +894,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
         }
         
-        int itemCount = 0;
-        if (getImportMode() == ImportMode.DELETE) {
-            for (EntityType entity : rows) {
-                if ((entity.getImportDeleteExistingItem() != null) && (entity.getImportDeleteExistingItem())) {
-                    itemCount = itemCount + 1;
-                }
-            }
-        } else {
-            itemCount = rows.size();
-        }
-                
+        int itemCount = getItemCountForCurrentMode();                
         if (itemCount == 0) {
             // nothing to import, this will disable the "next" button
             validationMessage = appendToString(
@@ -1537,13 +1555,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             return new ImportInfo(false, "Import failed. " + ex.getClass().getName());
         }
         
+        int itemCount = getItemCountForCurrentMode();
+        
         String pluralEnding = "";
-        if (rows.size() > 1) {
+        if (itemCount > 1) {
             pluralEnding = "s";
         }
         
         if (getImportMode() != ImportMode.COMPARE) {
-            message = "Operation succeeded, " + modeString + " " + rows.size() + " instance" + pluralEnding + ".";
+            message = "Operation succeeded, " + modeString + " " + itemCount + " instance" + pluralEnding + ".";
         } else {
             message = "Comparison complete.";
         }
