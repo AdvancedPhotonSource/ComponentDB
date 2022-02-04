@@ -16,7 +16,6 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignDeletedItemsController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignPowerController;
-import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
@@ -51,11 +50,12 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient ItemElement combinedItemElementListParentElement;
 
     private transient ItemDomainMachineDesign importMdItem = null;
+    private transient ItemDomainMachineDesign importParent = null;
     private transient String importPath = null;
     private transient String importParentPath = null;
     private transient String importAssemblyPart = null;
-    private transient ItemDomainLocation importLocationItem = null;
-    private transient String importLocationItemString = null;
+//    private transient ItemDomainLocation importLocationItem = null;
+//    private transient String importLocationItemString = null;
     private transient String importTemplateAndParameters = null;
     private transient Float importSortOrder = null;
     private transient String moveToTrashErrorMsg = null;
@@ -341,11 +341,23 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setImportPath(String importPath) {
         this.importPath = importPath;
     }
+    
+    @JsonIgnore
+    public ItemDomainMachineDesign getImportParent() {
+        if (importParent == null) {
+            importParent = getParentMachineDesign();
+        }
+        return importParent;
+    }
+    
+    public void setImportParent(ItemDomainMachineDesign importParent) {
+        this.importParent = importParent;
+    }
 
     @JsonIgnore
     public String getImportParentPath() {
         if (importParentPath == null) {
-            importParentPath = getParentPath();
+            importParentPath = "#" + getParentPath();
         }
         return importParentPath;
     }
@@ -598,34 +610,34 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         return importAssemblyPart;
     }
 
-    public void setImportLocationItem(ItemDomainLocation locationItem) {
-        if (locationItem != null) {
-            LocatableItemController.getInstance().setItemLocationInfo(this);
-            LocatableItemController.getInstance().updateLocationForItem(
-                    this, locationItem, null);
-            importLocationItemString = getLocationString();
-            importLocationItem = locationItem;
-        }
-    }
-
-    @JsonIgnore
-    public ItemDomainLocation getImportLocationItem() {
-        return importLocationItem;
-    }
-
-    @JsonIgnore
-    public String getImportLocationItemString() {
-        if ((importLocationItemString == null)
-                && (getId() != null)
-                && (this.getExportLocation() != null)) {
-            return this.getExportLocation().getName();
-        }
-        return importLocationItemString;
-    }
-
-    public void setImportLocationItemString(String str) {
-        importLocationItemString = str;
-    }
+//    public void setImportLocationItem(ItemDomainLocation locationItem) {
+//        if (locationItem != null) {
+//            LocatableItemController.getInstance().setItemLocationInfo(this);
+//            LocatableItemController.getInstance().updateLocationForItem(
+//                    this, locationItem, null);
+//            importLocationItemString = getLocationString();
+//            importLocationItem = locationItem;
+//        }
+//    }
+//
+//    @JsonIgnore
+//    public ItemDomainLocation getImportLocationItem() {
+//        return importLocationItem;
+//    }
+//
+//    @JsonIgnore
+//    public String getImportLocationItemString() {
+//        if ((importLocationItemString == null)
+//                && (getId() != null)
+//                && (this.getExportLocation() != null)) {
+//            return this.getExportLocation().getName();
+//        }
+//        return importLocationItemString;
+//    }
+//
+//    public void setImportLocationItemString(String str) {
+//        importLocationItemString = str;
+//    }
 
     @JsonIgnore
     public String getImportTemplateAndParameters() {
