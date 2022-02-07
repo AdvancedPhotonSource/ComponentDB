@@ -390,7 +390,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
                 }
             }
         }
-        List<MachineTreeNode> machineChildren = parentNode.getMachineChildren();
+        List<MachineTreeNode> machineChildren = parentNode.getTreeNodeItemChildren();
         for (MachineTreeNode node : machineChildren) {
             MachineTreeNode machineNode = (MachineTreeNode) node;
             searchMachineDesign(machineNode, searchPattern, results);
@@ -764,7 +764,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
         expandToSpecificTreeNode(selectedItemInListTreeTable);
         if (detachedDomainId == ItemDomainName.MACHINE_DESIGN_ID) {
-            List<MachineTreeNode> machineChildren = getCurrentMachineDesignListRootTreeNode().getMachineChildren();
+            List<MachineTreeNode> machineChildren = getCurrentMachineDesignListRootTreeNode().getTreeNodeItemChildren();
             for (MachineTreeNode node : machineChildren) {
                 ItemElement ie = (ItemElement) node.getData();
                 Item ci = ie.getContainedItem();
@@ -1037,7 +1037,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     private static ItemDomainMachineDesignBaseTreeNode expandToSpecificTreeNodeFromStack(
             Stack<ItemDomainMachineDesign> machineDesingItemStack,
             ItemDomainMachineDesignBaseTreeNode machineDesignTreeRootTreeNode) {
-        List<ItemDomainMachineDesignBaseTreeNode> children = machineDesignTreeRootTreeNode.getMachineChildren();
+        List<ItemDomainMachineDesignBaseTreeNode> children = machineDesignTreeRootTreeNode.getTreeNodeItemChildren();
 
         ItemDomainMachineDesignBaseTreeNode result = null;
 
@@ -1056,7 +1056,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
                             break;
                         } else {
                             treeNode.setExpanded(true);
-                            children = treeNode.getMachineChildren();
+                            children = treeNode.getTreeNodeItemChildren();
                             break;
                         }
                     }
@@ -1091,7 +1091,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
         ItemElement itemElement = (ItemElement) treeNode.getData();
         Item item = itemElement.getContainedItem();
-        List<MachineTreeNode> machineChildren = lastExpandedNode.getMachineChildren();
+        List<MachineTreeNode> machineChildren = lastExpandedNode.getTreeNodeItemChildren();
         for (MachineTreeNode ittrTreeNode : machineChildren) {
             ItemElement element = (ItemElement) ittrTreeNode.getData();
             Item ittrItem = element.getContainedItem();
@@ -2520,7 +2520,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
         // walk tree node hierarchy to create list
         node.setExpanded(true);
-        List<ItemDomainMachineDesignBaseTreeNode> machineChildren = node.getMachineChildren();
+        List<ItemDomainMachineDesignBaseTreeNode> machineChildren = node.getTreeNodeItemChildren();
         for (ItemDomainMachineDesignBaseTreeNode childNode : machineChildren) {
             ItemElement dataElem = childNode.getElement();
             if (dataElem != null) {
