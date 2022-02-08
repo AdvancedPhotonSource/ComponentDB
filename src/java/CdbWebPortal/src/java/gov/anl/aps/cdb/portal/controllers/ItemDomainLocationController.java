@@ -10,6 +10,8 @@ import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainLocationSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperLocation;
+import gov.anl.aps.cdb.portal.model.ItemBaseLazyTreeNode;
+import gov.anl.aps.cdb.portal.model.ItemDomainLocationTreeNode;
 import gov.anl.aps.cdb.portal.model.ItemGenericLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
@@ -252,12 +254,25 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     public void resetListDataModelAndSetSelectionLocatinTreeNodeByItem(Item item) {
         resetListDataModel();
         setSelectedLocationTreeNodeByItem(item);
-    }
+    }        
 
+    @Override
+    protected ItemDomainLocationTreeNode createItemLazyTreeNode(List<ItemDomainLocation> parentItems) {
+        return new ItemDomainLocationTreeNode(parentItems, getDefaultDomain(), getEntityDbFacade());
+    } 
+
+    @Override
+    public ItemDomainLocationTreeNode getItemsWithNoParentsRootNode() {
+        return (ItemDomainLocationTreeNode) super.getItemsWithNoParentsRootNode();
+    }    
+    
     public void setSelectedLocationTreeNodeByItem(Item item) {
         if (item != null) {
             // check selected node.. 
-            TreeNode root = getItemsWithNoParentsRootNode();
+            ItemDomainLocationTreeNode root = getItemsWithNoParentsRootNode();        
+            ItemDomainLocationTreeNode.ItemDomainLocationTreeConfiguration config = root.getConfig();
+            config.setLoadAllChildren(true);
+            
             ItemUtility.setExpandedSelectedOnAllChildren(root, false, false);
 
             selectedLocationTreeNode = ItemUtility.findTreeNodeWithItem(item, root);

@@ -17,6 +17,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
+import gov.anl.aps.cdb.portal.model.ItemBaseLazyTreeNode;
 import gov.anl.aps.cdb.portal.model.ItemLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
@@ -53,7 +54,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -141,7 +141,7 @@ public abstract class ItemController<
     protected ItemDomainEntity templateToCreateNewItem = null;
 
     protected DataModel itemsWithNoParentsListDataModel = null;
-    protected TreeNode itemsWithNoParentsRootNode = null;
+    protected ItemBaseLazyTreeNode itemsWithNoParentsRootNode = null;
 
     private Domain selectionDomain;
 
@@ -706,24 +706,18 @@ public abstract class ItemController<
         }
         return itemsWithNoParentsListDataModel;
     }
+    
+    protected ItemBaseLazyTreeNode createItemLazyTreeNode(List<ItemDomainEntity> parentItems) {
+        // Override for tree functionality. 
+        return null; 
+    } 
 
-    public TreeNode getItemsWithNoParentsRootNode() {
+    public ItemBaseLazyTreeNode getItemsWithNoParentsRootNode() {
         if (itemsWithNoParentsRootNode == null) {
-            LOGGER.info("Generating a tree from top level items.");
+            LOGGER.info("Generating a tree from top level items."); 
             List<ItemDomainEntity> itemsWitNoParentsList = getItemsWithoutParents();
-            itemsWithNoParentsRootNode = new DefaultTreeNode(null, null);
-
-            for (Item item : itemsWitNoParentsList) {
-                TreeNode itemRootTreeNode;
-                try {
-                    itemRootTreeNode = ItemElementUtility.createItemRoot(item);
-                } catch (CdbException ex) {
-                    SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
-                    itemsWithNoParentsRootNode = null;
-                    return null;
-                }
-                itemsWithNoParentsRootNode.getChildren().add(itemRootTreeNode);
-            }
+           
+            itemsWithNoParentsRootNode = createItemLazyTreeNode(itemsWitNoParentsList); 
         }
 
         return itemsWithNoParentsRootNode;
