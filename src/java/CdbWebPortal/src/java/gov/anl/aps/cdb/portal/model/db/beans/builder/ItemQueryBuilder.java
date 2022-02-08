@@ -38,6 +38,7 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
     private static final String ENTITY_TYPE_LIST_JOIN_NAME = "etl";
     private static final String ITEM_CATEGORY_LIST_JOIN_NAME = "icl"; 
     private static final String ITEM_TYPE_LIST_JOIN_NAME = "itl"; 
+    private static final String ITEM_SOURCE_LIST_JOIN_NAME = "isl"; 
     private static final String CORE_METADATA_PROPERTY_JOIN_NAME = "cmp";   
     
     private final String METADATA_FIELD_START = "Metadata-"; 
@@ -47,7 +48,8 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
     boolean include_ipl = false;
     boolean include_etl = false;
     boolean include_icl = false;
-    boolean include_itl = false;     
+    boolean include_itl = false;
+    boolean include_isl = false;
     private Set<String> coreMetadataNames = null; 
 
     private Set<String> firstIERNames = null;
@@ -117,6 +119,10 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
         
         if (include_itl) {
             joinPart += " JOIN i.itemTypeList " + ITEM_TYPE_LIST_JOIN_NAME; 
+        }
+        
+        if (include_isl) {
+            joinPart += " JOIN i.itemSourceList " + ITEM_SOURCE_LIST_JOIN_NAME; 
         }
 
         for (String ierName : firstIERNames) {
@@ -389,6 +395,9 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
             case ITEM_TYPE_LIST_JOIN_NAME: 
                 include_itl = true; 
                 break; 
+            case ITEM_SOURCE_LIST_JOIN_NAME:
+                include_isl = true;
+                break;
         }
     }
 
@@ -566,7 +575,8 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
         modifiedDate("lastModifiedOnDateTime", ITEM_ELEMENTS_LIST_JOIN_NAME, "entityInfo.lastModifiedOnDateTime"),
         entityTypeName("entityTypeString", ENTITY_TYPE_LIST_JOIN_NAME, "name"),
         itemCategoryName("itemCategoryString", ITEM_CATEGORY_LIST_JOIN_NAME, "name"),
-        itemTypeName("itemTypeString", ITEM_TYPE_LIST_JOIN_NAME, "name");
+        itemTypeName("itemTypeString", ITEM_TYPE_LIST_JOIN_NAME, "name"),
+        itemSource("itemSourceString", ITEM_SOURCE_LIST_JOIN_NAME, "source.name");
 
         private String value;
         private String customDesignation;

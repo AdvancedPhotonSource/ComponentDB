@@ -8,26 +8,26 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <!-- pass in two variables node, itemObject -->
 
     <p:treeNode>                    
-        <h:outputText value="#{node.name}" />
+        <h:outputText value="#{itemObject.name}" />
     </p:treeNode>
     
     <p:treeNode type="Machine Design" icon="ui-icon-machine-design">
-        <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
-            <ui:param name="itemObject" value="#{node}"/>
+        <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">            
             <ui:param name="viewName" value="locationMDLink" />
         </ui:include>        
     </p:treeNode>
 
     <p:treeNode type="Location" icon="fa fa-building">
-        <h:outputText value="#{node.name}" />         
+        <h:outputText value="#{itemObject.name}" />         
     </p:treeNode>
 
     <p:treeNode type="Inventory" icon="ui-icon-inventory">
         <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
             <ui:param name="displayString" value="#{itemDomainInventoryController.getItemDisplayString(node)}" />
-            <ui:param name="itemObject" value="#{node}"/> 
             <ui:param name="viewName" value="locationInventoryLink" />
         </ui:include>        
     </p:treeNode>
@@ -35,7 +35,6 @@ See LICENSE file.
     <p:treeNode type="Cable Inventory" icon="ui-icon-inventory">
         <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
             <ui:param name="displayString" value="#{itemDomainCableInventoryController.getItemDisplayString(node)}" />
-            <ui:param name="itemObject" value="#{node}"/> 
             <ui:param name="viewName" value="locationCableInventoryLink" />
         </ui:include>        
     </p:treeNode>
