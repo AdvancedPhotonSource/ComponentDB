@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model;
 import gov.anl.aps.cdb.portal.model.ItemDomainLocationTreeNode.ItemDomainLocationTreeConfiguration;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import java.util.List;
@@ -17,8 +18,12 @@ import java.util.List;
  */
 public class ItemDomainLocationTreeNode extends ItemBaseLazyTreeNode<ItemDomainLocation, ItemDomainLocationFacade, ItemDomainLocationTreeConfiguration>{
 
-    public ItemDomainLocationTreeNode(ItemElement element, ItemDomainLocationTreeConfiguration config, ItemBaseLazyTreeNode parent) {
+    protected ItemDomainLocationTreeNode(ItemElement element, ItemDomainLocationTreeConfiguration config, ItemBaseLazyTreeNode parent) {
         super(element, config, parent);
+        
+        Item containedItem = element.getContainedItem();
+        String type = containedItem.getDomain().getName();
+        setType(type);
     }
 
     public ItemDomainLocationTreeNode(List<ItemDomainLocation> items, Domain domain, ItemDomainLocationFacade facade) {
