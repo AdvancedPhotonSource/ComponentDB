@@ -1,0 +1,6 @@
+python-dateutil
+urllib3
+six
+paho-mqtt
+click
+ComponentDB-API

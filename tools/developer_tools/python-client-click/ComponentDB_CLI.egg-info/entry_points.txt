@@ -1,0 +1,7 @@
+[console_scripts]
+click-add-log-to-item-by-id = cdbClick.service.cli.addLogToItemByIdCli:add_log_to_item_by_id
+click-cli-tool = cdbClick.service.cli.CDBclick:main
+click-get-item-by-id = cdbClick.service.cli.getItemByIdCli:get_item_by_id
+click-log-to-mqtt = cdbClick.service.cli.CDBclickCmnds.cdb_log_to_mqtt:cdb_log_to_mqtt
+click-python-client-test = CdbApiFactory:run_command
+

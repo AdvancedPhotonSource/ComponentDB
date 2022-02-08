@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: ComponentDB-CLI
+Version: 1.0.0
+Summary: Python APIs used to communicate with java hosted ComponentDB API.
+Home-page: https://github.com/AdvancedPhotonSource/ComponentDB
+Maintainer: Dariusz Jarosz
+Maintainer-email: djarosz@aps.anl.gov
+License: Copyright (c) UChicago Argonne, LLC. All rights reserved.
+Platform: UNKNOWN
+
+UNKNOWN
+
