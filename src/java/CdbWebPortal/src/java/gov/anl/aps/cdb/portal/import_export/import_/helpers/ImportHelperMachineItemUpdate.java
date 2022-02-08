@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.ArrayList;
 import java.util.List;
@@ -175,7 +176,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
             // get parent item specified in import spreadsheet
             ItemDomainMachineDesign newParentItem = (ItemDomainMachineDesign) rowMap.get(PROPERTY_PARENT);
             ItemDomainMachineDesign oldParentItem = item.getParentMachineDesign();
-
+            
             // The following restrictions on moving items to/from root level of hierarchy
             // are due to the persistence cascades for update.  To allow moving from the root
             // level of the hierarchy, we'll need to call persistence create for the new ItemElement
@@ -190,21 +191,21 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
                     validString = "Item cannot be moved to root level of hierarchy";
                 }
 
-            } else if (oldParentItem == null) {
-                if (newParentItem != null) {
-                    isValid = false;
-                    validString = "Item cannot be moved from root level of hierarchy";
-                }
-
             } else {
+                
                 // check to see if parent item changed
                 if (!newParentItem.equals(item.getParentMachineDesign())) {
-
-                    // get owner of item to use in creating EntityInfo for new parent-child relationship
                     UserInfo user = item.getOwnerUser();
-
+                    ItemElement relationshipElement = null;
                     try {
-                        getControllerUtility().performMachineMove(newParentItem, item, user);
+                        relationshipElement = getControllerUtility().performMachineMove(newParentItem, item, user);
+                        if (oldParentItem == null) {
+                            // handle case where moving item from root level of hierarchy, 
+                            // need to create new ItemElement for relationship 
+                            // between new parent and child in database, so add to collection and
+                            // facade will create ItemElement when updating the item.
+                            item.getNewElementList().add(relationshipElement);
+                        }
                     } catch (CdbException ex) {
                         isValid = false;
                         validString = "Exception moving item to new parent: " + ex.getMessage();

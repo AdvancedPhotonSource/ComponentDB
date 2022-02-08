@@ -68,6 +68,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     private transient PropertyValue controlInterfaceToParent = null;
     private transient ItemElementRelationship controlRelationshipToParent = null;
+    
+    // collection of ItemElements for facade to create when updating items
+    private transient List<ItemElement> newElementList = null;
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
@@ -526,6 +529,25 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
 
     // <editor-fold defaultstate="collapsed" desc="Import functionality">
+    
+    @JsonIgnore
+    public List<ItemElement> getNewElementList() {
+        if (newElementList == null) {
+            newElementList = new ArrayList<>();
+        }
+        return newElementList;
+    }
+    
+    public void addNewElement(ItemElement element) {
+        this.getNewElementList().add(element);
+    }
+
+    public void clearNewElementList() {
+        if (newElementList != null) {
+            newElementList.clear();
+        }
+    }
+
     @JsonIgnore
     public Float getImportSortOrder() {
         if ((importSortOrder == null) && (getId() != null)) {
