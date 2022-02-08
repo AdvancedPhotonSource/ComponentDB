@@ -6,10 +6,10 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.ItemMemberViewSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemGenericControllerUtility;
+import gov.anl.aps.cdb.portal.model.ItemGenericLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -19,7 +19,7 @@ import javax.inject.Named;
  */
 @Named("itemMemberViewController")
 @SessionScoped
-public class ItemMemberViewController extends ItemController<ItemGenericControllerUtility, Item, ItemFacade, ItemMemberViewSettings> {    
+public class ItemMemberViewController extends ItemController<ItemGenericControllerUtility, Item, ItemFacade, ItemMemberViewSettings, ItemGenericLazyDataModel> {    
     
     @EJB
     ItemFacade itemFacade;     
@@ -118,6 +118,11 @@ public class ItemMemberViewController extends ItemController<ItemGenericControll
     public boolean getEntityDisplayItemConnectors() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public ItemGenericLazyDataModel createItemLazyDataModel() {
+        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain()); 
+    }   
 
     @Override
     protected ItemMemberViewSettings createNewSettingObject() {

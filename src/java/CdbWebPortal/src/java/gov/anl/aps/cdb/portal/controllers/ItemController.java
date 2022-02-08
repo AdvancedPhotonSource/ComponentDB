@@ -7,10 +7,8 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
-import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
-import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.ListName;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
@@ -19,7 +17,8 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
-import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorControllerUtility;
+import gov.anl.aps.cdb.portal.model.ItemBaseLazyTreeNode;
+import gov.anl.aps.cdb.portal.model.ItemLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
@@ -35,7 +34,6 @@ import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
@@ -52,16 +50,12 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
-import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
-import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
@@ -88,10 +82,10 @@ import org.primefaces.model.TreeNode;
 import org.primefaces.model.Visibility;
 
 public abstract class ItemController<
-            ControllerUtility extends ItemControllerUtility<ItemDomainEntity, ItemDomainEntityFacade>, ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>, ItemSettingsObject extends ItemSettings>
+            ControllerUtility extends ItemControllerUtility<ItemDomainEntity, ItemDomainEntityFacade>, ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>, ItemSettingsObject extends ItemSettings, LazyDataModel extends ItemLazyDataModel>
         extends CdbDomainEntityController<ControllerUtility, ItemDomainEntity, ItemDomainEntityFacade, ItemSettingsObject> implements IItemController<ItemDomainEntity, ItemSettingsObject> {
 
-    private static final Logger LOGGER = LogManager.getLogger(ItemController.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ItemController.class.getName());                    
     protected static final String PRIMARY_IMAGE_PROPERTY_METADATA_KEY = "Primary";
 
     @EJB
@@ -132,6 +126,7 @@ public abstract class ItemController<
     private List<Item> parentItemList;
     private int currentItemEntityHashCode;
 
+    private LazyDataModel itemLazyDataModel; 
     protected DataModel scopedListDataModel = null;
     protected List<String> displayListDataModelScopeSelectionList = null;
 
@@ -146,7 +141,7 @@ public abstract class ItemController<
     protected ItemDomainEntity templateToCreateNewItem = null;
 
     protected DataModel itemsWithNoParentsListDataModel = null;
-    protected TreeNode itemsWithNoParentsRootNode = null;
+    protected ItemBaseLazyTreeNode itemsWithNoParentsRootNode = null;
 
     private Domain selectionDomain;
 
@@ -711,27 +706,35 @@ public abstract class ItemController<
         }
         return itemsWithNoParentsListDataModel;
     }
+    
+    protected ItemBaseLazyTreeNode createItemLazyTreeNode(List<ItemDomainEntity> parentItems) {
+        // Override for tree functionality. 
+        return null; 
+    } 
 
-    public TreeNode getItemsWithNoParentsRootNode() {
+    public ItemBaseLazyTreeNode getItemsWithNoParentsRootNode() {
         if (itemsWithNoParentsRootNode == null) {
-            LOGGER.info("Generating a tree from top level items.");
+            LOGGER.info("Generating a tree from top level items."); 
             List<ItemDomainEntity> itemsWitNoParentsList = getItemsWithoutParents();
-            itemsWithNoParentsRootNode = new DefaultTreeNode(null, null);
-
-            for (Item item : itemsWitNoParentsList) {
-                TreeNode itemRootTreeNode;
-                try {
-                    itemRootTreeNode = ItemElementUtility.createItemRoot(item);
-                } catch (CdbException ex) {
-                    SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
-                    itemsWithNoParentsRootNode = null;
-                    return null;
-                }
-                itemsWithNoParentsRootNode.getChildren().add(itemRootTreeNode);
-            }
+           
+            itemsWithNoParentsRootNode = createItemLazyTreeNode(itemsWitNoParentsList); 
         }
 
         return itemsWithNoParentsRootNode;
+    }
+    
+    public abstract LazyDataModel createItemLazyDataModel(); 
+
+    public LazyDataModel getItemLazyDataModel() {
+        if (itemLazyDataModel == null) {
+            itemLazyDataModel = createItemLazyDataModel(); 
+        }
+        return itemLazyDataModel;
+    }
+
+    @Override
+    public DataModel getListDataModel() {
+        return getItemLazyDataModel(); 
     }
 
     @Override
@@ -743,6 +746,7 @@ public abstract class ItemController<
         itemsWithNoParentsRootNode = null;
         displayListDataModelScopeSelectionList = null;
         locationRelationshipCache = null;
+        itemLazyDataModel = null; 
     }
 
     public boolean isDataTableNotScoped() {

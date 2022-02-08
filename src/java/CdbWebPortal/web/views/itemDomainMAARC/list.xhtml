@@ -17,15 +17,9 @@ See LICENSE file.
         <f:viewAction action="#{itemDomainMAARCController.processPreRenderList()}"/>
     </f:metadata>
     
-    <ui:define name="domainEntityListDataTableParameters">
-        <ui:param name="itemListDataTableLazy"
-                  value="#{true}"/> 
-        
+    <ui:define name="domainEntityListDataTableParameters">        
         <ui:param name="itemListDataTablePaginatorAlwaysVisible"
                   value="#{true}"/>
-        
-        <ui:param name="itemListDataTableValue"
-                  value="#{itemDomainMAARCController.MAARCListDataModel}"/> 
     </ui:define>        
     
 </ui:composition>

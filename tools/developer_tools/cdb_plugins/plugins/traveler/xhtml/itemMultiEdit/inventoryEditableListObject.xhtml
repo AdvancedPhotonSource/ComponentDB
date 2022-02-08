@@ -47,6 +47,7 @@ See LICENSE file.
                         widgetVar="travelerInstanceListing#{itemObject.viewUUID}Widget">
             <p:dataTable value="#{travelerDomainInstanceController.getInstancesForMultiEditItem(itemObject)}"
                          sortMode="single"
+                         lazy="false"
                          stripedRows="true"
                          var="travelerObject">
                 <ui:include src="../support/travelerInstanceListObject.xhtml" />
