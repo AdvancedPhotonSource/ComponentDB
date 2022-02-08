@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.comparator.ItemSelfElementSortOrderComparator;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
@@ -246,6 +247,13 @@ public abstract class ItemBaseLazyTreeNode<ItemEntity extends Item, ItemEntityFa
         }
 
         return count;
+    }
+    
+    public void preFilter(String completeFilterCommand) {
+        if (config.isLoadAllChildren() == false) {
+            config.setLoadAllChildren(true);
+            SessionUtility.executeRemoteCommand(completeFilterCommand);
+        }
     }
 
     public class ItemTreeBaseConfiguration {
