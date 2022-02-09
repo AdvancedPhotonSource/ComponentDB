@@ -38,7 +38,6 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.DataModel;
 import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -526,11 +525,6 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
     @Override
     public ItemDomainMAARCLazyDataModel createItemLazyDataModel() {
         return new ItemDomainMAARCLazyDataModel(itemDomainMAARCFacade, getDefaultDomain());
-    }
-
-    @Override
-    protected Boolean fetchFilterablePropertyValue(Integer propertyTypeId) {
-        return true;
     }
 
     @Override

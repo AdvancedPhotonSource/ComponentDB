@@ -66,8 +66,6 @@ public abstract class CdbDomainEntitySettings<DomainEntityController extends Cdb
     @Override
     public void saveListSettingsForSessionSettingEntityActionListener(ActionEvent actionEvent) {
         super.saveListSettingsForSessionSettingEntityActionListener(actionEvent);
-
-        parentController.forceLoadPreProcessListDataModel();
     }   
     
     public Boolean getDisplayGalleryViewableDocuments() {
@@ -77,11 +75,13 @@ public abstract class CdbDomainEntitySettings<DomainEntityController extends Cdb
     public void setDisplayGalleryViewableDocuments(Boolean displayGalleryViewableDocuments) {
         this.displayGalleryViewableDocuments = displayGalleryViewableDocuments;
     }   
-
+    
+    @Deprecated
     public Boolean getFilterByPropertiesAutoLoad() {
         return filterByPropertiesAutoLoad;
     }
 
+    @Deprecated
     public void setFilterByPropertiesAutoLoad(Boolean filterByPropertiesAutoLoad) {
         this.filterByPropertiesAutoLoad = filterByPropertiesAutoLoad;
     }

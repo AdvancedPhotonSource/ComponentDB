@@ -539,42 +539,6 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      * @return URL to current entity instance view page or null when exception occurs.
      */
     public String update();         
-        
-    
-    /**
-     * Get boolean if a value is filterable 
-     * 
-     * @return 
-     */
-    public Boolean getFilterablePropertyValue1();
-
-    /**
-     * Get boolean if a value is filterable 
-     * 
-     * @return 
-     */
-    public Boolean getFilterablePropertyValue2();
-
-    /**
-     * Get boolean if a value is filterable 
-     * 
-     * @return 
-     */
-    public Boolean getFilterablePropertyValue3();
-
-    /**
-     * Get boolean if a value is filterable 
-     * 
-     * @return 
-     */
-    public Boolean getFilterablePropertyValue4();
-
-    /**
-     * Get boolean if a value is filterable 
-     * 
-     * @return 
-     */
-    public Boolean getFilterablePropertyValue5();
     
     /**
      * Get property type name to display to the user. 

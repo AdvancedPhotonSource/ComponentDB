@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.DataModel;
 import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -125,11 +124,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     @Override
     public ItemDomainInventoryLazyDataModel createItemLazyDataModel() {
         return new ItemDomainInventoryLazyDataModel(itemDomainInventoryFacade, getDefaultDomain());
-    }
-
-    @Override
-    protected Boolean fetchFilterablePropertyValue(Integer propertyTypeId) {
-        return true;
     }
 
     public boolean isInventoryDomainItem(Item item) {

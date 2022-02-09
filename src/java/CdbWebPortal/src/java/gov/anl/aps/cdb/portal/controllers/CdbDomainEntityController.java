@@ -56,16 +56,11 @@ public abstract class CdbDomainEntityController<ControllerUtility extends CdbDom
     @EJB
     protected PropertyTypeCategoryFacade propertyTypeCategoryFacade;
 
-    protected List<Integer> loadedDisplayPropertyTypes = null;
-
     protected Log newLogEdit;
 
     private static final Logger logger = LogManager.getLogger(CdbDomainEntity.class.getName());    
 
-    private List<PropertyValue> filteredPropertyValueList;
-
-    protected Integer preProcessLoadedListDataModelHashCode = null;
-    protected DataModel preProcessDomainEntityListDataModel = null;
+    private List<PropertyValue> filteredPropertyValueList;    
     
     protected List<PropertyTypeCategory> relevantPropertyTypeCategories = null;
 
@@ -209,87 +204,13 @@ public abstract class CdbDomainEntityController<ControllerUtility extends CdbDom
     @Override
     public void customizeListDisplay() {
         resetDomainEntityPropertyTypeIdIndexMappings();
-        forceLoadPreProcessListDataModel();       
     }   
 
     @Override
     public DataModel getListDataModel() {
         DataModel cdbDomainEntityDataModel = super.getListDataModel();
 
-        loadPreProcessListDataModelIfNeeded(listDataModel);
-
         return cdbDomainEntityDataModel;
-    }
-
-    /**
-     * Get hash code of the currently loaded data model.
-     *
-     * @return hash code integer.
-     */
-    private int getPreProcessDomainEntityListDataModelHashCode() {
-        return preProcessDomainEntityListDataModel.hashCode();
-    }
-
-    /**
-     * Should be executed whenever a relevant list datamodel is fetched.
-     *
-     * @param preProcessListDataModel dataModel that will be used for pre
-     * process actions.
-     */
-    protected void loadPreProcessListDataModelIfNeeded(DataModel preProcessListDataModel) {        
-        if (preProcessListDataModel != null) {
-            preProcessDomainEntityListDataModel = preProcessListDataModel;
-
-            // Check if requested list dataMode was loaded.
-            if (preProcessLoadedListDataModelHashCode == null
-                    || getPreProcessDomainEntityListDataModelHashCode() != preProcessLoadedListDataModelHashCode) {
-                logger.debug("Desired list data model changed. Starting data model pre process.");
-                resetPreProcessVariables();
-                processPreProcessDomainEntityListDataModel();
-            }
-
-            preProcessLoadedListDataModelHashCode = getPreProcessDomainEntityListDataModelHashCode();
-        }
-    }
-    
-    /**
-     * Variables that need to be reset when list data model changes. 
-     * 
-     */
-    protected void resetPreProcessVariables() {
-        loadedDisplayPropertyTypes = null; 
-    }
-
-    /**
-     * Check to determine if based on the current settings, a pre process is
-     * required.
-     *
-     * @return preProcess iterate should be executed.
-     */
-    protected boolean isPreProcessListDataModelIterateNeeded() {
-        if (isFilterByPropertiesAutoLoad()) {
-            return isPreProcessPropertyValueInformationSettingsPresent();
-        }
-        return false;
-    }
-
-    /**
-     * preProcess iterate was execute. Update any necessary variables prior to
-     * processing.
-     */
-    protected void preparePreProcessListDataModelIterate() {
-        if (isFilterByPropertiesAutoLoad()) {
-            loadedDisplayPropertyTypes = new ArrayList<>();
-        }
-    }
-
-    /**
-     * Iterate over preprocess datamodel if required by current settings.
-     */
-    private void processPreProcessDomainEntityListDataModel() {
-        if (isPreProcessListDataModelIterateNeeded()) {            
-            iteratePreProcessListDataModel();
-        }
     }
     
     public void resetDomainEntityPropertyTypeIdIndexMappings() {
@@ -298,172 +219,6 @@ public abstract class CdbDomainEntityController<ControllerUtility extends CdbDom
         ItemElement.setPropertyTypeIdIndex(3, settingObject.getDisplayPropertyTypeId3());
         ItemElement.setPropertyTypeIdIndex(4, settingObject.getDisplayPropertyTypeId4());
         ItemElement.setPropertyTypeIdIndex(5, settingObject.getDisplayPropertyTypeId5());
-    }
-
-    /**
-     * Performs pre process skipping list data model hash check.
-     */
-    public void forceLoadPreProcessListDataModel() {
-        processPreProcessDomainEntityListDataModel();
-    }
-    
-    protected Boolean isFilterByPropertiesAutoLoad() {
-        Boolean filterByPropertiesAutoLoad = settingObject.getFilterByPropertiesAutoLoad(); 
-        return filterByPropertiesAutoLoad != null && filterByPropertiesAutoLoad;
-    }
-    
-    public void loadPreProcessPropertyValueInformationColumns() {
-        logger.debug("User requested loading of property values for current data model.");
-        if (isFilterByPropertiesAutoLoad()) {
-            forceLoadPreProcessListDataModel();
-        } else {
-            settingObject.setFilterByPropertiesAutoLoad(true);
-            forceLoadPreProcessListDataModel();
-            settingObject.setFilterByPropertiesAutoLoad(false);
-        }
-    }
-
-    /**
-     * Execute on each iteration of pre process iterateListDataModel.
-     *
-     * @param entity
-     */
-    protected void processPreProcessIteratedDomainEntity(CdbDomainEntity entity) {
-        if (isFilterByPropertiesAutoLoad()) {
-            setPreProcessPropertyValueInformation(entity);
-        }
-    }
-
-    /**
-     * PreProcess iterate execution is completed; update any necessary
-     * variables.
-     */
-    protected void updatePreProcessListProcessedVariables() {
-        if (isFilterByPropertiesAutoLoad()) {
-            updatePreProcessCurrentPropertyValueSettingsLoaded();
-        }
-    }
-
-    protected boolean isPreProcessPropertyValueInformationSettingsPresent() {
-        return settingObject.getDisplayPropertyTypeId1() != null
-                || settingObject.getDisplayPropertyTypeId2() != null
-                || settingObject.getDisplayPropertyTypeId3() != null
-                || settingObject.getDisplayPropertyTypeId4() != null
-                || settingObject.getDisplayPropertyTypeId5() != null;
-    }
-
-    /**
-     * Loads all of the necessary property types for the entity passed.
-     *
-     * @param entity
-     */
-    protected void setPreProcessPropertyValueInformation(CdbDomainEntity entity) {
-        loadPropertyValueInformation(settingObject.getDisplayPropertyTypeId1(), entity);
-        loadPropertyValueInformation(settingObject.getDisplayPropertyTypeId2(), entity);
-        loadPropertyValueInformation(settingObject.getDisplayPropertyTypeId3(), entity);
-        loadPropertyValueInformation(settingObject.getDisplayPropertyTypeId4(), entity);
-        loadPropertyValueInformation(settingObject.getDisplayPropertyTypeId5(), entity);
-    }
-
-    /**
-     * Marks all of the currently set property types
-     */
-    protected void updatePreProcessCurrentPropertyValueSettingsLoaded() {
-        addPropertyTypeToLoadedDisplayPropertyTypes(settingObject.getDisplayPropertyTypeId1());
-        addPropertyTypeToLoadedDisplayPropertyTypes(settingObject.getDisplayPropertyTypeId2());
-        addPropertyTypeToLoadedDisplayPropertyTypes(settingObject.getDisplayPropertyTypeId3());
-        addPropertyTypeToLoadedDisplayPropertyTypes(settingObject.getDisplayPropertyTypeId4());
-        addPropertyTypeToLoadedDisplayPropertyTypes(settingObject.getDisplayPropertyTypeId5());
-    }
-
-    /**
-     * Execute iterate over preProcess List data model.
-     */
-    private void iteratePreProcessListDataModel() {
-        if (preProcessDomainEntityListDataModel != null) {
-            logger.debug("Data model pre process iterate starting.");
-            preparePreProcessListDataModelIterate();
-            DataModel<CdbDomainEntity> cdbDomainEntityList = preProcessDomainEntityListDataModel;
-            Iterator<CdbDomainEntity> cdbDomainEntityIterator = cdbDomainEntityList.iterator();
-            while (cdbDomainEntityIterator.hasNext()) {
-                CdbDomainEntity cdbDomainEntity = cdbDomainEntityIterator.next();
-                processPreProcessIteratedDomainEntity(cdbDomainEntity);
-            }
-            updatePreProcessListProcessedVariables();
-        }        
-    }
-
-    protected void addPropertyTypeToLoadedDisplayPropertyTypes(Integer propertyTypeId) {
-        if (propertyTypeId != null) {
-            if (!loadedDisplayPropertyTypes.contains(propertyTypeId)) {
-                loadedDisplayPropertyTypes.add(propertyTypeId);
-            }
-        }
-    }
-
-    protected void loadPropertyValueInformation(Integer propertyTypeId, CdbDomainEntity entity) {
-        if (propertyTypeId != null) {
-            entity.getPropertyValueInformation(propertyTypeId);
-        }
-    }
-
-    protected Boolean fetchFilterablePropertyValue(Integer propertyTypeId) {
-        if (propertyTypeId != null) {
-            if (loadedDisplayPropertyTypes != null) {
-                if (preProcessLoadedListDataModelHashCode != null && getPreProcessDomainEntityListDataModelHashCode() != preProcessLoadedListDataModelHashCode) {
-                    loadedDisplayPropertyTypes = null;
-                    return false;
-                }
-                for (Integer loadedPropertyTypeId : loadedDisplayPropertyTypes) {
-                    if (Objects.equals(propertyTypeId, loadedPropertyTypeId)) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }        
-
-    protected Boolean checkDisplayLoadPropertyValueButtonByProperty(Integer propertyTypeId) {
-        if (propertyTypeId == null) {
-            return false;
-        } else {
-            return !fetchFilterablePropertyValue(propertyTypeId);
-        }
-    }
-
-    public Boolean getFilterablePropertyValue1() {
-        return fetchFilterablePropertyValue(settingObject.getDisplayPropertyTypeId1());
-    }
-
-    public Boolean getFilterablePropertyValue2() {
-        return fetchFilterablePropertyValue(settingObject.getDisplayPropertyTypeId2());
-    }
-
-    public Boolean getFilterablePropertyValue3() {
-        return fetchFilterablePropertyValue(settingObject.getDisplayPropertyTypeId3());
-    }
-
-    public Boolean getFilterablePropertyValue4() {
-        return fetchFilterablePropertyValue(settingObject.getDisplayPropertyTypeId4());
-    }
-
-    public Boolean getFilterablePropertyValue5() {
-        return fetchFilterablePropertyValue(settingObject.getDisplayPropertyTypeId5());
-    }
-    
-    @Override
-    public Boolean getDisplayLoadPropertyValuesButton() {
-        if (isFilterByPropertiesAutoLoad()) {
-            return false;
-        }
-
-        return (checkDisplayLoadPropertyValueButtonByProperty(settingObject.getDisplayPropertyTypeId1())
-                || checkDisplayLoadPropertyValueButtonByProperty(settingObject.getDisplayPropertyTypeId2())
-                || checkDisplayLoadPropertyValueButtonByProperty(settingObject.getDisplayPropertyTypeId3())
-                || checkDisplayLoadPropertyValueButtonByProperty(settingObject.getDisplayPropertyTypeId4())
-                || checkDisplayLoadPropertyValueButtonByProperty(settingObject.getDisplayPropertyTypeId5()));
     }
 
     public String getDisplayPropertyTypeName(Integer propertyTypeId) {

@@ -414,31 +414,6 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     }
     
     @Override
-    public Boolean getFilterablePropertyValue1() {
-        return getItemController().getFilterablePropertyValue1();
-    }
-
-    @Override
-    public Boolean getFilterablePropertyValue2() {
-        return getItemController().getFilterablePropertyValue2();
-    }
-
-    @Override
-    public Boolean getFilterablePropertyValue3() {
-        return getItemController().getFilterablePropertyValue3();
-    }
-
-    @Override
-    public Boolean getFilterablePropertyValue4() {
-        return getItemController().getFilterablePropertyValue4();
-    }
-
-    @Override
-    public Boolean getFilterablePropertyValue5() {
-        return getItemController().getFilterablePropertyValue5();
-    }
-    
-    @Override
     public String getDisplayPropertyTypeName(Integer propertyTypeId) {
         return getItemController().getDisplayPropertyTypeName(propertyTypeId);
     }

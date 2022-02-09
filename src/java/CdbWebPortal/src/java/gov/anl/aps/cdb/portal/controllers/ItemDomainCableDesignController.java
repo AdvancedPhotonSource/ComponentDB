@@ -1076,11 +1076,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     @Override
     public ItemDomainCableDesignLazyDataModel createItemLazyDataModel() {
         return new ItemDomainCableDesignLazyDataModel(itemDomainCableDesignFacade, getDefaultDomain()); 
-    }        
-    
-    @Override
-    protected Boolean fetchFilterablePropertyValue(Integer propertyTypeId) {
-        return true;
     }
 
     @Override
