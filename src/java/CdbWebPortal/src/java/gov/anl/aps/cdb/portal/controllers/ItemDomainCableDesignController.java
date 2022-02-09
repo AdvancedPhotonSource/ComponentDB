@@ -1168,6 +1168,15 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
+    @Override
+    protected List<String> initializeCustomFilterCriteriaNames() {
+        List<String> criteriaNames = new ArrayList<>();
+        criteriaNames.add("endpoint ancestors");
+        criteriaNames.add("end1 device ancestors");
+        criteriaNames.add("end2 device ancestors");
+        return criteriaNames;
+    }
+    
     public List<CableDesignConnectionListObject> getConnectionListForCurrent() {
         refreshConnectionListForCurrent();
         return connectionListForCurrent;

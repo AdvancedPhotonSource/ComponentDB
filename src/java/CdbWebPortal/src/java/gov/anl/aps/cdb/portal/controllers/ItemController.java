@@ -60,6 +60,7 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
+import gov.anl.aps.cdb.portal.view.objects.ListFilter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -170,6 +171,9 @@ public abstract class ItemController<
 
     protected ItemMetadataPropertyInfo coreMetadataPropertyInfo = null;
     protected PropertyType coreMetadataPropertyType = null;
+    
+    private ListFilter customFilter = null;
+    private List<String> customFilterCriteriaNames = null;
 
     public ItemController() {
     }
@@ -2446,6 +2450,35 @@ public abstract class ItemController<
     @Override
     public final void checkItemProject(Item item) throws CdbException {
         getControllerUtility().checkItemProject(item);
+    }
+    
+    protected List<String> initializeCustomFilterCriteriaNames() {
+        return new ArrayList<>();
+    }
+    
+    private List<String> getCustomFilterCriteriaNames() {
+        if (customFilterCriteriaNames == null) {
+            customFilterCriteriaNames = initializeCustomFilterCriteriaNames();
+        }
+        return customFilterCriteriaNames;
+    }
+    
+    public ListFilter getCustomFilter() {
+        if (customFilter == null) {
+            customFilter = new ListFilter();
+            for (String criteriaName : getCustomFilterCriteriaNames()) {
+                customFilter.addCriteria(criteriaName);
+            }
+        }
+        return customFilter;
+    }
+    
+    public void resetCustomFilter() {
+        getCustomFilter().reset();
+    }
+    
+    public void applyCustomFilter() {
+        SessionUtility.addErrorMessage("Error", "Custom filter not supported for this domain.");
     }
 
 }
