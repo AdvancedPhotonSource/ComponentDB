@@ -65,7 +65,12 @@ public class MachineImportHelperCommon {
     private String optionExportNumLevels = null;
 
     public static MachineItemRefColumnSpec existingMachineItemColumnSpec(
-            List<ColumnModeOptions> options, ItemDomainMachineDesign rootItem, String columnLabel, String getter) {
+            List<ColumnModeOptions> options, 
+            ItemDomainMachineDesign rootItem, 
+            String columnLabel, 
+            String domainProperty,
+            String domainSetter,
+            String domainExportGetter) {
         
         // default to parent item column header but allow override
         String label;
@@ -75,15 +80,29 @@ public class MachineImportHelperCommon {
             label = HEADER_PARENT;
         }
         
+        String propertyName;
+        if (domainProperty != null) {
+            propertyName = domainProperty;
+        } else {
+            propertyName = KEY_MD_ITEM;
+        }
+        
+        String setter;
+        if (domainSetter != null) {
+            setter = domainSetter;
+        } else {
+            setter = "setImportMdItem";
+        }
+        
         String exportGetter = null;
-        if (getter != null) {
-            exportGetter = getter;
+        if (domainExportGetter != null) {
+            exportGetter = domainExportGetter;
         }
         
         return new MachineItemRefColumnSpec(
                 label,
-                KEY_MD_ITEM,
-                "setImportMdItem",
+                propertyName,
+                setter,
                 "CDB ID, name, or path of parent machine design item. Name must be unique and prefixed with '#'. Path must be prefixed with '#', start with a '/', and use '/' as a delimiter. If name includes an embedded '/' character, escape it by preceding with a '\' character.",
                 exportGetter,
                 options,

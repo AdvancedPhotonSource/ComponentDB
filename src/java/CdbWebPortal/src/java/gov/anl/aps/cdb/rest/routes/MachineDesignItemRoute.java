@@ -443,7 +443,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         verifyCurrentUserPermissionForItem(newParentMdId);
 
         ItemDomainMachineDesignBaseControllerUtility itemControllerUtility = childMd.getItemControllerUtility();
-        ItemElement machineElement = itemControllerUtility.performMachineMove(newParentMdId, childMd, currentUser);
+        ItemElement machineElement = itemControllerUtility.performMachineMoveWithUpdate(newParentMdId, childMd, currentUser);
 
         return machineElement;
     }

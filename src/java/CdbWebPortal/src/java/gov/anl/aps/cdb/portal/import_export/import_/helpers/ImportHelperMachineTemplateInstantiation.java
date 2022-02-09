@@ -74,7 +74,8 @@ public class ImportHelperMachineTemplateInstantiation
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(MachineImportHelperCommon.existingMachineItemColumnSpec(ColumnModeOptions.oCREATE(), getMachineImportHelperCommon().getRootItem(), null, null));
+        specs.add(MachineImportHelperCommon.existingMachineItemColumnSpec(
+                ColumnModeOptions.oCREATE(), getMachineImportHelperCommon().getRootItem(), null, null, null, null));
         specs.add(MachineImportHelperCommon.templateInvocationColumnSpec(ColumnModeOptions.rCREATE()));
         specs.add(MachineImportHelperCommon.altNameColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.descriptionColumnSpec(ColumnModeOptions.oCREATE()));

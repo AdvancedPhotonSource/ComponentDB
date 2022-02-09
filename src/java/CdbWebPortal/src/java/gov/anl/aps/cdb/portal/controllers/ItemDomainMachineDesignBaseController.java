@@ -160,7 +160,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
         UserInfo sessionUser = SessionUtility.getUser();
         try {
-            getControllerUtility().performMachineMove(parent, child, sessionUser);
+            getControllerUtility().performMachineMoveWithUpdate(parent, child, sessionUser);
             resetListDataModel();
             resetSelectDataModel();
         } catch (CdbException ex) {
