@@ -19,7 +19,6 @@ See LICENSE file.
     <ui:param name="displayAddButton" value="#{loginController.loggedInAsAdmin or (loginController.loggedIn and entityController.entityCanBeCreatedByUsers())}"/>
     <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
     <ui:param name="displayShowEntityListPageHelpFragmentButton" value="#{entitySettingObject.displayListPageHelpFragmentSettingTypeKey != null}" />
-    <ui:param name="displayLoadPropertiesFilterValuesButton" value="#{entityController.displayLoadPropertyValuesButton}" />    
     
     <ui:param name="resetListActionFunctionName"
               value="#{resetListActionFunctionName != null 
@@ -31,17 +30,7 @@ See LICENSE file.
             <ui:include src="reusedParts/listAddButton.xhtml" />
         </ui:insert>
         
-        <ui:insert name="additonalListButtons"/>
-
-        <p:commandButton id="#{entityTypeName}LoadPropertyValuesButton" 
-                         rendered="#{displayLoadPropertiesFilterValuesButton}" 
-                         value="Load Property Filters" alt="Load property value filters"
-                         onstart="PF('loadingDialog').show()"
-                         oncomplete="PF('loadingDialog').hide()"
-                         action="#{entityController.loadPreProcessPropertyValueInformationColumns()}"
-                         update="#{entityTypeName}ListDataTable @parent">
-            <p:tooltip for="#{entityTypeName}LoadPropertyValuesButton" value="Load property value filters."/>
-        </p:commandButton>
+        <ui:insert name="additonalListButtons"/>        
 
         <ui:include src="reusedParts/listExportButtons.xhtml"/>
         

@@ -77,8 +77,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.ToggleEvent;
-import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.TreeNode;
 import org.primefaces.model.Visibility;
 
 public abstract class ItemController<
@@ -870,9 +868,7 @@ public abstract class ItemController<
         if (scopedListDataModel == null) {
             //Nothing was populated into the list data model. 
             scopedListDataModel = new ListDataModel<>();
-        }
-
-        loadPreProcessListDataModelIfNeeded(scopedListDataModel);
+        }       
 
         return scopedListDataModel;
     }
@@ -995,37 +991,6 @@ public abstract class ItemController<
     public String getListStyleName() {
         return getStyleName();
 
-    }
-
-    @Override
-    protected boolean isPreProcessListDataModelIterateNeeded() {
-        boolean result = super.isPreProcessListDataModelIterateNeeded();
-
-        if (!result) {
-            return settingObject.getDisplayLocation();
-        }
-
-        return result;
-    }
-
-    @Override
-    protected void processPreProcessIteratedDomainEntity(CdbDomainEntity entity) {
-        super.processPreProcessIteratedDomainEntity(entity);
-
-        if (entity instanceof LocatableItem) {
-            if (settingObject.getDisplayLocation()) {
-                LocatableItem item = (LocatableItem) entity;
-                getLocatableItemController().loadCachedLocationStringForItem(getLocationRelationshipCache(), item);
-            }
-        }
-    }
-
-    private List<ItemElementRelationship> getLocationRelationshipCache() {
-        if (locationRelationshipCache == null) {
-            String locationRelationshipName = ItemElementRelationshipTypeNames.itemLocation.getValue();
-            locationRelationshipCache = itemElementRelationshipFacade.findItemElementRelationshipsByTypeAndItemDomain(getDefaultDomainName(), locationRelationshipName);
-        }
-        return locationRelationshipCache;
     }
 
     @Override
@@ -1742,41 +1707,6 @@ public abstract class ItemController<
         return settingObject.getDisplayListDataModelScope();
     }
 
-    public boolean isDisplayListDataModelScopePropertyFilterable() {
-        return fetchFilterablePropertyValue(settingObject.getDisplayListDataModelScopePropertyTypeId());
-    }
-
-    @Override
-    protected void setPreProcessPropertyValueInformation(CdbDomainEntity entity) {
-        super.setPreProcessPropertyValueInformation(entity);
-
-        if (settingObject.isDisplayListDataModelScopePropertyTypeSelection()) {
-            loadPropertyValueInformation(settingObject.getDisplayListDataModelScopePropertyTypeId(), entity);
-        }
-    }
-
-    @Override
-    protected void updatePreProcessCurrentPropertyValueSettingsLoaded() {
-        super.updatePreProcessCurrentPropertyValueSettingsLoaded();
-
-        if (settingObject.isDisplayListDataModelScopePropertyTypeSelection()) {
-            addPropertyTypeToLoadedDisplayPropertyTypes(settingObject.getDisplayListDataModelScopePropertyTypeId());
-        }
-    }
-
-    @Override
-    protected boolean isPreProcessPropertyValueInformationSettingsPresent() {
-        boolean result = super.isPreProcessPropertyValueInformationSettingsPresent();
-
-        if (!result) {
-            if (settingObject.isDisplayListDataModelScopePropertyTypeSelection()) {
-                return settingObject.getDisplayListDataModelScopePropertyTypeId() != null;
-            }
-        }
-
-        return result;
-    }
-
     @Override
     public List<PropertyValue> getImageList() {
         // Place primary image at front. 
@@ -1943,16 +1873,6 @@ public abstract class ItemController<
             return resultingList;
         }
         return null;
-    }
-
-    @Override
-    public Boolean getDisplayLoadPropertyValuesButton() {
-        if (isFilterByPropertiesAutoLoad()) {
-            return false;
-        }
-
-        return super.getDisplayLoadPropertyValuesButton()
-                || checkDisplayLoadPropertyValueButtonByProperty(settingObject.getDisplayListDataModelScopePropertyTypeId());
     }
 
     @Override

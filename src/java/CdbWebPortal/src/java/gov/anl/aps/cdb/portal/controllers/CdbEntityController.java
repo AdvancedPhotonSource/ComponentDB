@@ -1663,10 +1663,6 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         return settingObject;
     }
 
-    public Boolean getDisplayLoadPropertyValuesButton() {
-        return false;
-    }
-
     public Boolean getDisplayUpdateSortOrderButton() {
         return false;
     }
