@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    
+    <p:outputPanel id="#{entityTypeName}ListDisplayModeOptionsPanel#{viewName}"
+                   styleClass="leftAlignedText">
+
+        <p:panelGrid columns="2"
+                     styleClass="noCellPaddingPanelGrid" 
+                     rendered="#{entitySettingObject.displayListDataModelScopePropertyTypeSelection}">
+            <h:outputText value="Property Type" />            
+            <p:selectOneMenu id="#{entityTypeName}PropertyTypeDisplayMode#{viewName}" 
+                             value="#{entitySettingObject.displayListDataModelScopePropertyTypeId}"
+                             styleClass="entityDataSelectOne">
+                <f:selectItems var="displayScopePropertyType" 
+                               value="#{propertyTypeController.availableExternalItems}" 
+                               itemLabel="#{displayScopePropertyType.name}" 
+                               itemValue="#{displayScopePropertyType.id}"/>
+            </p:selectOneMenu>   
+        </p:panelGrid>
+
+        <p:panelGrid columns="2"
+                     rendered="#{entitySettingObject.displayListDataModelScopeAdvancedFilter}">
+            <c:forEach items="#{entityController.customFilter.criteria}"
+                       var="criterion">
+                <h:outputLabel for="#{metadataKey}#{viewName}" 
+                               value="#{criterion.name}" 
+                               styleClass="entityDataLabel"
+                               title="#{criterion.name}"/>
+                <p:inputText value="#{criterion.value}" 
+                             title="#{criterion.name}" 
+                             styleClass="entityDataText"/>
+            </c:forEach>
+        </p:panelGrid>
+
+    </p:outputPanel>    
+
+</ui:composition>
