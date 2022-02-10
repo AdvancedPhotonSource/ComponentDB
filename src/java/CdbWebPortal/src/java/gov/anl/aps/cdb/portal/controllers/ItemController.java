@@ -57,10 +57,10 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.AdvancedFilterOption;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
-import gov.anl.aps.cdb.portal.view.objects.ListFilter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -78,8 +78,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.ToggleEvent;
-import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.TreeNode;
 import org.primefaces.model.Visibility;
 
 public abstract class ItemController<
@@ -172,9 +170,10 @@ public abstract class ItemController<
     protected ItemMetadataPropertyInfo coreMetadataPropertyInfo = null;
     protected PropertyType coreMetadataPropertyType = null;
     
-    private ListFilter customFilter = null;
-    private List<String> customFilterCriteriaNames = null;
-
+    private List<AdvancedFilterOption> advancedFilterOptions = null;
+    private String advancedFilterName = null;
+    private String advancedFilterValue = null;
+    
     public ItemController() {
     }
 
@@ -2452,33 +2451,34 @@ public abstract class ItemController<
         getControllerUtility().checkItemProject(item);
     }
     
-    protected List<String> initializeCustomFilterCriteriaNames() {
+    /**
+     * Allows subclass to override with domain-specific options for advanced filter display mode.
+     */
+    protected List<AdvancedFilterOption> initializeAdvancedFilterOptions() {
         return new ArrayList<>();
     }
-    
-    private List<String> getCustomFilterCriteriaNames() {
-        if (customFilterCriteriaNames == null) {
-            customFilterCriteriaNames = initializeCustomFilterCriteriaNames();
+
+    public List<AdvancedFilterOption> getAdvancedFilterOptions() {
+        if (advancedFilterOptions == null) {
+            advancedFilterOptions = initializeAdvancedFilterOptions();
         }
-        return customFilterCriteriaNames;
-    }
-    
-    public ListFilter getCustomFilter() {
-        if (customFilter == null) {
-            customFilter = new ListFilter();
-            for (String criteriaName : getCustomFilterCriteriaNames()) {
-                customFilter.addCriteria(criteriaName);
-            }
-        }
-        return customFilter;
-    }
-    
-    public void resetCustomFilter() {
-        getCustomFilter().reset();
-    }
-    
-    public void applyCustomFilter() {
-        SessionUtility.addErrorMessage("Error", "Custom filter not supported for this domain.");
+        return advancedFilterOptions;
     }
 
+    public String getAdvancedFilterName() {
+        return advancedFilterName;
+    }
+
+    public void setAdvancedFilterName(String advancedFilterName) {
+        this.advancedFilterName = advancedFilterName;
+    }
+
+    public String getAdvancedFilterValue() {
+        return advancedFilterValue;
+    }
+
+    public void setAdvancedFilterValue(String advancedFilterValue) {
+        this.advancedFilterValue = advancedFilterValue;
+    }
+    
 }
