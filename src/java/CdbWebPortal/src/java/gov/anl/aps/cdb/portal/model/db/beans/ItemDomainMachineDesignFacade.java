@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
@@ -29,6 +30,25 @@ public class ItemDomainMachineDesignFacade extends ItemFacadeBase<ItemDomainMach
         super(ItemDomainMachineDesign.class);
     }
     
+    /**
+     * Updates machine design item.  Overridden here because, if we move an item from
+     * the root level of the machine hierarchy to a new parent item, we need to create
+     * the new ItemElement in the database in the course of updating the existing machine
+     * item.
+     */
+    @Override
+    public ItemDomainMachineDesign edit(ItemDomainMachineDesign entity) {
+        
+        ItemDomainMachineDesign result = super.edit(entity);
+        
+        for (ItemElement element : entity.getNewElementList()) {
+            ItemElementFacade.getInstance().create(element);
+        }
+        entity.clearNewElementList();
+        
+        return result;
+    } 
+
     public List<ItemDomainMachineDesign> getMachineDesignTemplates() {
         return findByDomainAndEntityType(
                 ItemDomainName.machineDesign.getValue(),
