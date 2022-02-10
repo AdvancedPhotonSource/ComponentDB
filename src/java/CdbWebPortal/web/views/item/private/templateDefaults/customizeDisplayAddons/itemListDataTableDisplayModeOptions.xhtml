@@ -32,28 +32,17 @@ See LICENSE file.
                      rendered="#{entitySettingObject.displayListDataModelScopeAdvancedFilter}">
             <h:outputText value="Filter Name" />            
             <p:selectOneMenu id="#{entityTypeName}AdvancedFilterMenu#{viewName}" 
-                             value="#{entitySettingObject.displayListDataModelScopePropertyTypeId}"
+                             value="#{entityController.advancedFilterName}"
                              styleClass="entityDataSelectOne">
-                <f:selectItems var="displayScopePropertyType" 
-                               value="#{propertyTypeController.availableExternalItems}" 
-                               itemLabel="#{displayScopePropertyType.name}" 
-                               itemValue="#{displayScopePropertyType.id}"/>
+                <f:selectItems var="filterInfo" 
+                               value="#{entityController.advancedFilterOptions}" 
+                               itemLabel="#{filterInfo.name}" 
+                               itemValue="#{filterInfo.name}"/>
             </p:selectOneMenu>   
-            
-            
-            <c:forEach items="#{entityController.customFilter.criteria}"
-                       var="criterion">
-                <h:outputLabel for="#{metadataKey}#{viewName}" 
-                               value="#{criterion.name}" 
-                               styleClass="entityDataLabel"
-                               title="#{criterion.name}"/>
-            </c:forEach>
-            
-            
-            
+                        
             <h:outputText value="Filter Value" />            
-            <p:inputText value="#{criterion.value}" 
-                         title="#{criterion.name}" 
+            <p:inputText value="#{entityController.advancedFilterValue}" 
+                         title="Value to use for filtering." 
                          styleClass="entityDataText"/>
         </p:panelGrid>
 
