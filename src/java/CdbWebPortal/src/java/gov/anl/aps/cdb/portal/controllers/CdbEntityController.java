@@ -284,7 +284,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
 
     public EntityType findUniqueByPath(String path) throws CdbException {
 
-        if ((path == null) || (path.isEmpty())) {
+        if ((path == null) || (path.isEmpty()) || (path.equals("/"))) {
             return null;
         }
 
