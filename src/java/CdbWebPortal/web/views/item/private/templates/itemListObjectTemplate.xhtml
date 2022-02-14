@@ -110,6 +110,7 @@ See LICENSE file.
         <p:column sortBy="#{itemListObject.itemProjectString}" headerText="Project"
                   filterBy="#{itemListObject.itemProjectString}"
                   filterable="#{filterable}"
+                  filterMatchMode="contains"
                   sortable="#{sortable}"
                   rendered="#{rendered and itemListRenderItemProject}">
             <ui:insert name="itemProjectObject" />
