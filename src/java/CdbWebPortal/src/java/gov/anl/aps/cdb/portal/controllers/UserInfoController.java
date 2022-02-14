@@ -34,27 +34,27 @@ import org.apache.logging.log4j.Logger;
 
 @Named(UserInfoController.CONTROLLER_NAMED)
 @SessionScoped
-public class UserInfoController extends CdbEntityController<UserInfoControllerUtility, UserInfo, UserInfoFacade, UserInfoSettings> implements Serializable {   
+public class UserInfoController extends CdbEntityController<UserInfoControllerUtility, UserInfo, UserInfoFacade, UserInfoSettings> implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(UserInfoController.class.getName());
     public static final String CONTROLLER_NAMED = "userInfoController";
 
     @EJB
     private UserInfoFacade userInfoFacade;
-    
+
     @EJB
-    private SettingTypeFacade settingTypeFacade;         
+    private SettingTypeFacade settingTypeFacade;
 
     private Integer loadedDataModelHashCode = null;
-    
-    private UserInfoControllerUtility controllerUtility; 
+
+    private UserInfoControllerUtility controllerUtility;
 
     @Override
     protected UserInfoControllerUtility getControllerUtility() {
         if (controllerUtility == null) {
             controllerUtility = new UserInfoControllerUtility();
         }
-        return controllerUtility; 
+        return controllerUtility;
     }
 
     public static UserInfoController getInstance() {
@@ -69,7 +69,7 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
     @Override
     public String getEntityTypeGroupName() {
         return "userGroup";
-    }  
+    }
 
     @Override
     public UserInfo findById(Integer id) {
@@ -79,7 +79,7 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
     @Override
     public List<UserInfo> getAvailableItems() {
         return super.getAvailableItems();
-    }   
+    }
 
     @Override
     public void processCreateRequestParams() {
@@ -109,17 +109,17 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
         passwordEntry = null;
         updateUserGroupListStringForItem(userInfo);
         return super.prepareEdit(userInfo);
-    } 
+    }
 
     @Override
     protected boolean verifyUserIsAuthorizedToEdit(UserInfo entity, UserInfo userInfo) {
         if (entity.equals(userInfo)) {
             // User can edit their own user profile. 
-            return true; 
+            return true;
         }
-        return super.verifyUserIsAuthorizedToEdit(entity, userInfo); 
+        return super.verifyUserIsAuthorizedToEdit(entity, userInfo);
     }
-    
+
     public void deleteUserRole(UserRole userRole) {
         UserInfo userInfo = getCurrent();
         List<UserRole> userRoleList = userInfo.getUserRoleList();
@@ -129,9 +129,9 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
         } else {
             SessionUtility.addInfoMessage("Success", "Removed new user role.");
         }
-        
+
     }
-    
+
     public void saveUserRoleList() {
         update();
     }
@@ -147,16 +147,20 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
             sessionUser.setUserSettingList(selectedUser.getUserSettingList());
         }
     }
-    
+
     public void resetAllSettingsForCurrentUser() {
-        getCurrent().getUserSettingList().clear();         
-        
+        getCurrent().getUserSettingList().clear();
+
         //Save new settings 
-        saveSettingListForSessionUser();
-        
+        update();
+
         // Load default settings 
+        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         UserInfo current = getCurrent();
-        SettingController.getInstance().loadSessionUser(current);
+
+        if (sessionUser.equals(current)) {
+            SettingController.getInstance().loadSessionUser(current);
+        }
     }
 
     public void saveSettingListForSessionUser() {
@@ -185,7 +189,7 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
         }
         prepareEdit(sessionUser);
         return viewPath + "?faces-redirect=true";
-    }    
+    }
 
     @Override
     public DataModel getListDataModel() {
@@ -202,20 +206,20 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
 
         return userInfoDataModel;
     }
-    
+
     public void updateUserGroupListStringForCurrent() {
         UserInfo current = getCurrent();
         updateUserGroupListStringForItem(current);
     }
-    
-    private void updateUserGroupListStringForItem(UserInfo userInfo) {        
+
+    private void updateUserGroupListStringForItem(UserInfo userInfo) {
         String userGroupString = CdbEntityController.displayEntityList(userInfo.getUserGroupList());
         if (userGroupString.isEmpty()) {
-            userGroupString = "No groups assigned"; 
+            userGroupString = "No groups assigned";
         }
         userInfo.setUserGroupListString(userGroupString);
     }
-    
+
     @Override
     public boolean entityHasGroups() {
         return true;
@@ -285,33 +289,33 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
 
     @Override
     protected DomainImportExportInfo initializeDomainImportInfo() {
-        
+
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
-        
+
         formatInfo.add(new ImportExportFormatInfo(
                 "Basic User Info Create/Update/Delete Format", ImportHelperUserInfo.class));
-        
+
         String completionUrl = "/views/userInfo/list?faces-redirect=true";
-        
+
         return new DomainImportExportInfo(formatInfo, completionUrl);
     }
-    
+
     @Override
     public boolean getEntityDisplayExportButton() {
         return true;
     }
-    
+
     @Override
     protected DomainImportExportInfo initializeDomainExportInfo() {
-        
+
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
-        
+
         formatInfo.add(new ImportExportFormatInfo(
                 "Basic User Info Create/Update/Delete Format", ImportHelperUserInfo.class));
-        
+
         String completionUrl = "/views/userInfo/list?faces-redirect=true";
-        
+
         return new DomainImportExportInfo(formatInfo, completionUrl);
     }
-    
+
 }
