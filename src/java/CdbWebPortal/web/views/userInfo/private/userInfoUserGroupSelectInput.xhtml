@@ -25,7 +25,7 @@ See LICENSE file.
                          action="#{userInfoController.updateUserGroupListStringForCurrent()}"
                          update="userGroups" />
     </p:column>
-    <h:outputText id="userGroupsOutput" value="#{userInfoController.userGroupListString}" rendered="#{!isFieldWriteable}" title="Group" styleClass="entityDataText"/>
+    <h:outputText id="userGroupsOutput" value="#{userInfoObject.userGroupListString}" rendered="#{!isFieldWriteable}" title="Group" styleClass="entityDataText"/>
     <p:message for="userGroupsColumn"/>
     <p:tooltip for="userGroupsColumn" value="User group specification is optional. More than one group may be selected."/>
     
