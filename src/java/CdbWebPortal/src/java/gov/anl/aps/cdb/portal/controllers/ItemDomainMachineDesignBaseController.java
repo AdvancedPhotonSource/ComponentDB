@@ -270,7 +270,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     @Override
     public ItemGenericLazyDataModel createItemLazyDataModel() {
-        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain()); 
+        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain(), settingObject); 
     }   
 
     @Override

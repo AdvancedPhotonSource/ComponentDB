@@ -10,7 +10,6 @@ import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainLocationSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperLocation;
-import gov.anl.aps.cdb.portal.model.ItemBaseLazyTreeNode;
 import gov.anl.aps.cdb.portal.model.ItemDomainLocationTreeNode;
 import gov.anl.aps.cdb.portal.model.ItemGenericLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
@@ -89,7 +88,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     
     @Override
     public ItemGenericLazyDataModel createItemLazyDataModel() {
-        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain()); 
+        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain(), settingObject); 
     }   
 
     @Override

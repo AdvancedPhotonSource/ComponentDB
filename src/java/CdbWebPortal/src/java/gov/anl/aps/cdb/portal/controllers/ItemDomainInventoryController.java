@@ -124,7 +124,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
 
     @Override
     public ItemDomainInventoryLazyDataModel createItemLazyDataModel() {
-        return new ItemDomainInventoryLazyDataModel(itemDomainInventoryFacade, getDefaultDomain());
+        return new ItemDomainInventoryLazyDataModel(itemDomainInventoryFacade, getDefaultDomain(), settingObject);
     }
 
     @Override

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.DataModel;
 import javax.inject.Named;
 
 /**
@@ -61,7 +60,7 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
 
     @Override
     public ItemDomainCableInventoryLazyDataModel createItemLazyDataModel() {
-        return new ItemDomainCableInventoryLazyDataModel(itemDomainCableInventoryFacade, getDefaultDomain()); 
+        return new ItemDomainCableInventoryLazyDataModel(itemDomainCableInventoryFacade, getDefaultDomain(), settingObject); 
     }
             
     @Override

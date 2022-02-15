@@ -525,7 +525,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
 
     @Override
     public ItemDomainMAARCLazyDataModel createItemLazyDataModel() {
-        return new ItemDomainMAARCLazyDataModel(itemDomainMAARCFacade, getDefaultDomain());
+        return new ItemDomainMAARCLazyDataModel(itemDomainMAARCFacade, getDefaultDomain(), settingObject);
     }
 
     @Override

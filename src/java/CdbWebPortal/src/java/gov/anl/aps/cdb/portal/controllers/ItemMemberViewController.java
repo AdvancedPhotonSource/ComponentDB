@@ -121,7 +121,7 @@ public class ItemMemberViewController extends ItemController<ItemGenericControll
 
     @Override
     public ItemGenericLazyDataModel createItemLazyDataModel() {
-        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain()); 
+        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain(), settingObject); 
     }   
 
     @Override
