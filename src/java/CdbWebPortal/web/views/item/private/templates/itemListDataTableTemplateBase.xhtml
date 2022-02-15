@@ -21,7 +21,7 @@ See LICENSE file.
     <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
     <ui:param name="sortable" value="#{sortable != null ? sortable : true}" />
     
-    <ui:param name="itemListDataTableLazy" value="#{itemListDataTableLazy != null ? itemListDataTableLazy : entityController.dataTableNotScoped}" /> 
+    <ui:param name="itemListDataTableLazy" value="#{itemListDataTableLazy != null ? itemListDataTableLazy : entityController.dataTableScopeLazy}" /> 
     <ui:param name="itemListDataTablePaginatorAlwaysVisible" value="#{itemListDataTablePaginatorAlwaysVisible != null ? itemListDataTablePaginatorAlwaysVisible : false}" /> 
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
