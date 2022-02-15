@@ -11,7 +11,7 @@ from CdbApiFactory import CdbApiFactory
 import paho.mqtt.client as mqtt
 from logging.handlers import TimedRotatingFileHandler
 
-from cdbClick.common.cli.cliBase import CliBase
+from cdbCli.common.cli.cliBase import CliBase
 
 
 

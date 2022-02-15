@@ -3,7 +3,7 @@
 import click
 
 from cdbApi import LogEntryEditInformation
-from cdbClick.common.cli.cliBase import CliBase
+from cdbCli.common.cli.cliBase import CliBase
 
 
 @click.command()

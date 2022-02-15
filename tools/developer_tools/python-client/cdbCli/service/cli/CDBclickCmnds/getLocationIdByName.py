@@ -10,7 +10,7 @@ from cdbApi import ApiException
 
 from CdbApiFactory import CdbApiFactory
 
-from cdbClick.common.cli.cliBase import CliBase
+from cdbCli.common.cli.cliBase import CliBase
 
 
 
@@ -75,11 +75,10 @@ def get_location_id_by_name(location_name, dist=None):
         * Wildcard (?): Use ? as any single character
         * Wildcard (*): Use * to capture any amount of characters
 
-        \b
+
         Example: get-location-id-by-name --location-name 335*
         Example: get-location-id-by-name --location-name "335?C?shelf 9"
     """
-#    cli = set_cdb_dist(dist)
     cli = CliBase(dist)
     get_location_id_by_name_help(location_name, cli)
 

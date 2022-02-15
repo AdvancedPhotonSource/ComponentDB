@@ -10,7 +10,7 @@ from cdbApi import ApiException
 
 from CdbApiFactory import CdbApiFactory
 
-from cdbClick.common.cli.cliBase import CliBase
+from cdbCli.common.cli.cliBase import CliBase
 
 
 

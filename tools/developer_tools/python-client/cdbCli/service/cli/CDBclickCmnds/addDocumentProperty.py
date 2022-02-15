@@ -11,8 +11,8 @@ from cdbApi import ApiException
 
 from CdbApiFactory import CdbApiFactory
 
-from cdbClick.common.cli.cliBase import CliBase
-from cdbClick.service.cli.CDBclickCmnds.setItemLogById import set_item_log_by_id_help
+from cdbCli.common.cli.cliBase import CliBase
+from cdbCli.service.cli.CDBclickCmnds.setItemLogById import set_item_log_by_id_help
 from cdbApi.models.property_value import PropertyValue
 
 
