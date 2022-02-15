@@ -300,7 +300,7 @@ public class RefInputHandler extends SimpleInputHandler {
         
         CdbEntity objValue = null;
         String msg = "";
-
+        
         for (CdbEntityController controller : controllers) {
             try {
                 objValue = getObjectManager(controller).getObjectWithPath(path);
@@ -454,6 +454,11 @@ public class RefInputHandler extends SimpleInputHandler {
                         
                         if (allowPaths && (nameString.charAt(0) == '/')) {
                             // lookup by path
+                            
+                            // single slash indicates no parent item
+                            if (nameString.equals("/")) {
+                                return new ParseInfo<>(null, true, "");
+                            }
                             
                             ParseInfo objWithPathInfo = getObjectWithPath(nameString.trim());
                             if (!objWithPathInfo.getValidInfo().isValid()) {

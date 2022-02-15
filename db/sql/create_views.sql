@@ -3,6 +3,7 @@
 -- See LICENSE file.
 --
 
+DROP VIEW IF EXISTS v_item_connector_domain_inventory;
 CREATE VIEW v_item_connector_domain_inventory 
 AS
 SELECT item_connector.* 
@@ -58,6 +59,7 @@ AND item.id not in (
 	AND item.id is not NULL and item.domain_id = 3
 );
 
+DROP VIEW IF EXISTS v_item_domain_inventory_connector_status;
 CREATE VIEW v_item_domain_inventory_connector_status 
 AS 
 SELECT 
@@ -78,6 +80,7 @@ LEFT OUTER JOIN v_item_connector_domain_inventory invConnector on (invConnector.
 LEFT OUTER JOIN item_element_relationship ier on invConnector.id = ier.first_item_connector_id 
 ORDER BY inventoryItem.id;
 
+DROP VIEW IF EXISTS v_item_self_element;
 CREATE VIEW v_item_self_element
 AS 
 SELECT i.id as item_id, ie.id as self_element_id, ie.entity_info_id

@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryBaseControllerUtility;
+import gov.anl.aps.cdb.portal.model.ItemLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
@@ -35,8 +36,8 @@ import org.primefaces.model.TreeNode;
  * @param <ItemInventoryEntityBaseSettingsObject>
  */
 public abstract class ItemDomainInventoryBaseController<
-            InventoryControllerUtility extends ItemDomainInventoryBaseControllerUtility<ItemInventoryBaseDomainEntity, ItemDomainInventoryEntityBaseFacade>, ItemInventoryBaseDomainEntity extends ItemDomainInventoryBase, ItemDomainInventoryEntityBaseFacade extends ItemFacadeBase<ItemInventoryBaseDomainEntity>, ItemInventoryEntityBaseSettingsObject extends ItemSettings>
-        extends ItemController<InventoryControllerUtility, ItemInventoryBaseDomainEntity, ItemDomainInventoryEntityBaseFacade, ItemInventoryEntityBaseSettingsObject> implements IItemStatusController {
+            InventoryControllerUtility extends ItemDomainInventoryBaseControllerUtility<ItemInventoryBaseDomainEntity, ItemDomainInventoryEntityBaseFacade>, ItemInventoryBaseDomainEntity extends ItemDomainInventoryBase, ItemDomainInventoryEntityBaseFacade extends ItemFacadeBase<ItemInventoryBaseDomainEntity>, ItemInventoryEntityBaseSettingsObject extends ItemSettings, ItemInventoryBaseLazyDataModel extends ItemLazyDataModel>
+        extends ItemController<InventoryControllerUtility, ItemInventoryBaseDomainEntity, ItemDomainInventoryEntityBaseFacade, ItemInventoryEntityBaseSettingsObject, ItemInventoryBaseLazyDataModel> implements IItemStatusController {
 
     // Inventory status variables
     protected InventoryStatusPropertyTypeInfo inventoryStatusPropertyTypeInfo = null;

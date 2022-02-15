@@ -4,7 +4,6 @@
  */
 package gov.anl.aps.cdb.portal.model;
 
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
@@ -18,13 +17,11 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
-import gov.anl.aps.cdb.portal.model.db.entities.comparator.ItemSelfElementSortOrderComparator;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -32,26 +29,17 @@ import org.primefaces.model.TreeNode;
  * @author Dariusz
  * @param <MachineNodeConfiguration>
  */
-public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfiguration extends MachineTreeBaseConfiguration> extends DefaultTreeNode {
+public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfiguration extends MachineTreeBaseConfiguration> extends ItemBaseLazyTreeNode<ItemDomainMachineDesign, ItemDomainMachineDesignFacade, MachineNodeConfiguration> {   
 
-    private final static Integer MAXIMUM_EXPANDED_NODES = 250;
-
-    private String nameFilter = "";
-    protected Domain domain;
-
-    private List<ItemDomainMachineDesign> topLevelItems;
+    private String nameFilter = "";      
 
     private List<ItemDomainMachineDesign> rawFilterResults;
     private List<ItemDomainMachineDesign> filterResults;
     private Boolean filterAllNodes;
 
-    boolean childrenLoaded = false;
-    MachineNodeConfiguration config;
 
     protected ItemDomainMachineDesignBaseTreeNode(ItemElement element, MachineNodeConfiguration config, ItemDomainMachineDesignBaseTreeNode parent, boolean setTypeForLevel) {
-        super(element);
-        this.config = config;
-        setParent(parent);
+        super(element, config, parent); 
         if (setTypeForLevel && config.isSetMachineTreeNodeType()) {
             setTreeNodeTypeMachineDesignTreeList();
         }
@@ -59,172 +47,77 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
 
     public ItemDomainMachineDesignBaseTreeNode(List<ItemDomainMachineDesign> items, Domain domain, ItemDomainMachineDesignFacade facade) {
         initFirstLevel(items, domain, facade);
-    }
-
-    protected final void initFirstLevel(List<ItemDomainMachineDesign> items, Domain domain, ItemDomainMachineDesignFacade facade) {
-        MachineNodeConfiguration config = createTreeNodeConfiguration();
-        initFirstLevel(items, domain, facade, config);
-    }
-
-    protected final void initFirstLevel(List<ItemDomainMachineDesign> items, Domain domain, ItemDomainMachineDesignFacade facade, MachineNodeConfiguration config) {
-        this.config = config;
-        this.domain = domain;
-        config.setDesignFacade(facade);
-        this.topLevelItems = items;
-        // Make sure the sort order is correct for top level nodes 
-        this.topLevelItems.sort(new ItemSelfElementSortOrderComparator());
-
-        addTopLevelChildren(this.topLevelItems);
-
-        this.setExpanded(true);
-        childrenLoaded = true;
-    }
-
-    public ItemDomainMachineDesignBaseTreeNode(Object data) {
-        super(data);
-    }
-
-    public boolean getIsTopLevel() {
-        ItemDomainMachineDesignBaseTreeNode parent = this.getParent();
-        return parent.topLevelItems != null;
-    }
-
-    private void addTopLevelChildren(List<ItemDomainMachineDesign> topNodes) {
-        for (ItemDomainMachineDesign item : topNodes) {
-            ItemElement element = createMockItemElement(item);
-            createChildNode(element);
-        }
-
-        // Expand first node if tree is only one node.
-        if (topNodes.size() == 1) {
-            List<ItemDomainMachineDesignBaseTreeNode> machineChildren = this.getMachineChildren();
-            machineChildren.get(0).setExpanded(true);
-        }
-    }
-
-    protected ItemElement createMockItemElement(ItemDomainMachineDesign item) {
-        ItemElement selfElement = item.getSelfElement();
-        ItemElement element = new ItemElement();
-        Float sortOrder = selfElement.getSortOrder();
-        element.setContainedItem(item);
-        element.setSortOrder(sortOrder);
-        return element;
-    }
+    }      
 
     public ItemDomainMachineDesignBaseTreeNode() {
         // Empty model
         config = createTreeNodeConfiguration();
     }
 
-    public abstract MachineNodeConfiguration createTreeNodeConfiguration();
+    public abstract MachineNodeConfiguration createTreeNodeConfiguration();   
 
-    protected abstract <T extends ItemDomainMachineDesignBaseTreeNode> T createTreeNodeObject(ItemElement itemElement);
+    protected abstract <T extends ItemDomainMachineDesignBaseTreeNode> T createTreeNodeObject(ItemElement element, MachineNodeConfiguration config, ItemDomainMachineDesignBaseTreeNode parent, boolean setType);   
 
-    protected abstract <T extends ItemDomainMachineDesignBaseTreeNode> T createTreeNodeObject(ItemElement element, MachineNodeConfiguration config, ItemDomainMachineDesignBaseTreeNode parent, boolean setType);
-
-    public ItemElement getElement() {
-        Object data = super.getData();
-        return (ItemElement) data;
+    @Override
+    protected <T extends ItemBaseLazyTreeNode> T createTreeNodeObject(ItemElement element, MachineNodeConfiguration config, ItemBaseLazyTreeNode parent) {
+        ItemDomainMachineDesignBaseTreeNode nodeObject = createTreeNodeObject(element, config, this, true);
+        return (T) nodeObject; 
     }
 
     @Override
-    public int getChildCount() {
-        fetchChildren();
-        return super.getChildCount();
+    protected <T extends ItemBaseLazyTreeNode> T createChildNode(ItemElement itemElement) {
+        return (T) createChildNode(itemElement, false);
     }
-
+    
     @Override
-    public boolean isLeaf() {
-        fetchChildren();
-        return super.isLeaf();
-    }
-
-    @Override
-    public List<TreeNode> getChildren() {
-        fetchChildren();
-        return super.getChildren();
-    }
-
-    public MachineNodeConfiguration getConfig() {
-        return config;
-    }
-
-    protected <T extends ItemDomainMachineDesignBaseTreeNode> T createChildNode(ItemElement itemElement) {
-        return createChildNode(itemElement, false);
-    }
-
-    protected <T extends ItemDomainMachineDesignBaseTreeNode> T createChildNode(ItemElement itemElement, boolean childrenLoaded) {
-        return createChildNode(itemElement, childrenLoaded, true);
+    protected <T extends ItemBaseLazyTreeNode> T createChildNode(ItemElement itemElement, boolean childrenLoaded) {
+        return (T) createChildNode(itemElement, childrenLoaded, true);
     }
 
     protected <T extends ItemDomainMachineDesignBaseTreeNode> T createChildNode(ItemElement itemElement, boolean childrenLoaded, boolean setType) {
+        return createChildNode(itemElement, childrenLoaded, setType, false);
+    }
+
+    protected <T extends ItemDomainMachineDesignBaseTreeNode> T createChildNode(ItemElement itemElement, boolean childrenLoaded, boolean setType, boolean verifySort) {
         T machine = createTreeNodeObject(itemElement, config, this, setType);
         if (childrenLoaded) {
             machine.childrenLoaded = childrenLoaded;
         }
-        super.getChildren().add(machine);
+        if (!verifySort) {
+            super.getChildren().add(machine);
+        } else {                        
+            List<TreeNode> currentChildren = super.getChildren();
+            Float newSort = itemElement.getSortOrder();            
+            boolean added = false;
 
-        return machine;
-    }
-
-    public <T extends ItemDomainMachineDesignBaseTreeNode> List<T> getMachineChildren() {
-        return (List<T>) (List<?>) this.getChildren();
-    }
-
-    private void fetchChildren() {
-        unloadAdditionalChildren();
-
-        if (!childrenLoaded || loadAdditionalNodes()) {
-            TreeNode parent = getParent();
-            if (config.isLoadAllChildren() || parent == null || parent.isExpanded()) {
-                ItemElement element = getElement();
-                if (element != null) {
-                    Item containedItem = element.getContainedItem();
-
-                    if (containedItem == null) {
-                        return;
+            if (newSort != null || currentChildren.size() == 0) {
+                for (int i = 0; i < currentChildren.size(); i++) {
+                    TreeNode child = currentChildren.get(i);
+                    ItemElement data = (ItemElement) child.getData();                    
+                    Float currentSort = data.getSortOrder();                    
+                    
+                    if (currentSort == null || currentSort > newSort || currentSort.equals(newSort)) {
+                        super.getChildren().add(i, machine);
+                        added = true; 
+                        break;
                     }
-
-                    ItemDomainMachineDesign idm = null;
-                    if (containedItem instanceof ItemDomainMachineDesign) {
-                        idm = (ItemDomainMachineDesign) containedItem;
-                    }
-
-                    if (!childrenLoaded) {
-                        childrenLoaded = true;
-
-                        if (isLoadElementChildren()) {
-                            List<ItemElement> itemElementList = containedItem.getItemElementDisplayList();
-
-                            for (ItemElement itemElement : itemElementList) {
-                                createChildNode(itemElement);
-                            }
-                        }
-                    }
-
-                    loadAdditionalChildren();
                 }
             }
+
+            if (!added) {
+                super.getChildren().add(machine);
+            }
         }
-    }
 
-    protected void loadAdditionalChildren() {
-    }
-
-    protected void unloadAdditionalChildren() {
-    }
-
-    // If toggle of relationship is avaialble, override this.
-    protected boolean loadAdditionalNodes() {
-        return false;
-    }
+        return machine;
+    }        
 
     protected void loadRelationshipsFromRelationshipList(boolean fetchParents, ItemElementRelationshipTypeNames relationshipTypeName, String customType) {
         ItemElement element = this.getElement();
         Item machineElement = element.getContainedItem();
 
         List<ItemDomainMachineDesign> results = null;
-        ItemDomainMachineDesignFacade designFacade = config.getDesignFacade();
+        ItemDomainMachineDesignFacade designFacade = config.getFacade();
         if (fetchParents) {
             results = designFacade.fetchRelationshipParentItems(machineElement.getId(), relationshipTypeName.getDbId());
         } else {
@@ -242,11 +135,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
             super.getChildren().add(node);
         }
     }
-
-    protected boolean isLoadElementChildren() {
-        return true;
-    }
-
+   
     @Override
     public ItemDomainMachineDesignBaseTreeNode getParent() {
         return (ItemDomainMachineDesignBaseTreeNode) super.getParent();
@@ -343,7 +232,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
             for (ItemDomainMachineDesign item : topLevelItems) {
                 boolean filterMachineNode = item.isFilterMachineNode();
                 item.updateFilterMachineNode(filterMachineNode);
-            }
+            }            
             addTopLevelChildren(topLevelItems);
         }
     }
@@ -362,7 +251,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
 
         ItemDomainMachineDesignQueryBuilder queryBuilder = new ItemDomainMachineDesignQueryBuilder(domain.getId(), filterMap);
 
-        ItemDomainMachineDesignFacade designFacade = config.getDesignFacade();
+        ItemDomainMachineDesignFacade designFacade = config.getFacade();
         return designFacade.findByDataTableFilterQueryBuilder(queryBuilder);
     }
 
@@ -417,7 +306,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
     }
 
     protected <T extends ItemDomainMachineDesignBaseTreeNode> T createSearchResultChildNode(ItemDomainMachineDesignBaseTreeNode parentNode, ItemElement ie, boolean childrenLoaded) {
-        return (T) parentNode.createChildNode(ie, childrenLoaded);
+        return (T) parentNode.createChildNode(ie, childrenLoaded, true, true);
     }
 
     private ItemDomainMachineDesignBaseTreeNode createTreeFromFilter(ItemDomainMachineDesign item, boolean searchResultNode, Integer[] displayedNodes) {
@@ -446,7 +335,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
             childElement = getParentItemElement(item);
         }
 
-        List<ItemDomainMachineDesignBaseTreeNode> children = parentNode.getMachineChildren();
+        List<ItemDomainMachineDesignBaseTreeNode> children = parentNode.getTreeNodeItemChildren();
         for (ItemDomainMachineDesignBaseTreeNode node : children) {
             ItemElement element = node.getElement();
 
@@ -514,74 +403,20 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
             }
         }
         this.filterAllNodes = filterAllNodes;
-    }
+    }  
 
-    public void expandAllChildren(boolean expanded) throws CdbException {
-        Integer count = expandAllChildren(this, expanded, 0);
-        if (expanded && count > MAXIMUM_EXPANDED_NODES) {
-            throw new CdbException("Exceeded maximum expanded nodes. Select a child and expand again.");
-        }
-    }
-
-    private Integer expandAllChildren(TreeNode treeNode, boolean expanded, Integer count) {
-        treeNode.setExpanded(expanded);
-        count++;
-        if (expanded && count > MAXIMUM_EXPANDED_NODES) {
-            treeNode.setExpanded(!expanded);
-            return count;
-        }
-
-        List<TreeNode> children = treeNode.getChildren();
-        if (children != null) {
-            boolean keepGoing = children.size() > 0;
-            int direction = 1;
-            int i = 0;
-            while (keepGoing) {
-                TreeNode child = children.get(i);
-                i += direction;
-
-                if (direction == 1) {
-                    count = expandAllChildren(child, expanded, count);
-                    if (expanded && count > MAXIMUM_EXPANDED_NODES) {
-                        direction = -1;
-                        i--;
-                    } else {
-                        if (i >= children.size()) {
-                            keepGoing = false;
-                        }
-                    }
-                } else {
-                    expandAllChildren(child, !expanded, 0);
-                    if (i < 0) {
-                        keepGoing = false;
-                    }
-                }
-            }
-        }
-
-        if (expanded && count > MAXIMUM_EXPANDED_NODES) {
-            treeNode.setExpanded(!expanded);
-        }
-
-        return count;
-    }
-
-    public class MachineTreeBaseConfiguration {
+    public class MachineTreeBaseConfiguration extends ItemTreeBaseConfiguration {
 
         private boolean setMachineTreeNodeType = true;
         private boolean loadAllChildren = false;
         private ItemDomainMachineDesignControllerUtility mdControllerUtility = null;
-        private ItemDomainMachineDesignFacade designFacade;
 
         public MachineTreeBaseConfiguration() {
         }
 
-        public ItemDomainMachineDesignFacade getDesignFacade() {
-            return designFacade;
-        }
-
-        public void setDesignFacade(ItemDomainMachineDesignFacade designFacade) {
-            this.designFacade = designFacade;
+        @Override
+        public ItemDomainMachineDesignFacade getFacade() {
+            return (ItemDomainMachineDesignFacade) super.getFacade(); 
         }
 
         public boolean isSetMachineTreeNodeType() {

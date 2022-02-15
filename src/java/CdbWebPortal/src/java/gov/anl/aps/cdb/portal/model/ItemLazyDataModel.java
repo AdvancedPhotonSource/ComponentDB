@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model;
 
+import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
@@ -30,11 +31,14 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
 
     QueryBuilder queryBuilder = null;
     Integer rowCount = 0;
+    
+    ItemSettings settings; 
 
-    public ItemLazyDataModel(Facade facade, Domain itemDomain) {
+    public ItemLazyDataModel(Facade facade, Domain itemDomain, ItemSettings settings) {
         this.facade = facade;
         this.itemDomain = itemDomain;
         updateItemList(new ArrayList<>());
+        this.settings = settings; 
     }
 
     protected void updateItemList(List<Item> itemList) {
@@ -128,6 +132,6 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
             itemElementFacade = ItemElementFacade.getInstance();
         }
         return itemElementFacade;
-    }
+    } 
 
 }

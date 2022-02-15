@@ -30,6 +30,10 @@ See LICENSE file.
                 selectionMode="single"
                 style="width: 635px; background: none; border: none;"
                 selection="#{locationSelectionValue}">
+            
+            <ui:param name="itemObject"
+                      value="#{node.containedItem}"/> 
+            
             <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" />
         </p:tree>
     </p:scrollPanel>

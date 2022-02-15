@@ -12,9 +12,12 @@ import java.util.List;
  *
  * @author djarosz
  */
-public abstract class ItemDomainCatalogBase<InventoryItem extends Item> extends Item {
+public abstract class ItemDomainCatalogBase<InventoryItem extends ItemDomainInventoryBase> extends Item {
 
     private transient String sourceString = null;
+    private transient Boolean displayInventorySpares = null;
+    private transient List<InventoryItem> inventorySparesList = null;
+    private transient List<InventoryItem> inventoryNonSparesList = null;
 
     @JsonIgnore
     public List<InventoryItem> getInventoryItemList() {
@@ -137,6 +140,33 @@ public abstract class ItemDomainCatalogBase<InventoryItem extends Item> extends 
 
     public void setPartNumber(String n) {
         this.setItemIdentifier1(n);
+    }
+
+    @JsonIgnore
+    public Boolean getDisplayInventorySpares() {
+        return displayInventorySpares;
+    }
+
+    public void setDisplayInventorySpares(Boolean displayInventorySpares) {
+        this.displayInventorySpares = displayInventorySpares;
+    }
+    
+    @JsonIgnore
+    public List<InventoryItem> getInventorySparesList() {
+        return inventorySparesList;
+    }
+
+    public void setInventorySparesList(List<InventoryItem> inventorySparesList) {
+        this.inventorySparesList = inventorySparesList;
+    }
+
+    @JsonIgnore
+    public List<InventoryItem> getInventoryNonSparesList() {
+        return inventoryNonSparesList;
+    }
+
+    public void setInventoryNonSparesList(List<InventoryItem> inventoryNonSparesList) {
+        this.inventoryNonSparesList = inventoryNonSparesList;
     }
 
 }

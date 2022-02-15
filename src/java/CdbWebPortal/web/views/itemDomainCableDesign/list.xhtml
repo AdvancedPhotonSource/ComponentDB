@@ -70,9 +70,6 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="domainEntityListDataTableParameters">
-        <ui:param name="itemListDataTableLazy"
-                  value="#{entityController.dataTableNotScoped}"/> 
-
         <ui:param name="itemListDataTableValue" value="#{itemListDataTableValue != null 
                                                          ? itemListDataTableValue 
                                                          : itemDomainCableDesignController.scopedListDataModel}" />

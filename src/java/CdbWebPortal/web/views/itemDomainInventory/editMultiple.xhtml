@@ -13,15 +13,15 @@ See LICENSE file.
     <ui:param name="entityController" value="#{itemMultiEditDomainInventoryController}" />
 
     <ui:define name="itemMulitEditSelectionListDataTable">
-        <ui:include src="private/itemDomainInventoryMultiEditListDataTable.xhtml" />
+        <ui:include src="../itemDomainInventoryBase/private/itemDomainInventoryBaseMultiEditListDataTable.xhtml" />
     </ui:define>
     
     <ui:define name="itemDomainSpecificAccordionPanelTabs">
-        <ui:include src="private/itemDomainInventorySpecificMultiEditConfigurationTabs.xhtml"/>         
+        <ui:include src="../itemDomainInventoryBase/private/itemDomainInventoryBaseSpecificMultiEditConfigurationTabs.xhtml"/>         
     </ui:define>
     
     <ui:define name="itemDomainSpecificEditableListObject">
-        <ui:include src="private/itemDomainInventorySpecificMultiEditEditableListObject.xhtml" /> 
+        <ui:include src="../itemDomainInventoryBase/private/itemDomainInventoryBaseSpecificMultiEditEditableListObject.xhtml" /> 
     </ui:define>
     
     <ui:define name="itemDomainSpecificEditableListSupport">
@@ -29,7 +29,7 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="pluginOptionsAccordionPanelTabs">
-        <ui:include src="private/itemDomainInventoryPluginMultiEditConfigurationTabs.xhtml" />
+        <ui:include src="../itemDomainInventoryBase/private/itemDomainInventoryBasePluginMultiEditConfigurationTabs.xhtml" />
     </ui:define>
 
     <ui:define name="pluginOptionsEditableListObject">

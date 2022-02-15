@@ -38,9 +38,7 @@ See LICENSE file.
                                rendered="#{propertyTypeMetadata.isHaveDescription}"
                                />
                 <p:overlayPanel for="#{viewId}propertyMetadataKeyDescriptionDisplayCommandLink#{propertyMetadata.viewUUID}"
-                                rendered="#{propertyTypeMetadata != null and propertyTypeMetadata.description != null}"
-                                hideEffect="fade"
-                                showEffect="fade">
+                                rendered="#{propertyTypeMetadata != null and propertyTypeMetadata.description != null}">
                     <h:outputText value="#{propertyTypeMetadata.description}"/>
                 </p:overlayPanel>                            
             </p:outputPanel>

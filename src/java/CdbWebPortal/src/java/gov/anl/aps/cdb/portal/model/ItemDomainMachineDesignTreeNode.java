@@ -184,7 +184,7 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
             TreeNode parent = getParent();
             if (parent == null || parent.isExpanded()) {
                 assemblyElementsLoaded = false;
-                List<ItemDomainMachineDesignTreeNode> machineChildren = getMachineChildren();
+                List<ItemDomainMachineDesignTreeNode> machineChildren = getTreeNodeItemChildren();
                 
                 for (int i = machineChildren.size() - 1; i >= 0; i--) {
                     ItemDomainMachineDesignTreeNode node = machineChildren.get(i);
@@ -206,7 +206,7 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
             TreeNode parent = getParent();
             if (parent == null || parent.isExpanded()) {
                 cablesLoaded = false;
-                List<ItemDomainMachineDesignTreeNode> machineChildren = getMachineChildren();
+                List<ItemDomainMachineDesignTreeNode> machineChildren = getTreeNodeItemChildren();
                 for (int i = machineChildren.size() - 1; i >= 0; i--) {
                     ItemDomainMachineDesignTreeNode node = machineChildren.get(i);
                     if (node.cableRelatedNode) {

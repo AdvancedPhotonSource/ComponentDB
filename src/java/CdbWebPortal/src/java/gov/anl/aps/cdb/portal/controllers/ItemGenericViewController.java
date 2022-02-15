@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.ItemGenericViewSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemGenericControllerUtility;
+import gov.anl.aps.cdb.portal.model.ItemGenericLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
@@ -23,7 +24,7 @@ import javax.inject.Named;
  */
 @Named("itemGenericViewController")
 @SessionScoped
-public class ItemGenericViewController extends ItemController<ItemGenericControllerUtility, Item, ItemFacade, ItemGenericViewSettings> {
+public class ItemGenericViewController extends ItemController<ItemGenericControllerUtility, Item, ItemFacade, ItemGenericViewSettings, ItemGenericLazyDataModel> {
     
     @EJB
     private DomainFacade domainFacade; 
@@ -151,6 +152,11 @@ public class ItemGenericViewController extends ItemController<ItemGenericControl
     public boolean getEntityDisplayItemConnectors() {
         return true; 
     }
+   
+    @Override
+    public ItemGenericLazyDataModel createItemLazyDataModel() {
+        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain(), settingObject); 
+    }   
 
     @Override
     protected ItemGenericViewSettings createNewSettingObject() {
