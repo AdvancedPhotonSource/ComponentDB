@@ -4,13 +4,20 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans.builder;
 
+import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
+import gov.anl.aps.cdb.portal.constants.ListName;
+import gov.anl.aps.cdb.portal.controllers.SettingController;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
+import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,21 +35,24 @@ import org.primefaces.model.SortOrder;
  * @author Dariusz
  */
 public abstract class ItemQueryBuilder extends CdbQueryBuilder {
-    
+
     private static final Logger logger = LogManager.getLogger(ItemQueryBuilder.class.getName());
 
-    private static final String QUERY_COUNT_STRING_START = "SELECT count(DISTINCT(i)) FROM Item i ";    
-    private static final String QUERY_STRING_START = "SELECT DISTINCT(i) FROM Item i ";    
+    private static final String QUERY_COUNT_STRING_START = "SELECT count(DISTINCT(i)) FROM Item i ";
+    private static final String QUERY_STRING_START = "SELECT DISTINCT(i) FROM Item i ";
     private static final String ITEM_ELEMENTS_LIST_JOIN_NAME = "fiel";
     private static final String ITEM_PROJECT_LIST_JOIN_NAME = "ipl";
     private static final String ENTITY_TYPE_LIST_JOIN_NAME = "etl";
-    private static final String ITEM_CATEGORY_LIST_JOIN_NAME = "icl"; 
-    private static final String ITEM_TYPE_LIST_JOIN_NAME = "itl"; 
-    private static final String ITEM_SOURCE_LIST_JOIN_NAME = "isl"; 
-    private static final String CORE_METADATA_PROPERTY_JOIN_NAME = "cmp";   
-    
-    private final String METADATA_FIELD_START = "Metadata-"; 
-    private final String PROPERTY_FIELD_START = "propertyColumn"; 
+    private static final String ITEM_CATEGORY_LIST_JOIN_NAME = "icl";
+    private static final String ITEM_TYPE_LIST_JOIN_NAME = "itl";
+    private static final String ITEM_SOURCE_LIST_JOIN_NAME = "isl";
+    private static final String CORE_METADATA_PROPERTY_JOIN_NAME = "cmp";
+
+    private final String METADATA_FIELD_START = "Metadata-";
+    private final String PROPERTY_FIELD_START = "propertyColumn";
+
+    private final String SCOPED_DATA_PROPERTY_TYPE = "scopedProperty";
+    private final String SCOPED_LIST_NAME = "scopedList";
 
     boolean include_fiel = false;
     boolean include_ipl = false;
@@ -50,31 +60,37 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
     boolean include_icl = false;
     boolean include_itl = false;
     boolean include_isl = false;
-    private Set<String> coreMetadataNames = null; 
+    private Set<String> coreMetadataNames = null;
+    boolean include_scoped_pt = false;
+    boolean include_scoped_list = false;
+    boolean include_left_scoped_list = false;
 
     private Set<String> firstIERNames = null;
-    private Set<String> secondIERNames = null; 
-    
+    private Set<String> secondIERNames = null;
+
     private Map<String, String> pvlNames = null;
 
     private boolean fiel_included_in_where;
-    
+
     protected Integer domainId;
-    
-    public ItemQueryBuilder(Integer domainId, Map filterMap, String sortField, SortOrder sortOrder) {
-        this.domainId = domainId; 
+
+    protected ItemSettings displayScopeSettings;
+
+    public ItemQueryBuilder(Integer domainId, Map filterMap, String sortField, SortOrder sortOrder, ItemSettings scopeSettings) {
+        this.domainId = domainId;
         this.filterMap = filterMap;
         this.sortField = sortField;
         this.sortOrder = sortOrder;
+        this.displayScopeSettings = scopeSettings;
 
-        this.coreMetadataNames = new HashSet<>(); 
-        this.firstIERNames = new HashSet<>(); 
-        this.secondIERNames = new HashSet<>(); 
+        this.coreMetadataNames = new HashSet<>();
+        this.firstIERNames = new HashSet<>();
+        this.secondIERNames = new HashSet<>();
         this.pvlNames = new HashMap<>();
-        
+
         this.fiel_included_in_where = false;
     }
-    
+
     public String getCountQueryForItems() {
         return getQuery(QUERY_COUNT_STRING_START);
     }
@@ -82,7 +98,7 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
     public String getQueryForItems() {
         return getQuery(QUERY_STRING_START);
     }
-    
+
     private String getQuery(String start) {
         generateWhereString();
         generateSortString();
@@ -112,35 +128,46 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
         if (include_ipl) {
             joinPart += " JOIN i.itemProjectList " + ITEM_PROJECT_LIST_JOIN_NAME;
         }
-        
+
         if (include_icl) {
-            joinPart += " JOIN i.itemCategoryList " + ITEM_CATEGORY_LIST_JOIN_NAME; 
+            joinPart += " JOIN i.itemCategoryList " + ITEM_CATEGORY_LIST_JOIN_NAME;
         }
-        
+
         if (include_itl) {
-            joinPart += " JOIN i.itemTypeList " + ITEM_TYPE_LIST_JOIN_NAME; 
+            joinPart += " JOIN i.itemTypeList " + ITEM_TYPE_LIST_JOIN_NAME;
         }
-        
+
         if (include_isl) {
-            joinPart += " JOIN i.itemSourceList " + ITEM_SOURCE_LIST_JOIN_NAME; 
+            joinPart += " JOIN i.itemSourceList " + ITEM_SOURCE_LIST_JOIN_NAME;
+        }
+
+        if (include_scoped_pt) {
+            joinPart += " JOIN fiel.propertyValueList " + SCOPED_DATA_PROPERTY_TYPE;
+        }
+
+        if (include_scoped_list || include_left_scoped_list) {
+            if (include_left_scoped_list) {
+                joinPart += " LEFT";
+            }
+            joinPart += " JOIN fiel.listList " + SCOPED_LIST_NAME;
         }
 
         for (String ierName : firstIERNames) {
             joinPart += " JOIN fiel.itemElementRelationshipList " + ierName;
         }
-        
+
         for (String ierName : secondIERNames) {
             joinPart += " JOIN fiel.itemElementRelationshipList1 " + ierName;
         }
-        
-        for (Entry<String,String> entry : pvlNames.entrySet()) {
+
+        for (Entry<String, String> entry : pvlNames.entrySet()) {
             joinPart += " JOIN " + entry.getValue() + ".propertyValueList " + entry.getKey();
         }
-        
+
         for (String cmName : coreMetadataNames) {
             joinPart += " JOIN " + CORE_METADATA_PROPERTY_JOIN_NAME + ".propertyMetadataList " + cmName;
         }
-        
+
         return joinPart;
 
     }
@@ -149,10 +176,44 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
         wherePart = "";
         appendWhere("=", "i.domain.id", domainId);
 
+        if (isHasDisplayScope()) {
+            String scope = displayScopeSettings.getDisplayListDataModelScope();
+            if (scope.equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
+                include_scoped_pt = true;
+                includeFiel();
+
+                Integer scopePropertyTypeId = displayScopeSettings.getDisplayListDataModelScopePropertyTypeId();
+                appendWhere("=", SCOPED_DATA_PROPERTY_TYPE + ".propertyType.id", scopePropertyTypeId);
+            } else if (scope.equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
+                include_scoped_list = true;
+                includeFiel();
+
+                Integer favoritesListId = getFavoritesListId();
+                appendWhere("=", SCOPED_LIST_NAME + ".id", favoritesListId);
+            } else if (scope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue())) {
+                include_left_scoped_list = true;
+                includeFiel();
+
+                Integer favoritesListId = getFavoritesListId();
+
+                String additionalWherePart = "(" + SCOPED_LIST_NAME + ".id = " + favoritesListId + " OR ";
+
+                String scopedOwnerWherePart = getScopedOwnerWherePart();
+                additionalWherePart += scopedOwnerWherePart + ")";
+
+                appendRawWhere(additionalWherePart);
+            } else if (scope.equals(ItemDisplayListDataModelScope.showOwned.getValue())) {
+                includeFiel();
+
+                String scopedOwnerWherePart = getScopedOwnerWherePart();
+                appendRawWhere(scopedOwnerWherePart);
+            }
+        }
+
         for (Object key : filterMap.keySet()) {
             Object filterValue = filterMap.get(key);
-            if (filterValue instanceof FilterMeta) {                
-                filterValue = ((FilterMeta)filterValue).getFilterValue();
+            if (filterValue instanceof FilterMeta) {
+                filterValue = ((FilterMeta) filterValue).getFilterValue();
             }
 
             if (filterValue != null) {
@@ -180,40 +241,41 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
             }
         }
     }
-    
+
     private String prepareCoreMetadataQuery(String key) {
         String coreMetadataPropertyName = getCoreMetadataPropertyName();
         if (coreMetadataPropertyName == null) {
             logger.warn("Cannot filter core property not specified in controller");
-            return null; 
-        }    
-        
+            return null;
+        }
+
         preparePropertyQuery(null, CORE_METADATA_PROPERTY_JOIN_NAME, "name", coreMetadataPropertyName);
-                
+
         String metadataKey = key.split("-")[1];
-        
-        String filter_key = "cmp"+metadataKey; 
+
+        String filter_key = "cmp" + metadataKey;
         coreMetadataNames.add(filter_key);
-        String keyMatchQuery = filter_key + ".metadataKey"; 
+        String keyMatchQuery = filter_key + ".metadataKey";
         appendWhere("=", keyMatchQuery, metadataKey);
 
-        return filter_key; 
+        return filter_key;
     }
-    
+
     private void addCoreMetadataWhere(String key, String value) {
-        String filter_key = prepareCoreMetadataQuery(key);                
-        
+        String filter_key = prepareCoreMetadataQuery(key);
+
         String filterMatchQuery = filter_key + ".metadataValue";
         appendWhere(QUERY_LIKE, filterMatchQuery, value);
     }
-    
+
     /**
-     * Override this method in sub-controller to allow filtering of core property. 
-     * 
-     * @return 
+     * Override this method in sub-controller to allow filtering of core
+     * property.
+     *
+     * @return
      */
     protected String getCoreMetadataPropertyName() {
-        return null; 
+        return null;
     }
 
     /**
@@ -236,13 +298,13 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
             fiel_included_in_where = true;
         }
     }
-    
-    protected void addSelfElementWhereByAttribute(String attribute, String value) {        
-        String nameField = ITEM_ELEMENTS_LIST_JOIN_NAME + "." + attribute; 
-        
+
+    protected void addSelfElementWhereByAttribute(String attribute, String value) {
+        String nameField = ITEM_ELEMENTS_LIST_JOIN_NAME + "." + attribute;
+
         appendWhere(QUERY_LIKE, nameField, value);
-        
-        includeFiel();        
+
+        includeFiel();
     }
 
     protected void addPropertyWhereByTypeId(String fullFieldName, String value) {
@@ -258,7 +320,7 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
         preparePropertyQueryByPropertyTypeName(pvlParentName, key, propertyTypeName);
         addPropertyWhere(key, value);
     }
-    
+
     private void addPropertyWhere(String key, String value) {
         String queryName = key + ".value";
         appendWhere(QUERY_LIKE, queryName, value);
@@ -267,7 +329,7 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
     protected String preparePropertyQueryByPropertyTypeName(String fieldName, String propertyTypeName) {
         return preparePropertyQueryByPropertyTypeName(null, fieldName, propertyTypeName);
     }
-    
+
     protected String preparePropertyQueryByPropertyTypeName(String pvlParentName, String fieldName, String propertyTypeName) {
         String fullFieldName = fieldName + "-" + propertyTypeName;
         return preparePropertyQuery(pvlParentName, fullFieldName, "name");
@@ -283,98 +345,98 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
     private String preparePropertyQuery(String fullFieldName, String byAttribute) {
         return preparePropertyQuery(null, fullFieldName, byAttribute);
     }
-    
+
     private String preparePropertyQuery(String pvlParentName, String fullFieldName, String byAttribute) {
 
         String[] split = fullFieldName.split("-");
-        String key = split[0]; 
+        String key = split[0];
         String propertyTypeByValue = split[1];
-        
+
         preparePropertyQuery(pvlParentName, key, byAttribute, propertyTypeByValue);
 
         return key;
     }
-    
+
     private void preparePropertyQuery(String pvlParentName, String key, String byAttribute, String propertyTypeByValue) {
 
         if (!pvlNames.containsKey(key)) {
-            
+
             // default value for pvlParentName is "fiel" for full item element list,
             // otherwise pvlParentName is specified explicitly for relationship property value list etc
             if (pvlParentName == null) {
                 pvlParentName = "fiel";
                 includeFiel();
             }
-            
+
             String queryName = key + ".propertyType." + byAttribute;
             appendWhere("=", queryName, propertyTypeByValue);
             pvlNames.put(key, pvlParentName);
         }
     }
-    
+
     protected void addFirstRelationshipDetailsWhere(String key, String relationshipTypeName, String relationshipDetails) {
         addFirstRelationshipWhere(key, relationshipTypeName, "relationshipDetails", relationshipDetails);
     }
-    
+
     protected void addFirstRelationshipParentItemWhere(String key, String relationshipTypeName, String relationshipItemName) {
         addFirstRelationshipWhere(key, relationshipTypeName, "secondItemElement.parentItem.name", relationshipItemName);
     }
-    
+
     protected void addFirstRelationshipWhere(String key, String relationshipTypeName, String dbFieldName, String value) {
         prepareFirstRelationshipQueryByRelationshipName(key, relationshipTypeName);
-        
-        String queryName = key + "." + dbFieldName; 
+
+        String queryName = key + "." + dbFieldName;
         appendWhere(QUERY_LIKE, queryName, value);
     }
-    
+
     /**
-     * Prepares a relationship entity for filter or sort 
-     * 
-     * @param key entity reference in query 
+     * Prepares a relationship entity for filter or sort
+     *
+     * @param key entity reference in query
      * @param relationshipTypeName name of the relationship type
      */
     protected void prepareFirstRelationshipQueryByRelationshipName(String key, String relationshipTypeName) {
         prepareRelationshipQuery(key, "name", relationshipTypeName);
         firstIERNames.add(key);
     }
-    
+
     protected void addSecondRelationshipDetailsWhere(String key, String relationshipTypeName, String relationshipDetails) {
         addSecondRelationshipWhere(key, relationshipTypeName, "relationshipDetails", relationshipDetails);
     }
-    
+
     protected void addSecondRelationshipParentItemWhere(String key, String relationshipTypeName, String relationshipItemName) {
         addSecondRelationshipWhere(key, relationshipTypeName, "firstItemElement.parentItem.name", relationshipItemName);
     }
-    
+
     protected void addSecondRelationshipWhere(String key, String relationshipTypeName, String dbFieldName, String value) {
         prepareSecondRelationshipQueryByRelationshipName(key, relationshipTypeName);
-        
-        String queryName = key + "." + dbFieldName; 
+
+        String queryName = key + "." + dbFieldName;
         appendWhere(QUERY_LIKE, queryName, value);
     }
-    
+
     /**
-     * Prepares a relationship entity for filter or sort 
-     * 
-     * @param key entity reference in query 
+     * Prepares a relationship entity for filter or sort
+     *
+     * @param key entity reference in query
      * @param relationshipTypeName name of the relationship type
      */
     protected void prepareSecondRelationshipQueryByRelationshipName(String key, String relationshipTypeName) {
         prepareRelationshipQuery(key, "name", relationshipTypeName);
         secondIERNames.add(key);
     }
-    
+
     /**
-     * prepares a relationship entity for filter or sort 
-     * 
+     * prepares a relationship entity for filter or sort
+     *
      * @param key entity reference in query
-     * @param byAttribute id/name of attribute 
-     * @param relationshipTypeAttribute 
+     * @param byAttribute id/name of attribute
+     * @param relationshipTypeAttribute
      */
     private void prepareRelationshipQuery(String key, String byAttribute, String relationshipTypeAttribute) {
         String queryName = key + ".relationshipType." + byAttribute;
         appendWhere("=", queryName, relationshipTypeAttribute);
-        
+
         includeFiel();
     }
 
@@ -389,12 +451,12 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
             case ITEM_PROJECT_LIST_JOIN_NAME:
                 include_ipl = true;
                 break;
-            case ITEM_CATEGORY_LIST_JOIN_NAME: 
+            case ITEM_CATEGORY_LIST_JOIN_NAME:
                 include_icl = true;
                 break;
-            case ITEM_TYPE_LIST_JOIN_NAME: 
-                include_itl = true; 
-                break; 
+            case ITEM_TYPE_LIST_JOIN_NAME:
+                include_itl = true;
+                break;
             case ITEM_SOURCE_LIST_JOIN_NAME:
                 include_isl = true;
                 break;
@@ -410,9 +472,9 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
                 sortField = preparePropertyQuery(sortField, "id");
                 fullSortField = sortField + ".value";
             } else if (sortField.startsWith(METADATA_FIELD_START)) {
-                sortField = prepareCoreMetadataQuery(sortField); 
-                fullSortField = sortField + ".metadataValue"; 
-            }else {
+                sortField = prepareCoreMetadataQuery(sortField);
+                fullSortField = sortField + ".metadataValue";
+            } else {
                 QueryTranslator qt = QueryTranslator.getQueryTranslatorByValue(sortField);
                 if (qt != null) {
                     fullSortField = qt.getQueryNameField();
@@ -555,7 +617,44 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
         }
 
         return queryString;
-    }           
+    }
+
+    private boolean isHasDisplayScope() {
+        if (displayScopeSettings != null) {
+            String displayListDataModelScope = displayScopeSettings.getDisplayListDataModelScope();
+            return !displayListDataModelScope.equals(ItemDisplayListDataModelScope.showAll);
+        }
+        return false;
+    }
+
+    private Integer getFavoritesListId() {
+        UserInfo user = SessionUtility.getUser();
+        List<ListTbl> lists = user.getListList();
+        if (lists != null) {
+            for (ListTbl list : lists) {
+                String favoriteListName = ListName.favorite.getValue();
+                if (list.getName().equals(favoriteListName)) {
+                    return list.getId();
+                }
+            }
+
+        }
+
+        return -1;
+    }
+
+    private String getScopedOwnerWherePart() {
+        SettingEntity settingEntity = SettingController.getInstance().getCurrentSettingEntity();
+
+        String ownerWhere = "fiel.entityInfo.";
+        if (settingEntity instanceof UserInfo) {
+            ownerWhere += "ownerUser.id = " + settingEntity.getId();
+        } else {
+            ownerWhere += "ownerUserGroup.id = " + settingEntity.getId();
+        }
+
+        return ownerWhere;
+    }
 
     public enum QueryTranslator {
         item_identifier1("itemIdentifier1", "i"),

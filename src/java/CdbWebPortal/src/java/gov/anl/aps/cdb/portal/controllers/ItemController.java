@@ -84,7 +84,7 @@ public abstract class ItemController<
             ControllerUtility extends ItemControllerUtility<ItemDomainEntity, ItemDomainEntityFacade>, ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>, ItemSettingsObject extends ItemSettings, LazyDataModel extends ItemLazyDataModel>
         extends CdbDomainEntityController<ControllerUtility, ItemDomainEntity, ItemDomainEntityFacade, ItemSettingsObject> implements IItemController<ItemDomainEntity, ItemSettingsObject> {
 
-    private static final Logger LOGGER = LogManager.getLogger(ItemController.class.getName());                    
+    private static final Logger LOGGER = LogManager.getLogger(ItemController.class.getName());
     protected static final String PRIMARY_IMAGE_PROPERTY_METADATA_KEY = "Primary";
 
     @EJB
@@ -125,7 +125,7 @@ public abstract class ItemController<
     private List<Item> parentItemList;
     private int currentItemEntityHashCode;
 
-    private LazyDataModel itemLazyDataModel; 
+    private LazyDataModel itemLazyDataModel;
     protected DataModel scopedListDataModel = null;
     protected List<String> displayListDataModelScopeSelectionList = null;
 
@@ -709,35 +709,35 @@ public abstract class ItemController<
         }
         return itemsWithNoParentsListDataModel;
     }
-    
+
     protected ItemBaseLazyTreeNode createItemLazyTreeNode(List<ItemDomainEntity> parentItems) {
         // Override for tree functionality. 
-        return null; 
-    } 
+        return null;
+    }
 
     public ItemBaseLazyTreeNode getItemsWithNoParentsRootNode() {
         if (itemsWithNoParentsRootNode == null) {
-            LOGGER.info("Generating a tree from top level items."); 
+            LOGGER.info("Generating a tree from top level items.");
             List<ItemDomainEntity> itemsWitNoParentsList = getItemsWithoutParents();
-           
-            itemsWithNoParentsRootNode = createItemLazyTreeNode(itemsWitNoParentsList); 
+
+            itemsWithNoParentsRootNode = createItemLazyTreeNode(itemsWitNoParentsList);
         }
 
         return itemsWithNoParentsRootNode;
     }
-    
-    public abstract LazyDataModel createItemLazyDataModel(); 
+
+    public abstract LazyDataModel createItemLazyDataModel();
 
     public LazyDataModel getItemLazyDataModel() {
         if (itemLazyDataModel == null) {
-            itemLazyDataModel = createItemLazyDataModel(); 
+            itemLazyDataModel = createItemLazyDataModel();
         }
         return itemLazyDataModel;
     }
 
     @Override
     public DataModel getListDataModel() {
-        return getItemLazyDataModel(); 
+        return getItemLazyDataModel();
     }
 
     @Override
@@ -749,129 +749,31 @@ public abstract class ItemController<
         itemsWithNoParentsRootNode = null;
         displayListDataModelScopeSelectionList = null;
         locationRelationshipCache = null;
-        itemLazyDataModel = null; 
+        itemLazyDataModel = null;
     }
 
-    public boolean isDataTableNotScoped() {
-        return settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showAll.getValue());
+    public void listDataModelScopeChanged() {
+        scopedListDataModel = null;
+        itemLazyDataModel = null;
+    }
+
+    public boolean isDataTableScopeLazy() {
+        String scope = settingObject.getDisplayListDataModelScope();
+        return scope.equals(ItemDisplayListDataModelScope.showAll.getValue())
+                || scope.equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())
+                || scope.equals(ItemDisplayListDataModelScope.showFavorites.getValue())
+                || scope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue())
+                || scope.equals(ItemDisplayListDataModelScope.showOwned.getValue());
     }
 
     public final DataModel getScopedListDataModel() {
         // Show all
-        if (isDataTableNotScoped()) {
+        if (isDataTableScopeLazy()) {
             return getListDataModel();
         } else if (scopedListDataModel == null) {
-            String templateEntityTypeName = EntityTypeName.template.getValue();
-            ItemDomainEntityFacade itemFacade = getEntityDbFacade();
-            String domainName = getDefaultDomainName();
-
-            if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
-                if (settingObject.getDisplayListDataModelScopePropertyTypeId() == null) {
-                    return null;
-                } else {
-                    /**
-                     * GET ITEMS WITH PROEPRTY TYPE *
-                     */
-                    List<ItemDomainEntity> itemList = null;
-                    ItemProject currentProject = getCurrentItemProject();
-                    Integer propertyTypeId = settingObject.getDisplayListDataModelScopePropertyTypeId();
-                    if (getEntityDisplayTemplates()) {
-                        if (currentProject != null) {
-                            itemList = itemFacade.getItemsWithPropertyTypeAndProjectExcludeEntityType(
-                                    domainName,
-                                    propertyTypeId,
-                                    currentProject.getName(),
-                                    templateEntityTypeName);
-                        } else {
-                            itemList = itemFacade.getItemListWithPropertyTypeExcludeEntityType(
-                                    domainName,
-                                    propertyTypeId,
-                                    templateEntityTypeName);
-                        }
-                    } else {
-                        if (currentProject != null) {
-                            itemList = itemFacade.getItemsWithPropertyTypeAndProject(
-                                    domainName,
-                                    propertyTypeId,
-                                    currentProject.getName());
-                        } else {
-                            itemList = itemFacade.getItemListWithPropertyType(
-                                    domainName,
-                                    propertyTypeId);
-                        }
-
-                    }
-                    scopedListDataModel = new ListDataModel(itemList);
-                }
-            } else {
-                // Determine if currently viewed as group or user. 
-                SettingEntity settingEntity = getSettingController().getCurrentSettingEntity();
-                // All the remaining options require a setting entity loaded. 
-                if (settingEntity == null) {
-                    return getListDataModel();
-                }
-
-                // Show only favorites
-                if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
-                    scopedListDataModel = createFavoritesListDataModel();
-                } else {
-                    // Show owned or owned & favorites. 
-                    boolean showOwnedAndFavorites = settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue());
-                    boolean showOwned = !showOwnedAndFavorites;
-
-                    List<ItemDomainEntity> itemList = null;
-
-                    if (showOwnedAndFavorites) {
-                        if (getFavoritesList() != null) {
-                            if (settingEntity instanceof UserInfo) {
-                                if (getEntityDisplayTemplates()) {
-                                    itemList = itemFacade
-                                            .getItemListContainedInListOrOwnedByUserExcludeEntityType(domainName, getFavoritesList(), (UserInfo) settingEntity, templateEntityTypeName);
-                                } else {
-                                    itemList = itemFacade
-                                            .getItemListContainedInListOrOwnedByUser(domainName, getFavoritesList(), (UserInfo) settingEntity);
-                                }
-                            } else if (settingEntity instanceof UserGroup) {
-                                if (getEntityDisplayTemplates()) {
-                                    itemList = itemFacade
-                                            .getItemListContainedInListOrOwnedByGroupExcludeEntityType(domainName, getFavoritesList(), (UserGroup) settingEntity, templateEntityTypeName);
-                                } else {
-                                    itemList = itemFacade
-                                            .getItemListContainedInListOrOwnedByGroup(domainName, getFavoritesList(), (UserGroup) settingEntity);
-                                }
-                            }
-                        } else {
-                            // No favorites list will not show any results from query. 
-                            showOwned = true;
-                        }
-                    }
-
-                    if (showOwned) {
-                        if (settingEntity instanceof UserInfo) {
-                            if (getEntityDisplayTemplates()) {
-                                itemList = itemFacade
-                                        .getItemListOwnedByUserExcludeEntityType(domainName, (UserInfo) settingEntity, templateEntityTypeName);
-                            } else {
-                                itemList = itemFacade
-                                        .getItemListOwnedByUser(domainName, (UserInfo) settingEntity);
-                            }
-                        } else if (settingEntity instanceof UserGroup) {
-                            if (getEntityDisplayTemplates()) {
-                                itemList = itemFacade
-                                        .getItemListOwnedByUserGroupExcludeEntityType(domainName, (UserGroup) settingEntity, templateEntityTypeName);
-                            } else {
-                                itemList = itemFacade
-                                        .getItemListOwnedByUserGroup(domainName, (UserGroup) settingEntity);
-                            }
-                        }
-                    }
-
-                    scopedListDataModel = new ListDataModel(itemList);
-                }
-            }
+            // Add code not handled in lazy data model
         }
         if (scopedListDataModel == null) {
-            //Nothing was populated into the list data model. 
             scopedListDataModel = new ListDataModel<>();
         }
 
@@ -2239,7 +2141,7 @@ public abstract class ItemController<
     @Override
     public ItemDomainEntity findByQrId(Integer qrId) {
         if (getDefaultDomain() == null) {
-            return getEntityDbFacade().findByQrId(qrId); 
+            return getEntityDbFacade().findByQrId(qrId);
         } else {
             return getEntityDbFacade().findByQrIdAndDomain(qrId, getDefaultDomain().getName());
         }
@@ -2336,6 +2238,7 @@ public abstract class ItemController<
             return expandedRowUUIDs.contains(viewUUID);
         }
         return false;
+
     }
 
     @FacesConverter(value = "itemConverter")

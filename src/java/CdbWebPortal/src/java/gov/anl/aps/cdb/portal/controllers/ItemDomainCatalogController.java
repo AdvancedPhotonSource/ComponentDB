@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.DataModel;
 import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,7 +66,7 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
 
     @Override
     public ItemLazyDataModel createItemLazyDataModel() {
-        return new ItemDomainCatalogLazyDataModel(itemDomainCatalogFacade, getDefaultDomain()); 
+        return new ItemDomainCatalogLazyDataModel(itemDomainCatalogFacade, getDefaultDomain(), settingObject); 
     }
 
     @Override

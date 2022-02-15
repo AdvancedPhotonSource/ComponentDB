@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans.builder;
 
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import java.util.Map;
 import org.primefaces.model.SortOrder;
 
@@ -18,8 +19,8 @@ public abstract class ItemDomainInventoryBaseQueryBuilder extends ItemQueryBuild
     private final String LOCATION_RELATIONSHIP_FIELD_NAME = "locationString";
     private final String LOCATION_DETAILS_RELATIONSHIP_FIELD_NAME = "locationDetails";
 
-    public ItemDomainInventoryBaseQueryBuilder(Integer domainId, Map filterMap, String sortField, SortOrder sortOrder) {
-        super(domainId, filterMap, sortField, sortOrder);
+    public ItemDomainInventoryBaseQueryBuilder(Integer domainId, Map filterMap, String sortField, SortOrder sortOrder, ItemSettings scopeSettings) {
+        super(domainId, filterMap, sortField, sortOrder, scopeSettings);
     }
 
     protected abstract String getStatusPropertyTypeName();

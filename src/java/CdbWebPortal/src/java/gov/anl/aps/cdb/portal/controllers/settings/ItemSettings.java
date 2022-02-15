@@ -549,7 +549,7 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
 
     public void setDisplayListDataModelScope(String listDataModelMode) {
         if (!this.displayListDataModelScope.equals(listDataModelMode)) {
-            parentController.resetListDataModel();
+            parentController.listDataModelScopeChanged();
         }
         this.displayListDataModelScope = listDataModelMode;
     }

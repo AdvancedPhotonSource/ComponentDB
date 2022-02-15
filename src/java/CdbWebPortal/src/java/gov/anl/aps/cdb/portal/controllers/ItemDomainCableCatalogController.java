@@ -13,7 +13,6 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableCatalogContro
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableCatalogConnectors;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainCableCatalogLazyDataModel;
-import gov.anl.aps.cdb.portal.model.ItemLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.DataModel;
 import javax.inject.Named;
 
 /**
@@ -72,7 +70,7 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
 
     @Override
     public ItemDomainCableCatalogLazyDataModel createItemLazyDataModel() {
-        return new ItemDomainCableCatalogLazyDataModel(itemDomainCableCatalogFacade, getDefaultDomain()); 
+        return new ItemDomainCableCatalogLazyDataModel(itemDomainCableCatalogFacade, getDefaultDomain(), settingObject); 
     }
 
     @Override

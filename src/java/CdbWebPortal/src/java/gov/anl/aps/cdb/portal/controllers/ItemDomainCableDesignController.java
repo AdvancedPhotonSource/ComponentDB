@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.model.DataModel;
 import javax.inject.Named;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
@@ -1076,7 +1075,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
     @Override
     public ItemDomainCableDesignLazyDataModel createItemLazyDataModel() {
-        return new ItemDomainCableDesignLazyDataModel(itemDomainCableDesignFacade, getDefaultDomain()); 
+        return new ItemDomainCableDesignLazyDataModel(itemDomainCableDesignFacade, getDefaultDomain(), settingObject); 
     }        
     
     @Override
