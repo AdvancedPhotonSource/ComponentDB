@@ -231,6 +231,11 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         return locationDetails;
     }
 
+    @Override
+    public void setLocationDetails(String locationDetails) {
+        this.locationDetails = locationDetails; 
+    }
+
     public static boolean isItemPower(Item item) {
         return isItemEntityType(item, EntityTypeName.power.getValue());
     }
