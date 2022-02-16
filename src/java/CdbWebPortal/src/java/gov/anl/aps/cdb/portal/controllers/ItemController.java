@@ -750,6 +750,8 @@ public abstract class ItemController<
         displayListDataModelScopeSelectionList = null;
         locationRelationshipCache = null;
         itemLazyDataModel = null;
+        advancedFilterName = null;
+        advancedFilterValue = null;
     }
 
     public void listDataModelScopeChanged() {
@@ -765,13 +767,46 @@ public abstract class ItemController<
                 || scope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue())
                 || scope.equals(ItemDisplayListDataModelScope.showOwned.getValue());
     }
+    
+    /**
+     * Allows subclass to return a ListDataModel using the current advanced
+     * filter settings.
+     */
+    protected ListDataModel createAdvancedFilterDataModel_() {
+        return null;        
+    }
+
+    private ListDataModel createAdvancedFilterDataModel() {
+        
+        String filterName = getAdvancedFilterName();
+        String filterValue = getAdvancedFilterValue();
+        
+        if (getAdvancedFilterOptions() == null) {
+            // domain doesn't support advanced filter display mode
+            SessionUtility.addErrorMessage("Warning", "Domain does not support advanced filter display mode.");
+            return null;
+            
+        } else if (filterName == null || filterName.isEmpty() || filterValue == null || filterValue.isEmpty()) {
+            // filter name and value not specified in display mode dialog
+            return null;
+        }
+        
+        return createAdvancedFilterDataModel_();        
+    }
 
     public final DataModel getScopedListDataModel() {
         // Show all
         if (isDataTableScopeLazy()) {
             return getListDataModel();
+            
         } else if (scopedListDataModel == null) {
             // Add code not handled in lazy data model
+            
+            if (settingObject.getDisplayListDataModelScope().equals(
+                    ItemDisplayListDataModelScope.advancedFilter.getValue())) {
+                // handle display mode: advanced filter 
+                return createAdvancedFilterDataModel();
+            }
         }
         if (scopedListDataModel == null) {
             scopedListDataModel = new ListDataModel<>();
