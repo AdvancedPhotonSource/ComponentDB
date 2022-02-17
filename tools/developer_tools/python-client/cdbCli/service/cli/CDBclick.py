@@ -26,6 +26,7 @@ from cdbCli.service.cli.CDBclickCmnds.setLocation import set_location
 from cdbCli.service.cli.CDBclickCmnds.addDocumentProperty import add_http_property
 from cdbCli.service.cli.CDBclickCmnds.updateParentLocation import update_parent_location
 from cdbCli.service.cli.CDBclickCmnds.setItemStatusesByName import set_item_statuses_by_name
+from cdbCli.service.cli.CDBclickCmnds.updateItemDetails import update_item_details
 
 class AliasedGroup(click.Group):
 
@@ -61,6 +62,7 @@ def main():
     entry_point.add_command(update_parent_location)
     entry_point.add_command(add_http_property)
     entry_point.add_command(set_item_statuses_by_name)
+    entry_point.add_command(update_item_details)
     entry_point()
 
     
