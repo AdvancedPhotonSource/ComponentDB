@@ -145,6 +145,10 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
         return super.getChildren();
     }
 
+    public List<ItemDomainMachineDesign> getTopLevelItems() {
+        return topLevelItems;
+    }
+
     public MachineNodeConfiguration getConfig() {
         return config;
     }
