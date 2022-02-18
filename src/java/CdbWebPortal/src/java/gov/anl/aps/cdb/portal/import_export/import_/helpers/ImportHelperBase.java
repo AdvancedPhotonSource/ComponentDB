@@ -1867,7 +1867,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "Location details for item.", 
                 "getExportLocationDetails",
                 ColumnModeOptions.oCREATEoUPDATE(), 
-                256);
+                64);
     }
     
     public IntegerColumnSpec existingItemIdColumnSpec() {

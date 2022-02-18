@@ -116,10 +116,10 @@ public class ItemRoute extends ItemBaseRoute {
 
     @EJB
     ItemProjectFacade itemProjectFacade;
-    
+
     @EJB
     ItemTypeFacade itemTypeFacade;
-    
+
     @EJB
     ItemCategoryFacade itemCategoryFacade;
 
@@ -131,7 +131,7 @@ public class ItemRoute extends ItemBaseRoute {
         LOGGER.debug("Fetching item by id: " + id);
         return getItemByIdBase(id);
     }
-    
+
     @GET
     @Path("/ById/{itemId}/Hierarchy")
     @Produces(MediaType.APPLICATION_JSON)
@@ -150,7 +150,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Operation(summary = "Fetch an item by its id.")
     @Deprecated
     public ItemHierarchy getItemHierarchyByIdDeprecated(@PathParam("id") int id) throws ObjectNotFound {
-        return getItemHierarchyById(id); 
+        return getItemHierarchyById(id);
     }
 
     @POST
@@ -221,7 +221,7 @@ public class ItemRoute extends ItemBaseRoute {
         }
         return pt;
     }
-    
+
     @GET
     @Path("/ById/{itemId}/ItemsDerivedFromItem")
     @Produces(MediaType.APPLICATION_JSON)
@@ -230,13 +230,13 @@ public class ItemRoute extends ItemBaseRoute {
         Item itemById = getItemByIdBase(id);
         return itemById.getDerivedFromItemList();
     }
-    
+
     @GET
     @Path("/ItemsDerivedFromItemByItemId/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Deprecated
     public List<Item> getItemsDerivedFromItemByItemIdDeprecated(@PathParam("id") int id) throws ObjectNotFound {
-        return getItemsDerivedFromItemByItemId(id); 
+        return getItemsDerivedFromItemByItemId(id);
     }
 
     @GET
@@ -311,7 +311,7 @@ public class ItemRoute extends ItemBaseRoute {
             // When trees are loaded than the ItemHierarchy nodes can be loaded. 
             for (LocationHistoryObject hist : histories) {
                 controllerUtility.getLocationTreeForLocationHistoryObject(hist);
-                controllerUtility.getHousingTreeForLocationHistoryObject(hist); 
+                controllerUtility.getHousingTreeForLocationHistoryObject(hist);
             }
 
             return histories;
@@ -341,7 +341,7 @@ public class ItemRoute extends ItemBaseRoute {
 
         return itemMemberships;
     }
-    
+
     @GET
     @Path("/ById/{itemId}/VerifyPermission")
     @Produces(MediaType.APPLICATION_JSON)
@@ -365,7 +365,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Secured
     @Deprecated
     public boolean verifyUserPermissionForItemDeprecated(@PathParam("itemId") int id) throws ObjectNotFound {
-        return verifyUserPermissionForItem(id); 
+        return verifyUserPermissionForItem(id);
     }
 
     @POST
@@ -398,13 +398,20 @@ public class ItemRoute extends ItemBaseRoute {
             locationItem = (ItemDomainLocation) locItem;
         }
 
+        String locationDetails = locationInformation.getLocationDetails();
+        if (locationDetails != null && locationDetails.length() > 64) {
+            InvalidArgument invalidArgument = new InvalidArgument("Location details length exceeded 64 characters.");
+            LOGGER.error(invalidArgument);
+            throw invalidArgument;
+        }
+
         // Load current location info
-        LocatableItemControllerUtility locationControllerUtility = new LocatableItemControllerUtility(); 
+        LocatableItemControllerUtility locationControllerUtility = new LocatableItemControllerUtility();
         locationControllerUtility.setItemLocationInfo(locatableItem);
 
         // Use the location information provided 
         locatableItem.setLocation(locationItem);
-        locatableItem.setLocationDetails(locationInformation.getLocationDetails());
+        locatableItem.setLocationDetails(locationDetails);
 
         // Perfrom update        
         UserInfo currentUser = verifyCurrentUserPermissionForItem(locatableItem);
@@ -459,7 +466,7 @@ public class ItemRoute extends ItemBaseRoute {
             dbItem.getEntityInfo().setIsGroupWriteable(groupWriteable);
         }
 
-        ItemControllerUtility itemDomainControllerForApi = dbItem.getItemControllerUtility(); 
+        ItemControllerUtility itemDomainControllerForApi = dbItem.getItemControllerUtility();
 
         itemDomainControllerForApi.update(dbItem, currentUser);
 
@@ -484,20 +491,20 @@ public class ItemRoute extends ItemBaseRoute {
         dbItem.setItemIdentifier1(item.getItemIdentifier1());
         dbItem.setItemIdentifier2(item.getItemIdentifier2());
         dbItem.setDescription(item.getDescriptionFromAPI());
-        
+
         Domain domain = dbItem.getDomain();
-        
+
         List<ItemType> itemTypeList = dbItem.getItemTypeList();
-        
+
         if (item.getItemTypeList() != null) {
             itemTypeList.clear();
-            
+
             for (ItemType type : item.getItemTypeList()) {
                 ItemType dbType = itemTypeFacade.find(type.getId());
-                
+
                 if (dbType != null) {
                     if (dbType.getDomain().equals(domain)) {
-                        itemTypeList.add(dbType); 
+                        itemTypeList.add(dbType);
                     } else {
                         throw new InvalidArgument("Invalid item type provided: " + type.toString());
                     }
@@ -505,19 +512,19 @@ public class ItemRoute extends ItemBaseRoute {
                     throw new InvalidArgument("Invalid item type provided: " + type.toString());
                 }
             }
-        } 
+        }
         dbItem.setItemTypeList(itemTypeList);
-        
+
         List<ItemCategory> itemCategoryList = dbItem.getItemCategoryList();
         if (item.getItemCategoryList() != null) {
             itemCategoryList.clear();
-            
+
             for (ItemCategory category : item.getItemCategoryList()) {
                 ItemCategory dbCategory = itemCategoryFacade.find(category.getId());
-                 
+
                 if (dbCategory != null) {
                     if (dbCategory.getDomain().equals(domain)) {
-                        itemCategoryList.add(dbCategory); 
+                        itemCategoryList.add(dbCategory);
                     } else {
                         throw new InvalidArgument("Invalid item category provided: " + category.toString());
                     }
@@ -526,7 +533,7 @@ public class ItemRoute extends ItemBaseRoute {
                 }
             }
         }
-        
+
         dbItem.setItemCategoryList(itemCategoryList);
 
         ItemControllerUtility itemDomainControllerForApi = dbItem.getItemControllerUtility();
@@ -554,7 +561,7 @@ public class ItemRoute extends ItemBaseRoute {
 
         UserInfo currentUser = verifyCurrentUserPermissionForItem(itemById);
 
-        ItemControllerUtility ic = itemById.getItemControllerUtility();         
+        ItemControllerUtility ic = itemById.getItemControllerUtility();
         IItemStatusControllerUtility controller = null;
         LocatableStatusItem item = null;
 
@@ -578,7 +585,7 @@ public class ItemRoute extends ItemBaseRoute {
         inventoryStatusPropertyValue.setEffectiveFromDateTime(status.getEffectiveFromDate());
 
         ic.update(item, currentUser);
-        return item.getInventoryStatusPropertyValue(); 
+        return item.getInventoryStatusPropertyValue();
     }
 
     private void updateDbPropertyValueWithPassedInDate(PropertyValue dbPropertyValue, PropertyValue userPassedValue) {
@@ -616,7 +623,7 @@ public class ItemRoute extends ItemBaseRoute {
             throw ex;
         }
 
-        ItemControllerUtility itemController = dbItem.getItemControllerUtility(); 
+        ItemControllerUtility itemController = dbItem.getItemControllerUtility();
         itemController.destroy(dbItem, updatedByUser);
     }
 
@@ -637,7 +644,7 @@ public class ItemRoute extends ItemBaseRoute {
             throw ex;
         }
 
-        ItemControllerUtility ItemControllerUtility = dbItem.getItemControllerUtility(); 
+        ItemControllerUtility ItemControllerUtility = dbItem.getItemControllerUtility();
         PropertyValue dbPropertyValue = null;
 
         int propIdx = -1;
@@ -673,7 +680,7 @@ public class ItemRoute extends ItemBaseRoute {
 
         ItemControllerUtility.update(dbItem, updatedByUser);
 
-        dbItem = (Item) ItemControllerUtility.findById(itemId); 
+        dbItem = (Item) ItemControllerUtility.findById(itemId);
 
         List<PropertyValue> pvList = dbItem.getPropertyValueList();
         if (propIdx >= 0) {
@@ -684,7 +691,7 @@ public class ItemRoute extends ItemBaseRoute {
     }
 
     @POST
-    @Path("/UpdatePropertyMetadata/{itemId}/{propertyValueId}") 
+    @Path("/UpdatePropertyMetadata/{itemId}/{propertyValueId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
@@ -700,7 +707,7 @@ public class ItemRoute extends ItemBaseRoute {
             throw ex;
         }
 
-        ItemControllerUtility itemControllerUtility = dbItem.getItemControllerUtility(); 
+        ItemControllerUtility itemControllerUtility = dbItem.getItemControllerUtility();
         PropertyValue dbPropertyValue = null;
 
         int propIdx = -1;
@@ -731,7 +738,7 @@ public class ItemRoute extends ItemBaseRoute {
 
         itemControllerUtility.update(dbItem, updatedByUser);
 
-        dbItem = (Item) itemControllerUtility.findById(itemId); 
+        dbItem = (Item) itemControllerUtility.findById(itemId);
 
         List<PropertyValue> pvList = dbItem.getPropertyValueList();
         if (propIdx >= 0) {
@@ -747,7 +754,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public PropertyValue addItemPropertyValue(@PathParam("itemId") int itemId, 
+    public PropertyValue addItemPropertyValue(@PathParam("itemId") int itemId,
             @RequestBody(required = true) PropertyValue propertyValue) throws InvalidArgument, ObjectNotFound, CdbException {
         LOGGER.debug("Adding property to item with id: " + itemId);
         Item dbItem = getItemByIdBase(itemId);
@@ -803,7 +810,7 @@ public class ItemRoute extends ItemBaseRoute {
         int itemId = logEntryEditInformation.getItemId();
         Item itemById = getItemByIdBase(itemId);
 
-        ItemControllerUtility controllerUtility = itemById.getItemControllerUtility(); 
+        ItemControllerUtility controllerUtility = itemById.getItemControllerUtility();
 
         UserInfo updateUser = verifyCurrentUserPermissionForItem(itemById);
         Log newLog = controllerUtility.prepareAddLog(itemById, updateUser);
@@ -924,7 +931,7 @@ public class ItemRoute extends ItemBaseRoute {
         }
         return findByQrId;
     }
-    
+
     @GET
     @Path("/ById/{itemId}/Properties")
     @Produces(MediaType.APPLICATION_JSON)
@@ -933,7 +940,7 @@ public class ItemRoute extends ItemBaseRoute {
         Item itemById = getItemByIdBase(itemId);
         return itemById.getPropertyValueList();
     }
-    
+
     @GET
     @Path("/ById/{itemId}/Logs")
     @Produces(MediaType.APPLICATION_JSON)
@@ -942,31 +949,31 @@ public class ItemRoute extends ItemBaseRoute {
         Item itemById = getItemByIdBase(itemId);
         return itemById.getLogList();
     }
-        
+
     @GET
     @Path("/ById/{itemId}/ImageProperties")
-    @Produces(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)
     public List<PropertyValue> getImagePropertiesForItem(@PathParam("itemId") int itemId) throws ObjectNotFound {
         LOGGER.debug("Fetching image properties for item by id: " + itemId);
         Item itemById = getItemByIdBase(itemId);
         List<PropertyValue> propertyValueList = itemById.getPropertyValueList();
         return PropertyValueUtility.prepareImagePropertyValueList(propertyValueList);
     }
-    
+
     @GET
     @Path("/PropertiesForItem/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Deprecated
     public List<PropertyValue> getPropertiesForItemDeprecated(@PathParam("itemId") int itemId) throws ObjectNotFound {
-        return getPropertiesForItem(itemId); 
+        return getPropertiesForItem(itemId);
     }
-    
+
     @GET
     @Path("/LogsForItem/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Deprecated
     public List<Log> getLogsForItemDeprecated(@PathParam("itemId") int itemId) throws ObjectNotFound {
-        return getLogsForItem(itemId); 
+        return getLogsForItem(itemId);
     }
 
     @GET
@@ -974,7 +981,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Produces(MediaType.APPLICATION_JSON)
     @Deprecated
     public List<PropertyValue> getImagePropertiesForItemDeprecated(@PathParam("itemId") int itemId) throws ObjectNotFound {
-        return getImagePropertiesForItem(itemId); 
+        return getImagePropertiesForItem(itemId);
     }
 
     @GET
@@ -984,15 +991,15 @@ public class ItemRoute extends ItemBaseRoute {
         LOGGER.debug("Fetch items for domain: " + domainName);
         return itemFacade.findByDomain(domainName);
     }
-    
-    @POST 
+
+    @POST
     @Path("/ByDomain/{domainName}/Concise")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<ConciseItem> getConciseItemsByDomain(@PathParam("domainName") String domainName, ConciseItemOptions options) {
         LOGGER.debug("Fetch concise items for domain: " + domainName);
         List<Item> itemList = itemFacade.findByDomain(domainName);
-        return ConciseItem.createList(itemList, options); 
+        return ConciseItem.createList(itemList, options);
     }
 
     @GET
@@ -1001,14 +1008,14 @@ public class ItemRoute extends ItemBaseRoute {
     public List<ItemDomainCatalog> getCatalogItems() {
         return (List<ItemDomainCatalog>) (List<?>) getItemsByDomain(ItemDomainName.catalog.getValue());
     }
-    
+
     @POST
     @Path("/Catalog/Concise")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<ConciseItem> getConciseCatalogItems(ConciseItemOptions options) {
-        List<Item> catalogItems = getItemsByDomain(ItemDomainName.catalog.getValue());               
-        return ConciseItem.createList(catalogItems, options); 
+        List<Item> catalogItems = getItemsByDomain(ItemDomainName.catalog.getValue());
+        return ConciseItem.createList(catalogItems, options);
     }
 
     @GET
@@ -1017,7 +1024,7 @@ public class ItemRoute extends ItemBaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public List<ItemDomainCatalog> getFavoriteCatalogItems() {
-        ItemDomainCatalogControllerUtility controller = new ItemDomainCatalogControllerUtility(); 
+        ItemDomainCatalogControllerUtility controller = new ItemDomainCatalogControllerUtility();
         UserInfo currentUser = getCurrentRequestUserInfo();
         LOGGER.debug("Fetching favorite catalog items for user: " + currentUser.getUsername());
         currentUser = userFacade.find(currentUser.getId());
@@ -1030,15 +1037,15 @@ public class ItemRoute extends ItemBaseRoute {
     public List<ItemDomainInventory> getInventoryItems() {
         return (List<ItemDomainInventory>) (List<?>) getItemsByDomain(ItemDomainName.inventory.getValue());
     }
-    
+
     @POST
     @Path("/Inventory/Concise")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<ConciseItem> getConciseInventoryItems(ConciseItemOptions options) {
-        List<Item> inventoryItems = getItemsByDomain(ItemDomainName.inventory.getValue());        
-        
-        return ConciseItem.createList(inventoryItems, options); 
+        List<Item> inventoryItems = getItemsByDomain(ItemDomainName.inventory.getValue());
+
+        return ConciseItem.createList(inventoryItems, options);
     }
 
     @GET
@@ -1129,8 +1136,8 @@ public class ItemRoute extends ItemBaseRoute {
             throw new AuthorizationError("Only adminstrators can create locations.");
         }
 
-        ItemDomainLocationControllerUtility locControllerUtility = new ItemDomainLocationControllerUtility(); 
-       
+        ItemDomainLocationControllerUtility locControllerUtility = new ItemDomainLocationControllerUtility();
+
         ItemDomainLocation newLocationItem = locControllerUtility.createEntityInstance(currentUser);
 
         newLocationItem.setName(newLocationName);
@@ -1177,7 +1184,7 @@ public class ItemRoute extends ItemBaseRoute {
             ie.setSortOrder(sortOrder);
 
             newLocationItem.setItemElementMemberList(new ArrayList<>());
-            newLocationItem.getItemElementMemberList().add(ie); 
+            newLocationItem.getItemElementMemberList().add(ie);
         }
 
         locControllerUtility.create(newLocationItem, currentUser);
@@ -1202,9 +1209,9 @@ public class ItemRoute extends ItemBaseRoute {
         ItemDomainInventoryControllerUtility inventoryInstance = new ItemDomainInventoryControllerUtility();
         ItemDomainMachineDesignControllerUtility mdInstance = new ItemDomainMachineDesignControllerUtility();
 
-        LinkedList<SearchResult> catalogResults = catalogControllerUtility.performEntitySearch(searchText, true);         
-        LinkedList<SearchResult> inventoryResults = inventoryInstance.performEntitySearch(searchText, true);        
-        LinkedList<SearchResult> mdResults = mdInstance.performEntitySearch(searchText, true);        
+        LinkedList<SearchResult> catalogResults = catalogControllerUtility.performEntitySearch(searchText, true);
+        LinkedList<SearchResult> inventoryResults = inventoryInstance.performEntitySearch(searchText, true);
+        LinkedList<SearchResult> mdResults = mdInstance.performEntitySearch(searchText, true);
 
         return new ItemSearchResults(catalogResults, inventoryResults, mdResults);
     }
@@ -1218,7 +1225,6 @@ public class ItemRoute extends ItemBaseRoute {
         ItemDomainCatalogControllerUtility catalogUtility = new ItemDomainCatalogControllerUtility();
 
         LinkedList<SearchResult> catalogResults = catalogUtility.performEntitySearch(searchText, true);
-        
 
         List<ItemDomainCatalogSearchResult> detailedSearchResults = new ArrayList<>();
         for (SearchResult result : catalogResults) {
