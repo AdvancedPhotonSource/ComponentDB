@@ -78,10 +78,13 @@ See LICENSE file.
                                     
                                     <p:defaultCommand target="jumpToQrIdCommandButton" />
                                     <p:commandButton id="jumpToQrIdCommandButton"
-                                                     action="#{facesUtility.jumpToItemQrId()}"
+                                                     action="#{facesUtility.jumpToItemQrId('jumpToQrIdFailed()')}"
                                                      value="Go"
                                                      onclick="PF('loadingDialog').show()"/> 
                                 </p:dialog>
+                                
+                                <p:remoteCommand name="jumpToQrIdFailed"
+                                                 onstart="PF('loadingDialog').hide()"/> 
                             </h:form>
 
                             <ui:include src="../views/settings/private/settingsViewAsLabelDialog.xhtml" />
