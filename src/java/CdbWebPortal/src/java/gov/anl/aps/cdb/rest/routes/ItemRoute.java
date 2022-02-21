@@ -246,8 +246,8 @@ public class ItemRoute extends ItemBaseRoute {
         LOGGER.debug("Fetching status for item id: " + id);
         Item item = getItemByIdBase(id);
 
-        if (item instanceof ItemDomainInventory) {
-            return ((ItemDomainInventory) item).getInventoryStatusPropertyValue();
+        if (item instanceof LocatableStatusItem) {
+            return ((LocatableStatusItem) item).getInventoryStatusPropertyValue();
         }
 
         return null;
