@@ -54,7 +54,7 @@ See LICENSE file.
                 <p:commandButton update="multiEditTravelerTitleConfiguration"
                                  value="Add sequence"
                                  rendered="#{!withSequence}">
-                    <f:setPropertyActionListener target="#{travelerDomainInstanceController.currentSequenceStartValueToColumn}"
+                    <f:setPropertyActionListener target="#{travelerDomainInstanceController.currentSequenceStartValueToColumnWithFormat}"
                                                  value="0"/>
                 </p:commandButton>
 
