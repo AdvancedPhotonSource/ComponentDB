@@ -57,7 +57,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.AdvancedFilterOption;
+import gov.anl.aps.cdb.portal.view.objects.AdvancedFilter;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
@@ -170,7 +170,6 @@ public abstract class ItemController<
     protected ItemMetadataPropertyInfo coreMetadataPropertyInfo = null;
     protected PropertyType coreMetadataPropertyType = null;
     
-    private List<AdvancedFilterOption> advancedFilterOptions = null;
     private String advancedFilterName = null;
     private String advancedFilterValue = null;
     
@@ -781,7 +780,7 @@ public abstract class ItemController<
         String filterName = getAdvancedFilterName();
         String filterValue = getAdvancedFilterValue();
         
-        if (getAdvancedFilterOptions() == null) {
+        if (getAdvancedFilters() == null) {
             // domain doesn't support advanced filter display mode
             SessionUtility.addErrorMessage("Warning", "Domain does not support advanced filter display mode.");
             return null;
@@ -2389,18 +2388,8 @@ public abstract class ItemController<
         getControllerUtility().checkItemProject(item);
     }
     
-    /**
-     * Allows subclass to override with domain-specific options for advanced filter display mode.
-     */
-    protected List<AdvancedFilterOption> initializeAdvancedFilterOptions() {
-        return new ArrayList<>();
-    }
-
-    public List<AdvancedFilterOption> getAdvancedFilterOptions() {
-        if (advancedFilterOptions == null) {
-            advancedFilterOptions = initializeAdvancedFilterOptions();
-        }
-        return advancedFilterOptions;
+    public List<AdvancedFilter> getAdvancedFilters() {
+        return getEntityDbFacade().getAdvancedFilters();
     }
 
     public String getAdvancedFilterName() {

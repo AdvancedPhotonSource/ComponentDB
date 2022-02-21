@@ -20,6 +20,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.view.objects.AdvancedFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,8 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
     @PersistenceContext(unitName = "CdbWebPortalPU")
     protected EntityManager em;
+    
+    private List<AdvancedFilter> advancedFilters = null;
 
     List<ItemDomainEntity> itemsToAdd;
     
@@ -100,6 +103,20 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
 
         return super.edit(item);
+    }
+
+    /**
+     * Allows subclass to override with domain-specific advanced filter information.
+     */
+    protected List<AdvancedFilter> initializeAdvancedFilters() {
+        return new ArrayList<>();
+    }
+
+    public List<AdvancedFilter> getAdvancedFilters() {
+        if (advancedFilters == null) {
+            advancedFilters = initializeAdvancedFilters();
+        }
+        return advancedFilters;
     }
 
     private void populateItemsToAdd(ItemDomainEntity item) {

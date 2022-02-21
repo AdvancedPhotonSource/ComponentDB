@@ -30,7 +30,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.AdvancedFilterOption;
+import gov.anl.aps.cdb.portal.view.objects.AdvancedFilter;
 import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
@@ -1166,13 +1166,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
-    @Override
-    protected List<AdvancedFilterOption> initializeAdvancedFilterOptions() {
-        List<AdvancedFilterOption> filterOptions = new ArrayList<>();
-        filterOptions.add(new AdvancedFilterOption("endpoint ancestors", "Machine design parents of cable endpoints."));
-        return filterOptions;
     }
     
     public List<CableDesignConnectionListObject> getConnectionListForCurrent() {
