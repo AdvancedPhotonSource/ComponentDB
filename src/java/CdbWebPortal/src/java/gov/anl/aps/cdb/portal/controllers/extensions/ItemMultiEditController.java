@@ -995,10 +995,12 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     }
 
     public void populateValuesForColumn() {
-        // Load sequence start value 
-        currentSequenceStartValueToColumn = Integer.parseInt(currentSequenceStartValueToColumnWithFormat);
-        // Load the format of the sequence. 
-        currentSequenceStartValueToColumnWithFormat = getFormatForSequenceStartWithFormat(currentSequenceStartValueToColumnWithFormat);
+        if (currentSequenceStartValueToColumnWithFormat != null) {
+            // Load sequence start value 
+            currentSequenceStartValueToColumn = Integer.parseInt(currentSequenceStartValueToColumnWithFormat);
+            // Load the format of the sequence. 
+            currentSequenceStartValueToColumnWithFormat = getFormatForSequenceStartWithFormat(currentSequenceStartValueToColumnWithFormat);
+        }
         
         isInputValueDialogOpen = false;
         for (Item item : selectedItemsToEdit) {
