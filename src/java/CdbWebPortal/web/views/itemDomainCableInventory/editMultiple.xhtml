@@ -29,15 +29,19 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="pluginOptionsAccordionPanelTabs">
-        <ui:include src="../itemDomainInventoryBase/private/itemDomainInventoryBasePluginMultiEditConfigurationTabs.xhtml" />
+        <ui:decorate template="../itemDomainInventoryBase/private/templates/itemDomainInventoryBasePluginMultiEditConfigurationTabsTemplate.xhtml">
+            <ui:define name="pluginConfigurationInclude">
+                <ui:include src="../plugins/private/cableInventoryMultiEditConfigurations.xhtml" />
+            </ui:define>
+        </ui:decorate>
     </ui:define>
 
     <ui:define name="pluginOptionsEditableListObject">
-        <ui:include src="../plugins/private/inventoryMultiEditEditableListObjects.xhtml" />
+        <ui:include src="../plugins/private/cableInventoryMultiEditEditableListObjects.xhtml" />
     </ui:define>
 
     <ui:define name="pluginEditableListSupport">
-        <ui:include src="../plugins/private/inventoryMultiEditEditableListSupports.xhtml" />
+        <ui:include src="../plugins/private/cableInventoryMultiEditEditableListSupports.xhtml" />
     </ui:define>
 
 </ui:composition>
