@@ -424,9 +424,20 @@ BEGIN
 	DECLARE row_count INT; 
 	DECLARE item_self_element_id INT; 
 
+	-- check that cable_item_id is specified
+	IF ISNULL(cable_item_id)
+	THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'cable item id must be specified';
+	END IF;
+
 	-- add % to both ends of filter value 
+	IF ISNULL(name_filter_value) OR name_filter_value = ''
+	THEN
+		RETURN true;
+	END IF;
 	SET name_filter_value = CONCAT('%', name_filter_value); 
-	SET name_filter_value = CONCAT(name_filter_value, '%'); 
+	SET name_filter_value = CONCAT(name_filter_value, '%');
 
 	-- get self element id for cable design item 
 	SELECT self_element_id INTO item_self_element_id FROM v_item_self_element  WHERE item_id = cable_item_id; 
