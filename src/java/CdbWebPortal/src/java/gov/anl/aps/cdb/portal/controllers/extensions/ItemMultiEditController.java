@@ -106,6 +106,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     protected ItemDefaultColumnReferences currentApplyValuesToColumn = null;
     protected String currentPrefixValueToColumn = null;
     protected String currentPostfixValueToColumn = null;
+    protected String currentSequenceStartValueToColumnWithFormat = null; 
     protected Integer currentSequenceStartValueToColumn = null;
     protected List<Object> currentObjectListValueToColumn = null;
     protected String currentObjectListStringRep = null;
@@ -983,8 +984,22 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
         return true;
     }
+    
+    public static String getFormatForSequenceStartWithFormat(String sequenceStartWithFormat) {
+        if (sequenceStartWithFormat.startsWith("0")) {
+            int zeroCount = sequenceStartWithFormat.length();
+            return "%0" + zeroCount + "d"; 
+        } else {
+            return "%d"; 
+        }   
+    }
 
     public void populateValuesForColumn() {
+        // Load sequence start value 
+        currentSequenceStartValueToColumn = Integer.parseInt(currentSequenceStartValueToColumnWithFormat);
+        // Load the format of the sequence. 
+        currentSequenceStartValueToColumnWithFormat = getFormatForSequenceStartWithFormat(currentSequenceStartValueToColumnWithFormat);
+        
         isInputValueDialogOpen = false;
         for (Item item : selectedItemsToEdit) {
             switch (currentApplyValuesToColumn) {
@@ -1079,7 +1094,8 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     private String getNextValueForCurrentSequence() {
         String newValue = currentPrefixValueToColumn;
         if (getHasSequenceValueToSet()) {
-            newValue += currentSequenceStartValueToColumn;
+            newValue += String.format(currentSequenceStartValueToColumnWithFormat, 
+                    currentSequenceStartValueToColumn); 
             newValue += currentPostfixValueToColumn;
             currentSequenceStartValueToColumn++;
         }
@@ -1099,6 +1115,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         this.isInputValueDialogOpen = true;
         this.currentPrefixValueToColumn = null;
         this.currentPostfixValueToColumn = null;
+        this.currentSequenceStartValueToColumnWithFormat = null; 
         this.currentSequenceStartValueToColumn = null;
         this.currentObjectListValueToColumn = null;
         this.currentObjectListStringRep = null;
@@ -1139,6 +1156,14 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
     public void setCurrentPostfixValueToColumn(String currentPostfixValueToColumn) {
         this.currentPostfixValueToColumn = currentPostfixValueToColumn;
+    }
+
+    public String getCurrentSequenceStartValueToColumnWithFormat() {
+        return currentSequenceStartValueToColumnWithFormat;
+    }
+
+    public void setCurrentSequenceStartValueToColumnWithFormat(String currentSequenceStartValueToColumnWithFormat) {
+        this.currentSequenceStartValueToColumnWithFormat = currentSequenceStartValueToColumnWithFormat;
     }
 
     public Integer getCurrentSequenceStartValueToColumn() {
