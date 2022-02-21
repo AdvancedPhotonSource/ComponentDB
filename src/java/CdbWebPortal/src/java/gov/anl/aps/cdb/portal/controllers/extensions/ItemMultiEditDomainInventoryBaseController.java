@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.LocatableStatusItem;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
@@ -151,7 +152,7 @@ public abstract class ItemMultiEditDomainInventoryBaseController<InventoryDomain
         if (updateInventoryStatus) {
             InventoryController itemController = getInventoryController();
             for (Item item : selectedItemsToEdit) {
-                itemController.prepareEditInventoryStatus((ItemDomainInventory) item);
+                itemController.prepareEditInventoryStatus((LocatableStatusItem) item);
             }
         }
 
