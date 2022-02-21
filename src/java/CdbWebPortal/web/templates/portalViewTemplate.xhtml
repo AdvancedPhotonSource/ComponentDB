@@ -74,7 +74,8 @@ See LICENSE file.
                                           modal="true"
                                           header="Jump to Item by QrId"
                                           styleClass="viewTransparentBackgroundDialog">
-                                    <h:inputText value="#{facesUtility.jumpToQrIdEntry}" />
+                                    <h:inputText value="#{facesUtility.jumpToQrIdEntry}"
+                                                 onkeypress="if ((event.which &lt; 48 || event.which &gt; 57) &amp;&amp; event.which != 32) return false;"/>
                                     
                                     <p:defaultCommand target="jumpToQrIdCommandButton" />
                                     <p:commandButton id="jumpToQrIdCommandButton"
