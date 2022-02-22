@@ -11,3 +11,8 @@ INSERT INTO setting_type values
 
 
 UPDATE domain SET item_type_label = "Function" WHERE name = "Cable Catalog";
+
+-- Remove deprecated/unused cable domain. 
+SET @cable_domain_id = (SELECT id FROM domain WHERE name = 'Cable');
+DELETE FROM allowed_property_domain WHERE domain_id = @cable_domain_id;
+DELETE FROM domain WHERE id = @cable_domain_id;
