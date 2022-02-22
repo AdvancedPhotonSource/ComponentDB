@@ -14,14 +14,15 @@ See LICENSE file.
     <p:panelGrid columns="2"
                  styleClass="leftAlignedText">
         <h:outputText value='Item Status' />
-        <ui:include src="../../../propertyValue/private/propertyValueEditObjectValueSelectOneAllowedValue.xhtml">
-            <ui:param name="propertyValueObject"
-                      value="#{statusMockProperty}"/> 
-        </ui:include>
-        
+        <p:outputPanel>
+            <ui:include src="../../../propertyValue/private/propertyValueEditObjectValueSelectOneAllowedValue.xhtml">
+                <ui:param name="propertyValueObject"
+                          value="#{statusMockProperty}"/> 
+            </ui:include>
+        </p:outputPanel>
+
         <h:outputText value='Effective Date' />
-        <p:datePicker value="#{statusMockProperty.effectiveFromDateTime}"
-                      inline="true"/>
+        <p:datePicker value="#{statusMockProperty.effectiveFromDateTime}"/>
     </p:panelGrid>
 
 </ui:composition>

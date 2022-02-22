@@ -75,8 +75,13 @@ public class DownloadRoute extends BaseRoute {
             String documentHandlerName = DocumentPropertyTypeHandler.HANDLER_NAME;
             String imageHandlerName = ImagePropertyTypeHandler.HANDLER_NAME;
 
+            String imageFormat = GalleryUtility.getImageFormat(originalFileName);
+
+            if (imageFormat.equalsIgnoreCase("pdf")) {
+                mediaType = MediaType.WILDCARD_TYPE;
+            }
+
             if (name.equals(documentHandlerName)) {
-                String imageFormat = GalleryUtility.getImageFormat(originalFileName);
                 if (GalleryUtility.viewableFormat(imageFormat)) {
                     isAttachment = false;
                 } else if (imageFormat.equalsIgnoreCase("html")) {
