@@ -8,3 +8,6 @@
 INSERT INTO setting_type values 
 (21019,'ItemDomainMachineDesign.List.Filter.FilteredMachineIds', 'Comma seperated list of top level ids that are filtered by default', ''), 
 (21020,'ItemDomainMachineDesign.List.FilterBy.Name','Filter for machine by name.',NULL);
+
+
+UPDATE domain SET item_type_label = "Function" WHERE name = "Cable Catalog";
