@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableCatalogSetting
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableCatalogControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableCatalogConnectors;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.model.ItemDomainCableCatalogLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
@@ -31,9 +32,9 @@ import javax.inject.Named;
  */
 @Named(ItemDomainCableCatalogController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseController<ItemDomainCableCatalogControllerUtility, ItemDomainCableCatalog, ItemDomainCableCatalogFacade, ItemDomainCableCatalogSettings> {
+public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseController<ItemDomainCableCatalogControllerUtility, ItemDomainCableCatalog, ItemDomainCableCatalogFacade, ItemDomainCableCatalogSettings, ItemDomainCableCatalogLazyDataModel> {
     
-    public static final String CONTROLLER_NAMED = "itemDomainCableCatalogController";
+    public static final String CONTROLLER_NAMED = "itemDomainCableCatalogController";        
     
     @EJB
     ItemDomainCableCatalogFacade itemDomainCableCatalogFacade;
@@ -65,6 +66,11 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     @Override
     protected ItemDomainCableCatalogFacade getEntityDbFacade() {
         return itemDomainCableCatalogFacade; 
+    }
+
+    @Override
+    public ItemDomainCableCatalogLazyDataModel createItemLazyDataModel() {
+        return new ItemDomainCableCatalogLazyDataModel(itemDomainCableCatalogFacade, getDefaultDomain(), settingObject); 
     }
 
     @Override

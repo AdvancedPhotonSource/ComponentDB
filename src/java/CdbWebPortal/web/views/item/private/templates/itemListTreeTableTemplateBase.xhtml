@@ -24,14 +24,24 @@ See LICENSE file.
     <ui:param name="itemListTreeTableValue" value="#{itemListTreeTableValue != null ? itemListTreeTableValue : entityController.itemsWithNoParentsRootNode}" />    
     <!-- PF10 tree pre-render solution --> 
     <ui:param name="itemListActualTreeTableValue" value="#{listTreeTableRendered ? itemListTreeTableValue : null}" />    
+    
+    <p:remoteCommand name="prepareItemTreeFilter"                                             
+                     action="#{itemListActualTreeTableValue.preFilter('completeFilter()')}"/>
+    <p:remoteCommand name="completeFilter"
+                     onstart="PF('#{entityTypeName}ListTreeTable#{viewName}Widget').filter()"/>
 
     <p:treeTable id="#{entityTypeName}ListTreeTable#{viewName}"
                  widgetVar="#{entityTypeName}ListTreeTable#{viewName}Widget"
                  value="#{itemListActualTreeTableValue}"
-                 var="itemListObject" 
-                 resizableColumns="true"
+                 var="itemElementObject"                 
                  liveResize="true"
                  emptyMessage="No #{displayEntityTypeName}s found.">
+        
+        <p:ajax event="filter" onstart="prepareItemTreeFilter();"/>        
+        
+        <ui:param name="itemListObject" 
+                  value="#{itemElementObject.containedItem}" /> 
+        
         <ui:insert name="itemColumns" />
 
         <ui:insert name="domainEntityListExtraColumns"/>
