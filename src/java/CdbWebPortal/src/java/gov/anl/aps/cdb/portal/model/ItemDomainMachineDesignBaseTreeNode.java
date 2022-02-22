@@ -63,6 +63,10 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
         ItemDomainMachineDesignBaseTreeNode nodeObject = createTreeNodeObject(element, config, this, true);
         return (T) nodeObject; 
     }
+    
+    public List<ItemDomainMachineDesign> getTopLevelItems() {
+        return topLevelItems;
+    }
 
     @Override
     protected <T extends ItemBaseLazyTreeNode> T createChildNode(ItemElement itemElement) {
