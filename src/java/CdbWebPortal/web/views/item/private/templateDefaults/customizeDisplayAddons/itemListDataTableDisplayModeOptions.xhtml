@@ -29,22 +29,37 @@ See LICENSE file.
         </p:panelGrid>
 
         <p:panelGrid columns="2"
+                     styleClass="noCellPaddingPanelGrid" 
                      rendered="#{entitySettingObject.displayListDataModelScopeAdvancedFilter}">
             <h:outputText value="Filter Name" />            
             <p:selectOneMenu id="#{entityTypeName}AdvancedFilterMenu#{viewName}" 
                              value="#{entityController.advancedFilterName}"
                              styleClass="entityDataSelectOne">
                 <f:selectItems var="filterInfo" 
-                               value="#{entityController.advancedFilterOptions}" 
+                               value="#{entityController.advancedFilters}" 
                                itemLabel="#{filterInfo.name}" 
                                itemValue="#{filterInfo.name}"/>
+                <p:ajax event="itemSelect"
+                        update="#{entityTypeName}AdvancedFilterParams#{viewName}"/>        
             </p:selectOneMenu>   
-                        
-            <h:outputText value="Filter Value" />            
-            <p:inputText value="#{entityController.advancedFilterValue}" 
-                         title="Value to use for filtering." 
-                         styleClass="entityDataText"/>
         </p:panelGrid>
+
+        <p:outputPanel id="#{entityTypeName}AdvancedFilterParams#{viewName}"
+                       rendered="#{entitySettingObject.displayListDataModelScopeAdvancedFilter}">
+            <p:panelGrid columns="2"
+                         styleClass="noCellPaddingPanelGrid">
+                <c:forEach items="#{entityController.selectedFilter.parameters}"
+                           var="parameter">
+                    <h:outputLabel for="#{metadataKey}#{viewName}" 
+                                   value="#{parameter.name}" 
+                                   styleClass="entityDataLabel"
+                                   title="#{criterion.description}"/>
+                    <p:inputText value="#{parameter.value}" 
+                                 title="#{parameter.description}" 
+                                 styleClass="entityDataText"/>
+                </c:forEach>
+            </p:panelGrid>
+        </p:outputPanel>
 
     </p:outputPanel>    
 

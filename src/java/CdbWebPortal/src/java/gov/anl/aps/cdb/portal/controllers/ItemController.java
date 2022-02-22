@@ -66,6 +66,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -171,7 +172,6 @@ public abstract class ItemController<
     protected PropertyType coreMetadataPropertyType = null;
     
     private String advancedFilterName = null;
-    private String advancedFilterValue = null;
     
     public ItemController() {
     }
@@ -750,7 +750,6 @@ public abstract class ItemController<
         locationRelationshipCache = null;
         itemLazyDataModel = null;
         advancedFilterName = null;
-        advancedFilterValue = null;
     }
 
     public void listDataModelScopeChanged() {
@@ -778,14 +777,13 @@ public abstract class ItemController<
     private ListDataModel createAdvancedFilterDataModel() {
         
         String filterName = getAdvancedFilterName();
-        String filterValue = getAdvancedFilterValue();
         
         if (getAdvancedFilters() == null) {
             // domain doesn't support advanced filter display mode
             SessionUtility.addErrorMessage("Warning", "Domain does not support advanced filter display mode.");
             return null;
             
-        } else if (filterName == null || filterName.isEmpty() || filterValue == null || filterValue.isEmpty()) {
+        } else if (filterName == null || filterName.isEmpty()) {
             // filter name and value not specified in display mode dialog
             return null;
         }
@@ -2391,6 +2389,19 @@ public abstract class ItemController<
     public List<AdvancedFilter> getAdvancedFilters() {
         return getEntityDbFacade().getAdvancedFilters();
     }
+    
+    public AdvancedFilter getSelectedFilter() {
+        String selectedFilterName = getAdvancedFilterName();
+        if (selectedFilterName == null) {
+            return null;
+        }
+        for (AdvancedFilter filter : getAdvancedFilters()) {
+            if (filter.getName().equals(selectedFilterName)) {
+                return filter;
+            }
+        }
+        return null;
+    }
 
     public String getAdvancedFilterName() {
         return advancedFilterName;
@@ -2400,12 +2411,4 @@ public abstract class ItemController<
         this.advancedFilterName = advancedFilterName;
     }
 
-    public String getAdvancedFilterValue() {
-        return advancedFilterValue;
-    }
-
-    public void setAdvancedFilterValue(String advancedFilterValue) {
-        this.advancedFilterValue = advancedFilterValue;
-    }
-    
 }

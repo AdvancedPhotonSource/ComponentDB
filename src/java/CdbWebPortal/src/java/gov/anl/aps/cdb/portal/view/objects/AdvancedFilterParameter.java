@@ -12,6 +12,7 @@ public class AdvancedFilterParameter {
 
     private String name;
     private String description;
+    private String value;
     
     public AdvancedFilterParameter(String name, String description) {
         this.name = name;
@@ -24,6 +25,14 @@ public class AdvancedFilterParameter {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }
