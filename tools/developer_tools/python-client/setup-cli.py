@@ -16,7 +16,7 @@ from setuptools import setup
 from setuptools import find_packages
 
 setup(name='ComponentDB-CLI',
-      version='3.13.2',
+      version='3.13.3',
       packages=['cdbCli',
                 'cdbCli.common',
                 'cdbCli.common.cli',
@@ -28,7 +28,7 @@ setup(name='ComponentDB-CLI',
                         'six',
                         'paho-mqtt',
                         'click',
-                        'ComponentDB-API==3.13.0'],
+                        'ComponentDB-API==3.13.3'],
       license='Copyright (c) UChicago Argonne, LLC. All rights reserved.',
       description='Python APIs used to communicate with java hosted ComponentDB API.',
       maintainer='Dariusz Jarosz',
