@@ -12,6 +12,10 @@ See LICENSE file.
                 rendered="#{locatableItemTreeValue != null}"
                 value="#{locatableItemTreeValue}" 
                 var="node" animate="true">
+            
+            <ui:param name="itemObject"
+                      value="#{node}"/> 
+            
             <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" />
         </p:tree>
     </p:outputPanel>

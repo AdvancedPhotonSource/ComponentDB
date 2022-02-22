@@ -47,7 +47,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Named("itemDomainInventoryController")
 @SessionScoped
-public class ItemDomainInventoryController extends ItemDomainInventoryBaseController<ItemDomainInventoryControllerUtility, ItemDomainInventory, ItemDomainInventoryFacade, ItemDomainInventorySettings> {
+public class ItemDomainInventoryController extends ItemDomainInventoryBaseController<ItemDomainInventoryControllerUtility, ItemDomainInventory, ItemDomainInventoryFacade, ItemDomainInventorySettings, ItemDomainInventoryLazyDataModel> {
 
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status";
 
@@ -55,8 +55,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "Catalog";
 
     private static final Logger logger = LogManager.getLogger(ItemDomainInventoryController.class.getName());   
-
-    private ItemDomainInventoryLazyDataModel itemDomainInventoryLazyDataModel = null;
 
     @EJB
     private ItemDomainInventoryFacade itemDomainInventoryFacade;
@@ -122,29 +120,16 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     @Override
     public List<EntityType> getFilterableEntityTypes() {
         return getDefaultDomainDerivedFromDomain().getAllowedEntityTypeList();
-    }
+    } 
 
     @Override
-    public void resetListDataModel() {
-        super.resetListDataModel();
-        itemDomainInventoryLazyDataModel = null;
-    }
-
-    @Override
-    public DataModel getListDataModel() {
-        return getItemDomainInventoryLazyDataModel();
+    public ItemDomainInventoryLazyDataModel createItemLazyDataModel() {
+        return new ItemDomainInventoryLazyDataModel(itemDomainInventoryFacade, getDefaultDomain(), settingObject);
     }
 
     @Override
     protected Boolean fetchFilterablePropertyValue(Integer propertyTypeId) {
         return true;
-    }
-
-    public ItemDomainInventoryLazyDataModel getItemDomainInventoryLazyDataModel() {
-        if (itemDomainInventoryLazyDataModel == null) {
-            itemDomainInventoryLazyDataModel = new ItemDomainInventoryLazyDataModel(itemDomainInventoryFacade, getDefaultDomain());
-        }
-        return itemDomainInventoryLazyDataModel;
     }
 
     public boolean isInventoryDomainItem(Item item) {

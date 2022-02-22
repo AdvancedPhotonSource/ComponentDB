@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans.builder;
 
+import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import java.util.Map;
 import org.primefaces.model.SortOrder;
 
@@ -14,11 +15,11 @@ import org.primefaces.model.SortOrder;
 public class ItemDomainMachineDesignQueryBuilder extends ItemQueryBuilder {
     
     public ItemDomainMachineDesignQueryBuilder(Integer domainId, Map filterMap) {
-        super(domainId, filterMap, null, null); 
+        super(domainId, filterMap, null, null, null); 
     }
-    
-    public ItemDomainMachineDesignQueryBuilder(Integer domainId, Map filterMap, String sortField, SortOrder sortOrder) {
-        super(domainId, filterMap, sortField, sortOrder);
+
+    public ItemDomainMachineDesignQueryBuilder(Integer domainId, Map filterMap, String sortField, SortOrder sortOrder, ItemSettings scopeSettings) {
+        super(domainId, filterMap, sortField, sortOrder, scopeSettings);
     }
     
 }

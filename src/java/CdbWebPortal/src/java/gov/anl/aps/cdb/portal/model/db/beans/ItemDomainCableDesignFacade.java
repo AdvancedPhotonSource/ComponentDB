@@ -38,6 +38,7 @@ public class ItemDomainCableDesignFacade extends ItemFacadeBase<ItemDomainCableD
      * by updating the database for that cable.  Thus they are removed explicitly
      * here.
      */
+    @Override
     public ItemDomainCableDesign edit(ItemDomainCableDesign entity) {
         
         ItemDomainCableDesign result = super.edit(entity);

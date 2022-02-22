@@ -25,14 +25,18 @@ public abstract class CdbQueryBuilder {
     protected String wherePart;
     protected String sortPart;
     protected String joinPart;
-
-    protected void appendWhere(String comparator, String key, Object object) {
+    
+    protected void appendRawWhere(String rawWhere) {
         if (wherePart.isEmpty()) {
             wherePart += " WHERE ";
         } else {
             wherePart += "AND ";
         }
+        
+        wherePart += rawWhere; 
+    }
 
+    protected void appendWhere(String comparator, String key, Object object) {        
         String value = "NULL";
         if (object != null) {
             value = object.toString();
@@ -47,7 +51,8 @@ public abstract class CdbQueryBuilder {
             value = "'" + escapeCharacters(value) + "'";
         }
 
-        wherePart += key + " " + comparator + " " + value + " ";
+        String wherePart = key + " " + comparator + " " + value + " ";
+        appendRawWhere(wherePart); 
     }
     
     protected static String escapeCharacters(String queryParameter) {

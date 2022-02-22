@@ -65,7 +65,9 @@ public class ImportHelperMachineAssignTemplate extends ImportHelperBase<ItemDoma
         specs.add(MachineImportHelperCommon.existingMachineItemColumnSpec(
                 ColumnModeOptions.rUPDATErCOMPARE(), 
                 getMachineImportHelperCommon().getRootItem(), 
-                LABEL_MACHINE_ITEM, 
+                LABEL_MACHINE_ITEM,
+                null,
+                null,
                 "getName"));
         
         specs.add(MachineImportHelperCommon.templateInvocationColumnSpec(
