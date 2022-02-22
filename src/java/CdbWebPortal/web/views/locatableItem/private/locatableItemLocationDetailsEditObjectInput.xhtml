@@ -12,7 +12,8 @@ See LICENSE file.
     <p:column id="locationDetails#{viewName}">
         <h:inputText value="#{itemObject.locationDetails}"
                      styleClass="entityDataText"
-                     onkeyup="updateLocationDetails#{viewName}()"/>
+                     onkeyup="updateLocationDetails#{viewName}()"
+                     maxlength="64"/>
         <p:remoteCommand name="updateLocationDetails#{viewName}"
                          update="locationDetails#{viewName}"/>
     </p:column>

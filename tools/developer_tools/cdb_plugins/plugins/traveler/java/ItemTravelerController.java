@@ -93,6 +93,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     private String travelerInstanceTitle;
     protected String currentPostfixValueToColumn = null;
     protected Integer currentSequenceStartValueToColumn = null;
+    protected String currentSequenceStartValueToColumnWithFormat = null; 
 
     private List<Form> availableTemplates;
     private List<Form> defaultTemplates;
@@ -445,6 +446,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         List<Item> selectedItemsToEdit = getItemController().getItemMultiEditController().getSelectedItemsToEdit();
         multiEditAvailableTemplateForApplyAll = null;
         currentSequenceStartValueToColumn = null;
+        currentSequenceStartValueToColumnWithFormat = null; 
         currentPostfixValueToColumn = null;
         setSelectedTravelerInstanceTemplate(null);
 
@@ -477,7 +479,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     }
 
     public boolean getHasSequenceValueToSet() {
-        return currentSequenceStartValueToColumn != null;
+        return currentSequenceStartValueToColumnWithFormat != null;
     }
 
     public void createTravelerInstanceForEachSelectedItem(String onSuccess) {
@@ -487,6 +489,10 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
                 String prefix = null;
                 Integer currentSequence = null;
                 if (getHasSequenceValueToSet()) {
+                    currentSequenceStartValueToColumn = Integer.parseInt(currentSequenceStartValueToColumnWithFormat); 
+                    currentSequenceStartValueToColumnWithFormat 
+                            = ItemMultiEditController.getFormatForSequenceStartWithFormat(currentSequenceStartValueToColumnWithFormat); 
+                    
                     prefix = travelerInstanceTitle;
                     currentSequence = currentSequenceStartValueToColumn;
                 }
@@ -494,7 +500,8 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
                 List<Item> selectedItemsToEdit = getItemController().getItemMultiEditController().getSelectedItemsToEdit();
                 for (int i = 0; i < selectedItemsToEdit.size(); i++) {
                     if (prefix != null) {
-                        travelerInstanceTitle = prefix + currentSequence + currentPostfixValueToColumn;
+                        String nextSequence = String.format(currentSequenceStartValueToColumnWithFormat, currentSequence); 
+                        travelerInstanceTitle = prefix + nextSequence + currentPostfixValueToColumn;
                         currentSequence += 1;
                     }
                     Item item = selectedItemsToEdit.get(i);
@@ -1632,6 +1639,14 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
     public void setCurrentSequenceStartValueToColumn(Integer currentSequenceStartValueToColumn) {
         this.currentSequenceStartValueToColumn = currentSequenceStartValueToColumn;
+    }
+
+    public String getCurrentSequenceStartValueToColumnWithFormat() {
+        return currentSequenceStartValueToColumnWithFormat;
+    }
+
+    public void setCurrentSequenceStartValueToColumnWithFormat(String currentSequenceStartValueToColumnWithFormat) {
+        this.currentSequenceStartValueToColumnWithFormat = currentSequenceStartValueToColumnWithFormat;
     }
 
     public void setSelectedTravelerInstanceTemplate(Form selectedTravelerInstanceTemplate) {

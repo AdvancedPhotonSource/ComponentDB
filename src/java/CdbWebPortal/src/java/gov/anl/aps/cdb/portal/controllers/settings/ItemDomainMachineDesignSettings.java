@@ -36,6 +36,9 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     private static final String DisplayPropertyTypeId3SettingTypeKey = "ItemDomainMachineDesign.List.Display.PropertyTypeId3";
     private static final String DisplayPropertyTypeId4SettingTypeKey = "ItemDomainMachineDesign.List.Display.PropertyTypeId4";
     private static final String DisplayPropertyTypeId5SettingTypeKey = "ItemDomainMachineDesign.List.Display.PropertyTypeId5";
+    
+    private static final String FilterFilteredMachineIdsSettingTypeKey = "ItemDomainMachineDesign.List.Filter.FilteredMachineIds";  
+    private static final String FilterByNameSettingTypeKey = "ItemDomainMachineDesign.List.FilterBy.Name";
 
     protected Boolean displayAlternateName = null; 
     protected Boolean displayItemElementsSimpleView = false;
@@ -45,6 +48,8 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     protected Boolean displayHousing = false;
     
     protected Boolean displayInstalledQrId = null; 
+    
+    protected String filterFilteredMachineIds = null; 
 
     public ItemDomainMachineDesignSettings(ItemDomainMachineDesignBaseController parentController) {
         super(parentController);
@@ -82,6 +87,9 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
         displayPropertyTypeId3 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId3SettingTypeKey).getDefaultValue());
         displayPropertyTypeId4 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId4SettingTypeKey).getDefaultValue());
         displayPropertyTypeId5 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId5SettingTypeKey).getDefaultValue());
+        
+        filterFilteredMachineIds = settingTypeMap.get(FilterFilteredMachineIdsSettingTypeKey).getDefaultValue(); 
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
 
     }
 
@@ -112,6 +120,9 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
         displayPropertyTypeId3 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
         displayPropertyTypeId4 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
         displayPropertyTypeId5 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
+        
+        filterFilteredMachineIds = settingEntity.getSettingValueAsString(FilterFilteredMachineIdsSettingTypeKey, filterFilteredMachineIds); 
+        filterByName = settingEntity.getSettingValueAsString(FilterByNameSettingTypeKey, filterByName); 
     }
 
     @Override
@@ -141,6 +152,9 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
         settingEntity.setSettingValue(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
         settingEntity.setSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
         settingEntity.setSettingValue(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
+        
+        settingEntity.setSettingValue(FilterFilteredMachineIdsSettingTypeKey, filterFilteredMachineIds);
+        settingEntity.setSettingValue(FilterByNameSettingTypeKey, filterByName);
     }
     
     private boolean isDerivedMachineSettingsWithOwnKeys() {
@@ -194,6 +208,14 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
 
     public void setDisplayInstalledQrId(Boolean displayInstalledQrId) {
         this.displayInstalledQrId = displayInstalledQrId;
+    }
+
+    public String getFilterFilteredMachineIds() {
+        return filterFilteredMachineIds;
+    }
+
+    public void setFilterFilteredMachineIds(String filterFilteredMachineIds) {
+        this.filterFilteredMachineIds = filterFilteredMachineIds;
     }
 
 }

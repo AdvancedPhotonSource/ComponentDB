@@ -159,7 +159,7 @@ public class FacesUtility {
         return "";
     }
 
-    public String jumpToItemQrId() {
+    public String jumpToItemQrId(String failRemoteCommand) {
         // Remove any spaces 
         jumpToQrIdEntry = jumpToQrIdEntry.replace(" ", "");
 
@@ -169,6 +169,7 @@ public class FacesUtility {
             qrIdNum = Integer.parseInt(jumpToQrIdEntry);
         } catch (NumberFormatException ex) {
             SessionUtility.addErrorMessage("Error parsing qrid", ex.getMessage());
+            SessionUtility.executeRemoteCommand(failRemoteCommand); 
             return null;
         }
 
