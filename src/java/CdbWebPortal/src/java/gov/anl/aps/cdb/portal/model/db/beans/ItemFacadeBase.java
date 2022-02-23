@@ -39,8 +39,6 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     @PersistenceContext(unitName = "CdbWebPortalPU")
     protected EntityManager em;
     
-    private List<AdvancedFilter> advancedFilters = null;
-
     List<ItemDomainEntity> itemsToAdd;
     
     protected final Integer SEARCH_RESULT_LIMIT = 1000;
@@ -71,17 +69,10 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     /**
      * Allows subclass to override with domain-specific advanced filter information.
      */
-    protected List<AdvancedFilter> initializeAdvancedFilters() {
+    public List<AdvancedFilter> getAdvancedFilterInfo() {
         return new ArrayList<>();
     }
 
-    public List<AdvancedFilter> getAdvancedFilters() {
-        if (advancedFilters == null) {
-            advancedFilters = initializeAdvancedFilters();
-        }
-        return advancedFilters;
-    }
-    
     /**
      * Allows subclasses to override in a domain-specific way for processing specified
      * filter and parameters.

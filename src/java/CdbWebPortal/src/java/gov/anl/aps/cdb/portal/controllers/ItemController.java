@@ -171,6 +171,7 @@ public abstract class ItemController<
     protected ItemMetadataPropertyInfo coreMetadataPropertyInfo = null;
     protected PropertyType coreMetadataPropertyType = null;
     
+    private List<AdvancedFilter> advancedFilters = null;
     private String advancedFilterName = null;
     
     public ItemController() {
@@ -2392,9 +2393,12 @@ public abstract class ItemController<
     }
     
     public List<AdvancedFilter> getAdvancedFilters() {
-        return getEntityDbFacade().getAdvancedFilters();
+        if (advancedFilters == null) {
+            advancedFilters = getEntityDbFacade().getAdvancedFilterInfo();
+        }
+        return advancedFilters;
     }
-    
+
     public AdvancedFilter getSelectedFilter() {
         String selectedFilterName = getAdvancedFilterName();
         if (selectedFilterName == null) {

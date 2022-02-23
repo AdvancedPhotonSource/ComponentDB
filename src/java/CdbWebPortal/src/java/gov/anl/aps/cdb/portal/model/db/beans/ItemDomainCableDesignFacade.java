@@ -43,7 +43,7 @@ public class ItemDomainCableDesignFacade extends ItemFacadeBase<ItemDomainCableD
     }
     
     @Override
-    protected List<AdvancedFilter> initializeAdvancedFilters() {
+    public List<AdvancedFilter> getAdvancedFilterInfo() {
         List<AdvancedFilter> filters = new ArrayList<>();
         
         AdvancedFilter filter = new AdvancedFilter(
