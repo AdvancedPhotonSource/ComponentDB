@@ -35,6 +35,7 @@ See LICENSE file.
             <p:selectOneMenu id="#{entityTypeName}AdvancedFilterMenu#{viewName}" 
                              value="#{entityController.advancedFilterName}"
                              styleClass="entityDataSelectOne">
+                <f:selectItem itemLabel="Select Filter" noSelectionOption="true"/>
                 <f:selectItems var="filterInfo" 
                                value="#{entityController.advancedFilters}" 
                                itemLabel="#{filterInfo.name}" 
