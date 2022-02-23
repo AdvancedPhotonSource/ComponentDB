@@ -841,6 +841,12 @@ public abstract class ItemController<
                         continue;
                     }
                 }
+                if (value.equals(ItemDisplayListDataModelScope.advancedFilter)) {
+                    // don't display advanced filter option if filters not supported by domain
+                    if (getAdvancedFilters().isEmpty()) {
+                        continue;
+                    }
+                }
                 displayListDataModelScopeSelectionList.add(value.getValue());
             }
         }
