@@ -1678,8 +1678,18 @@ public abstract class ItemController<
 
     public String getDisplayListDataModelScopeDisplayString() {
         if (settingObject.getDisplayListDataModelScope() != null) {
-            if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
-                return settingObject.getDisplayListDataModelScope() + " '" + getDisplayPropertyTypeName(settingObject.getDisplayListDataModelScopePropertyTypeId()) + "'";
+            if (settingObject.getDisplayListDataModelScope().equals(
+                    ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
+                return settingObject.getDisplayListDataModelScope() + " '" 
+                        + getDisplayPropertyTypeName(settingObject.getDisplayListDataModelScopePropertyTypeId()) 
+                        + "'";
+            } else if (settingObject.getDisplayListDataModelScope().equals(
+                    ItemDisplayListDataModelScope.advancedFilter.getValue())) {
+                String selectedFilter = getAdvancedFilterName();
+                if (selectedFilter == null) {
+                    selectedFilter = "No Filter Specified";
+                }
+                return settingObject.getDisplayListDataModelScope() + " '" + selectedFilter + "'";
             }
         }
         return settingObject.getDisplayListDataModelScope();
