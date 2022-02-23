@@ -767,11 +767,13 @@ public abstract class ItemController<
     }
     
     /**
-     * Allows subclass to return a ListDataModel using the current advanced
-     * filter settings.
+     * Allows subclass to return a ListDataModel using the specified filter and parameters.
      */
-    protected ListDataModel createAdvancedFilterDataModel_() {
-        return null;        
+    protected ListDataModel createAdvancedFilterDataModel_(
+            String filterName, Map<String, String> parameterValueMap) {
+        
+        List<ItemDomainEntity> itemList = getEntityDbFacade().processAdvancedFilter(filterName, parameterValueMap);
+        return new ListDataModel(itemList);
     }
 
     private ListDataModel createAdvancedFilterDataModel() {
@@ -788,7 +790,10 @@ public abstract class ItemController<
             return null;
         }
         
-        return createAdvancedFilterDataModel_();        
+        AdvancedFilter selectedFilter = getSelectedFilter();
+        Map<String, String> parameterValueMap = selectedFilter.getParameterValueMap();
+        
+        return createAdvancedFilterDataModel_(selectedFilter.getName(), parameterValueMap);        
     }
 
     public final DataModel getScopedListDataModel() {

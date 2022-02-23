@@ -5,7 +5,9 @@
 package gov.anl.aps.cdb.portal.view.objects;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -37,6 +39,14 @@ public class AdvancedFilter {
     public void addParameter(String name, String description) {
         AdvancedFilterParameter parameter = new AdvancedFilterParameter(name, description);
         parameters.add(parameter);
+    }
+    
+    public Map<String, String> getParameterValueMap() {
+        Map<String, String> parameterValueMap = new HashMap();
+        for (AdvancedFilterParameter parameter : getParameters()) {
+            parameterValueMap.put(parameter.getName(), parameter.getValue());
+        }
+        return parameterValueMap;
     }
 
 }

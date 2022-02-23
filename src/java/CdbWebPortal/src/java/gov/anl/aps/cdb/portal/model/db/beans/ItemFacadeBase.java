@@ -68,6 +68,28 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return em;
     }
 
+    /**
+     * Allows subclass to override with domain-specific advanced filter information.
+     */
+    protected List<AdvancedFilter> initializeAdvancedFilters() {
+        return new ArrayList<>();
+    }
+
+    public List<AdvancedFilter> getAdvancedFilters() {
+        if (advancedFilters == null) {
+            advancedFilters = initializeAdvancedFilters();
+        }
+        return advancedFilters;
+    }
+    
+    /**
+     * Allows subclasses to override in a domain-specific way for processing specified
+     * filter and parameters.
+     */
+    public List<ItemDomainEntity> processAdvancedFilter(String name, Map<String, String> parameterValueMap) {
+        return null;
+    }
+
     public Item findItem(Object id) {
         // Find any item type item not only of derived domain 
         return getEntityManager().find(Item.class, id);
@@ -103,20 +125,6 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
 
         return super.edit(item);
-    }
-
-    /**
-     * Allows subclass to override with domain-specific advanced filter information.
-     */
-    protected List<AdvancedFilter> initializeAdvancedFilters() {
-        return new ArrayList<>();
-    }
-
-    public List<AdvancedFilter> getAdvancedFilters() {
-        if (advancedFilters == null) {
-            advancedFilters = initializeAdvancedFilters();
-        }
-        return advancedFilters;
     }
 
     private void populateItemsToAdd(ItemDomainEntity item) {
