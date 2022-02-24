@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.view.objects;
 
+import gov.anl.aps.cdb.portal.controllers.ItemController;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,10 +19,12 @@ public class AdvancedFilter {
     private String name = null;
     private String description = null;
     private List<AdvancedFilterParameter> parameters = new ArrayList<>();
+    private ItemController controller = null;
     
-    public AdvancedFilter(String name, String description) {
+    public AdvancedFilter(String name, String description, ItemController controller) {
         this.name = name;
         this.description = description;
+        this.controller = controller;
     }
 
     public String getName() {
@@ -37,7 +40,7 @@ public class AdvancedFilter {
     }
     
     public void addParameter(String name, String description) {
-        AdvancedFilterParameter parameter = new AdvancedFilterParameter(name, description);
+        AdvancedFilterParameter parameter = new AdvancedFilterParameter(this, name, description);
         parameters.add(parameter);
     }
     
@@ -47,6 +50,10 @@ public class AdvancedFilter {
             parameterValueMap.put(parameter.getName(), parameter.getValue());
         }
         return parameterValueMap;
+    }
+
+    void changedParameterValue(String name) {
+        controller.advancedFilterChanged(name);
     }
 
 }

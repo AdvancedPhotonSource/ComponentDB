@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -43,12 +44,13 @@ public class ItemDomainCableDesignFacade extends ItemFacadeBase<ItemDomainCableD
     }
     
     @Override
-    public List<AdvancedFilter> getAdvancedFilterInfo() {
+    public List<AdvancedFilter> initializeAdvancedFilterInfo(ItemController controller) {
         List<AdvancedFilter> filters = new ArrayList<>();
         
         AdvancedFilter filter = new AdvancedFilter(
                 FILTER_NAME_ANCESTOR_ANY, 
-                "Machine design parents of cable endpoints");
+                "Machine design parents of cable endpoints",
+                controller);
         filter.addParameter(
                 FILTER_PARAM_ANCESTOR_NAME, 
                 "Substring to match in machine hierarchy for endpoint devices");
@@ -56,7 +58,8 @@ public class ItemDomainCableDesignFacade extends ItemFacadeBase<ItemDomainCableD
         
         filter = new AdvancedFilter(
                 FILTER_NAME_ANCESTOR_BY_END, 
-                "Machine design parents of cable endpoints constrained to cable end");
+                "Machine design parents of cable endpoints constrained to cable end",
+                controller);
         filter.addParameter(
                 FILTER_PARAM_ANCESTOR_NAME_END1, 
                 "Substring to match in machine hierarchy for endpoint devices on end 1");

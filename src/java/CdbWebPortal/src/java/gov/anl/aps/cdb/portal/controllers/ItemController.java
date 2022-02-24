@@ -767,36 +767,6 @@ public abstract class ItemController<
                 || scope.equals(ItemDisplayListDataModelScope.showOwned.getValue());
     }
     
-    /**
-     * Allows subclass to return a ListDataModel using the specified filter and parameters.
-     */
-    protected ListDataModel createAdvancedFilterDataModel_(
-            String filterName, Map<String, String> parameterValueMap) {
-        
-        List<ItemDomainEntity> itemList = getEntityDbFacade().processAdvancedFilter(filterName, parameterValueMap);
-        return new ListDataModel(itemList);
-    }
-
-    private ListDataModel createAdvancedFilterDataModel() {
-        
-        String filterName = getAdvancedFilterName();
-        
-        if (getAdvancedFilters() == null) {
-            // domain doesn't support advanced filter display mode
-            SessionUtility.addErrorMessage("Warning", "Domain does not support advanced filter display mode.");
-            return null;
-            
-        } else if (filterName == null || filterName.isEmpty()) {
-            // filter name and value not specified in display mode dialog
-            return null;
-        }
-        
-        AdvancedFilter selectedFilter = getSelectedFilter();
-        Map<String, String> parameterValueMap = selectedFilter.getParameterValueMap();
-        
-        return createAdvancedFilterDataModel_(selectedFilter.getName(), parameterValueMap);        
-    }
-
     public final DataModel getScopedListDataModel() {
         // Show all
         if (isDataTableScopeLazy()) {
@@ -808,15 +778,11 @@ public abstract class ItemController<
             if (settingObject.getDisplayListDataModelScope().equals(
                     ItemDisplayListDataModelScope.advancedFilter.getValue())) {
                 // handle display mode: advanced filter 
-                return createAdvancedFilterDataModel();
+                scopedListDataModel = createAdvancedFilterDataModel();
             }
         }
-        if (scopedListDataModel == null) {
-            scopedListDataModel = new ListDataModel<>();
-        }
-
+        
         loadPreProcessListDataModelIfNeeded(scopedListDataModel);
-
         return scopedListDataModel;
     }
 
@@ -2410,7 +2376,7 @@ public abstract class ItemController<
     
     public List<AdvancedFilter> getAdvancedFilters() {
         if (advancedFilters == null) {
-            advancedFilters = getEntityDbFacade().getAdvancedFilterInfo();
+            advancedFilters = getEntityDbFacade().initializeAdvancedFilterInfo(this);
         }
         return advancedFilters;
     }
@@ -2433,7 +2399,48 @@ public abstract class ItemController<
     }
 
     public void setAdvancedFilterName(String advancedFilterName) {
+        if ((this.advancedFilterName == null && advancedFilterName != null) 
+            || (!this.advancedFilterName.equals(advancedFilterName))) {
+            
+            // reset list data models so that we rebuild them in subsequent calls to getScopedListDataModel
+            listDataModelScopeChanged();
+        }
         this.advancedFilterName = advancedFilterName;
+    }
+
+    public void advancedFilterChanged(String name) {
+        // filter parameter value changed, reset list data models so we rebuild them in subsequent calls to getScopedListDataModel
+        listDataModelScopeChanged();
+    }
+
+    /**
+     * Allows subclass to return a ListDataModel using the specified filter and parameters.
+     */
+    protected ListDataModel createAdvancedFilterDataModel_(
+            String filterName, Map<String, String> parameterValueMap) {
+        
+        List<ItemDomainEntity> itemList = getEntityDbFacade().processAdvancedFilter(filterName, parameterValueMap);
+        return new ListDataModel(itemList);
+    }
+
+    private ListDataModel createAdvancedFilterDataModel() {
+        
+        String filterName = getAdvancedFilterName();
+        
+        if (getAdvancedFilters() == null) {
+            // domain doesn't support advanced filter display mode
+            SessionUtility.addErrorMessage("Warning", "Domain does not support advanced filter display mode.");
+            return null;
+            
+        } else if (filterName == null || filterName.isEmpty()) {
+            // filter name and value not specified in display mode dialog
+            return null;
+        }
+        
+        AdvancedFilter selectedFilter = getSelectedFilter();
+        Map<String, String> parameterValueMap = selectedFilter.getParameterValueMap();
+        
+        return createAdvancedFilterDataModel_(selectedFilter.getName(), parameterValueMap);        
     }
 
 }

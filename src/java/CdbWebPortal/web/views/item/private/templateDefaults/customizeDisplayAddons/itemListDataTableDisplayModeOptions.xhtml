@@ -57,8 +57,12 @@ See LICENSE file.
                                    title="#{criterion.description}"/>
                     <p:inputText value="#{parameter.value}" 
                                  title="#{parameter.description}" 
-                                 styleClass="entityDataText"/>
+                                 styleClass="entityDataText"
+                                 onchange="update#{entityTypeName}ListDisplayModeOptionsPanel#{viewName}()"/>
                 </c:forEach>
+                <p:remoteCommand name="update#{entityTypeName}ListDisplayModeOptionsPanel#{viewName}"
+                                 process="#{entityTypeName}ListDisplayModeOptionsPanel#{viewName}"
+                                 update="#{entityTypeName}ListDisplayModeOptionsPanel#{viewName}" />            
             </p:panelGrid>
         </p:outputPanel>
 

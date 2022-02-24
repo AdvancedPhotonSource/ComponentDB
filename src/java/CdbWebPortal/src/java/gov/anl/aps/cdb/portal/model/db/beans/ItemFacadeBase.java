@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
@@ -69,7 +70,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     /**
      * Allows subclass to override with domain-specific advanced filter information.
      */
-    public List<AdvancedFilter> getAdvancedFilterInfo() {
+    public List<AdvancedFilter> initializeAdvancedFilterInfo(ItemController controller) {
         return new ArrayList<>();
     }
 

@@ -13,10 +13,12 @@ public class AdvancedFilterParameter {
     private String name;
     private String description;
     private String value;
+    private AdvancedFilter filter;
     
-    public AdvancedFilterParameter(String name, String description) {
+    public AdvancedFilterParameter(AdvancedFilter filter, String name, String description) {
         this.name = name;
         this.description = description;
+        this.filter = filter;
     }
     
     public String getName() {
@@ -32,6 +34,9 @@ public class AdvancedFilterParameter {
     }
 
     public void setValue(String value) {
+        if (value != null && !value.equals(this.value)) {
+            filter.changedParameterValue(name);
+        }
         this.value = value;
     }
 

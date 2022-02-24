@@ -31,7 +31,8 @@ See LICENSE file.
 
             <p:remoteCommand name="update#{entityTypeName}ListDisplayModeSelectionPanel#{viewName}"
                              onstart="PF('loadingDialog').show();"
-                             update="#{entityTypeName}ListDisplayModeOptionsPanel#{viewName}"
+                             update="#{entityTypeName}ListDisplayModeSelectionPanel#{viewName} #{entityTypeName}ListDisplayModeOptionsPanel#{viewName}"
+                             process="#{entityTypeName}ListDisplayModeSelectionPanel#{viewName} #{entityTypeName}ListDisplayModeOptionsPanel#{viewName}"
                              oncomplete="PF('loadingDialog').hide()"/>
         </p:panelGrid>                
     </p:outputPanel>    
