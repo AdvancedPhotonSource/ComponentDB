@@ -1649,19 +1649,33 @@ public abstract class ItemController<
     }
 
     public String getDisplayListDataModelScopeDisplayString() {
+        
         if (settingObject.getDisplayListDataModelScope() != null) {
+            
             if (settingObject.getDisplayListDataModelScope().equals(
                     ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
+                // label for property type display mode                
                 return settingObject.getDisplayListDataModelScope() + " '" 
                         + getDisplayPropertyTypeName(settingObject.getDisplayListDataModelScopePropertyTypeId()) 
                         + "'";
+                
             } else if (settingObject.getDisplayListDataModelScope().equals(
                     ItemDisplayListDataModelScope.advancedFilter.getValue())) {
-                String selectedFilter = getAdvancedFilterName();
+                // label for advanced filter display mode
+                String labelDetails = "";
+                AdvancedFilter selectedFilter = getSelectedFilter();
                 if (selectedFilter == null) {
-                    selectedFilter = "No Filter Specified";
+                    labelDetails = ": No Filter Specified";
+                } else {
+                    labelDetails = labelDetails + ": " + "'" + selectedFilter.getName() + "'";
+                    String paramsString = selectedFilter.getParametersString();
+                    if (paramsString == null) {
+                        labelDetails = labelDetails + ", no parameter values specified";
+                    } else {
+                        labelDetails = labelDetails + " Params: (" + paramsString + ")";
+                    }
                 }
-                return settingObject.getDisplayListDataModelScope() + " '" + selectedFilter + "'";
+                return settingObject.getDisplayListDataModelScope() + " " + labelDetails;
             }
         }
         return settingObject.getDisplayListDataModelScope();

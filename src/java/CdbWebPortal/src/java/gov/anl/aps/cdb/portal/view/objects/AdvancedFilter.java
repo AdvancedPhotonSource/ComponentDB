@@ -44,6 +44,24 @@ public class AdvancedFilter {
         parameters.add(parameter);
     }
     
+    public String getParametersString() {
+        
+        String result = "";
+        boolean first = true;
+        for (AdvancedFilterParameter parameter : getParameters()) {
+            String value = parameter.getValue();
+            if (value != null && !value.isEmpty()) {
+                if (!first) {
+                    result = result + ", ";
+                } else {
+                    first = false;
+                }
+                result  = result + parameter.getName() + ": " + value;
+            }
+        }
+        return result;
+    }
+
     public Map<String, String> getParameterValueMap() {
         Map<String, String> parameterValueMap = new HashMap();
         for (AdvancedFilterParameter parameter : getParameters()) {
