@@ -1669,7 +1669,7 @@ public abstract class ItemController<
                 } else {
                     labelDetails = labelDetails + ": " + "'" + selectedFilter.getName() + "'";
                     String paramsString = selectedFilter.getParametersString();
-                    if (paramsString == null) {
+                    if (paramsString == null || paramsString.isEmpty()) {
                         labelDetails = labelDetails + ", no parameter values specified";
                     } else {
                         labelDetails = labelDetails + " Params: (" + paramsString + ")";
