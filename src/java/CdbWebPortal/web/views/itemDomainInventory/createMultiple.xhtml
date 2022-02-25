@@ -25,7 +25,11 @@ See LICENSE file.
     </ui:define>
     
     <ui:define name="pluginOptionsAccordionPanelTabs">
-        <ui:include src="../itemDomainInventoryBase/private/itemDomainInventoryBasePluginMultiEditConfigurationTabs.xhtml" />
+        <ui:decorate template="../itemDomainInventoryBase/private/templates/itemDomainInventoryBasePluginMultiEditConfigurationTabsTemplate.xhtml">
+            <ui:define name="pluginConfigurationInclude">
+                <ui:include src="../plugins/private/inventoryMultiEditConfigurations.xhtml" />
+            </ui:define>
+        </ui:decorate>                
     </ui:define>
     
     <ui:define name="pluginOptionsEditableListObject">
