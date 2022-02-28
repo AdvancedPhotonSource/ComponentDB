@@ -33,12 +33,15 @@ See LICENSE file.
                                                   ? customizeDialogName 
                                                   : 'ListCustomizeDisplayDialog'}" />
     
+    <ui:param name="customizeDialogModal" value="#{customizeDialogModal != null ? customizeDialogModal : false}" />
+    
     <ui:param name="customizeDisplayDialogId" value="#{customizeDisplayEntityTypeName}#{viewName}#{customizeDialogName}" />
     
     <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
 
     <p:dialog id="#{customizeDisplayDialogId}"
               widgetVar="#{customizeDisplayDialogId}Widget" 
+              modal="#{customizeDialogModal}"
               appendTo="@form"
               header="Customize #{entityTypeDisplayName} List Display" 
               styleClass="viewTransparentBackgroundDialog"
