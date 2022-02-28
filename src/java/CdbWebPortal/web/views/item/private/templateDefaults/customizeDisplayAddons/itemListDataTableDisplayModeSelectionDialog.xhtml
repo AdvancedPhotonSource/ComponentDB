@@ -22,10 +22,8 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="customizeDisplayDialogConent">
-        <p:panelGrid columns="2">
-            <h:outputText value="Display Mode" />
-            <ui:include src="itemListDataTableDisplayModeSelection.xhtml"/>
-        </p:panelGrid>
+        <ui:include src="itemListDataTableDisplayModeSelection.xhtml"/>
+        <ui:include src="itemListDataTableDisplayModeOptions.xhtml"/>
     </ui:define>
 
 </ui:composition>

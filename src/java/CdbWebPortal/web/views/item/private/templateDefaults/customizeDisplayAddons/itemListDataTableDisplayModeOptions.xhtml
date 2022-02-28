@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    
+    <p:outputPanel id="#{entityTypeName}ListDisplayModeOptionsPanel#{viewName}"
+                   styleClass="leftAlignedText">
+
+        <p:panelGrid columns="2"
+                     styleClass="noCellPaddingPanelGrid" 
+                     rendered="#{entitySettingObject.displayListDataModelScopePropertyTypeSelection}">
+            <h:outputText value="Property Type" />            
+            <p:selectOneMenu id="#{entityTypeName}PropertyTypeDisplayMode#{viewName}" 
+                             value="#{entitySettingObject.displayListDataModelScopePropertyTypeId}"
+                             styleClass="entityDataSelectOne">
+                <f:selectItems var="displayScopePropertyType" 
+                               value="#{propertyTypeController.availableExternalItems}" 
+                               itemLabel="#{displayScopePropertyType.name}" 
+                               itemValue="#{displayScopePropertyType.id}"/>
+            </p:selectOneMenu>   
+        </p:panelGrid>
+
+        <p:panelGrid columns="2"
+                     styleClass="noCellPaddingPanelGrid" 
+                     rendered="#{entitySettingObject.displayListDataModelScopeAdvancedFilter}">
+            <h:outputText value="Filter Name" />            
+            <p:selectOneMenu id="#{entityTypeName}AdvancedFilterMenu#{viewName}" 
+                             value="#{entityController.advancedFilterName}"
+                             styleClass="entityDataSelectOne">
+                <f:selectItem itemLabel="Select Filter" noSelectionOption="true"/>
+                <f:selectItems var="filterInfo" 
+                               value="#{entityController.advancedFilters}" 
+                               itemLabel="#{filterInfo.name}" 
+                               itemValue="#{filterInfo.name}"/>
+                <p:ajax event="itemSelect"
+                        update="#{entityTypeName}AdvancedFilterParams#{viewName}"/>        
+            </p:selectOneMenu>   
+        </p:panelGrid>
+
+        <p:outputPanel id="#{entityTypeName}AdvancedFilterParams#{viewName}"
+                       rendered="#{entitySettingObject.displayListDataModelScopeAdvancedFilter}">
+            <p:panelGrid columns="2"
+                         styleClass="noCellPaddingPanelGrid">
+                <c:forEach items="#{entityController.selectedFilter.parameters}"
+                           var="parameter">
+                    <h:outputLabel for="#{metadataKey}#{viewName}" 
+                                   value="#{parameter.name}" 
+                                   styleClass="entityDataLabel"
+                                   title="#{criterion.description}"/>
+                    <p:inputText value="#{parameter.value}" 
+                                 title="#{parameter.description}" 
+                                 styleClass="entityDataText"
+                                 onchange="update#{entityTypeName}ListDisplayModeOptionsPanel#{viewName}()"/>
+                </c:forEach>
+                <p:remoteCommand name="update#{entityTypeName}ListDisplayModeOptionsPanel#{viewName}"
+                                 process="#{entityTypeName}ListDisplayModeOptionsPanel#{viewName}"
+                                 update="#{entityTypeName}ListDisplayModeOptionsPanel#{viewName}" />            
+            </p:panelGrid>
+        </p:outputPanel>
+
+    </p:outputPanel>    
+
+</ui:composition>

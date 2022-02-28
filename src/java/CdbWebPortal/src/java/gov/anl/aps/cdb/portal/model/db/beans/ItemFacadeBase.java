@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
@@ -20,6 +21,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.view.objects.AdvancedFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +39,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
     @PersistenceContext(unitName = "CdbWebPortalPU")
     protected EntityManager em;
-
+    
     List<ItemDomainEntity> itemsToAdd;
     
     protected final Integer SEARCH_RESULT_LIMIT = 1000;
@@ -63,6 +65,21 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     @Override
     protected EntityManager getEntityManager() {
         return em;
+    }
+
+    /**
+     * Allows subclass to override with domain-specific advanced filter information.
+     */
+    public List<AdvancedFilter> initializeAdvancedFilterInfo(ItemController controller) {
+        return new ArrayList<>();
+    }
+
+    /**
+     * Allows subclasses to override in a domain-specific way for processing specified
+     * filter and parameters.
+     */
+    public List<ItemDomainEntity> processAdvancedFilter(String name, Map<String, String> parameterValueMap) {
+        return null;
     }
 
     public Item findItem(Object id) {
