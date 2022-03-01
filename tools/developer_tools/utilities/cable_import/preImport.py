@@ -92,7 +92,7 @@ LABEL_CABLES_FIRST_WAYPOINT = "First waypoint"
 LABEL_CABLES_FINAL_WAYPOINT = "Final waypoint"
 LABEL_CABLES_NOTES = "Notes"
 
-LABEL_CABLESPECS_DESCRIPTION = "purpose"
+LABEL_CABLESPECS_DESCRIPTION = "cable type description"
 LABEL_CABLESPECS_MANUFACTURER = "manufacturer"
 LABEL_CABLESPECS_PART_NUM = "part number"
 LABEL_CABLESPECS_ALT_PART_NUM = "alt part number"
@@ -114,6 +114,13 @@ LABEL_CABLESPECS_REEL_QUANTITY = "reel quantity"
 LABEL_CABLESPECS_LEAD_TIME = "lead time"
 LABEL_CABLESPECS_ORDERED = "ordered"
 LABEL_CABLESPECS_RECEIVED = "received"
+LABEL_CABLESPECS_CHECKLIST = "checklist"
+LABEL_CABLESPECS_E1_1 = "e1-1"
+LABEL_CABLESPECS_E2_1 = "e2-1"
+LABEL_CABLESPECS_E1_2 = "e1-2"
+LABEL_CABLESPECS_E2_2 = "e2-2"
+LABEL_CABLESPECS_E1_3 = "e1-3"
+LABEL_CABLESPECS_E2_3 = "e2-3"
 
 CABLE_TYPE_NAME_KEY = "Name"
 CABLE_TYPE_ALT_NAME_KEY = "Alt Name"
@@ -139,6 +146,15 @@ CABLE_TYPE_REEL_QTY_KEY = "Reel Quantity"
 CABLE_TYPE_LEAD_TIME_KEY = "Lead Time"
 CABLE_TYPE_ORDERED_KEY = "ordered"
 CABLE_TYPE_RECEIVED_KEY = "received"
+CABLE_TYPE_CHECKLIST_KEY = "checklist"
+CABLE_TYPE_COLUMN_Y_KEY = "column Y"
+CABLE_TYPE_COLUMN_Z_KEY = "column Z"
+CABLE_TYPE_E1_1_KEY = "e1-1"
+CABLE_TYPE_E2_1_KEY = "e2-1"
+CABLE_TYPE_E1_2_KEY = "e1-2"
+CABLE_TYPE_E2_2_KEY = "e2-2"
+CABLE_TYPE_E1_3_KEY = "e1-3"
+CABLE_TYPE_E2_3_KEY = "e2-3"
 
 CABLE_TYPE_NAME_INDEX = 0
 CABLE_TYPE_MANUFACTURER_INDEX = 2
@@ -1326,7 +1342,7 @@ class CableTypeHelper(PreImportHelper):
         return "CableType"
 
     def num_input_cols(self):
-        return 23
+        return 32
 
     def generate_input_column_list(self):
         column_list = [
@@ -1353,6 +1369,15 @@ class CableTypeHelper(PreImportHelper):
             InputColumnModel(col_index=20, key=CABLE_TYPE_LEAD_TIME_KEY, label=LABEL_CABLESPECS_LEAD_TIME),
             InputColumnModel(col_index=21, key=CABLE_TYPE_ORDERED_KEY, label=LABEL_CABLESPECS_ORDERED),
             InputColumnModel(col_index=22, key=CABLE_TYPE_RECEIVED_KEY, label=LABEL_CABLESPECS_RECEIVED),
+            InputColumnModel(col_index=23, key=CABLE_TYPE_CHECKLIST_KEY, label=LABEL_CABLESPECS_CHECKLIST),
+            InputColumnModel(col_index=24, key=CABLE_TYPE_COLUMN_Y_KEY),
+            InputColumnModel(col_index=25, key=CABLE_TYPE_COLUMN_Z_KEY),
+            InputColumnModel(col_index=26, key=CABLE_TYPE_E1_1_KEY, label=LABEL_CABLESPECS_E1_1),
+            InputColumnModel(col_index=27, key=CABLE_TYPE_E2_1_KEY, label=LABEL_CABLESPECS_E2_1),
+            InputColumnModel(col_index=28, key=CABLE_TYPE_E1_2_KEY, label=LABEL_CABLESPECS_E1_2),
+            InputColumnModel(col_index=29, key=CABLE_TYPE_E2_2_KEY, label=LABEL_CABLESPECS_E2_2),
+            InputColumnModel(col_index=30, key=CABLE_TYPE_E1_3_KEY, label=LABEL_CABLESPECS_E1_3),
+            InputColumnModel(col_index=31, key=CABLE_TYPE_E2_3_KEY, label=LABEL_CABLESPECS_E2_3),
         ]
         return column_list
 
@@ -2437,19 +2462,19 @@ def main():
             header_cell_ind = 0
             for cell in row:
                 header_cell_value = cell.value
-                if header_cell_value is not None:
-                    header_input_column = helper.input_columns[header_cell_ind]
-                    if header_input_column is None:
-                        fatal_error("unexpected actual header column: %s" % header_cell_value)
-                    expected_header_label = header_input_column.label
-                    if expected_header_label is not None:
-                        if header_cell_value != expected_header_label:
-                            fatal_error("actual header column: %s mismatch with expected: %s" % (header_cell_value, expected_header_label))
-                    num_header_cols = num_header_cols + 1
-                    header_cell_ind = header_cell_ind + 1
-                    continue
-                else:
-                    break
+                if header_cell_ind not in helper.input_columns:
+                    fatal_error("unexpected input column index: %d" % header_cell_ind)
+                header_input_column = helper.input_columns[header_cell_ind]
+                if header_input_column is None:
+                    fatal_error("unexpected actual header column: %s index: %d" % (header_cell_value, header_cell_ind))
+                expected_header_label = header_input_column.label
+                if expected_header_label is not None:
+                    # ignore mismatch when expected value not specified (for cases like CableSpecs where the header value changes for each tech system
+                    if header_cell_value != expected_header_label:
+                        fatal_error("actual header column: %s mismatch with expected: %s" % (header_cell_value, expected_header_label))
+                num_header_cols = num_header_cols + 1
+                header_cell_ind = header_cell_ind + 1
+                continue
             if num_header_cols != helper.num_input_cols():
                 fatal_error("actual number of header columns: %d mismatch with expected number: %d" % (num_header_cols, helper.num_input_cols()))
 
