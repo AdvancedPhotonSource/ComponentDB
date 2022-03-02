@@ -67,6 +67,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -2414,7 +2415,7 @@ public abstract class ItemController<
 
     public void setAdvancedFilterName(String advancedFilterName) {
         if ((this.advancedFilterName == null && advancedFilterName != null) 
-            || (!this.advancedFilterName.equals(advancedFilterName))) {
+            || (this.advancedFilterName != null && !this.advancedFilterName.equals(advancedFilterName))) {
             
             // reset list data models so that we rebuild them in subsequent calls to getScopedListDataModel
             listDataModelScopeChanged();
