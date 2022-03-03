@@ -1006,12 +1006,14 @@ class DevicePortHandler(InputHandler):
 
 class SourceHandler(InputHandler):
 
-    def __init__(self, column_key, column_index, id_manager, api, missing_source_list):
+    def __init__(self, column_key, column_index, id_manager, api, output_sources, existing_sources, new_sources):
         super().__init__(column_key)
         self.column_index = column_index
         self.id_manager = id_manager
         self.api = api
-        self.missing_source_list = missing_source_list
+        self.output_objects = output_sources
+        self.existing_sources = existing_sources
+        self.new_sources = new_sources
 
     @staticmethod
     def get_source_id_list(api, source_name_list, description):
@@ -1041,7 +1043,7 @@ class SourceHandler(InputHandler):
         for row_ind in range(first_row, last_row+1):
             val = sheet.cell(row_ind, self.column_index).value
             if val is not None and val != "":
-                source_names.add(val)
+                source_names.add(val.upper())
 
         id_list = SourceHandler.get_source_id_list(api, source_names, "manufacturer lookup")
 
@@ -1049,21 +1051,25 @@ class SourceHandler(InputHandler):
 
     def handle_input(self, input_dict):
 
-        source_name = input_dict[self.column_key]
+        source_name = input_dict[self.column_key].upper()
 
-        if source_name == "" or source_name is None:
+        if len(source_name) == 0:
+            # no manufacturer specified
             return True, ""
 
         cached_id = self.id_manager.get_id_for_name(source_name)
         if cached_id != 0:
+            self.existing_sources.add(source_name)
             logging.debug("found source with name: %s, id: %s" % (source_name, cached_id))
-            return True, ""
         else:
-            self.missing_source_list.append(source_name)
-            error_msg = "no source found for name: %s" % source_name
-            logging.error(error_msg)
-            return False, error_msg
-            
+            if source_name not in self.new_sources:
+                self.new_sources.add(source_name)
+                self.output_objects.append(SourceOutputObject(None, input_dict))
+                logging.debug("adding new source: %s" % source_name)
+            else:
+                logging.debug("already added new source: %s" % source_name)
+
+        return True, ""
 
 class InputColumnModel:
 
@@ -1305,7 +1311,9 @@ class CableTypeHelper(PreImportHelper):
     def __init__(self):
         super().__init__()
         self.source_id_manager = IdManager()
-        self.missing_source_list = []
+        self.source_output_objects = []
+        self.existing_sources = set()
+        self.new_sources = set()
         self.existing_cable_types = []
         self.cable_type_names = []
         self.project_id = None
@@ -1426,7 +1434,7 @@ class CableTypeHelper(PreImportHelper):
 
         if not self.validate_only:
             handler_list.append(CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, CABLE_TYPE_NAME_INDEX+1, self.api, self.existing_cable_types))
-            handler_list.append(SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, CABLE_TYPE_MANUFACTURER_INDEX+1, self.source_id_manager, self.api, self.missing_source_list))
+            handler_list.append(SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, CABLE_TYPE_MANUFACTURER_INDEX+1, self.source_id_manager, self.api, self.source_output_objects, self.existing_sources, self.new_sources))
 
         return handler_list
 
@@ -1460,7 +1468,9 @@ class CableTypeHelper(PreImportHelper):
         return True, ""
 
     def close(self):
-        if len(self.missing_source_list) > 0 or len(self.existing_cable_types) > 0:
+        if len(self.new_sources) > 0 or len(self.existing_cable_types) > 0:
+
+            print(self.new_sources)
 
             if not self.info_file:
                 print("provide command line arg 'infoFile' to generate debugging output file")
@@ -1469,11 +1479,11 @@ class CableTypeHelper(PreImportHelper):
             output_book = xlsxwriter.Workbook(self.info_file)
             output_sheet = output_book.add_worksheet()
 
-            output_sheet.write(0, 0, "missing sources")
+            output_sheet.write(0, 0, "new sources")
             output_sheet.write(0, 1, "existing cable types")
 
             row_index = 1
-            for src in sorted(self.missing_source_list):
+            for src in sorted(self.new_sources):
                 output_sheet.write(row_index, 0, src)
                 row_index = row_index + 1
 
