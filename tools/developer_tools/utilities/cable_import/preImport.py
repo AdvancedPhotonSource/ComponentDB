@@ -209,6 +209,7 @@ class PreImportHelper(ABC):
         self.input_columns = {}
         self.output_columns = {}
         self.input_handlers = []
+        self.output_objects = []
         self.api = None
         self.validate_only = False
         self.ignore_existing = False
@@ -315,7 +316,7 @@ class PreImportHelper(ABC):
 
     # Returns an output object for the specified input object, or None if the input object is duplicate.
     @abstractmethod
-    def get_output_object(self, input_dict):
+    def handle_valid_row(self, input_dict):
         pass
 
     def set_config_preimport(self, config, section):
@@ -384,7 +385,7 @@ class PreImportHelper(ABC):
         return True, ""
 
     # Provides hook for subclasses to override to validate the input before generating the output spreadsheet.
-    def input_is_valid(self, output_objects):
+    def input_is_valid(self):
         return True, ""
 
     def invoke_row_handlers(self, input_dict, row_num):
@@ -403,6 +404,44 @@ class PreImportHelper(ABC):
     # Returns column label for specified column index.
     def get_output_column_label(self, col_index):
         return self.output_columns[col_index].label
+    
+    def get_cell_value(self, obj, method):
+        # use reflection to invoke column getter method on supplied object
+        val = getattr(obj, method)()
+        return val
+
+    def write_sheet(self, output_book, sheet_name, columns, output_objects):
+        
+        output_sheet = output_book.add_worksheet(sheet_name)
+
+        # write output spreadsheet header row
+        row_ind = 0
+        for column in columns:
+            col_ind = column.index
+            label = column.label
+            output_sheet.write(row_ind, col_ind, label)
+
+        # process rows
+        num_output_rows = 0
+        for output_obj in output_objects:
+
+            row_ind = row_ind + 1
+            num_output_rows = num_output_rows + 1
+            current_row_num = row_ind + 1
+
+            for column in columns:
+                col_ind = column.index
+                val = self.get_cell_value(output_obj, column.method)
+                output_sheet.write(row_ind, col_ind, val)
+
+        return num_output_rows
+
+    def write_output_sheet(self, output_book):
+        self.write_sheet(output_book, "Default", self.output_column_list(), self.output_objects)
+        return len(self.output_objects)
+
+    def write_workbook_sheets(self, output_book):
+        return self.write_output_sheet(output_book)
 
     # Returns value for output spreadsheet cell and supplied object at specified index.
     def get_output_cell_value(self, obj, index):
@@ -1219,31 +1258,33 @@ class SourceHelper(PreImportHelper):
             handler_list.append(ManufacturerHandler(CABLE_TYPE_MANUFACTURER_KEY, CABLE_TYPE_MANUFACTURER_INDEX+1, self.api, self.existing_sources, self.new_sources))
         return handler_list
 
-    def get_output_object(self, input_dict):
+    def handle_valid_row(self, input_dict):
+
+        output_object = None
 
         manufacturer = input_dict[CABLE_TYPE_MANUFACTURER_KEY].upper()
 
         if len(manufacturer) == 0:
             logging.debug("manufacturer is empty")
-            return None
-
-        logging.debug("found manufacturer: %s" % manufacturer)
-
-        if manufacturer in self.existing_sources:
-            # don't need to import this item
-            logging.debug("skipping existing cdb manufacturer: %s" % manufacturer)
-            return None
-
-        if manufacturer not in self.output_manufacturers:
-            # need to write this object to output spreadsheet for import
-            self.output_manufacturers.add(manufacturer)
-            logging.debug("adding new manufacturer: %s to output" % manufacturer)
-            return SourceOutputObject(helper=self, input_dict=input_dict)
 
         else:
-            # already added to output spreadsheet
-            logging.debug("ignoring duplicate manufacturer: %s" % manufacturer)
-            return None
+
+            logging.debug("found manufacturer: %s" % manufacturer)
+
+            if manufacturer in self.existing_sources:
+                # don't need to import this item
+                logging.debug("skipping existing cdb manufacturer: %s" % manufacturer)
+
+            elif manufacturer not in self.output_manufacturers:
+                # need to write this object to output spreadsheet for import
+                self.output_manufacturers.add(manufacturer)
+                logging.debug("adding new manufacturer: %s to output" % manufacturer)
+                output_object = SourceOutputObject(helper=self, input_dict=input_dict)
+                self.output_objects.append(output_object)
+
+            else:
+                # already added to output spreadsheet
+                logging.debug("ignoring duplicate manufacturer: %s" % manufacturer)
 
     def close(self):
         if len(self.new_sources) > 0 or len(self.existing_sources) > 0:
@@ -1438,27 +1479,27 @@ class CableTypeHelper(PreImportHelper):
 
         return handler_list
 
-    def get_output_object(self, input_dict):
+    def handle_valid_row(self, input_dict):
 
         name = input_dict[CABLE_TYPE_NAME_KEY]
         if name in self.existing_cable_types:
             # cable type already exists with this name, skip
             logging.debug(": %s, skipping" % input_dict[CABLE_TYPE_NAME_KEY])
-            return None
+            return
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
-        return CableTypeOutputObject(helper=self, input_dict=input_dict)
+        self.output_objects.append(CableTypeOutputObject(helper=self, input_dict=input_dict))
 
-    def input_is_valid(self, output_objects):
+    def input_is_valid(self):
 
         global name_manager
 
         cable_type_named_range = self.named_range
 
-        if len(output_objects) + len(self.existing_cable_types) < name_manager.num_values_for_name(cable_type_named_range):
+        if len(self.output_objects) + len(self.existing_cable_types) < name_manager.num_values_for_name(cable_type_named_range):
             missing_cable_types = []
             utilized_cable_types = []
-            utilized_cable_types.extend(output_object.get_name() for output_object in output_objects)
+            utilized_cable_types.extend(output_object.get_name() for output_object in self.output_objects)
             utilized_cable_types.extend(self.existing_cable_types)
             for cable_type in name_manager.values_for_name(cable_type_named_range):
                 if cable_type not in utilized_cable_types:
@@ -1466,6 +1507,32 @@ class CableTypeHelper(PreImportHelper):
             return False, "named range: %s includes cable types (%s) not included in start/end range of script" % (cable_type_named_range, missing_cable_types)
 
         return True, ""
+
+    def write_debug_sheet(self, output_book):
+
+        if len(self.new_sources) > 0 or len(self.existing_cable_types) > 0:
+
+            print(self.new_sources)
+
+            output_sheet = output_book.add_worksheet("Cable Catalog Debug")
+
+            output_sheet.write(0, 0, "new sources")
+            output_sheet.write(0, 1, "existing cable types")
+
+            row_index = 1
+            for src in sorted(self.new_sources):
+                output_sheet.write(row_index, 0, src)
+                row_index = row_index + 1
+
+            row_index = 1
+            for name in sorted(self.existing_cable_types):
+                output_sheet.write(row_index, 1, name)
+                row_index = row_index + 1
+
+    def write_workbook_sheets(self, output_book):
+        self.write_debug_sheet(output_book)
+        self.write_sheet(output_book, "Cable Catalog", self.output_column_list(), self.output_objects)
+        return len(self.output_objects)
 
     def close(self):
         if len(self.new_sources) > 0 or len(self.existing_cable_types) > 0:
@@ -1709,10 +1776,10 @@ class CableInventoryHelper(PreImportHelper):
                           (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
             return True
 
-    def get_output_object(self, input_dict):
+    def handle_valid_row(self, input_dict):
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_INVENTORY_NAME_KEY])
-        return CableInventoryOutputObject(helper=self, input_dict=input_dict)
+        self.output_objects.append(CableInventoryOutputObject(helper=self, input_dict=input_dict))
 
 
 class CableInventoryOutputObject(OutputObject):
@@ -1947,16 +2014,16 @@ class CableDesignHelper(PreImportHelper):
         # if input_dict[CABLE_DESIGN_NAME_KEY] == "[] | []":
         #     return True
 
-    def get_output_object(self, input_dict):
+    def handle_valid_row(self, input_dict):
 
         name = CableDesignOutputObject.get_name_cls(input_dict)
         if name in self.existing_cable_designs:
             # cable design already exists with this name, skip
             logging.debug("cable design already exists in CDB for: %s, skipping" % name)
-            return None
+            return
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_DESIGN_NAME_KEY])
-        return CableDesignOutputObject(helper=self, input_dict=input_dict)
+        self.output_objects.append(CableDesignOutputObject(helper=self, input_dict=input_dict))
 
     def close(self):
 
@@ -2445,7 +2512,6 @@ def main():
     print()
 
     input_valid = True
-    output_objects = []
     validation_map = {}
     num_input_rows = 0
     num_empty_rows = 0
@@ -2536,9 +2602,7 @@ def main():
                 row_valid_messages.extend(handler_messages)
 
             if row_is_valid:
-                output_obj = helper.get_output_object(input_dict=input_dict)
-                if output_obj:
-                    output_objects.append(output_obj)
+                helper.handle_valid_row(input_dict=input_dict)
             else:
                 input_valid = False
                 msg = "validation ERRORS found for row %d" % current_row_num
@@ -2560,7 +2624,7 @@ def main():
     print("VALIDATION SUMMARY ====================")
     print()
 
-    (sheet_valid, sheet_valid_string) = helper.input_is_valid(output_objects)
+    (sheet_valid, sheet_valid_string) = helper.input_is_valid()
     if not sheet_valid:
         input_valid = False
         msg = "ERROR validating input spreadsheet: %s" % sheet_valid_string
@@ -2584,33 +2648,7 @@ def main():
     # create output spreadsheet
     if input_valid and not helper.validate_only:
         output_book = xlsxwriter.Workbook(file_output)
-        output_sheet = output_book.add_worksheet()
-
-        # write output spreadsheet header row
-        row_ind = 0
-        for col_ind in range(helper.num_output_cols()):
-            if col_ind in helper.output_columns:
-                label = helper.get_output_column_label(col_index=col_ind)
-                output_sheet.write(row_ind, col_ind, label)
-
-        # process output spreadsheet rows
-        num_output_rows = 0
-        if len(output_objects) == 0:
-            logging.info("no output objects, output spreadsheet will be empty")
-        for output_obj in output_objects:
-
-            row_ind = row_ind + 1
-            num_output_rows = num_output_rows + 1
-            current_row_num = row_ind + 1
-
-            logging.debug("processing row %d in output spreadsheet" % current_row_num)
-
-            for col_ind in range(helper.num_output_cols()):
-                if col_ind in helper.output_columns:
-
-                    val = helper.get_output_cell_value(obj=output_obj, index=col_ind)
-                    output_sheet.write(row_ind, col_ind, val)
-
+        num_output_rows = helper.write_workbook_sheets(output_book)
         output_book.close()
 
         summary_msg = "PROCESSING SUCCESSFUL: processed %d input rows including %d empty rows and wrote %d output rows" % (num_input_rows, num_empty_rows, num_output_rows)
