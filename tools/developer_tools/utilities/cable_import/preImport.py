@@ -575,53 +575,6 @@ class InputHandler(ABC):
         pass
 
 
-class ManufacturerHandler(InputHandler):
-
-    def __init__(self, column_key, column_index, api, existing_sources, new_sources):
-        super().__init__(column_key)
-        self.column_index = column_index
-        self.existing_sources = existing_sources
-        self.new_sources = new_sources
-        self.api = api
-        self.id_mgr = IdManager()
-
-    def initialize(self, api, sheet, first_row, last_row):
-
-        source_names = set()
-
-        for row_ind in range(first_row, last_row+1):
-            val = sheet.cell(row_ind, self.column_index).value
-            if val is not None and val != "":
-                source_names.add(val)
-
-        id_list = SourceHandler.get_source_id_list(api, source_names, "existence check")
-
-        self.id_mgr.set_dict(dict(zip(source_names, id_list)))
-
-    def handle_input(self, input_dict):
-
-        manufacturer = input_dict[self.column_key]
-
-        if len(manufacturer) == 0:
-            # no manufacturer specified, skip
-            return True, ""
-
-        if (manufacturer in self.new_sources) or (manufacturer in self.existing_sources):
-            # already looked up this manufacturer
-            return True, ""
-
-        # check to see if manufacturer exists as a CDB Source
-        source_id = self.id_mgr.get_id_for_name(manufacturer)
-        if source_id != 0:
-            # source already exists for mfr
-            self.existing_sources.append(manufacturer)
-        else:
-            # need to add new source for mfr
-            self.new_sources.add(manufacturer)
-
-        return True, ""
-
-
 class ConnectedMenuHandler(InputHandler):
 
     def __init__(self, column_key, parent_key):
@@ -1195,122 +1148,6 @@ class RackManager():
         return None
 
 
-@register
-class SourceHelper(PreImportHelper):
-
-    def __init__(self):
-        super().__init__()
-        self.output_manufacturers = set()
-        self.source_name_manager = NameVariantManager()
-        self.existing_sources = []
-        self.new_sources = set()
-
-    @staticmethod
-    def tag():
-        return "Source"
-
-    def num_input_cols(self):
-        return 23
-
-    def generate_input_column_list(self):
-        column_list = [
-            InputColumnModel(col_index=CABLE_TYPE_NAME_INDEX, required=True),
-            InputColumnModel(col_index=1, label=LABEL_CABLESPECS_DESCRIPTION),
-            InputColumnModel(col_index=CABLE_TYPE_MANUFACTURER_INDEX, key=CABLE_TYPE_MANUFACTURER_KEY, label=LABEL_CABLESPECS_MANUFACTURER),
-            InputColumnModel(col_index=3, label=LABEL_CABLESPECS_PART_NUM),
-            InputColumnModel(col_index=4, label=LABEL_CABLESPECS_ALT_PART_NUM),
-            InputColumnModel(col_index=5, label=LABEL_CABLESPECS_DIAMETER),
-            InputColumnModel(col_index=6, label=LABEL_CABLESPECS_WEIGHT),
-            InputColumnModel(col_index=7, label=LABEL_CABLESPECS_CONDUCTORS),
-            InputColumnModel(col_index=8, label=LABEL_CABLESPECS_INSULATION),
-            InputColumnModel(col_index=9, label=LABEL_CABLESPECS_JACKET),
-            InputColumnModel(col_index=10, label=LABEL_CABLESPECS_VOLTAGE),
-            InputColumnModel(col_index=11, label=LABEL_CABLESPECS_FIRE_LOAD),
-            InputColumnModel(col_index=12, label=LABEL_CABLESPECS_HEAT_LIMIT),
-            InputColumnModel(col_index=13, label=LABEL_CABLESPECS_BEND_RADIUS),
-            InputColumnModel(col_index=14, label=LABEL_CABLESPECS_RAD_TOLERANCE),
-            InputColumnModel(col_index=15, label=LABEL_CABLESPECS_LINK),
-            InputColumnModel(col_index=16, label=LABEL_CABLESPECS_IMAGE),
-            InputColumnModel(col_index=17, label=LABEL_CABLESPECS_TOTAL_LENGTH),
-            InputColumnModel(col_index=18, label=LABEL_CABLESPECS_REEL_LENGTH),
-            InputColumnModel(col_index=19, label=LABEL_CABLESPECS_REEL_QUANTITY),
-            InputColumnModel(col_index=20, label=LABEL_CABLESPECS_LEAD_TIME),
-            InputColumnModel(col_index=21, label=LABEL_CABLESPECS_ORDERED),
-            InputColumnModel(col_index=22, label=LABEL_CABLESPECS_RECEIVED),
-        ]
-        return column_list
-
-    def generate_output_column_list(self):
-        return SourceOutputObject.get_output_columns()
-
-    def generate_handler_list(self):
-        global name_manager
-        handler_list = []
-        if not self.validate_only:
-            handler_list.append(ManufacturerHandler(CABLE_TYPE_MANUFACTURER_KEY, CABLE_TYPE_MANUFACTURER_INDEX+1, self.api, self.existing_sources, self.new_sources))
-        return handler_list
-
-    def handle_valid_row(self, input_dict):
-
-        output_object = None
-
-        manufacturer = input_dict[CABLE_TYPE_MANUFACTURER_KEY]
-
-        if len(manufacturer) == 0:
-            logging.debug("manufacturer is empty")
-
-        else:
-
-            logging.debug("found manufacturer: %s" % manufacturer)
-
-            if manufacturer in self.existing_sources:
-                # don't need to import this item
-                logging.debug("skipping existing cdb manufacturer: %s" % manufacturer)
-
-            elif manufacturer not in self.output_manufacturers:
-                # need to write this object to output spreadsheet for import
-                self.output_manufacturers.add(manufacturer)
-                logging.debug("adding new manufacturer: %s to output" % manufacturer)
-                output_object = SourceOutputObject(helper=self, input_dict=input_dict)
-                self.output_objects.append(output_object)
-
-            else:
-                # already added to output spreadsheet
-                logging.debug("ignoring duplicate manufacturer: %s" % manufacturer)
-
-    def close(self):
-        if len(self.new_sources) > 0 or len(self.existing_sources) > 0:
-
-            if not self.info_file:
-                print("provide command line arg 'infoFile' to generate debugging output file")
-                return
-
-            output_book = xlsxwriter.Workbook(self.info_file)
-            output_sheet = output_book.add_worksheet()
-
-            output_sheet.write(0, 0, "new sources")
-            output_sheet.write(0, 1, "existing cdb sources")
-
-            row_index = 1
-            for src in sorted(self.new_sources):
-                output_sheet.write(row_index, 0, src)
-                row_index = row_index + 1
-
-            row_index = 1
-            for src in self.existing_sources:
-                output_sheet.write(row_index, 1, src)
-                row_index = row_index + 1
-
-            output_book.close()
-
-    # Returns processing summary message.
-    def get_processing_summary(self):
-        if len(self.new_sources) > 0 or len(self.existing_sources) > 0:
-            return "DETAILS: number of new sources: %d number of existing sources (not written to output spreadsheet): %d\nDETAILS: rows with no manufacturer included in number of empty rows" % (len(self.new_sources), len(self.existing_sources))
-        else:
-            return ""
-
-
 class SourceOutputObject(OutputObject):
 
     def __init__(self, helper, input_dict):
@@ -1516,8 +1353,6 @@ class CableTypeHelper(PreImportHelper):
 
         if len(self.new_sources) > 0 or len(self.existing_cable_types) > 0:
 
-            print(self.new_sources)
-
             output_sheet = output_book.add_worksheet("Cable Catalog Debug")
 
             output_sheet.write(0, 0, "new sources")
@@ -1535,37 +1370,9 @@ class CableTypeHelper(PreImportHelper):
 
     def write_workbook_sheets(self, output_book):
         self.write_debug_sheet(output_book)
-        print(SourceOutputObject)
         self.write_sheet(output_book, "Source Import", SourceOutputObject.get_output_columns(), self.source_output_objects)
         self.write_sheet(output_book, "Cable Catalog Import", self.output_column_list(), self.output_objects)
         return len(self.output_objects)
-
-    def close(self):
-        if len(self.new_sources) > 0 or len(self.existing_cable_types) > 0:
-
-            print(self.new_sources)
-
-            if not self.info_file:
-                print("provide command line arg 'infoFile' to generate debugging output file")
-                return
-
-            output_book = xlsxwriter.Workbook(self.info_file)
-            output_sheet = output_book.add_worksheet()
-
-            output_sheet.write(0, 0, "new sources")
-            output_sheet.write(0, 1, "existing cable types")
-
-            row_index = 1
-            for src in sorted(self.new_sources):
-                output_sheet.write(row_index, 0, src)
-                row_index = row_index + 1
-
-            row_index = 1
-            for name in sorted(self.existing_cable_types):
-                output_sheet.write(row_index, 1, name)
-                row_index = row_index + 1
-
-            output_book.close()
 
     # Returns processing summary message.
     def get_processing_summary(self):
