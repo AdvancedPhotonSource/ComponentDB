@@ -592,7 +592,7 @@ class ManufacturerHandler(InputHandler):
         for row_ind in range(first_row, last_row+1):
             val = sheet.cell(row_ind, self.column_index).value
             if val is not None and val != "":
-                source_names.add(val.upper())
+                source_names.add(val)
 
         id_list = SourceHandler.get_source_id_list(api, source_names, "existence check")
 
@@ -600,13 +600,13 @@ class ManufacturerHandler(InputHandler):
 
     def handle_input(self, input_dict):
 
-        manufacturer = input_dict[self.column_key].upper()
+        manufacturer = input_dict[self.column_key]
 
         if len(manufacturer) == 0:
             # no manufacturer specified, skip
             return True, ""
 
-        if (manufacturer.upper in self.new_sources) or (manufacturer in self.existing_sources):
+        if (manufacturer in self.new_sources) or (manufacturer in self.existing_sources):
             # already looked up this manufacturer
             return True, ""
 
@@ -1082,7 +1082,7 @@ class SourceHandler(InputHandler):
         for row_ind in range(first_row, last_row+1):
             val = sheet.cell(row_ind, self.column_index).value
             if val is not None and val != "":
-                source_names.add(val.upper())
+                source_names.add(val)
 
         id_list = SourceHandler.get_source_id_list(api, source_names, "manufacturer lookup")
 
@@ -1090,7 +1090,7 @@ class SourceHandler(InputHandler):
 
     def handle_input(self, input_dict):
 
-        source_name = input_dict[self.column_key].upper()
+        source_name = input_dict[self.column_key]
 
         if len(source_name) == 0:
             # no manufacturer specified
@@ -1241,15 +1241,7 @@ class SourceHelper(PreImportHelper):
         return column_list
 
     def generate_output_column_list(self):
-        column_list = [
-            OutputColumnModel(col_index=0, method="get_existing_item_id", label="Existing Item ID"),
-            OutputColumnModel(col_index=1, method="get_delete_existing_item", label="Delete Existing Item"),
-            OutputColumnModel(col_index=2, method="get_name", label="Name"),
-            OutputColumnModel(col_index=3, method="get_description", label="Description"),
-            OutputColumnModel(col_index=4, method="get_contact_info", label="Contact Info"),
-            OutputColumnModel(col_index=5, method="get_url", label="URL"),
-        ]
-        return column_list
+        return SourceOutputObject.get_output_columns()
 
     def generate_handler_list(self):
         global name_manager
@@ -1262,7 +1254,7 @@ class SourceHelper(PreImportHelper):
 
         output_object = None
 
-        manufacturer = input_dict[CABLE_TYPE_MANUFACTURER_KEY].upper()
+        manufacturer = input_dict[CABLE_TYPE_MANUFACTURER_KEY]
 
         if len(manufacturer) == 0:
             logging.debug("manufacturer is empty")
@@ -1326,6 +1318,18 @@ class SourceOutputObject(OutputObject):
         self.description = ""
         self.contact_info = ""
         self.url = ""
+
+    @staticmethod
+    def get_output_columns():
+        column_list = [
+            OutputColumnModel(col_index=0, method="get_existing_item_id", label="Existing Item ID"),
+            OutputColumnModel(col_index=1, method="get_delete_existing_item", label="Delete Existing Item"),
+            OutputColumnModel(col_index=2, method="get_name", label="Name"),
+            OutputColumnModel(col_index=3, method="get_description", label="Description"),
+            OutputColumnModel(col_index=4, method="get_contact_info", label="Contact Info"),
+            OutputColumnModel(col_index=5, method="get_url", label="URL"),
+        ]
+        return column_list
 
     def get_existing_item_id(self):
         return ""
@@ -1531,7 +1535,9 @@ class CableTypeHelper(PreImportHelper):
 
     def write_workbook_sheets(self, output_book):
         self.write_debug_sheet(output_book)
-        self.write_sheet(output_book, "Cable Catalog", self.output_column_list(), self.output_objects)
+        print(SourceOutputObject)
+        self.write_sheet(output_book, "Source Import", SourceOutputObject.get_output_columns(), self.source_output_objects)
+        self.write_sheet(output_book, "Cable Catalog Import", self.output_column_list(), self.output_objects)
         return len(self.output_objects)
 
     def close(self):
@@ -1591,7 +1597,10 @@ class CableTypeOutputObject(OutputObject):
 
     def get_manufacturer_id(self):
         source_name = self.input_dict[CABLE_TYPE_MANUFACTURER_KEY]
-        return self.helper.source_id_manager.get_id_for_name(source_name)
+        if source_name is not None and len(source_name) > 0:
+            return "#" + source_name
+        else:
+            return None
 
     def get_part_number(self):
         return self.input_dict[CABLE_TYPE_PART_NUMBER_KEY]
