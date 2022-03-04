@@ -1370,8 +1370,8 @@ class CableTypeHelper(PreImportHelper):
 
     def write_workbook_sheets(self, output_book):
         self.write_debug_sheet(output_book)
-        self.write_sheet(output_book, "Source Import", SourceOutputObject.get_output_columns(), self.source_output_objects)
-        self.write_sheet(output_book, "Cable Catalog Import", self.output_column_list(), self.output_objects)
+        self.write_sheet(output_book, "Source Item Import", SourceOutputObject.get_output_columns(), self.source_output_objects)
+        self.write_sheet(output_book, "Cable Catalog Item Import", self.output_column_list(), self.output_objects)
         return len(self.output_objects)
 
     # Returns processing summary message.
@@ -1841,16 +1841,19 @@ class CableDesignHelper(PreImportHelper):
         logging.debug("adding output object for: %s" % input_dict[CABLE_DESIGN_NAME_KEY])
         self.output_objects.append(CableDesignOutputObject(helper=self, input_dict=input_dict))
 
-    def close(self):
+    def write_debug_sheet(self, output_book):
+       pass
+
+    def write_workbook_sheets(self, output_book):
+        self.write_debug_sheet(output_book)
+        self.write_sheet(output_book, "Cable Design Item Import", self.output_column_list(), self.output_objects)
+        return len(self.output_objects)
+
+    def write_error_sheet(self, output_book):
 
         if len(self.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0 or len(self.existing_cable_designs) > 0:
 
-            if not self.info_file:
-                print("provide command line arg 'infoFile' to generate debugging output file")
-                return
-
-            output_book = xlsxwriter.Workbook(self.info_file)
-            output_sheet = output_book.add_worksheet()
+            output_sheet = output_book.add_worksheet("Cable Design Debug")
 
             output_sheet.write(0, 0, "missing cable types")
             output_sheet.write(0, 1, "missing endpoints")
@@ -1876,8 +1879,6 @@ class CableDesignHelper(PreImportHelper):
             for cable_design_name in sorted(self.existing_cable_designs):
                 output_sheet.write(row_index, 3, cable_design_name)
                 row_index = row_index + 1
-
-            output_book.close()
 
     # Returns processing summary message.
     def get_processing_summary(self):
