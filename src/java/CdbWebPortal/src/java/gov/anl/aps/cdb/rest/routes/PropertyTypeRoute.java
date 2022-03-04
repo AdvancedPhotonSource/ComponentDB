@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.rest.routes;
 
 import gov.anl.aps.cdb.portal.constants.SystemPropertyTypeNames;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import io.swagger.v3.oas.annotations.Operation;
@@ -65,6 +66,14 @@ public class PropertyTypeRoute extends BaseRoute {
     public PropertyType getInventoryStatusPropertyType() { 
         LOGGER.debug("Fetching inventory item status property type.");
         return propertyTypeFacade.findByName(ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME); 
+    }
+    
+    @GET
+    @Path("/cableInventoryStatusPropertyType")    
+    @Produces(MediaType.APPLICATION_JSON)    
+    public PropertyType getCableInventoryStatusPropertyType() { 
+        LOGGER.debug("Fetching inventory item status property type.");
+        return propertyTypeFacade.findByName(ItemDomainCableInventory.ITEM_DOMAIN_CABLE_INVENTORY_STATUS_PROPERTY_TYPE_NAME); 
     }
     
     @GET
