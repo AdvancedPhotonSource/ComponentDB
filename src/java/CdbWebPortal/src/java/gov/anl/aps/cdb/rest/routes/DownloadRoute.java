@@ -127,6 +127,10 @@ public class DownloadRoute extends BaseRoute {
 
             response.header("Content-Disposition",
                     headerObject);
+            
+            // Reverse proxy can include header with value 'nosniff' causing issue where documents are not displayed correctly. 
+            response.header("X-Content-Type-Options", " ");
+            
             return response.build();
         }
 
