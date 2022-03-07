@@ -18,20 +18,20 @@ from cdbCli.service.cli.CDBclickCmnds.setItemStatusById import set_item_status_b
 @click.option('--item-id-type', default='id',
               type=click.Choice(["id", "qr_id"], case_sensitive=False),
               help="Allowed values are 'id'(default) or 'qr_id'")
-@click.option('--status', help='Desired updated item status in CDB')
+@click.option('--status', help='Desired updated item status in CDB, default is "Planned"')
 @click.option('--dist', help='Change the CDB distribution (as provided in cdb.conf)')
-def set_item_statuses_by_name(input_file, item_id_type, status="Planned", dist=None):
+def set_machine_install_statuses(input_file, item_id_type, status="Planned", dist=None):
 
     """Set new status for items if id matches child of machine design, otherwise print mismatch
         to console. Id is specified by type
 
         \b
-        Example (file): set-item-statuses-by-name --input-file PlannedMachineElements.csv --item-id-type=qr_id"""
+        Example (file): set_machine_install_statuses --input-file PlannedMachineElements.csv --item-id-type=qr_id"""
     """Gets the corresponding id from an item name
 
        Input is either through a named csv file or through STDIN.   Default is STDIN
        The format of the input data is an intended row to be removed followed by
-       <Machine Design Name>,<Item ID>   where the ID is by the type specified by the commandline."""
+       <Machine Design Name>,<Item ID>   where the ID is by the type specified by the command line."""
 
     cli = CliBase(dist)
     factory = cli.require_authenticated_api()
@@ -69,5 +69,5 @@ def set_item_statuses_by_name(input_file, item_id_type, status="Planned", dist=N
     print("Statuses of desired items have be set to " + status)
 
 if __name__ == "__main__":
-    set_item_statuses_by_name()
+    set_machine_install_statuses()
 
