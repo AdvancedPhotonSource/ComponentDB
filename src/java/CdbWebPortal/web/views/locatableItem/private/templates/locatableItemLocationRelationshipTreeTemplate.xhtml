@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <p:outputPanel styleClass="inlineFlexOutputPanel locationRelationshipTree">
+        <ui:insert name="params"/>
+        
+        
+        <ui:insert name="inplaceContent" /> 
+        <p:tree styleClass="transparent-tree"
+                rendered="#{locatableItemTreeValue != null}"
+                value="#{locatableItemTreeValue}" 
+                var="node" animate="true">
+            <ui:include src="../../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" />
+        </p:tree>
+    </p:outputPanel>
+
+</ui:composition>

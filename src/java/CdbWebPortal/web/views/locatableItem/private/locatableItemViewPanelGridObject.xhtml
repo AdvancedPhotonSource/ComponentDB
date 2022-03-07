@@ -41,32 +41,35 @@ See LICENSE file.
                    widgetVar="locationViewOutputEditableWidget"
                    toggleable="false">                               
             <f:facet name="output">
-                <p:outputPanel styleClass="inlineFlexOutputPanel">
-                    <p:commandLink id="locationViewFakeEditShowButton"
-                                   styleClass="fa-link-icon fa-icon-warning fa fa-pencil"                                   
-                                   rendered="#{isEntityWriteable and !locationEditable}">
-                        <p:tooltip for="locationViewFakeEditShowButton"
-                                   value="Item is part of another item, location cannot be updated." />
-                    </p:commandLink>
-
-                    <p:commandLink id="locationViewOutputEditShowButton"
-                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
-                                   onclick="PF('loadingDialog').show()"
-                                   oncomplete="PF('loadingDialog').hide();
-                                               PF('locationViewOutputEditableWidget').show();
-                                               PF('locationDetailsViewOutputEditableWidget').show();"
-                                   update="locationViewOutputEditable"
-                                   rendered="#{isEntityWriteable and locationEditable}">
-                        <p:tooltip for="locationViewOutputEditShowButton"
-                                   value="Edit Location" />
-                        <f:setPropertyActionListener value="#{true}"
-                                                     target="#{itemDomainLocationController.renderLocationInplaceEditTieredMenu}"/> 
-                    </p:commandLink>
-                    <ui:include src="locatableItemLocationRelationshipTree.xhtml">
+                <ui:decorate template="templates/locatableItemLocationRelationshipTreeTemplate.xhtml">
+                    <ui:define name="params">
                         <ui:param name="cdbDomainEntityObject" value="#{itemObject}" />
                         <ui:param name="locatableItemTreeValue" value="#{locatableItemController.getLocationRelationshipTree(itemObject)}" />
-                    </ui:include>
-                </p:outputPanel>
+                    </ui:define>
+                    <ui:define name="inplaceContent">
+                        <p:commandLink id="locationViewFakeEditShowButton"
+                                       styleClass="fa-link-icon fa-icon-warning fa fa-pencil"                                   
+                                       rendered="#{isEntityWriteable and !locationEditable}">
+                            <p:tooltip for="locationViewFakeEditShowButton"
+                                       value="Item is part of another item, location cannot be updated." />
+                        </p:commandLink>
+
+                        <p:commandLink id="locationViewOutputEditShowButton"
+                                       styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                       onclick="PF('loadingDialog').show()"
+                                       oncomplete="PF('loadingDialog').hide();
+                                       PF('locationViewOutputEditableWidget').show();
+                                       PF('locationDetailsViewOutputEditableWidget').show();"
+                                       update="locationViewOutputEditable"
+                                       rendered="#{isEntityWriteable and locationEditable}">
+                            <p:tooltip for="locationViewOutputEditShowButton"
+                                       value="Edit Location" />
+                            <f:setPropertyActionListener value="#{true}"
+                                                         target="#{itemDomainLocationController.renderLocationInplaceEditTieredMenu}"/> 
+                        </p:commandLink>
+                    </ui:define>
+
+                </ui:decorate>
             </f:facet>
             <f:facet name="input">
                 <p:outputPanel rendered="#{itemDomainLocationController.renderLocationInplaceEditTieredMenu}">
