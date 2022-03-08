@@ -67,6 +67,9 @@ from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomain
 
 # constants
 
+DEFAULT_COLUMN_WIDTH = 80
+DEFAULT_FONT_HEIGHT = 12
+
 LABEL_CABLES_NAME = "BRCM kabel name (*NOT the final APS-U, CDB, or MBA name)"
 LABEL_CABLES_LAYING = "Laying"
 LABEL_CABLES_VOLTAGE = "Voltage"
@@ -217,6 +220,7 @@ class PreImportHelper(ABC):
         self.first_data_row = None
         self.last_data_row = None
         self.input_sheet = None
+        self.input_valid_message = None
 
     # returns number of rows at which progress message should be displayed
     @classmethod
@@ -249,6 +253,12 @@ class PreImportHelper(ABC):
     @staticmethod
     @abstractmethod  # must be innermost decorator
     def tag():
+        pass
+
+    # Returns name of CDB item for helper.
+    @staticmethod
+    @abstractmethod
+    def item_name():
         pass
 
     # Returns expected number of columns in input spreadsheet.
@@ -450,6 +460,99 @@ class PreImportHelper(ABC):
         logging.debug("index: %d method: %s value: %s" % (index, self.output_columns[index].method, val))
         return val
 
+    def get_error_messages(self):
+        return []
+
+    def get_error_sheet_columns(self):
+        return [], []
+
+    def write_error_sheet(self, output_book):
+
+        error_messages = self.get_error_messages()
+        error_column_names, error_column_values = self.get_error_sheet_columns()
+
+        if self.input_valid_message is None and len(error_messages) == 0 and len(error_column_names) == 0:
+            return
+
+        output_sheet = output_book.add_worksheet(self.item_name() + " " + "Sheet Errors")
+        text_wrap_format = output_book.add_format({'text_wrap': True})
+
+        column_index = 0
+        if self.input_valid_message is not None or len(error_messages) > 0:
+
+            output_sheet.write(0, 0, "error messages")
+            output_sheet.set_column(0, 0, DEFAULT_COLUMN_WIDTH)
+
+            row_index = 1
+            if self.input_valid_message is not None:
+                row_height = get_row_height_wrapped_message(self.input_valid_message)
+                output_sheet.write(row_index, 0, self.input_valid_message + "\n", text_wrap_format)
+                output_sheet.set_row(row_index, row_height)
+                row_index = row_index + 1
+
+            for error_message in error_messages:
+                row_height = get_row_height_wrapped_message(error_message)
+                output_sheet.write(row_index, 0, error_message + "\n", text_wrap_format)
+                output_sheet.set_row(row_index, row_height)
+                row_index = row_index + 1
+
+            column_index = column_index + 1
+
+        if len(error_column_names) > 0:
+
+            for (column_name, column_values) in zip(error_column_names, error_column_values):
+                maximum_column_width = 0
+                row_index = 0
+                # write column header
+                output_sheet.write(row_index, column_index, column_name)
+                if len(column_name) > maximum_column_width:
+                    maximum_column_width = len(column_name)
+                for value in column_values:
+                    row_index = row_index + 1
+                    output_sheet.write(row_index, column_index, value)
+                    if len(value) > maximum_column_width:
+                        maximum_column_width = len(value)
+
+                # set column width
+                output_sheet.set_column(column_index, column_index, maximum_column_width)
+
+            column_index = column_index + 1
+
+    # Writes error content to output workbook, subclasses override to customize with multiple error sheets.
+    def write_error_sheets(self, output_book):
+        self.write_error_sheet(output_book)
+
+    @classmethod
+    def write_validation_sheet(cls, output_book, validation_map):
+
+        if len(validation_map) == 0:
+            return
+
+        # create output sheet
+        output_sheet = output_book.add_worksheet(cls.item_name() + " " + "Row Errors")
+
+        # write header row
+        output_sheet.write(0, 0, "input row number")
+        output_sheet.write(0, 1, "validation messages")
+
+        row_ind = 0
+        maximum_column_width = 0
+        for key in validation_map:
+            row_ind = row_ind + 1
+            output_sheet.write(row_ind, 0, key)
+            messages = ""
+            message_count = len(validation_map[key])
+            for message in validation_map[key]:
+                messages = messages + message + "\n"
+                if len(message) > maximum_column_width:
+                    maximum_column_width = len(message)
+            output_sheet.write(row_ind, 1, messages)
+            # set row height
+            output_sheet.set_row(row_ind, (message_count+1)*DEFAULT_FONT_HEIGHT)
+
+        # set column width
+        output_sheet.set_column(1, 1, maximum_column_width)
+
     # Complete helper processing after all output objects are processed.  Subclass overrides to customize.
     def close(self):
         pass
@@ -624,7 +727,7 @@ class UniqueNameHandler(InputHandler):
 
         if item_name in self.item_names:
             # flag duplicate item name
-            error_msg = "duplicate value: %s for column: %s not allowed" % (item_name, self.column_key)
+            error_msg = "duplicate value: %s for column: %s" % (item_name, self.column_key)
             logging.error(error_msg)
             return False, error_msg
         else:
@@ -1231,6 +1334,10 @@ class CableTypeHelper(PreImportHelper):
     def tag():
         return "CableType"
 
+    @staticmethod
+    def item_name():
+        return "Cable Catalog"
+
     def num_input_cols(self):
         return 32
 
@@ -1345,7 +1452,8 @@ class CableTypeHelper(PreImportHelper):
             for cable_type in name_manager.values_for_name(cable_type_named_range):
                 if cable_type not in utilized_cable_types:
                     missing_cable_types.append(cable_type)
-            return False, "named range: %s includes cable types (%s) not included in start/end range of script" % (cable_type_named_range, missing_cable_types)
+            self.input_valid_message = "Named range: %s includes cable types (%s) not included in start/end range of script" % (cable_type_named_range, missing_cable_types)
+            return False, self.input_valid_message
 
         return True, ""
 
@@ -1353,7 +1461,7 @@ class CableTypeHelper(PreImportHelper):
 
         if len(self.new_sources) > 0 or len(self.existing_cable_types) > 0:
 
-            output_sheet = output_book.add_worksheet("Cable Catalog Debug")
+            output_sheet = output_book.add_worksheet(self.item_name() + " " + "Debug")
 
             output_sheet.write(0, 0, "new sources")
             output_sheet.write(0, 1, "existing cable types")
@@ -1692,6 +1800,10 @@ class CableDesignHelper(PreImportHelper):
     def tag():
         return "CableDesign"
 
+    @staticmethod
+    def item_name():
+        return "Cable Design"
+
     def num_input_cols(self):
         return 24
 
@@ -1849,36 +1961,28 @@ class CableDesignHelper(PreImportHelper):
         self.write_sheet(output_book, "Cable Design Item Import", self.output_column_list(), self.output_objects)
         return len(self.output_objects)
 
-    def write_error_sheet(self, output_book):
+    def get_error_sheet_columns(self):
 
-        if len(self.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0 or len(self.existing_cable_designs) > 0:
+        error_column_names = []
+        error_column_values = []
 
-            output_sheet = output_book.add_worksheet("Cable Design Debug")
+        if len(self.missing_cable_types) > 0:
+            error_column_names.append("missing cable types")
+            error_column_values.append(sorted(self.missing_cable_types))
 
-            output_sheet.write(0, 0, "missing cable types")
-            output_sheet.write(0, 1, "missing endpoints")
-            output_sheet.write(0, 2, "non-unique endpoints")
-            output_sheet.write(0, 3, "existing cable designs")
+        if len(self.missing_endpoints) > 0:
+            error_column_names.append("missing endpoints")
+            error_column_values.append(sorted(self.missing_endpoints))
 
-            row_index = 1
-            for cable_type_name in sorted(self.missing_cable_types):
-                output_sheet.write(row_index, 0, cable_type_name)
-                row_index = row_index + 1
+        if len(self.nonunique_endpoints) > 0:
+            error_column_names.append("non-unique endpoints")
+            error_column_values.append(sorted(self.nonunique_endpoints))
 
-            row_index = 1
-            for endpoint_name in sorted(self.missing_endpoints):
-                output_sheet.write(row_index, 1, endpoint_name)
-                row_index = row_index + 1
+        if len(self.existing_cable_designs) > 0:
+            error_column_names.append("existing cable designs")
+            error_column_values.append(sorted(self.existing_cable_designs))
 
-            row_index = 1
-            for endpoint_name in sorted(self.nonunique_endpoints):
-                output_sheet.write(row_index, 2, endpoint_name)
-                row_index = row_index + 1
-
-            row_index = 1
-            for cable_design_name in sorted(self.existing_cable_designs):
-                output_sheet.write(row_index, 3, cable_design_name)
-                row_index = row_index + 1
+        return error_column_names, error_column_values
 
     # Returns processing summary message.
     def get_processing_summary(self):
@@ -2027,23 +2131,8 @@ def xl_cell_to_rowcol(cell_str):
     return row, col
 
 
-def write_validation_report(validation_map, validation_report_file):
-    output_book = xlsxwriter.Workbook(validation_report_file)
-    output_sheet = output_book.add_worksheet()
-
-    output_sheet.write(0, 0, "input row number")
-    output_sheet.write(0, 1, "validation messages")
-
-    row_index = 1
-    for key in validation_map:
-        output_sheet.write(row_index, 0, key)
-        cell_value = ""
-        for message in validation_map[key]:
-            cell_value = cell_value + message + "\n"
-        output_sheet.write(row_index, 1, cell_value)
-        row_index = row_index + 1
-
-    output_book.close()
+def get_row_height_wrapped_message(message):
+    return ((len(message) // DEFAULT_COLUMN_WIDTH) + 2) * DEFAULT_FONT_HEIGHT
 
 
 def fatal_error(error_msg):
@@ -2455,7 +2544,6 @@ def main():
             print("row: %d" % key)
             for message in validation_map[key]:
                 print("\t%s" % message)
-        write_validation_report(validation_map, file_validation)
         print()
         print("%d validation ERROR(S) found" % len(validation_map))
 
@@ -2463,20 +2551,22 @@ def main():
         print("no validation errors found")
 
     # create output spreadsheet
-    if input_valid and not helper.validate_only:
-        output_book = xlsxwriter.Workbook(file_output)
-        num_output_rows = helper.write_workbook_sheets(output_book)
-        output_book.close()
+    output_book = xlsxwriter.Workbook(file_output)
 
+    if input_valid and not helper.validate_only:
+        num_output_rows = helper.write_workbook_sheets(output_book)
         summary_msg = "PROCESSING SUCCESSFUL: processed %d input rows including %d empty rows and wrote %d output rows" % (num_input_rows, num_empty_rows, num_output_rows)
 
     elif not input_valid:
         summary_msg = "PROCESSING ERROR: processed %d input rows including %d empty rows but no output spreadsheet generated, see validation summary/file and log for details" % (num_input_rows, num_empty_rows)
+        helper.write_error_sheets(output_book)
+        helper.write_validation_sheet(output_book, validation_map)
 
     else:
         summary_msg = "VALIDATION ONLY: processed %d input rows including %d empty rows but no output spreadsheet generated, see validation summary/file for details" % (num_input_rows, num_empty_rows)
 
     # clean up helper
+    output_book.close()
     helper.close()
 
     # close CDB connection
