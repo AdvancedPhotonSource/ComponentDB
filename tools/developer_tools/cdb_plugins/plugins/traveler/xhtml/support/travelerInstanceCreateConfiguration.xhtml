@@ -39,9 +39,29 @@ See LICENSE file.
                       value="#{additonalTravelerTemplateEmptyMessage}" /> 
         </ui:include>
 
+        <style>
+            .travelerConfigurationPanelgrid, .travelerConfigurationPanelgrid tbody {
+                width: 100%; 
+            }
+            
+            .travelerConfigurationPanelgrid tr {
+                width: 100%; 
+            }
 
+            .travelerConfigurationPanelgrid tbody > tr > td:nth-child(1) {
+                width: 25%; 
+            }
+            
+            .travelerConfigurationPanelgrid tbody > tr > td:nth-child(2) {
+                width: 100%;                 
+            }
+            
+            .travelerConfigurationPanelgrid tbody > tr > td:nth-child(2) input {
+                width: -webkit-fill-available;
+            }
+        </style>
 
-        <p:panelGrid styleClass="centeredContent">
+        <p:panelGrid styleClass="centeredContent travelerConfigurationPanelgrid">
             <p:row>
                 <p:column>
                     <p:outputLabel value="Select Released Version" styleClass="entityDataLabel" />
