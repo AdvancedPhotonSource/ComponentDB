@@ -221,6 +221,7 @@ class PreImportHelper(ABC):
         self.last_data_row = None
         self.input_sheet = None
         self.input_valid_message = None
+        self.num_input_rows = None
 
     # returns number of rows at which progress message should be displayed
     @classmethod
@@ -341,6 +342,9 @@ class PreImportHelper(ABC):
     def set_api(self, api):
         self.api = api
 
+    def set_num_input_rows(self, num_input_rows):
+        self.num_input_rows = num_input_rows
+
     def set_info_file(self, file):
         self.info_file = file
 
@@ -446,12 +450,68 @@ class PreImportHelper(ABC):
 
         return num_output_rows
 
-    def write_output_sheet(self, output_book):
-        self.write_sheet(output_book, "Default", self.output_column_list(), self.output_objects)
-        return len(self.output_objects)
+    def get_summary_messages(self):
+        return []
+
+    def get_summary_sheet_columns(self):
+        return [], []
+
+    def write_summary_sheet(self, output_book):
+        
+        summary_messages = self.get_summary_messages()
+        summary_column_names, summary_column_values = self.get_summary_sheet_columns()
+
+        summary_messages.insert(0, "Data rows in input sheet: %d" % self.num_input_rows)
+
+        if len(summary_messages) == 0 and len(summary_column_names) == 0:
+            return
+
+        output_sheet = output_book.add_worksheet(self.item_name() + " Summary")
+        text_wrap_format = output_book.add_format({'text_wrap': True})
+
+        column_index = 0
+        if len(summary_messages) > 0:
+
+            output_sheet.write(0, 0, "summary messages")
+            output_sheet.set_column(0, 0, DEFAULT_COLUMN_WIDTH)
+
+            row_index = 1
+            for summary_message in summary_messages:
+                row_height = get_row_height_wrapped_message(summary_message)
+                output_sheet.write(row_index, 0, summary_message + "\n", text_wrap_format)
+                output_sheet.set_row(row_index, row_height)
+                row_index = row_index + 1
+
+            column_index = column_index + 1
+
+        if len(summary_column_names) > 0:
+
+            for (column_name, column_values) in zip(summary_column_names, summary_column_values):
+                maximum_column_width = 0
+                row_index = 0
+                # write column header
+                output_sheet.write(row_index, column_index, column_name)
+                if len(column_name) > maximum_column_width:
+                    maximum_column_width = len(column_name)
+                for value in column_values:
+                    row_index = row_index + 1
+                    output_sheet.write(row_index, column_index, value)
+                    if len(value) > maximum_column_width:
+                        maximum_column_width = len(value)
+
+                # set column width
+                output_sheet.set_column(column_index, column_index, maximum_column_width)
+
+                column_index = column_index + 1
+
+    # Writes content to output workbook.  Subclasses override to customize with multiple tabs
+    def write_helper_sheets(self, output_book):
+        self.write_sheet(output_book, self.item_name() + " Item Import", self.output_column_list(), self.output_objects)
 
     def write_workbook_sheets(self, output_book):
-        return self.write_output_sheet(output_book)
+        self.write_summary_sheet(output_book)
+        self.write_helper_sheets(output_book)
+        return len(self.output_objects)
 
     # Returns value for output spreadsheet cell and supplied object at specified index.
     def get_output_cell_value(self, obj, index):
@@ -958,10 +1018,11 @@ class CableTypeIdHandler(InputHandler):
 
 class CableTypeExistenceHandler(InputHandler):
 
-    def __init__(self, column_key, column_index, api, existing_cable_types):
+    def __init__(self, column_key, column_index, api, existing_cable_types, new_cable_types):
         super().__init__(column_key)
         self.column_index = column_index
         self.existing_cable_types = existing_cable_types
+        self.new_cable_types = new_cable_types
         self.api = api
         self.id_mgr = IdManager()
 
@@ -988,6 +1049,7 @@ class CableTypeExistenceHandler(InputHandler):
             self.existing_cable_types.append(cable_type_name)
             return True, ""
         else:
+            self.new_cable_types.append(cable_type_name)
             return True, ""
 
 
@@ -1300,6 +1362,7 @@ class CableTypeHelper(PreImportHelper):
         self.existing_sources = set()
         self.new_sources = set()
         self.existing_cable_types = []
+        self.new_cable_types = []
         self.cable_type_names = []
         self.project_id = None
         self.tech_system_id = None
@@ -1422,7 +1485,7 @@ class CableTypeHelper(PreImportHelper):
         ]
 
         if not self.validate_only:
-            handler_list.append(CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, CABLE_TYPE_NAME_INDEX+1, self.api, self.existing_cable_types))
+            handler_list.append(CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, CABLE_TYPE_NAME_INDEX+1, self.api, self.existing_cable_types, self.new_cable_types))
             handler_list.append(SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, CABLE_TYPE_MANUFACTURER_INDEX+1, self.source_id_manager, self.api, self.source_output_objects, self.existing_sources, self.new_sources))
 
         return handler_list
@@ -1457,30 +1520,38 @@ class CableTypeHelper(PreImportHelper):
 
         return True, ""
 
-    def write_debug_sheet(self, output_book):
+    def get_summary_messages(self):
+        return ["Sources that already exist in CDB: %d" % len(self.existing_sources),
+                "Sources that need to be added to CDB: %d" % len(self.new_sources),
+                "Cable types that already exist in CDB: %d" % len(self.existing_cable_types),
+                "Cable types that need to be added to CDB: %d" % len(self.new_cable_types)]
 
-        if len(self.new_sources) > 0 or len(self.existing_cable_types) > 0:
+    def get_summary_sheet_columns(self):
+        
+        summary_column_names = []
+        summary_column_values = []
 
-            output_sheet = output_book.add_worksheet(self.item_name() + " " + "Debug")
+        if len(self.existing_sources) > 0:
+            summary_column_names.append("existing sources")
+            summary_column_values.append(sorted(self.existing_sources))
 
-            output_sheet.write(0, 0, "new sources")
-            output_sheet.write(0, 1, "existing cable types")
+        if len(self.new_sources) > 0:
+            summary_column_names.append("new sources")
+            summary_column_values.append(sorted(self.new_sources))
 
-            row_index = 1
-            for src in sorted(self.new_sources):
-                output_sheet.write(row_index, 0, src)
-                row_index = row_index + 1
+        if len(self.existing_cable_types) > 0:
+            summary_column_names.append("existing cable types")
+            summary_column_values.append(sorted(self.existing_cable_types))
 
-            row_index = 1
-            for name in sorted(self.existing_cable_types):
-                output_sheet.write(row_index, 1, name)
-                row_index = row_index + 1
+        if len(self.new_cable_types) > 0:
+            summary_column_names.append("new cable types")
+            summary_column_values.append(sorted(self.new_cable_types))
 
-    def write_workbook_sheets(self, output_book):
-        self.write_debug_sheet(output_book)
+        return summary_column_names, summary_column_values
+
+    def write_helper_sheets(self, output_book):
         self.write_sheet(output_book, "Source Item Import", SourceOutputObject.get_output_columns(), self.source_output_objects)
         self.write_sheet(output_book, "Cable Catalog Item Import", self.output_column_list(), self.output_objects)
-        return len(self.output_objects)
 
     # Returns processing summary message.
     def get_processing_summary(self):
@@ -1953,13 +2024,50 @@ class CableDesignHelper(PreImportHelper):
         logging.debug("adding output object for: %s" % input_dict[CABLE_DESIGN_NAME_KEY])
         self.output_objects.append(CableDesignOutputObject(helper=self, input_dict=input_dict))
 
-    def write_debug_sheet(self, output_book):
-       pass
+    def get_summary_messages(self):
 
-    def write_workbook_sheets(self, output_book):
-        self.write_debug_sheet(output_book)
+        messages = []
+
+        messages.append("New cable design items for import to CDB: %d" % len(self.output_objects))
+
+        num_port_values = len(self.from_port_values) + len(self.to_port_values)
+        if num_port_values > 0:
+            messages.append("WARNING: ignored %d non-empty values in from/to device port columns (ignorePortColumns config resource set to true)" % num_port_values)
+
+        return messages
+
+    def get_summary_sheet_columns(self):
+
+        summary_column_names = []
+        summary_column_values = []
+
+        ignored_ports = self.from_port_values + self.to_port_values
+        if len(ignored_ports) > 0:
+            summary_column_names.append("ignored from/to ports")
+            summary_column_values.append(ignored_ports)
+
+        return summary_column_names, summary_column_values
+
+    def write_helper_sheets(self, output_book):
         self.write_sheet(output_book, "Cable Design Item Import", self.output_column_list(), self.output_objects)
-        return len(self.output_objects)
+
+    def get_error_messages(self):
+
+        messages = []
+
+        if len(self.missing_cable_types) > 0:
+            messages.append("Cable types not defined in CDB: %d" % len(self.missing_cable_types))
+
+        if len(self.missing_endpoints) > 0:
+            messages.append("Endpoint device names not defined in CDB: %d" % len(self.missing_endpoints))
+
+        if len(self.nonunique_endpoints) > 0:
+            messages.append("Multiple CDB devices with matching name: %d" % len(self.nonunique_endpoints))
+
+        if len(self.existing_cable_designs) > 0:
+            messages.append("Duplicate cable design name exists in CDB: %d" % len(self.existing_cable_designs))
+
+        return messages
 
     def get_error_sheet_columns(self):
 
@@ -2521,6 +2629,7 @@ def main():
 
     # print final progress message
     print("processed %d spreadsheet rows" % num_input_rows)
+    helper.set_num_input_rows(num_input_rows)
 
     #
     # display validation summary
@@ -2564,6 +2673,7 @@ def main():
 
     else:
         summary_msg = "VALIDATION ONLY: processed %d input rows including %d empty rows but no output spreadsheet generated, see validation summary/file for details" % (num_input_rows, num_empty_rows)
+        helper.write_validation_sheet(output_book, validation_map)
 
     # clean up helper
     output_book.close()
