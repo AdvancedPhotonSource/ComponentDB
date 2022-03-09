@@ -181,6 +181,11 @@ public class UserInfo extends SettingEntity implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
+    
+    @JsonIgnore
+    public boolean getHasLocalPassword() {
+        return password != null; 
+    }
 
     @JsonIgnore
     public String getPassword() {
