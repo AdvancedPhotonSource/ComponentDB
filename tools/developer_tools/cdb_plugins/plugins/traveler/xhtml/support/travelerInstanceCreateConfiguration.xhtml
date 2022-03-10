@@ -8,11 +8,13 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
+    <ui:insert name="travelerInstanceCreateConfigParams"/>
+
     <ui:param name="travelerDomainInstanceController"
               value="#{travelerDomainInstanceController != null
                        ? travelerDomainInstanceController
                        : itemTravelerDomainInventoryController}" />
-    
+
     <ui:param name="renderedTravelerTitle"
               value="#{renderedTravelerTitle != null ? renderedTravelerTitle : true}" />
 
@@ -39,35 +41,53 @@ See LICENSE file.
                       value="#{additonalTravelerTemplateEmptyMessage}" /> 
         </ui:include>
 
+        <style>
+            .travelerConfigurationPanelgrid, .travelerConfigurationPanelgrid tbody {
+                width: 100%;
+            }
 
+            .travelerConfigurationPanelgrid tr {
+                width: 100%;
+            }
 
-        <p:panelGrid styleClass="centeredContent">
-            <p:row>
-                <p:column>
-                    <p:outputLabel value="Select Released Version" styleClass="entityDataLabel" />
-                </p:column>
-                <p:column>                    
-                    <p:outputPanel>
-                        <ui:include src="travelerTemplateReleasedVersionSelectionDataTable.xhtml">
-                            <ui:param name="selectedTemplate"
-                                      value="#{travelerDomainInstanceController.selectedTravelerInstanceTemplate}"/>                     
-                        </ui:include>
-                    </p:outputPanel>
-                </p:column>
-            </p:row>
-            <p:row rendered="#{renderedTravelerTitle}">
-                <p:column>
-                    <p:outputLabel value="Traveler Instance Title" styleClass="entityDataLabel" />
-                </p:column>
-                <p:column>
-                    <p:inputText styleClass="entityDataText" 
-                                 value="#{travelerDomainInstanceController.travelerInstanceTitle}"
-                                 id="#{viewName}travelerInstanceTitleInputText"                             
-                                 />
-                </p:column>
-            </p:row>          
+            .travelerConfigurationPanelgrid tbody > tr > td:nth-child(1) {
+                width: 25%;
+            }
+
+            .travelerConfigurationPanelgrid tbody > tr > td:nth-child(2) {
+                width: 100%;
+            }
+
+            .travelerConfigurationPanelgrid tbody > tr > td:nth-child(2) input {
+                width: -webkit-fill-available;
+            }
+        </style>
+
+        <p:panelGrid styleClass="centeredContent travelerConfigurationPanelgrid"
+                     columns="2">
+            <p:column>
+                <p:outputLabel value="Select Released Version" styleClass="entityDataLabel" />
+            </p:column>
+            <p:column>                    
+                <p:outputPanel>
+                    <ui:include src="travelerTemplateReleasedVersionSelectionDataTable.xhtml">
+                        <ui:param name="selectedTemplate"
+                                  value="#{travelerDomainInstanceController.selectedTravelerInstanceTemplate}"/>                     
+                    </ui:include>
+                </p:outputPanel>
+            </p:column>
+
+            <p:column rendered="#{renderedTravelerTitle}">
+                <p:outputLabel value="Traveler Instance Title" styleClass="entityDataLabel" />
+            </p:column>
+            <p:column rendered="#{renderedTravelerTitle}">
+                <p:inputText styleClass="entityDataText" 
+                             value="#{travelerDomainInstanceController.travelerInstanceTitle}"
+                             id="#{viewName}travelerInstanceTitleInputText"/>
+            </p:column>
+
+            <ui:insert name="travelerInstanceCreateConfigAdditionalPanelGrid"/>
         </p:panelGrid>
-
 
         <p:remoteCommand name="updateConfigurationPanel"
                          onstart="PF('loadingDialog').show();"
