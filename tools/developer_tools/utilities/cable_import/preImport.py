@@ -2647,14 +2647,9 @@ def main():
         print(msg)
         print()
 
-    # print validation report
     if len(validation_map) > 0:
-        for key in validation_map:
-            print("row: %d" % key)
-            for message in validation_map[key]:
-                print("\t%s" % message)
-        print()
         print("%d validation ERROR(S) found" % len(validation_map))
+        print("See output workbook for additional details")
 
     else:
         print("no validation errors found")
@@ -2664,15 +2659,15 @@ def main():
 
     if input_valid and not helper.validate_only:
         num_output_rows = helper.write_workbook_sheets(output_book)
-        summary_msg = "PROCESSING SUCCESSFUL: processed %d input rows including %d empty rows and wrote %d output rows" % (num_input_rows, num_empty_rows, num_output_rows)
+        summary_msg = "PROCESSING SUCCESSFUL: processed %d input rows including %d empty rows and wrote %d output rows, see output workbook for CDB import sheets" % (num_input_rows, num_empty_rows, num_output_rows)
 
     elif not input_valid:
-        summary_msg = "PROCESSING ERROR: processed %d input rows including %d empty rows but no output spreadsheet generated, see validation summary/file and log for details" % (num_input_rows, num_empty_rows)
+        summary_msg = "PROCESSING ERROR: processed %d input rows including %d empty rows but no CDB import sheets generated, see output workbook and log for details" % (num_input_rows, num_empty_rows)
         helper.write_error_sheets(output_book)
         helper.write_validation_sheet(output_book, validation_map)
 
     else:
-        summary_msg = "VALIDATION ONLY: processed %d input rows including %d empty rows but no output spreadsheet generated, see validation summary/file for details" % (num_input_rows, num_empty_rows)
+        summary_msg = "VALIDATION ONLY: processed %d input rows including %d empty rows but no CDB import sheets generated, see output workbook for details" % (num_input_rows, num_empty_rows)
         helper.write_validation_sheet(output_book, validation_map)
 
     # clean up helper
