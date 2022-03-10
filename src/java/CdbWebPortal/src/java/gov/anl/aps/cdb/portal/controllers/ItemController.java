@@ -7,10 +7,8 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
-import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
-import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.ListName;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
@@ -19,7 +17,8 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
-import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorControllerUtility;
+import gov.anl.aps.cdb.portal.model.ItemBaseLazyTreeNode;
+import gov.anl.aps.cdb.portal.model.ItemLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
@@ -35,7 +34,6 @@ import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
@@ -52,17 +50,14 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
-import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
-import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.AdvancedFilter;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
@@ -71,6 +66,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -83,12 +79,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.ToggleEvent;
-import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.TreeNode;
 import org.primefaces.model.Visibility;
 
 public abstract class ItemController<
-            ControllerUtility extends ItemControllerUtility<ItemDomainEntity, ItemDomainEntityFacade>, ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>, ItemSettingsObject extends ItemSettings>
+            ControllerUtility extends ItemControllerUtility<ItemDomainEntity, ItemDomainEntityFacade>, ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>, ItemSettingsObject extends ItemSettings, LazyDataModel extends ItemLazyDataModel>
         extends CdbDomainEntityController<ControllerUtility, ItemDomainEntity, ItemDomainEntityFacade, ItemSettingsObject> implements IItemController<ItemDomainEntity, ItemSettingsObject> {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemController.class.getName());
@@ -132,6 +126,7 @@ public abstract class ItemController<
     private List<Item> parentItemList;
     private int currentItemEntityHashCode;
 
+    private LazyDataModel itemLazyDataModel;
     protected DataModel scopedListDataModel = null;
     protected List<String> displayListDataModelScopeSelectionList = null;
 
@@ -146,7 +141,7 @@ public abstract class ItemController<
     protected ItemDomainEntity templateToCreateNewItem = null;
 
     protected DataModel itemsWithNoParentsListDataModel = null;
-    protected TreeNode itemsWithNoParentsRootNode = null;
+    protected ItemBaseLazyTreeNode itemsWithNoParentsRootNode = null;
 
     private Domain selectionDomain;
 
@@ -175,7 +170,10 @@ public abstract class ItemController<
 
     protected ItemMetadataPropertyInfo coreMetadataPropertyInfo = null;
     protected PropertyType coreMetadataPropertyType = null;
-
+    
+    private List<AdvancedFilter> advancedFilters = null;
+    private String advancedFilterName = null;
+    
     public ItemController() {
     }
 
@@ -712,26 +710,34 @@ public abstract class ItemController<
         return itemsWithNoParentsListDataModel;
     }
 
-    public TreeNode getItemsWithNoParentsRootNode() {
+    protected ItemBaseLazyTreeNode createItemLazyTreeNode(List<ItemDomainEntity> parentItems) {
+        // Override for tree functionality. 
+        return null;
+    }
+
+    public ItemBaseLazyTreeNode getItemsWithNoParentsRootNode() {
         if (itemsWithNoParentsRootNode == null) {
             LOGGER.info("Generating a tree from top level items.");
             List<ItemDomainEntity> itemsWitNoParentsList = getItemsWithoutParents();
-            itemsWithNoParentsRootNode = new DefaultTreeNode(null, null);
 
-            for (Item item : itemsWitNoParentsList) {
-                TreeNode itemRootTreeNode;
-                try {
-                    itemRootTreeNode = ItemElementUtility.createItemRoot(item);
-                } catch (CdbException ex) {
-                    SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
-                    itemsWithNoParentsRootNode = null;
-                    return null;
-                }
-                itemsWithNoParentsRootNode.getChildren().add(itemRootTreeNode);
-            }
+            itemsWithNoParentsRootNode = createItemLazyTreeNode(itemsWitNoParentsList);
         }
 
         return itemsWithNoParentsRootNode;
+    }
+
+    public abstract LazyDataModel createItemLazyDataModel();
+
+    public LazyDataModel getItemLazyDataModel() {
+        if (itemLazyDataModel == null) {
+            itemLazyDataModel = createItemLazyDataModel();
+        }
+        return itemLazyDataModel;
+    }
+
+    @Override
+    public DataModel getListDataModel() {
+        return getItemLazyDataModel();
     }
 
     @Override
@@ -743,133 +749,40 @@ public abstract class ItemController<
         itemsWithNoParentsRootNode = null;
         displayListDataModelScopeSelectionList = null;
         locationRelationshipCache = null;
+        itemLazyDataModel = null;
+        advancedFilterName = null;
     }
 
-    public boolean isDataTableNotScoped() {
-        return settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showAll.getValue());
+    public void listDataModelScopeChanged() {
+        scopedListDataModel = null;
+        itemLazyDataModel = null;
     }
 
+    public boolean isDataTableScopeLazy() {
+        String scope = settingObject.getDisplayListDataModelScope();
+        return scope.equals(ItemDisplayListDataModelScope.showAll.getValue())
+                || scope.equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())
+                || scope.equals(ItemDisplayListDataModelScope.showFavorites.getValue())
+                || scope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue())
+                || scope.equals(ItemDisplayListDataModelScope.showOwned.getValue());
+    }
+    
     public final DataModel getScopedListDataModel() {
         // Show all
-        if (isDataTableNotScoped()) {
+        if (isDataTableScopeLazy()) {
             return getListDataModel();
+            
         } else if (scopedListDataModel == null) {
-            String templateEntityTypeName = EntityTypeName.template.getValue();
-            ItemDomainEntityFacade itemFacade = getEntityDbFacade();
-            String domainName = getDefaultDomainName();
-
-            if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
-                if (settingObject.getDisplayListDataModelScopePropertyTypeId() == null) {
-                    return null;
-                } else {
-                    /**
-                     * GET ITEMS WITH PROEPRTY TYPE *
-                     */
-                    List<ItemDomainEntity> itemList = null;
-                    ItemProject currentProject = getCurrentItemProject();
-                    Integer propertyTypeId = settingObject.getDisplayListDataModelScopePropertyTypeId();
-                    if (getEntityDisplayTemplates()) {
-                        if (currentProject != null) {
-                            itemList = itemFacade.getItemsWithPropertyTypeAndProjectExcludeEntityType(
-                                    domainName,
-                                    propertyTypeId,
-                                    currentProject.getName(),
-                                    templateEntityTypeName);
-                        } else {
-                            itemList = itemFacade.getItemListWithPropertyTypeExcludeEntityType(
-                                    domainName,
-                                    propertyTypeId,
-                                    templateEntityTypeName);
-                        }
-                    } else {
-                        if (currentProject != null) {
-                            itemList = itemFacade.getItemsWithPropertyTypeAndProject(
-                                    domainName,
-                                    propertyTypeId,
-                                    currentProject.getName());
-                        } else {
-                            itemList = itemFacade.getItemListWithPropertyType(
-                                    domainName,
-                                    propertyTypeId);
-                        }
-
-                    }
-                    scopedListDataModel = new ListDataModel(itemList);
-                }
-            } else {
-                // Determine if currently viewed as group or user. 
-                SettingEntity settingEntity = getSettingController().getCurrentSettingEntity();
-                // All the remaining options require a setting entity loaded. 
-                if (settingEntity == null) {
-                    return getListDataModel();
-                }
-
-                // Show only favorites
-                if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
-                    scopedListDataModel = createFavoritesListDataModel();
-                } else {
-                    // Show owned or owned & favorites. 
-                    boolean showOwnedAndFavorites = settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue());
-                    boolean showOwned = !showOwnedAndFavorites;
-
-                    List<ItemDomainEntity> itemList = null;
-
-                    if (showOwnedAndFavorites) {
-                        if (getFavoritesList() != null) {
-                            if (settingEntity instanceof UserInfo) {
-                                if (getEntityDisplayTemplates()) {
-                                    itemList = itemFacade
-                                            .getItemListContainedInListOrOwnedByUserExcludeEntityType(domainName, getFavoritesList(), (UserInfo) settingEntity, templateEntityTypeName);
-                                } else {
-                                    itemList = itemFacade
-                                            .getItemListContainedInListOrOwnedByUser(domainName, getFavoritesList(), (UserInfo) settingEntity);
-                                }
-                            } else if (settingEntity instanceof UserGroup) {
-                                if (getEntityDisplayTemplates()) {
-                                    itemList = itemFacade
-                                            .getItemListContainedInListOrOwnedByGroupExcludeEntityType(domainName, getFavoritesList(), (UserGroup) settingEntity, templateEntityTypeName);
-                                } else {
-                                    itemList = itemFacade
-                                            .getItemListContainedInListOrOwnedByGroup(domainName, getFavoritesList(), (UserGroup) settingEntity);
-                                }
-                            }
-                        } else {
-                            // No favorites list will not show any results from query. 
-                            showOwned = true;
-                        }
-                    }
-
-                    if (showOwned) {
-                        if (settingEntity instanceof UserInfo) {
-                            if (getEntityDisplayTemplates()) {
-                                itemList = itemFacade
-                                        .getItemListOwnedByUserExcludeEntityType(domainName, (UserInfo) settingEntity, templateEntityTypeName);
-                            } else {
-                                itemList = itemFacade
-                                        .getItemListOwnedByUser(domainName, (UserInfo) settingEntity);
-                            }
-                        } else if (settingEntity instanceof UserGroup) {
-                            if (getEntityDisplayTemplates()) {
-                                itemList = itemFacade
-                                        .getItemListOwnedByUserGroupExcludeEntityType(domainName, (UserGroup) settingEntity, templateEntityTypeName);
-                            } else {
-                                itemList = itemFacade
-                                        .getItemListOwnedByUserGroup(domainName, (UserGroup) settingEntity);
-                            }
-                        }
-                    }
-
-                    scopedListDataModel = new ListDataModel(itemList);
-                }
+            // Add code not handled in lazy data model
+            
+            if (settingObject.getDisplayListDataModelScope().equals(
+                    ItemDisplayListDataModelScope.advancedFilter.getValue())) {
+                // handle display mode: advanced filter 
+                scopedListDataModel = createAdvancedFilterDataModel();
             }
         }
-        if (scopedListDataModel == null) {
-            //Nothing was populated into the list data model. 
-            scopedListDataModel = new ListDataModel<>();
-        }
-
+        
         loadPreProcessListDataModelIfNeeded(scopedListDataModel);
-
         return scopedListDataModel;
     }
 
@@ -891,6 +804,12 @@ public abstract class ItemController<
             for (ItemDisplayListDataModelScope value : ItemDisplayListDataModelScope.values()) {
                 if (!settingEntityLoaded) {
                     if (value.isSettingEntityRequired()) {
+                        continue;
+                    }
+                }
+                if (value.equals(ItemDisplayListDataModelScope.advancedFilter)) {
+                    // don't display advanced filter option if filters not supported by domain
+                    if (getAdvancedFilters().isEmpty()) {
                         continue;
                     }
                 }
@@ -1730,9 +1649,33 @@ public abstract class ItemController<
     }
 
     public String getDisplayListDataModelScopeDisplayString() {
+        
         if (settingObject.getDisplayListDataModelScope() != null) {
-            if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
-                return settingObject.getDisplayListDataModelScope() + " '" + getDisplayPropertyTypeName(settingObject.getDisplayListDataModelScopePropertyTypeId()) + "'";
+            
+            if (settingObject.getDisplayListDataModelScope().equals(
+                    ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
+                // label for property type display mode                
+                return settingObject.getDisplayListDataModelScope() + " '" 
+                        + getDisplayPropertyTypeName(settingObject.getDisplayListDataModelScopePropertyTypeId()) 
+                        + "'";
+                
+            } else if (settingObject.getDisplayListDataModelScope().equals(
+                    ItemDisplayListDataModelScope.advancedFilter.getValue())) {
+                // label for advanced filter display mode
+                String labelDetails = "";
+                AdvancedFilter selectedFilter = getSelectedFilter();
+                if (selectedFilter == null) {
+                    labelDetails = ": No Filter Specified";
+                } else {
+                    labelDetails = labelDetails + ": " + "'" + selectedFilter.getName() + "'";
+                    String paramsString = selectedFilter.getParametersString();
+                    if (paramsString == null || paramsString.isEmpty()) {
+                        labelDetails = labelDetails + ", no parameter values specified";
+                    } else {
+                        labelDetails = labelDetails + " Params: (" + paramsString + ")";
+                    }
+                }
+                return settingObject.getDisplayListDataModelScope() + " " + labelDetails;
             }
         }
         return settingObject.getDisplayListDataModelScope();
@@ -2232,7 +2175,7 @@ public abstract class ItemController<
     @Override
     public ItemDomainEntity findByQrId(Integer qrId) {
         if (getDefaultDomain() == null) {
-            return getEntityDbFacade().findByQrId(qrId); 
+            return getEntityDbFacade().findByQrId(qrId);
         } else {
             return getEntityDbFacade().findByQrIdAndDomain(qrId, getDefaultDomain().getName());
         }
@@ -2329,6 +2272,7 @@ public abstract class ItemController<
             return expandedRowUUIDs.contains(viewUUID);
         }
         return false;
+
     }
 
     @FacesConverter(value = "itemConverter")
@@ -2442,6 +2386,75 @@ public abstract class ItemController<
     @Override
     public final void checkItemProject(Item item) throws CdbException {
         getControllerUtility().checkItemProject(item);
+    }
+    
+    public List<AdvancedFilter> getAdvancedFilters() {
+        if (advancedFilters == null) {
+            advancedFilters = getEntityDbFacade().initializeAdvancedFilterInfo(this);
+        }
+        return advancedFilters;
+    }
+
+    public AdvancedFilter getSelectedFilter() {
+        String selectedFilterName = getAdvancedFilterName();
+        if (selectedFilterName == null) {
+            return null;
+        }
+        for (AdvancedFilter filter : getAdvancedFilters()) {
+            if (filter.getName().equals(selectedFilterName)) {
+                return filter;
+            }
+        }
+        return null;
+    }
+
+    public String getAdvancedFilterName() {
+        return advancedFilterName;
+    }
+
+    public void setAdvancedFilterName(String advancedFilterName) {
+        if ((this.advancedFilterName == null && advancedFilterName != null) 
+            || (!this.advancedFilterName.equals(advancedFilterName))) {
+            
+            // reset list data models so that we rebuild them in subsequent calls to getScopedListDataModel
+            listDataModelScopeChanged();
+        }
+        this.advancedFilterName = advancedFilterName;
+    }
+
+    public void advancedFilterChanged(String name) {
+        // filter parameter value changed, reset list data models so we rebuild them in subsequent calls to getScopedListDataModel
+        listDataModelScopeChanged();
+    }
+
+    /**
+     * Allows subclass to return a ListDataModel using the specified filter and parameters.
+     */
+    protected ListDataModel createAdvancedFilterDataModel_(
+            String filterName, Map<String, String> parameterValueMap) {
+        
+        List<ItemDomainEntity> itemList = getEntityDbFacade().processAdvancedFilter(filterName, parameterValueMap);
+        return new ListDataModel(itemList);
+    }
+
+    private ListDataModel createAdvancedFilterDataModel() {
+        
+        String filterName = getAdvancedFilterName();
+        
+        if (getAdvancedFilters() == null) {
+            // domain doesn't support advanced filter display mode
+            SessionUtility.addErrorMessage("Warning", "Domain does not support advanced filter display mode.");
+            return null;
+            
+        } else if (filterName == null || filterName.isEmpty()) {
+            // filter name and value not specified in display mode dialog
+            return null;
+        }
+        
+        AdvancedFilter selectedFilter = getSelectedFilter();
+        Map<String, String> parameterValueMap = selectedFilter.getParameterValueMap();
+        
+        return createAdvancedFilterDataModel_(selectedFilter.getName(), parameterValueMap);        
     }
 
 }

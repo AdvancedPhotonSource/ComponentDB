@@ -11,6 +11,7 @@ tools/developer_tools/portal_testing/CdbFunctionalTester/nbproject/private/
 /tools/developer_tools/code_testing/CdbWebPortalTest/target/
 /tools/developer_tools/portal_testing/PythonSeleniumTest/support_bin/
 /tools/developer_tools/python-client/*
+/tools/developer_tools/python-client/**/.DS_Store
 !/tools/developer_tools/python-client/generatePyClient.sh
 !/tools/developer_tools/python-client/CdbApiFactory.py
 !/tools/developer_tools/python-client/ClientApiConfig.yml

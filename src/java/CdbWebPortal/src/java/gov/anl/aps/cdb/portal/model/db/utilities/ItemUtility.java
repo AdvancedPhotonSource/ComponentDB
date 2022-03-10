@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
+import gov.anl.aps.cdb.portal.model.ItemBaseLazyTreeNode;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
@@ -104,7 +105,15 @@ public class ItemUtility {
      * @return 
      */
     public static TreeNode findTreeNodeWithItem(Item item, TreeNode nodeRoot) {
-        Item nodeItem = (Item) nodeRoot.getData();
+        Item nodeItem = null; 
+        if (nodeRoot instanceof ItemBaseLazyTreeNode) {
+            ItemElement element = ((ItemBaseLazyTreeNode) nodeRoot).getElement();
+            if (element != null) {
+                nodeItem = element.getContainedItem();
+            }
+        } else {
+            nodeItem = (Item) nodeRoot.getData();            
+        }
 
         if (nodeItem != null && nodeItem.equals(item)) {
             return nodeRoot;

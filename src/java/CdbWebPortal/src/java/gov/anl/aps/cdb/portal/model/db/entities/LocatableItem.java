@@ -28,6 +28,7 @@ public abstract class LocatableItem extends Item {
     private transient String locationString;
     private transient String housingString; 
     private transient DefaultMenuModel locationMenuModel;
+    private transient ItemDomainLocation importLocationItem = null;
     private transient String importLocationItemString = null;
     private transient List<LocationHistoryObject> locationHistoryListObject = null; 
 
@@ -193,6 +194,10 @@ public abstract class LocatableItem extends Item {
 
     @JsonIgnore
     public String getImportLocationItemString() {
+        if (importLocationItemString == null) {
+            LocatableItemController.getInstance().setItemLocationInfo(this);
+            importLocationItemString = getLocationString();
+        }
         return importLocationItemString;
     }
     
@@ -202,8 +207,14 @@ public abstract class LocatableItem extends Item {
         LocatableItemController.getInstance().updateLocationForItem(
                 this, location, null);
         importLocationItemString = getLocationString();
+        importLocationItem = location;
     }
     
+    @JsonIgnore
+    public ItemDomainLocation getImportLocationItem() {
+        return importLocationItem;
+    }
+
     @JsonIgnore
     public Item getExportLocation() {
         LocatableItemController.getInstance().setItemLocationInfo(this);

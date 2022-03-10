@@ -8,34 +8,31 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
     
     <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
+
     <p:outputPanel id="#{entityTypeName}ListDisplayModeSelectionPanel#{viewName}"
                    styleClass="leftAlignedText">
-        <p:panelGrid columns="1"
+
+        <p:panelGrid columns="2"
                      styleClass="noCellPaddingPanelGrid">
+
+            <h:outputText value="Display Mode" />
             <p:selectOneMenu id="#{entityTypeName}ListDisplayMode#{viewName}" 
                              value="#{entitySettingObject.displayListDataModelScope}"
                              onchange="update#{entityTypeName}ListDisplayModeSelectionPanel#{viewName}()">
                 <f:selectItems value="${entityController.displayListDataScopeSelectionList}" />
             </p:selectOneMenu>
-            <p:selectOneMenu id="#{entityTypeName}PropertyTypeDisplayMode#{viewName}" 
-                             value="#{entitySettingObject.displayListDataModelScopePropertyTypeId}" 
-                             rendered="#{entitySettingObject.displayListDataModelScopePropertyTypeSelection}"
-                             styleClass="entityDataSelectOne">
-                <f:selectItems var="displayScopePropertyType" 
-                               value="#{propertyTypeController.availableExternalItems}" 
-                               itemLabel="#{displayScopePropertyType.name}" 
-                               itemValue="#{displayScopePropertyType.id}"/>
-            </p:selectOneMenu>   
-            
+
             <h:outputText value="NOTE: Selected display mode does not apply global project selection."
                           rendered="#{entitySettingObject.displayGlobalProjectWarning}"/>
 
             <p:remoteCommand name="update#{entityTypeName}ListDisplayModeSelectionPanel#{viewName}"
                              onstart="PF('loadingDialog').show();"
-                             update="#{entityTypeName}ListDisplayModeSelectionPanel#{viewName}"
+                             update="#{entityTypeName}ListDisplayModeSelectionPanel#{viewName} #{entityTypeName}ListDisplayModeOptionsPanel#{viewName}"
+                             process="#{entityTypeName}ListDisplayModeSelectionPanel#{viewName} #{entityTypeName}ListDisplayModeOptionsPanel#{viewName}"
                              oncomplete="PF('loadingDialog').hide()"/>
         </p:panelGrid>                
     </p:outputPanel>    

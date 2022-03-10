@@ -289,7 +289,9 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         return itemElement;
     }
 
-    public ItemElement performMachineMove(ItemDomainMachineDesign newParent, ItemDomainMachineDesign child, UserInfo sessionUser) throws CdbException {
+    public ItemElement performMachineMove(
+            ItemDomainMachineDesign newParent, ItemDomainMachineDesign child, UserInfo sessionUser) throws CdbException {
+
         if ((newParent instanceof ItemDomainMachineDesign && child instanceof ItemDomainMachineDesign) == false) {
             throw new CdbException("Both items provided must be of type machine design");
         }
@@ -311,9 +313,14 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         }
 
         prepareAddItemElement(newParent, currentItemElement);
-
+        
+        return currentItemElement;
+    }
+    
+    public ItemElement performMachineMoveWithUpdate(
+            ItemDomainMachineDesign newParent, ItemDomainMachineDesign child, UserInfo sessionUser) throws CdbException {
+        ItemElement currentItemElement = performMachineMove(newParent, child, sessionUser);
         update(newParent, sessionUser);
-
         return currentItemElement;
     }
 

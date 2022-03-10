@@ -31,14 +31,14 @@ public class ItemDomainMachineDesignControllerUtility extends ItemDomainMachineD
     }
 
     @Override
-    public ItemElement performMachineMove(ItemDomainMachineDesign newParent, ItemDomainMachineDesign child, UserInfo sessionUser) throws CdbException {
+    public ItemElement performMachineMoveWithUpdate(ItemDomainMachineDesign newParent, ItemDomainMachineDesign child, UserInfo sessionUser) throws CdbException {
         ItemElement representsCatalogElement = child.getRepresentsCatalogElement();
 
         if (representsCatalogElement != null) {
             throw new CdbException("Cannot move assembly representing machine element.");
         }
 
-        return super.performMachineMove(newParent, child, sessionUser);
+        return super.performMachineMoveWithUpdate(newParent, child, sessionUser);
     }
 
     /**

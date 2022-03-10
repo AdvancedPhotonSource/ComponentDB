@@ -30,6 +30,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.AdvancedFilter;
 import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
@@ -42,7 +43,6 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.model.DataModel;
 import javax.inject.Named;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
@@ -55,7 +55,7 @@ import org.primefaces.model.TreeNode;
  */
 @Named(ItemDomainCableDesignController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemDomainCableDesignController extends ItemController<ItemDomainCableDesignControllerUtility, ItemDomainCableDesign, ItemDomainCableDesignFacade, ItemDomainCableDesignSettings> {
+public class ItemDomainCableDesignController extends ItemController<ItemDomainCableDesignControllerUtility, ItemDomainCableDesign, ItemDomainCableDesignFacade, ItemDomainCableDesignSettings, ItemDomainCableDesignLazyDataModel> {
 
     @Override
     protected ItemDomainCableDesignControllerUtility createControllerUtilityInstance() {
@@ -869,9 +869,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     private CatalogDialog dialogCatalog = null;
     private ConnectionEditDialog dialogConnection = null;
     
-    private List<CableDesignConnectionListObject> connectionListForCurrent;
-    
-    private ItemDomainCableDesignLazyDataModel itemDomainCableDesignLazyDataModel; 
+    private List<CableDesignConnectionListObject> connectionListForCurrent;       
 
     protected ImportHelperCableDesign importHelper = new ImportHelperCableDesign();
     
@@ -1073,25 +1071,12 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public String prepareWizardBundle() {        
         BundleWizard.getInstance().reset();
         return "/views/itemDomainCableDesign/createBundle?faces-redirect=true";
-    }
-    
-    @Override
-    public void resetListDataModel() {
-        super.resetListDataModel(); 
-        itemDomainCableDesignLazyDataModel = null; 
-    }
-
-    public ItemDomainCableDesignLazyDataModel getItemDomainCableDesignLazyDataModel() {
-        if (itemDomainCableDesignLazyDataModel == null) {
-            itemDomainCableDesignLazyDataModel = new ItemDomainCableDesignLazyDataModel(itemDomainCableDesignFacade, getDefaultDomain());
-        }
-        return itemDomainCableDesignLazyDataModel;
-    }
+    } 
 
     @Override
-    public DataModel getListDataModel() {
-        return getItemDomainCableDesignLazyDataModel();
-    }
+    public ItemDomainCableDesignLazyDataModel createItemLazyDataModel() {
+        return new ItemDomainCableDesignLazyDataModel(itemDomainCableDesignFacade, getDefaultDomain(), settingObject); 
+    }        
     
     @Override
     protected Boolean fetchFilterablePropertyValue(Integer propertyTypeId) {

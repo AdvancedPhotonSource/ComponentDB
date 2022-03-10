@@ -229,6 +229,13 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
         return false;
     }
     
+    public boolean isDisplayListDataModelScopeAdvancedFilter() {
+        if (displayListDataModelScope != null) {
+            return displayListDataModelScope.equals(ItemDisplayListDataModelScope.advancedFilter.getValue());
+        }
+        return false;
+    }
+    
     /**
      * Override for locatable item types as needed. 
      * 
@@ -542,7 +549,7 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
 
     public void setDisplayListDataModelScope(String listDataModelMode) {
         if (!this.displayListDataModelScope.equals(listDataModelMode)) {
-            parentController.resetListDataModel();
+            parentController.listDataModelScopeChanged();
         }
         this.displayListDataModelScope = listDataModelMode;
     }

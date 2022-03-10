@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model;
 
+import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
@@ -12,6 +13,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 
@@ -22,6 +25,8 @@ import org.primefaces.model.SortOrder;
  * @param <QueryBuilder>
  */
 public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuilder extends ItemQueryBuilder> extends CdbLazyDataModel {
+    
+    private static final Logger LOGGER = LogManager.getLogger(ItemLazyDataModel.class.getName());
 
     List<Item> itemList;
     Facade facade;
@@ -30,11 +35,14 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
 
     QueryBuilder queryBuilder = null;
     Integer rowCount = 0;
+    
+    ItemSettings settings; 
 
-    public ItemLazyDataModel(Facade facade, Domain itemDomain) {
+    public ItemLazyDataModel(Facade facade, Domain itemDomain, ItemSettings settings) {
         this.facade = facade;
         this.itemDomain = itemDomain;
         updateItemList(new ArrayList<>());
+        this.settings = settings; 
     }
 
     protected void updateItemList(List<Item> itemList) {
@@ -128,6 +136,18 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
             itemElementFacade = ItemElementFacade.getInstance();
         }
         return itemElementFacade;
+    }
+
+    @Override
+    public Object getRowData() {        
+        // TODO figure out how to prevent this or is this simply a primefaces bug.
+        try {
+            return super.getRowData();
+        } catch (IndexOutOfBoundsException ex) {
+            LOGGER.error(ex);
+        }
+            
+        return new Item();
     }
 
 }

@@ -96,7 +96,7 @@ public class ImportHelperMachineHierarchy
         List<ColumnSpec> specs = new ArrayList<>();
         
         specs.add(MachineImportHelperCommon.existingMachineItemColumnSpec(
-                ColumnModeOptions.oCREATE(), getMachineImportHelperCommon().getRootItem(), null, null));
+                ColumnModeOptions.oCREATE(), getMachineImportHelperCommon().getRootItem(), null, null, null, null));
         specs.add(MachineImportHelperCommon.nameHierarchyColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.altNameColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.descriptionColumnSpec(ColumnModeOptions.oCREATE()));
