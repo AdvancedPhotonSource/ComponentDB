@@ -57,6 +57,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.AdvancedFilter;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
@@ -65,6 +66,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -77,8 +80,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.ToggleEvent;
-import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.TreeNode;
 import org.primefaces.model.Visibility;
 
 public abstract class ItemController<
@@ -170,7 +171,10 @@ public abstract class ItemController<
 
     protected ItemMetadataPropertyInfo coreMetadataPropertyInfo = null;
     protected PropertyType coreMetadataPropertyType = null;
-
+    
+    private List<AdvancedFilter> advancedFilters = null;
+    private String advancedFilterName = null;
+    
     public ItemController() {
     }
 
@@ -747,6 +751,7 @@ public abstract class ItemController<
         displayListDataModelScopeSelectionList = null;
         locationRelationshipCache = null;
         itemLazyDataModel = null;
+        advancedFilterName = null;
     }
 
     public void listDataModelScopeChanged() {
@@ -762,20 +767,23 @@ public abstract class ItemController<
                 || scope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue())
                 || scope.equals(ItemDisplayListDataModelScope.showOwned.getValue());
     }
-
+    
     public final DataModel getScopedListDataModel() {
         // Show all
         if (isDataTableScopeLazy()) {
             return getListDataModel();
+            
         } else if (scopedListDataModel == null) {
             // Add code not handled in lazy data model
+            
+            if (settingObject.getDisplayListDataModelScope().equals(
+                    ItemDisplayListDataModelScope.advancedFilter.getValue())) {
+                // handle display mode: advanced filter 
+                scopedListDataModel = createAdvancedFilterDataModel();
+            }
         }
-        if (scopedListDataModel == null) {
-            scopedListDataModel = new ListDataModel<>();
-        }
-
+        
         loadPreProcessListDataModelIfNeeded(scopedListDataModel);
-
         return scopedListDataModel;
     }
 
@@ -797,6 +805,12 @@ public abstract class ItemController<
             for (ItemDisplayListDataModelScope value : ItemDisplayListDataModelScope.values()) {
                 if (!settingEntityLoaded) {
                     if (value.isSettingEntityRequired()) {
+                        continue;
+                    }
+                }
+                if (value.equals(ItemDisplayListDataModelScope.advancedFilter)) {
+                    // don't display advanced filter option if filters not supported by domain
+                    if (getAdvancedFilters().isEmpty()) {
                         continue;
                     }
                 }
@@ -1636,9 +1650,33 @@ public abstract class ItemController<
     }
 
     public String getDisplayListDataModelScopeDisplayString() {
+        
         if (settingObject.getDisplayListDataModelScope() != null) {
-            if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
-                return settingObject.getDisplayListDataModelScope() + " '" + getDisplayPropertyTypeName(settingObject.getDisplayListDataModelScopePropertyTypeId()) + "'";
+            
+            if (settingObject.getDisplayListDataModelScope().equals(
+                    ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
+                // label for property type display mode                
+                return settingObject.getDisplayListDataModelScope() + " '" 
+                        + getDisplayPropertyTypeName(settingObject.getDisplayListDataModelScopePropertyTypeId()) 
+                        + "'";
+                
+            } else if (settingObject.getDisplayListDataModelScope().equals(
+                    ItemDisplayListDataModelScope.advancedFilter.getValue())) {
+                // label for advanced filter display mode
+                String labelDetails = "";
+                AdvancedFilter selectedFilter = getSelectedFilter();
+                if (selectedFilter == null) {
+                    labelDetails = ": No Filter Specified";
+                } else {
+                    labelDetails = labelDetails + ": " + "'" + selectedFilter.getName() + "'";
+                    String paramsString = selectedFilter.getParametersString();
+                    if (paramsString == null || paramsString.isEmpty()) {
+                        labelDetails = labelDetails + ", no parameter values specified";
+                    } else {
+                        labelDetails = labelDetails + " Params: (" + paramsString + ")";
+                    }
+                }
+                return settingObject.getDisplayListDataModelScope() + " " + labelDetails;
             }
         }
         return settingObject.getDisplayListDataModelScope();
@@ -2349,6 +2387,75 @@ public abstract class ItemController<
     @Override
     public final void checkItemProject(Item item) throws CdbException {
         getControllerUtility().checkItemProject(item);
+    }
+    
+    public List<AdvancedFilter> getAdvancedFilters() {
+        if (advancedFilters == null) {
+            advancedFilters = getEntityDbFacade().initializeAdvancedFilterInfo(this);
+        }
+        return advancedFilters;
+    }
+
+    public AdvancedFilter getSelectedFilter() {
+        String selectedFilterName = getAdvancedFilterName();
+        if (selectedFilterName == null) {
+            return null;
+        }
+        for (AdvancedFilter filter : getAdvancedFilters()) {
+            if (filter.getName().equals(selectedFilterName)) {
+                return filter;
+            }
+        }
+        return null;
+    }
+
+    public String getAdvancedFilterName() {
+        return advancedFilterName;
+    }
+
+    public void setAdvancedFilterName(String advancedFilterName) {
+        if ((this.advancedFilterName == null && advancedFilterName != null) 
+            || (this.advancedFilterName != null && !this.advancedFilterName.equals(advancedFilterName))) {
+            
+            // reset list data models so that we rebuild them in subsequent calls to getScopedListDataModel
+            listDataModelScopeChanged();
+        }
+        this.advancedFilterName = advancedFilterName;
+    }
+
+    public void advancedFilterChanged(String name) {
+        // filter parameter value changed, reset list data models so we rebuild them in subsequent calls to getScopedListDataModel
+        listDataModelScopeChanged();
+    }
+
+    /**
+     * Allows subclass to return a ListDataModel using the specified filter and parameters.
+     */
+    protected ListDataModel createAdvancedFilterDataModel_(
+            String filterName, Map<String, String> parameterValueMap) {
+        
+        List<ItemDomainEntity> itemList = getEntityDbFacade().processAdvancedFilter(filterName, parameterValueMap);
+        return new ListDataModel(itemList);
+    }
+
+    private ListDataModel createAdvancedFilterDataModel() {
+        
+        String filterName = getAdvancedFilterName();
+        
+        if (getAdvancedFilters() == null) {
+            // domain doesn't support advanced filter display mode
+            SessionUtility.addErrorMessage("Warning", "Domain does not support advanced filter display mode.");
+            return null;
+            
+        } else if (filterName == null || filterName.isEmpty()) {
+            // filter name and value not specified in display mode dialog
+            return null;
+        }
+        
+        AdvancedFilter selectedFilter = getSelectedFilter();
+        Map<String, String> parameterValueMap = selectedFilter.getParameterValueMap();
+        
+        return createAdvancedFilterDataModel_(selectedFilter.getName(), parameterValueMap);        
     }
 
 }

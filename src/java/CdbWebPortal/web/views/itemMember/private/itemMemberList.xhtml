@@ -16,6 +16,8 @@ See LICENSE file.
     
     <ui:include src="itemMemberListDataTable.xhtml" />
     
-    <ui:include src="itemMemberListCustomizeDisplayDialog.xhtml" />
+    <ui:include src="itemMemberListCustomizeDisplayDialog.xhtml">
+        <ui:param name="customizeDisplayEntityTypeName" value="designMember" /> 
+    </ui:include>
 
 </ui:composition>

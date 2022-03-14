@@ -24,52 +24,54 @@ See LICENSE file.
               modal="true"
               resizable="false">
 
-        <ui:include src="travelerInstanceCreateConfiguration.xhtml">
-            <ui:param name="overrideTravelerTemplateList"
-                      value="#{true}" />
-            <ui:param name="renderedTravelerTitle"
-                      value="#{false}" /> 
-            <ui:param name="travelerTemplateList"
-                      value="#{travelerDomainInstanceController.multiEditAvailableTemplateForApplyAll}" />
-            <ui:param name="viewName"
-                      value="multiEditApplyAll"/>
-            <ui:param name="additonalTravelerTemplateEmptyMessage"
-                      value="Parent catalog items in the list do not share a common template." /> 
-            <ui:param name="additionalUpdateOnRowSelection"
-                      value="multiEditTravelerTitleConfiguration" /> 
-        </ui:include>
+        <ui:param name="withSequence"
+                  value="#{travelerDomainInstanceController.hasSequenceValueToSet}" />
+
 
         <p:outputPanel id="multiEditTravelerTitleConfiguration">
-            <ui:param name="withSequence"
-                      value="#{travelerDomainInstanceController.hasSequenceValueToSet}" />
+            <ui:decorate template="travelerInstanceCreateConfiguration.xhtml">
+                <ui:define name="travelerInstanceCreateConfigParams">
+                    <ui:param name="overrideTravelerTemplateList"
+                              value="#{true}" />
+                    <ui:param name="renderedTravelerTitle"
+                              value="#{false}" /> 
+                    <ui:param name="travelerTemplateList"
+                              value="#{travelerDomainInstanceController.multiEditAvailableTemplateForApplyAll}" />
+                    <ui:param name="viewName"
+                              value="multiEditApplyAll"/>
+                    <ui:param name="additonalTravelerTemplateEmptyMessage"
+                              value="Parent catalog items in the list do not share a common template." /> 
+                    <ui:param name="additionalUpdateOnRowSelection"
+                              value="multiEditTravelerTitleConfiguration" />                 
+                </ui:define>
 
-            <p:panelGrid styleClass="centeredContent"                     
-                         columns="2">
+                <ui:define name="travelerInstanceCreateConfigAdditionalPanelGrid">
+                    <h:outputText value="#{withSequence ? 'Title Prefix' : 'Traveler Title'}" />
+                    <p:inputText value="#{travelerDomainInstanceController.travelerInstanceTitle}"
+                                 style="width: -webkit-fill-available;"/>  
 
-                <h:outputText value="#{withSequence ? 'Title Prefix' : 'Traveler Title'}" />
-                <p:inputText value="#{travelerDomainInstanceController.travelerInstanceTitle}"/>
+                    <h:outputText value="Needs Sequence?"
+                                  rendered="#{!withSequence}"/>
+                    <p:commandButton update="multiEditTravelerTitleConfiguration"
+                                     value="Add sequence"
+                                     rendered="#{!withSequence}">
+                        <f:setPropertyActionListener target="#{travelerDomainInstanceController.currentSequenceStartValueToColumnWithFormat}"
+                                                     value="0"/>
+                    </p:commandButton>
 
-                <h:outputText value="Needs Sequence?"
-                              rendered="#{!withSequence}"/>
-                <p:commandButton update="multiEditTravelerTitleConfiguration"
-                                 value="Add sequence"
-                                 rendered="#{!withSequence}">
-                    <f:setPropertyActionListener target="#{travelerDomainInstanceController.currentSequenceStartValueToColumnWithFormat}"
-                                                 value="0"/>
-                </p:commandButton>
+                    <ui:include src="../../../../itemMultiEdit/private/applyValuesTo/common/sequenceStart.xhtml">
+                        <ui:param name="rendered"
+                                  value="#{withSequence}" />
+                        <ui:param name="entityController"
+                                  value="#{travelerDomainInstanceController}" />
+                    </ui:include>  
 
-                <ui:include src="../../../../itemMultiEdit/private/applyValuesTo/common/sequenceStart.xhtml">
-                    <ui:param name="rendered"
-                              value="#{withSequence}" />
-                    <ui:param name="entityController"
-                              value="#{travelerDomainInstanceController}" />
-                </ui:include>  
-
-                <h:outputText value="Postfix"
-                              rendered="#{withSequence}"/>
-                <p:inputText value="#{travelerDomainInstanceController.currentPostfixValueToColumn}"
-                             rendered="#{withSequence}"/>
-            </p:panelGrid>
+                    <h:outputText value="Postfix"
+                                  rendered="#{withSequence}"/>
+                    <p:inputText value="#{travelerDomainInstanceController.currentPostfixValueToColumn}"
+                                 rendered="#{withSequence}"/>
+                </ui:define>
+            </ui:decorate>
         </p:outputPanel>
 
 

@@ -9,7 +9,8 @@ public enum ItemDisplayListDataModelScope {
     showOwned("Owned", true),
     showFavorites("Favorites", true),
     showOwnedPlusFavorites("Owned & Favorites", true),
-    showItemsWithPropertyType("Items with Property", false);
+    showItemsWithPropertyType("Items with Property", false),
+    advancedFilter("Advanced Filter", false);
 
     private String value;
     private boolean settingEntityRequired; 

@@ -4,7 +4,6 @@
 --
 
 delimiter //
-
 DROP PROCEDURE IF EXISTS search_items;//
 CREATE PROCEDURE `search_items` (IN limit_row int, IN domain_id int, IN search_string VARCHAR(255)) 
 BEGIN
@@ -415,4 +414,85 @@ BEGIN
 	RETURN true;
 END//
 
+DROP FUNCTION IF EXISTS cable_design_ancestor_filter// 
+CREATE FUNCTION cable_design_ancestor_filter 
+	(cable_item_id INT, 
+	name_filter_value VARCHAR(64), 
+	cable_end VARCHAR(64)) 
+RETURNS BOOLEAN 
+BEGIN	 
+	DECLARE row_count INT; 
+	DECLARE item_self_element_id INT; 
+
+	-- check that cable_item_id is specified
+	IF ISNULL(cable_item_id)
+	THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'cable item id must be specified';
+	END IF;
+
+	-- add % to both ends of filter value 
+	IF ISNULL(name_filter_value) OR name_filter_value = ''
+	THEN
+		RETURN true;
+	END IF;
+	SET name_filter_value = CONCAT('%', name_filter_value); 
+	SET name_filter_value = CONCAT(name_filter_value, '%');
+
+	-- get self element id for cable design item 
+	SELECT self_element_id INTO item_self_element_id FROM v_item_self_element  WHERE item_id = cable_item_id; 
+
+	-- check if any endpoint or its ancestors match the filter using recursive query 
+	-- limit relationship elements to cable relationship type and specified cable end 
+	IF ISNULL(cable_end) OR cable_end = ''
+	THEN
+		-- cable end not specified
+		WITH RECURSIVE ancestors as ( 
+		     SELECT parent_item_id FROM item_element WHERE parent_item_id in ( 
+		     	    SELECT parent_item_id FROM item_element WHERE id in ( 
+	     	    	    	   SELECT first_item_element_id  
+		    	   	   FROM item_element_relationship ier  
+		    	   	   WHERE ier.relationship_type_id = 4 AND  
+			   	   	 second_item_element_id = item_self_element_id)) 
+
+		     UNION  
+
+	     	     SELECT ie.parent_item_id  
+	     	     FROM item_element ie, ancestors AS a  
+	     	     WHERE ie.contained_item_id1 = a.parent_item_id 
+
+		) SELECT count(i.name)  
+		INTO row_count  
+		FROM item i, ancestors  
+		WHERE i.id = ancestors.parent_item_id and i.name like name_filter_value;
+	ELSE
+		-- cable end specified
+		WITH RECURSIVE ancestors as ( 
+		     SELECT parent_item_id FROM item_element WHERE parent_item_id in ( 
+		     	    SELECT parent_item_id FROM item_element WHERE id in ( 
+	     	    	    	   SELECT first_item_element_id  
+		    	   	   FROM item_element_relationship ier,  
+			   	   	item_element_relationship_property ierp,  
+					property_value pv  
+		    	   	   WHERE ier.relationship_type_id = 4 AND  
+			   	   	 second_item_element_id = item_self_element_id AND 
+			  	 	 ierp.item_element_relationship_id = ier.id AND 
+			  	 	 pv.id = ierp.property_value_id AND 
+		          	 	 pv.value = cable_end)) 
+
+		     UNION  
+
+	     	     SELECT ie.parent_item_id  
+	     	     FROM item_element ie, ancestors AS a  
+	     	     WHERE ie.contained_item_id1 = a.parent_item_id 
+
+		) SELECT count(i.name)  
+		INTO row_count  
+		FROM item i, ancestors  
+		WHERE i.id = ancestors.parent_item_id and i.name like name_filter_value;
+	END IF;
+
+	RETURN row_count > 0; 
+END// 
+ 
 delimiter ;
