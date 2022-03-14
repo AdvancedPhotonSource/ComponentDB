@@ -214,6 +214,7 @@ class PreImportHelper(ABC):
         self.input_handlers = []
         self.output_objects = []
         self.validation_map = {}
+        self.info_manager = None
         self.api = None
         self.validate_only = False
         self.ignore_existing = False
@@ -247,11 +248,12 @@ class PreImportHelper(ABC):
 
     # creates instance of class with specified tag
     @classmethod
-    def create_helper(cls, tag, config_preimport, config_group, api):
+    def create_helper(cls, tag, config_preimport, config_group, info_manager, api):
         helper_class = cls.helperDict[tag]
         helper_instance = helper_class()
         helper_instance.set_config_preimport(config_preimport, tag)
         helper_instance.set_config_group(config_group, tag)
+        helper_instance.info_manager = info_manager
         helper_instance.api = api
         return helper_instance
 
@@ -1527,6 +1529,15 @@ class OutputObject(ABC):
         return ""
 
 
+class ItemInfoManager():
+
+    def __init__(self, api):
+        self.api = api
+
+    def initialize(self):
+        pass
+
+
 class IdManager():
 
     def __init__(self):
@@ -2749,6 +2760,10 @@ def main():
     except (ApiException, urllib3.exceptions.MaxRetryError) as exc:
         fatal_error("CDB login failed user: %s message: %s, exiting" % (cdb_user, exc))
 
+    # create information manager for retrieving item data via cdb api and managing cdb and parsed item data
+    info_manager = ItemInfoManager(api)
+    info_manager.initialize()
+
     # open input spreadsheet
     input_book = openpyxl.load_workbook(filename=file_input, data_only=True)
     name_manager = ConnectedMenuManager(input_book)
@@ -2762,7 +2777,7 @@ def main():
         print()
         print("%s OPTIONS ====================" % item_type.upper())
         print()
-        helper = PreImportHelper.create_helper(item_type, config_preimport, config_group, api)
+        helper = PreImportHelper.create_helper(item_type, config_preimport, config_group, info_manager, api)
         helpers.append(helper)
         input_valid = helper.process_input_book(input_book)
         if not input_valid:
