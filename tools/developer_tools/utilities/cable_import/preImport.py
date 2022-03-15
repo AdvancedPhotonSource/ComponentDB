@@ -428,6 +428,7 @@ class PreImportHelper(ABC):
 
             # validate header row
             elif row_ind == header_index:
+                ignoredColumns = []
                 num_header_cols = 0
                 header_cell_ind = 0
                 for cell in row:
@@ -443,9 +444,14 @@ class PreImportHelper(ABC):
                             if header_cell_value != expected_header_label:
                                 fatal_error("actual header column: %s mismatch with expected: %s" % (
                                 header_cell_value, expected_header_label))
+                    else:
+                        if header_cell_value is not None and header_cell_value != '':
+                            ignoredColumns.append(header_cell_value)
                     num_header_cols = num_header_cols + 1
                     header_cell_ind = header_cell_ind + 1
                     continue
+                if len(ignoredColumns) > 0:
+                    print("ignored extra input columns: %s" % ignoredColumns)
 
             # skip to first data row:
             elif row_ind < first_data_index:
