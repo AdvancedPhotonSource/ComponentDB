@@ -433,7 +433,6 @@ class PreImportHelper(ABC):
                 for cell in row:
                     header_cell_value = cell.value
                     if header_cell_ind in self.input_columns:
-                        print(header_cell_value)
                         header_input_column = self.input_columns[header_cell_ind]
                         if header_input_column is None:
                             fatal_error(
