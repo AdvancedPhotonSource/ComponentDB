@@ -71,7 +71,7 @@ from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomain
 DEFAULT_COLUMN_WIDTH = 80
 DEFAULT_FONT_HEIGHT = 12
 
-LABEL_CABLES_NAME = "BRCM kabel name (*NOT the final APS-U, CDB, or MBA name)"
+LABEL_CABLES_NAME = "Kabel name (*NOT the final APS-U, CDB, or MBA name)"
 LABEL_CABLES_LAYING = "Laying"
 LABEL_CABLES_VOLTAGE = "Voltage"
 LABEL_CABLES_OWNER = "Owner"
@@ -433,28 +433,30 @@ class PreImportHelper(ABC):
 
             # validate header row
             elif row_ind == header_index:
+                ignoredColumns = []
                 num_header_cols = 0
                 header_cell_ind = 0
                 for cell in row:
                     header_cell_value = cell.value
-                    if header_cell_ind not in self.input_columns:
-                        fatal_error("unexpected input column index: %d" % header_cell_ind)
-                    header_input_column = self.input_columns[header_cell_ind]
-                    if header_input_column is None:
-                        fatal_error(
-                            "unexpected actual header column: %s index: %d" % (header_cell_value, header_cell_ind))
-                    expected_header_label = header_input_column.label
-                    if expected_header_label is not None:
-                        # ignore mismatch when expected value not specified (for cases like CableSpecs where the header value changes for each tech system
-                        if header_cell_value != expected_header_label:
-                            fatal_error("actual header column: %s mismatch with expected: %s" % (
-                            header_cell_value, expected_header_label))
+                    if header_cell_ind in self.input_columns:
+                        header_input_column = self.input_columns[header_cell_ind]
+                        if header_input_column is None:
+                            fatal_error(
+                                "unexpected actual header column: %s index: %d" % (header_cell_value, header_cell_ind))
+                        expected_header_label = header_input_column.label
+                        if expected_header_label is not None:
+                            # ignore mismatch when expected value not specified (for cases like CableSpecs where the header value changes for each tech system
+                            if header_cell_value != expected_header_label:
+                                fatal_error("actual header column: %s mismatch with expected: %s" % (
+                                header_cell_value, expected_header_label))
+                    else:
+                        if header_cell_value is not None and header_cell_value != '':
+                            ignoredColumns.append(header_cell_value)
                     num_header_cols = num_header_cols + 1
                     header_cell_ind = header_cell_ind + 1
                     continue
-                if num_header_cols != self.num_input_cols():
-                    fatal_error("actual number of header columns: %d mismatch with expected number: %d" % (
-                    num_header_cols, self.num_input_cols()))
+                if len(ignoredColumns) > 0:
+                    print("ignored extra input columns: %s" % ignoredColumns)
 
             # skip to first data row:
             elif row_ind < first_data_index:
@@ -1821,25 +1823,6 @@ class CableTypeHelper(PreImportHelper):
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
         self.output_objects.append(CableTypeOutputObject(helper=self, input_dict=input_dict))
-
-    def input_is_valid(self):
-
-        global name_manager
-
-        cable_type_named_range = self.named_range
-
-        if len(self.output_objects) + len(self.existing_cable_types) < name_manager.num_values_for_name(cable_type_named_range):
-            missing_cable_types = []
-            utilized_cable_types = []
-            utilized_cable_types.extend(output_object.get_name() for output_object in self.output_objects)
-            utilized_cable_types.extend(self.existing_cable_types)
-            for cable_type in name_manager.values_for_name(cable_type_named_range):
-                if cable_type not in utilized_cable_types:
-                    missing_cable_types.append(cable_type)
-            self.input_valid_message = "Named range: %s includes cable types (%s) not included in start/end range of script" % (cable_type_named_range, missing_cable_types)
-            return False, self.input_valid_message
-
-        return True, ""
 
     def get_summary_messages(self):
         return ["Connector Types that already exist in CDB: %d" % len(self.info_manager.existing_connector_types),
