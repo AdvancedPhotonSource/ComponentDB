@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 
 from click import prompt,echo
@@ -7,6 +8,10 @@ from getpass import getpass
 from CdbApiFactory import CdbApiFactory
 from cdbApi import ApiException
 from cdbCli.common.utility.configurationManager import ConfigurationManager
+try:
+    from rich import print
+except:
+    pass
 
 
 class CliBase:
@@ -58,20 +63,34 @@ class CliBase:
             if token is not None:
                 factory.setAuthenticateToken(token)
             factory.testAuthenticated()
+            return(factory)
         except ApiException as ex:
-            # Need to prompt for credentials
-            echo(prompt_string)
-            username = prompt("Username: ")
-            password = getpass("Password: ")
+            pass
+        # The session key doesn't work.  We now 
+        # See if the username and password are in the Configuration data
+        username,password = self.config.get_session_credentials()
+        if (username != None) and (password != None):
             try:
                 factory.authenticateUser(username, password)
                 token = factory.getAuthenticateToken()
                 self.set_session_token(token)
+                return(factory)
             except ApiException as ex:
-                raise ex
-                echo("Authentication failed.")
+                exObj = factory.parseApiException(ex)
+                echo("Local configured password failed: %s" % exObj.simple_name)
 
-        return factory
+        # Need to prompt for credentials
+        echo(prompt_string)
+        username = prompt("Username")
+        password = getpass("Password: ")
+        try:
+            factory.authenticateUser(username, password)
+            token = factory.getAuthenticateToken()
+            self.set_session_token(token)
+            return factory
+        except ApiException as ex:
+            exObj = factory.parseApiException(ex)
+            raise Exception("%s - %s" % (exObj.simple_name, exObj.message))
 
     @staticmethod
     def print_cdb_obj(cdb_object):
@@ -79,3 +98,7 @@ class CliBase:
         echo(cdb_object)
 
     # TODO Add a print list cdb of cdb object
+
+if __name__ == "__main__":
+    cli = CliBase()
+    factory = cli.require_authenticated_api()
