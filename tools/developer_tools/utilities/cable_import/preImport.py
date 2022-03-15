@@ -1403,8 +1403,8 @@ class CableDesignExistenceHandler(InputHandler):
             return False, "unexpected error with missing entry in cable design id map"
         if cable_design_id != 0:
             # cable design already exists
+            self.existing_cable_designs.append(cable_design_name)
             if self.ignore_existing:
-                self.existing_cable_designs.append(cable_design_name)
                 return True, ""
             else:
                 return False, "cable design already exists in CDB"
@@ -1774,7 +1774,12 @@ class CableTypeHelper(PreImportHelper):
         return summary_column_names, summary_column_values
 
     def write_helper_sheets(self, output_book):
-        self.write_sheet(output_book, "Source Item Import", SourceOutputObject.get_output_columns(), self.source_output_objects)
+
+        self.write_sheet(output_book,
+                         "Source Item Import",
+                         SourceOutputObject.get_output_columns(),
+                         self.source_output_objects)
+
         self.write_sheet(output_book, "Cable Catalog Item Import", self.output_column_list(), self.output_objects)
 
     # Returns processing summary message.
@@ -2143,7 +2148,7 @@ class CableDesignHelper(PreImportHelper):
 
     def generate_input_column_list(self):
         column_list = [
-            InputColumnModel(col_index=0, key=CABLE_DESIGN_NAME_KEY, label=LABEL_CABLES_NAME, required=True),
+            InputColumnModel(col_index=0, key=CABLE_DESIGN_NAME_KEY, required=True),
             InputColumnModel(col_index=1, key=CABLE_DESIGN_LAYING_KEY, label=LABEL_CABLES_LAYING, required=True),
             InputColumnModel(col_index=2, key=CABLE_DESIGN_VOLTAGE_KEY, label=LABEL_CABLES_VOLTAGE, required=True),
             InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, label=LABEL_CABLES_OWNER, required=True),
