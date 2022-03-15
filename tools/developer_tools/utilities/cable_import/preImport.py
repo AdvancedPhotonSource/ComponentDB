@@ -70,7 +70,7 @@ from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomain
 DEFAULT_COLUMN_WIDTH = 80
 DEFAULT_FONT_HEIGHT = 12
 
-LABEL_CABLES_NAME = "BRCM kabel name (*NOT the final APS-U, CDB, or MBA name)"
+LABEL_CABLES_NAME = "Kabel name (*NOT the final APS-U, CDB, or MBA name)"
 LABEL_CABLES_LAYING = "Laying"
 LABEL_CABLES_VOLTAGE = "Voltage"
 LABEL_CABLES_OWNER = "Owner"
