@@ -433,6 +433,7 @@ class PreImportHelper(ABC):
                 for cell in row:
                     header_cell_value = cell.value
                     if header_cell_ind in self.input_columns:
+                        print(header_cell_value)
                         header_input_column = self.input_columns[header_cell_ind]
                         if header_input_column is None:
                             fatal_error(
@@ -1737,25 +1738,6 @@ class CableTypeHelper(PreImportHelper):
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
         self.output_objects.append(CableTypeOutputObject(helper=self, input_dict=input_dict))
-
-    def input_is_valid(self):
-
-        global name_manager
-
-        cable_type_named_range = self.named_range
-
-        if len(self.output_objects) + len(self.existing_cable_types) < name_manager.num_values_for_name(cable_type_named_range):
-            missing_cable_types = []
-            utilized_cable_types = []
-            utilized_cable_types.extend(output_object.get_name() for output_object in self.output_objects)
-            utilized_cable_types.extend(self.existing_cable_types)
-            for cable_type in name_manager.values_for_name(cable_type_named_range):
-                if cable_type not in utilized_cable_types:
-                    missing_cable_types.append(cable_type)
-            self.input_valid_message = "Named range: %s includes cable types (%s) not included in start/end range of script" % (cable_type_named_range, missing_cable_types)
-            return False, self.input_valid_message
-
-        return True, ""
 
     def get_summary_messages(self):
         return ["Sources that already exist in CDB: %d" % len(self.existing_sources),
