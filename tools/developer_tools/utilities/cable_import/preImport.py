@@ -851,7 +851,7 @@ class PreImportHelper(ABC):
                 # set column width
                 output_sheet.set_column(column_index, column_index, maximum_column_width)
 
-            column_index = column_index + 1
+                column_index = column_index + 1
 
     # Writes error content to output workbook, subclasses override to customize with multiple error sheets.
     def write_error_sheets(self, output_book):
@@ -1222,7 +1222,7 @@ class EndpointHandler(InputHandler):
             is_valid = False
             valid_string = "no endpoint item found in CDB with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
             logging.error(valid_string)
-            self.missing_endpoints.add(rack_name + " + " + endpoint_name)
+            self.missing_endpoints.add("rack: %s device: %s" % (rack_name, endpoint_name))
         elif id == -1:
             is_valid = False
             valid_string = "duplicate endpoint items found in CDB with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
