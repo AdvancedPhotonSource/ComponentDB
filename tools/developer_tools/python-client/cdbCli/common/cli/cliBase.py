@@ -76,13 +76,12 @@ class CliBase:
                 self.set_session_token(token)
                 return(factory)
             except ApiException as ex:
-                pass
-        # Finally, ask the user for the right authentication
-        print("Username: ",username)
-        print("Password: ",password)
+                exObj = factory.parseApiException(ex)
+                echo("Local configured password failed: %s" % exObj.simple_name)
+
         # Need to prompt for credentials
         echo(prompt_string)
-        username = prompt("Username: ")
+        username = prompt("Username")
         password = getpass("Password: ")
         try:
             factory.authenticateUser(username, password)
@@ -90,8 +89,8 @@ class CliBase:
             self.set_session_token(token)
             return factory
         except ApiException as ex:
-            echo("Authentication failed.")
-            raise ex
+            exObj = factory.parseApiException(ex)
+            raise Exception("%s - %s" % (exObj.simple_name, exObj.message))
 
     @staticmethod
     def print_cdb_obj(cdb_object):
