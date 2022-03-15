@@ -432,24 +432,20 @@ class PreImportHelper(ABC):
                 header_cell_ind = 0
                 for cell in row:
                     header_cell_value = cell.value
-                    if header_cell_ind not in self.input_columns:
-                        fatal_error("unexpected input column index: %d" % header_cell_ind)
-                    header_input_column = self.input_columns[header_cell_ind]
-                    if header_input_column is None:
-                        fatal_error(
-                            "unexpected actual header column: %s index: %d" % (header_cell_value, header_cell_ind))
-                    expected_header_label = header_input_column.label
-                    if expected_header_label is not None:
-                        # ignore mismatch when expected value not specified (for cases like CableSpecs where the header value changes for each tech system
-                        if header_cell_value != expected_header_label:
-                            fatal_error("actual header column: %s mismatch with expected: %s" % (
-                            header_cell_value, expected_header_label))
+                    if header_cell_ind in self.input_columns:
+                        header_input_column = self.input_columns[header_cell_ind]
+                        if header_input_column is None:
+                            fatal_error(
+                                "unexpected actual header column: %s index: %d" % (header_cell_value, header_cell_ind))
+                        expected_header_label = header_input_column.label
+                        if expected_header_label is not None:
+                            # ignore mismatch when expected value not specified (for cases like CableSpecs where the header value changes for each tech system
+                            if header_cell_value != expected_header_label:
+                                fatal_error("actual header column: %s mismatch with expected: %s" % (
+                                header_cell_value, expected_header_label))
                     num_header_cols = num_header_cols + 1
                     header_cell_ind = header_cell_ind + 1
                     continue
-                if num_header_cols != self.num_input_cols():
-                    fatal_error("actual number of header columns: %d mismatch with expected number: %d" % (
-                    num_header_cols, self.num_input_cols()))
 
             # skip to first data row:
             elif row_ind < first_data_index:
