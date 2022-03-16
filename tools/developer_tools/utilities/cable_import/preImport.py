@@ -573,10 +573,41 @@ class PreImportHelper(ABC):
         input_dict[key] = value
 
     def input_row_is_empty(self, input_dict, row_num):
-        non_empty_count = sum([1 for val in input_dict.values() if len(str(val)) > 0])
-        if non_empty_count == 0 or self.input_row_is_empty_custom(input_dict, row_num):
-            logging.debug("skipping empty row: %d" % row_num)
+
+        non_empty_cols = {k: v for k, v in input_dict.items() if v is not None and v != ""}
+        non_empty_count = len(non_empty_cols)
+        blank_row_columns_allowed_dict = self.blank_row_columns_allowed_dict()
+
+        # row contains no values
+        if non_empty_count == 0:
             return True
+
+        if self.input_row_is_empty_custom(input_dict, row_num):
+            return True
+
+        # check if values in more columns than allowed columns
+        if non_empty_count > len(blank_row_columns_allowed_dict):
+            return False
+
+        # check if value in any column not explicitly allowed
+        for column_key in non_empty_cols.keys():
+
+            if column_key not in blank_row_columns_allowed_dict:
+                return False
+
+            allowed_value = blank_row_columns_allowed_dict[column_key]
+            if allowed_value is not None:
+                if non_empty_cols[column_key] != allowed_value:
+                    return False
+
+        return True
+
+    # Returns dictionary of column keys that can contain values and the row still be considered blank.
+    # Dictionary values should be None, or a string that is the value allowed in that column if we want that constraint.
+    # Subclasses override to customize
+    @classmethod
+    def blank_row_columns_allowed_dict(cls):
+        return {}
 
     # Returns True if the row represented by input_dict should be treated as a blank row.  Default is False.  Subclass
     # can override to allow certain non-empty values to be treated as empty.
@@ -2014,14 +2045,6 @@ class CableInventoryHelper(PreImportHelper):
         ]
         return handler_list
 
-    # Treat a row that contains a single non-empty value in the "import id" column as an empty row.
-    def input_row_is_empty_custom(self, input_dict, row_num):
-        non_empty_count = sum([1 for val in input_dict.values() if len(str(val)) > 0])
-        if non_empty_count == 1 and len(str(input_dict[CABLE_DESIGN_IMPORT_ID_KEY])) > 0:
-            logging.debug("skipping empty row with non-empty import id: %s row: %d" %
-                          (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
-            return True
-
     def handle_valid_row(self, input_dict):
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_INVENTORY_NAME_KEY])
@@ -2210,29 +2233,11 @@ class CableDesignHelper(PreImportHelper):
     def get_md_root(self):
         return self.md_root
 
-    # Treat a row that contains a single non-empty value in the "import id" column as an empty row.
-    def input_row_is_empty_custom(self, input_dict, row_num):
-
-        non_empty_count = sum([1 for val in input_dict.values() if len(str(val)) > 0])
-
-        if non_empty_count == 2 and ((len(str(input_dict[CABLE_DESIGN_IMPORT_ID_KEY])) > 0) and (input_dict[CABLE_DESIGN_NAME_KEY] == "[] | []")):
-            logging.debug("skipping empty row with non-empty import id: %s row: %d" %
-                          (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
-            return True
-
-        if non_empty_count == 1 and (input_dict[CABLE_DESIGN_NAME_KEY] == "[] | []"):
-            logging.debug("skipping empty row with no import id: %s row: %d" %
-                          (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
-            return True
-
-        if non_empty_count == 1 and (len(str(input_dict[CABLE_DESIGN_IMPORT_ID_KEY])) > 0):
-            logging.debug("skipping empty row with id: %s row: %d" %
-                          (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
-            return True
-
-        # the following block allows any row whose name is "[] | []", which I'd like to avoid to detect copy/paste errors
-        # if input_dict[CABLE_DESIGN_NAME_KEY] == "[] | []":
-        #     return True
+    @classmethod
+    def blank_row_columns_allowed_dict(cls):
+        return {CABLE_DESIGN_NAME_KEY: "[] | []",
+                CABLE_DESIGN_IMPORT_ID_KEY: None,
+                CABLE_DESIGN_NOTES_KEY: None}
 
     def handle_valid_row(self, input_dict):
 
