@@ -63,7 +63,8 @@ import openpyxl
 import xlsxwriter
 
 from CdbApiFactory import CdbApiFactory
-from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomainCableDesignIdListRequest, ItemDomainMachineDesignIdListRequest, SourceIdListRequest
+from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomainCableDesignIdListRequest, \
+    ItemDomainMachineDesignIdListRequest, SourceIdListRequest, ConnectorTypeIdListRequest
 
 # constants
 
@@ -161,6 +162,8 @@ CABLE_TYPE_E2_3_KEY = "e2-3"
 
 CABLE_TYPE_NAME_INDEX = 0
 CABLE_TYPE_MANUFACTURER_INDEX = 2
+CABLE_TYPE_CONNECTOR_TYPE_FIRST_INDEX = 27
+CABLE_TYPE_CONNECTOR_TYPE_LAST_INDEX = 32
 
 CABLE_INVENTORY_NAME_KEY = "name"
 
@@ -214,6 +217,7 @@ class PreImportHelper(ABC):
         self.input_handlers = []
         self.output_objects = []
         self.validation_map = {}
+        self.info_manager = None
         self.api = None
         self.validate_only = False
         self.ignore_existing = False
@@ -247,11 +251,12 @@ class PreImportHelper(ABC):
 
     # creates instance of class with specified tag
     @classmethod
-    def create_helper(cls, tag, config_preimport, config_group, api):
+    def create_helper(cls, tag, config_preimport, config_group, info_manager, api):
         helper_class = cls.helperDict[tag]
         helper_instance = helper_class()
         helper_instance.set_config_preimport(config_preimport, tag)
         helper_instance.set_config_group(config_group, tag)
+        helper_instance.info_manager = info_manager
         helper_instance.api = api
         return helper_instance
 
@@ -279,7 +284,7 @@ class PreImportHelper(ABC):
     def initialize(self, api, sheet, first_row, last_row):
         self.initialize_columns()
         self.initialize_handlers(api, sheet, first_row, last_row)
-        self.initialize_custom()
+        self.initialize_custom(api, sheet, first_row, last_row)
 
     def initialize_columns(self):
         self.initialize_input_columns()
@@ -300,7 +305,7 @@ class PreImportHelper(ABC):
             self.input_handlers.append(handler)
             handler.initialize(api, sheet, first_row, last_row)
 
-    def initialize_custom(self):
+    def initialize_custom(self, api, sheet, first_row, last_row):
         pass
 
     # subclass overrides to create list of input columns
@@ -1618,6 +1623,69 @@ class RackManager():
         return None
 
 
+class ItemInfoManager():
+
+    def __init__(self, api):
+        self.api = api
+        self.connector_type_id_mgr = IdManager()
+        self.existing_connector_types = set()
+        self.new_connector_types = set()
+        self.output_connector_types = []
+
+    def initialize(self):
+        pass
+
+    def get_connector_type_id_list(self, connector_type_name_list):
+
+        connector_type_name_list = list(connector_type_name_list)
+
+        print("fetching %d connector type id's" % (len(connector_type_name_list)))
+
+        try:
+            request_obj = ConnectorTypeIdListRequest(name_list=connector_type_name_list)
+            id_list = self.api.getConnectorTypesApi().get_connector_type_id_list(
+                connector_type_id_list_request=request_obj)
+        except ApiException as ex:
+            fatal_error("unknown api exception getting list of connector type ids")
+
+        # list sizes should match
+        if len(connector_type_name_list) != len(id_list):
+            fatal_error("api list size mismatch getting list of connector type ids")
+
+        print("fetched %d connector type id's" % (len(id_list)))
+
+        return id_list
+
+    def initialize_connector_types(self, connector_type_names):
+        id_list = self.get_connector_type_id_list(connector_type_names)
+        for connector_type_name, connector_type_id in zip(connector_type_names, id_list):
+            if connector_type_id != 0:
+                self.existing_connector_types.add(connector_type_name)
+            else:
+                if connector_type_name not in self.new_connector_types:
+                    self.new_connector_types.add(connector_type_name)
+                    self.output_connector_types.append(ConnectorTypeOutputObject(connector_type_name))
+
+
+class ConnectorTypeOutputObject(OutputObject):
+
+    def __init__(self, name):
+        self.name = name
+
+    @classmethod
+    def get_output_columns(cls):
+        column_list = [
+            OutputColumnModel(col_index=0, method="empty_column", label="Existing Item ID"),
+            OutputColumnModel(col_index=1, method="empty_column", label="Delete Existing Item"),
+            OutputColumnModel(col_index=2, method="get_name", label="Name"),
+            OutputColumnModel(col_index=3, method="empty_column", label="Description"),
+        ]
+        return column_list
+
+    def get_name(self):
+        return self.name
+
+
 class SourceOutputObject(OutputObject):
 
     def __init__(self, helper, input_dict):
@@ -1764,6 +1832,18 @@ class CableTypeHelper(PreImportHelper):
 
         return handler_list
 
+    def initialize_custom(self, api, sheet, first_row, last_row):
+
+        # initialize connector type information from the connector columns
+        connector_type_names = set()  # use set to eliminate duplicates
+        for row_ind in range(first_row, last_row + 1):
+            for col_ind in range(CABLE_TYPE_CONNECTOR_TYPE_FIRST_INDEX, CABLE_TYPE_CONNECTOR_TYPE_LAST_INDEX + 1):
+                # get connector type name from all connector columns and add to set
+                val = sheet.cell(row_ind, col_ind).value
+                if val is not None and val != "":
+                    connector_type_names.add(val)
+        self.info_manager.initialize_connector_types(connector_type_names)
+
     def handle_valid_row(self, input_dict):
 
         name = input_dict[CABLE_TYPE_NAME_KEY]
@@ -1776,7 +1856,9 @@ class CableTypeHelper(PreImportHelper):
         self.output_objects.append(CableTypeOutputObject(helper=self, input_dict=input_dict))
 
     def get_summary_messages(self):
-        return ["Sources that already exist in CDB: %d" % len(self.existing_sources),
+        return ["Connector Types that already exist in CDB: %d" % len(self.info_manager.existing_connector_types),
+                "Connector Types that need to be added to CDB: %d" % len(self.info_manager.new_connector_types),
+                "Sources that already exist in CDB: %d" % len(self.existing_sources),
                 "Sources that need to be added to CDB: %d" % len(self.new_sources),
                 "Cable types that already exist in CDB: %d" % len(self.existing_cable_types),
                 "Cable types that need to be added to CDB: %d" % len(self.new_cable_types)]
@@ -1785,6 +1867,14 @@ class CableTypeHelper(PreImportHelper):
         
         summary_column_names = []
         summary_column_values = []
+
+        if len(self.info_manager.existing_connector_types) > 0:
+            summary_column_names.append("existing connector types")
+            summary_column_values.append(sorted(self.info_manager.existing_connector_types))
+
+        if len(self.info_manager.new_connector_types) > 0:
+            summary_column_names.append("new connector types")
+            summary_column_values.append(sorted(self.info_manager.new_connector_types))
 
         if len(self.existing_sources) > 0:
             summary_column_names.append("existing sources")
@@ -1805,6 +1895,11 @@ class CableTypeHelper(PreImportHelper):
         return summary_column_names, summary_column_values
 
     def write_helper_sheets(self, output_book):
+
+        self.write_sheet(output_book,
+                         "Connector Type Import",
+                         ConnectorTypeOutputObject.get_output_columns(),
+                         self.info_manager.output_connector_types)
 
         self.write_sheet(output_book,
                          "Source Item Import",
@@ -2742,6 +2837,10 @@ def main():
     except (ApiException, urllib3.exceptions.MaxRetryError) as exc:
         fatal_error("CDB login failed user: %s message: %s, exiting" % (cdb_user, exc))
 
+    # create information manager for retrieving item data via cdb api and managing cdb and parsed item data
+    info_manager = ItemInfoManager(api)
+    info_manager.initialize()
+
     # open input spreadsheet
     input_book = openpyxl.load_workbook(filename=file_input, data_only=True)
     name_manager = ConnectedMenuManager(input_book)
@@ -2755,7 +2854,7 @@ def main():
         print()
         print("%s OPTIONS ====================" % item_type.upper())
         print()
-        helper = PreImportHelper.create_helper(item_type, config_preimport, config_group, api)
+        helper = PreImportHelper.create_helper(item_type, config_preimport, config_group, info_manager, api)
         helpers.append(helper)
         input_valid = helper.process_input_book(input_book)
         if not input_valid:
