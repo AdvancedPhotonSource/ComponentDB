@@ -30,7 +30,8 @@ See LICENSE file.
                   filterBy="#{itemListObject[metadataKey]}"
                   field="Metadata-#{metadataKey}"
                   filterMatchMode="contains"
-                  filterValue="#{entitySettingObject[filterValue]}">
+                  filterValue="#{entitySettingObject[filterValue]}"
+                  exportFunction="#{facesUtility.getFilterString(itemListObject[metadataKey])}">
             <f:facet name="header">
                 <h:outputText value="#{metadataLabel}" />
                 <p:tooltip value="#{metadataDescription}"

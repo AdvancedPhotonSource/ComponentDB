@@ -15,6 +15,7 @@ from cdbApi.api.sources_api import SourcesApi
 from cdbApi.api.cable_catalog_items_api import CableCatalogItemsApi
 from cdbApi.api.cable_design_items_api import CableDesignItemsApi
 from cdbApi.api.machine_design_items_api import MachineDesignItemsApi
+from cdbApi.api.connector_types_api import ConnectorTypesApi
 from cdbApi.api_client import ApiClient
 from cdbApi.api.authentication_api import AuthenticationApi
 from cdbApi.configuration import Configuration
@@ -41,6 +42,7 @@ class CdbApiFactory:
 		self.locationItemApi = LocationItemsApi(api_client=self.apiClient)
 		self.componentCatalogItemApi = ComponentCatalogItemsApi(api_client=self.apiClient)
 		self.componentInventoryItemApi = ComponentInventoryItemsApi(api_client=self.apiClient)
+		self.connectorTypesApi = ConnectorTypesApi(api_client=self.apiClient)
 
 		self.authApi = AuthenticationApi(api_client=self.apiClient)
 
@@ -82,6 +84,9 @@ class CdbApiFactory:
 
 	def getComponentCatalogItemApi(self):
 		return self.componentCatalogItemApi
+
+	def getConnectorTypesApi(self):
+		return self.connectorTypesApi
 
 	def authenticateUser(self, username, password):
 		response = self.authApi.authenticate_user_with_http_info(username=username, password=password)
