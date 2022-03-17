@@ -614,8 +614,11 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         if (newAssignment instanceof ItemDomainInventory) {
             for (ItemElement itemElement : newAssignment.getItemElementMemberList2()) {
                 Item item = itemElement.getParentItem();
-                if (item instanceof ItemDomainMachineDesign) {
-                    throw new CdbException("Inventory item used. Inventory item cannot be saved, used in: " + item.toString());
+                if (item instanceof ItemDomainMachineDesign) {    
+                    // Allow updates for the same item. 
+                    if (!mdItem.equals(item)) {
+                        throw new CdbException("Inventory item used. Inventory item cannot be saved, used in: " + item.toString());
+                    }
                 }
             }
         }
