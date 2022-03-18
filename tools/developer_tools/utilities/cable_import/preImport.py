@@ -228,6 +228,10 @@ class PreImportHelper(ABC):
         self.num_input_rows = None
         self.config_preimport = None
         self.config_group = None
+        self.num_empty_rows = 0
+        self.num_rows_missing_required_column = 0
+        self.num_handler_validation_errors = 0
+        self.num_rows_cell_parsed_date = 0
 
     # returns number of rows at which progress message should be displayed
     @classmethod
@@ -412,7 +416,6 @@ class PreImportHelper(ABC):
 
         input_valid = True
         num_input_rows = 0
-        num_empty_rows = 0
         rows = input_sheet.rows
         row_ind = 0
 
@@ -433,7 +436,7 @@ class PreImportHelper(ABC):
 
             # validate header row
             elif row_ind == header_index:
-                ignoredColumns = []
+                ignored_columns = []
                 num_header_cols = 0
                 header_cell_ind = 0
                 for cell in row:
@@ -451,12 +454,12 @@ class PreImportHelper(ABC):
                                 header_cell_value, expected_header_label))
                     else:
                         if header_cell_value is not None and header_cell_value != '':
-                            ignoredColumns.append(header_cell_value)
+                            ignored_columns.append(header_cell_value)
                     num_header_cols = num_header_cols + 1
                     header_cell_ind = header_cell_ind + 1
                     continue
-                if len(ignoredColumns) > 0:
-                    print("ignored extra input columns: %s" % ignoredColumns)
+                if len(ignored_columns) > 0:
+                    print("ignored extra input columns: %s" % ignored_columns)
 
             # skip to first data row:
             elif row_ind < first_data_index:
@@ -475,6 +478,9 @@ class PreImportHelper(ABC):
                 logging.debug("processing row %d from input spreadsheet" % current_row_num)
 
                 input_dict = {}
+                row_is_valid = True
+                row_valid_messages = []
+                row_error_parsed_date = False
 
                 for col_ind in range(self.num_input_cols()):
                     if col_ind in self.input_columns:
@@ -482,17 +488,26 @@ class PreImportHelper(ABC):
                         val = row[col_ind].value
                         if val is None:
                             val = ""
+                        if isinstance(val, datetime):
+                            # we don't want to parse anything as a date from the input sheet, this happens when a value
+                            # like rack name "03-25" gets turned into a date like "03/25/2022 00:00:00" by excel
+                            row_is_valid = False
+                            row_valid_messages.append("parsed as date from excel input sheet: %s" % str(val))
+                            val = str(val)
+                            row_error_parsed_date = True
+
                         logging.debug("col: %d value: %s" % (col_ind, str(val)))
                         self.handle_input_cell_value(input_dict=input_dict, index=col_ind, value=val,
-                                                       row_num=current_row_num)
+                                                     row_num=current_row_num)
+
+                # count date parsing errors for display on error sheet
+                if row_error_parsed_date:
+                    self.num_rows_cell_parsed_date = self.num_rows_cell_parsed_date + 1
 
                 # ignore row if blank
                 if self.input_row_is_empty(input_dict=input_dict, row_num=current_row_num):
-                    num_empty_rows = num_empty_rows + 1
+                    self.num_empty_rows = self.num_empty_rows + 1
                     continue
-
-                row_is_valid = True
-                row_valid_messages = []
 
                 # validate row
                 (is_valid, valid_messages) = self.input_row_is_valid(input_dict=input_dict, row_num=row_ind)
@@ -502,8 +517,9 @@ class PreImportHelper(ABC):
 
                 # invoke handlers
                 (handler_is_valid, handler_messages) = self.invoke_row_handlers(input_dict=input_dict,
-                                                                                  row_num=row_ind)
+                                                                                row_num=row_ind)
                 if not handler_is_valid:
+                    self.num_handler_validation_errors = self.num_handler_validation_errors + 1
                     row_is_valid = False
                     row_valid_messages.extend(handler_messages)
 
@@ -511,7 +527,7 @@ class PreImportHelper(ABC):
                     self.handle_valid_row(input_dict=input_dict)
                 else:
                     input_valid = False
-                    msg = "validation ERRORS found for row %d" % current_row_num
+                    msg = "ERRORS found for row %d" % current_row_num
                     logging.error(msg)
                     self.validation_map[current_row_num] = row_valid_messages
 
@@ -548,15 +564,15 @@ class PreImportHelper(ABC):
 
         if input_valid and not self.validate_only:
             summary_msg = "PROCESSING SUCCESSFUL: processed %d input rows including %d empty rows and wrote %d output rows, see output workbook for CDB import sheets" % (
-                num_input_rows, num_empty_rows, len(self.output_objects))
+                num_input_rows, self.num_empty_rows, len(self.output_objects))
 
         elif not input_valid:
             summary_msg = "PROCESSING ERROR: processed %d input rows including %d empty rows but no CDB import sheets generated, see output workbook and log for details" % (
-                num_input_rows, num_empty_rows)
+                num_input_rows, self.num_empty_rows)
 
         else:
             summary_msg = "VALIDATION ONLY: processed %d input rows including %d empty rows but no CDB import sheets generated, see output workbook for details" % (
-                num_input_rows, num_empty_rows)
+                num_input_rows, self.num_empty_rows)
 
         #
         # print summary
@@ -626,6 +642,7 @@ class PreImportHelper(ABC):
         is_valid = True
         valid_messages = []
 
+        missing_required_column = False
         for column in self.input_column_list():
 
             required = column.required
@@ -634,6 +651,10 @@ class PreImportHelper(ABC):
                 if value is None or len(str(value)) == 0:
                     is_valid = False
                     valid_messages.append("required value missing for key: %s row index: %d" % (column.key, row_num))
+                    missing_required_column = True
+
+        if missing_required_column:
+            self.num_rows_missing_required_column = self.num_rows_missing_required_column + 1
 
         (custom_is_valid, custom_valid_string) = self.input_row_is_valid_custom(input_dict)
         if not custom_is_valid:
@@ -700,6 +721,11 @@ class PreImportHelper(ABC):
         return num_output_rows
 
     def get_summary_messages(self):
+        return ["Total rows processed in input sheet: %d" % self.num_input_rows,
+                "Blank rows in input sheet: %d" % self.num_empty_rows]
+
+    # Subclasses override to return list of custom summary messages for summary sheet
+    def get_summary_messages_custom(self):
         return []
 
     def get_summary_sheet_columns(self):
@@ -708,9 +734,8 @@ class PreImportHelper(ABC):
     def write_summary_sheet(self, output_book):
 
         summary_messages = self.get_summary_messages()
+        summary_messages.extend(self.get_summary_messages_custom())
         summary_column_names, summary_column_values = self.get_summary_sheet_columns()
-
-        summary_messages.insert(0, "Data rows in input sheet: %d" % self.num_input_rows)
 
         if len(summary_messages) == 0 and len(summary_column_names) == 0:
             return
@@ -827,6 +852,11 @@ class PreImportHelper(ABC):
         return val
 
     def get_error_messages(self):
+        return ["Rows missing required values: %d" % self.num_rows_missing_required_column,
+                "Rows with handler validation errors: %d" % self.num_handler_validation_errors,
+                "Rows with cells parsed as Excel date: %d" % self.num_rows_cell_parsed_date]
+
+    def get_error_messages_custom(self):
         return []
 
     def get_error_sheet_columns(self):
@@ -835,6 +865,7 @@ class PreImportHelper(ABC):
     def write_error_sheet(self, output_book):
 
         error_messages = self.get_error_messages()
+        error_messages.extend(self.get_error_messages_custom())
         error_column_names, error_column_values = self.get_error_sheet_columns()
 
         if self.input_valid_message is None and len(error_messages) == 0 and len(error_column_names) == 0:
@@ -887,12 +918,6 @@ class PreImportHelper(ABC):
     # Writes error content to output workbook, subclasses override to customize with multiple error sheets.
     def write_error_sheets(self, output_book):
         self.write_error_sheet(output_book)
-
-    def get_summary_messages(self):
-        return []
-
-    def get_summary_sheet_columns(self):
-        return [], []
 
     def write_validation_sheet(self, output_book):
 
@@ -1855,7 +1880,7 @@ class CableTypeHelper(PreImportHelper):
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
         self.output_objects.append(CableTypeOutputObject(helper=self, input_dict=input_dict))
 
-    def get_summary_messages(self):
+    def get_summary_messages_custom(self):
         return ["Connector Types that already exist in CDB: %d" % len(self.info_manager.existing_connector_types),
                 "Connector Types that need to be added to CDB: %d" % len(self.info_manager.new_connector_types),
                 "Sources that already exist in CDB: %d" % len(self.existing_sources),
@@ -2345,7 +2370,7 @@ class CableDesignHelper(PreImportHelper):
         logging.debug("adding output object for: %s" % input_dict[CABLE_DESIGN_NAME_KEY])
         self.output_objects.append(CableDesignOutputObject(helper=self, input_dict=input_dict, ignore_port_columns=self.ignore_port_columns))
 
-    def get_summary_messages(self):
+    def get_summary_messages_custom(self):
 
         messages = []
 
@@ -2379,7 +2404,7 @@ class CableDesignHelper(PreImportHelper):
     def write_helper_sheets(self, output_book):
         self.write_sheet(output_book, "Cable Design Item Import", self.output_column_list(), self.output_objects)
 
-    def get_error_messages(self):
+    def get_error_messages_custom(self):
 
         messages = []
 
