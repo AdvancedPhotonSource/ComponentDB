@@ -207,769 +207,6 @@ def register(helper_class):
     PreImportHelper.register(helper_class.tag(), helper_class)
 
 
-class PreImportHelper(ABC):
-
-    helperDict = {}
-
-    def __init__(self):
-        self.input_columns = {}
-        self.output_columns = {}
-        self.input_handlers = []
-        self.output_objects = []
-        self.validation_map = {}
-        self.info_manager = None
-        self.api = None
-        self.validate_only = False
-        self.ignore_existing = False
-        self.first_data_row = None
-        self.last_data_row = None
-        self.input_sheet = None
-        self.input_valid_message = None
-        self.num_input_rows = None
-        self.config_preimport = None
-        self.config_group = None
-        self.num_empty_rows = 0
-        self.num_rows_missing_required_column = 0
-        self.num_handler_validation_errors = 0
-        self.num_rows_cell_parsed_date = 0
-        self.num_comment_rows = 0
-
-    # returns number of rows at which progress message should be displayed
-    @classmethod
-    def progress_increment(cls):
-        return 5
-
-    # registers helper concrete classes for lookup by tag
-    @classmethod
-    def register(cls, tag, the_class):
-        cls.helperDict[tag] = the_class
-
-    # returns helper class for specified tag
-    @classmethod
-    def get_helper_class(cls, tag):
-        return cls.helperDict[tag]
-
-    # checks if specified tag is valid
-    @classmethod
-    def is_valid_type(cls, tag):
-        return tag in cls.helperDict
-
-    # creates instance of class with specified tag
-    @classmethod
-    def create_helper(cls, tag, config_preimport, config_group, info_manager, api):
-        helper_class = cls.helperDict[tag]
-        helper_instance = helper_class()
-        helper_instance.set_config_preimport(config_preimport, tag)
-        helper_instance.set_config_group(config_group, tag)
-        helper_instance.info_manager = info_manager
-        helper_instance.api = api
-        return helper_instance
-
-    # Returns registered tag for subclass.
-    @staticmethod
-    @abstractmethod  # must be innermost decorator
-    def tag():
-        pass
-
-    # Returns name of CDB item for helper.
-    @staticmethod
-    @abstractmethod
-    def item_name():
-        pass
-
-    # Returns expected number of columns in input spreadsheet.
-    @abstractmethod
-    def num_input_cols(self):
-        pass
-
-    def num_output_cols(self):
-        return len(self.output_column_list())
-
-    # Initializes the helper.  Subclass overrides initialize_custom() to customize.
-    def initialize(self, api, sheet, first_row, last_row):
-        self.initialize_columns()
-        self.initialize_handlers(api, sheet, first_row, last_row)
-        self.initialize_custom(api, sheet, first_row, last_row)
-
-    def initialize_columns(self):
-        self.initialize_input_columns()
-        self.initialize_output_columns()
-
-    # Builds dictionary whose keys are column index and value is column model object.
-    def initialize_input_columns(self):
-        for col in self.generate_input_column_list():
-            self.input_columns[col.index] = col
-
-    # Builds dictionary whose keys are column index and value is column model object.
-    def initialize_output_columns(self):
-        for col in self.generate_output_column_list():
-            self.output_columns[col.index] = col
-
-    def initialize_handlers(self, api, sheet, first_row, last_row):
-        for handler in self.generate_handler_list():
-            self.input_handlers.append(handler)
-            handler.initialize(api, sheet, first_row, last_row)
-
-    def initialize_custom(self, api, sheet, first_row, last_row):
-        pass
-
-    # subclass overrides to create list of input columns
-    @abstractmethod
-    def generate_input_column_list(self):
-        pass
-
-    # subclass overrides to create list of output columns
-    @abstractmethod
-    def generate_output_column_list(self):
-        pass
-
-    # subclass overrides to create list of input handlers
-    def generate_handler_list(self):
-        pass
-
-    # Returns list of input column models.
-    def input_column_list(self):
-        return list(self.input_columns.values())
-
-    # Returns list of output column models.  Not all columns need be mapped, only the ones we wish to
-    # write values to.
-    def output_column_list(self):
-        return list(self.output_columns.values())
-
-    # Returns list of input handlers.
-    def input_handler_list(self):
-        return self.input_handlers
-
-    # Returns an output object for the specified input object, or None if the input object is duplicate.
-    @abstractmethod
-    def handle_valid_row(self, input_dict):
-        pass
-
-    def set_config_preimport(self, config, section):
-        self.config_preimport = config
-
-    def set_config_group(self, config, section):
-        self.config_group = config
-        self.validate_only = get_config_resource_boolean(config, section, 'validateOnly', False)
-        self.ignore_existing = get_config_resource_boolean(config, section, 'ignoreExisting', False)
-        self.first_data_row = int(get_config_resource(config, section, 'firstDataRow', False))
-        self.last_data_row = int(get_config_resource(config, section, 'lastDataRow', False))
-
-    def set_api(self, api):
-        self.api = api
-
-    def set_num_input_rows(self, num_input_rows):
-        self.num_input_rows = num_input_rows
-
-    def set_input_sheet(self, sheet):
-        self.input_sheet = sheet
-
-    def process_input_book(self, input_book):
-        
-        item_type = self.item_name().upper()
-
-        # process sheetNumber option
-        option_sheet_number = get_config_resource(self.config_preimport, self.tag(), 'sheetNumber', True)
-
-        # process headerRow option
-        option_header_row = get_config_resource(self.config_group, self.tag(), 'headerRow', True)
-
-        # process firstDataRow option
-        option_first_data_row = get_config_resource(self.config_group, self.tag(), 'firstDataRow', True)
-
-        # process lastDataRow option
-        option_last_data_row = get_config_resource(self.config_group, self.tag(), 'lastDataRow', True)
-
-        sheet_num = int(option_sheet_number)
-        header_row_num = int(option_header_row)
-        first_data_row_num = int(option_first_data_row)
-        last_data_row_num = int(option_last_data_row)
-
-        sheet_index = sheet_num - 1
-        header_index = header_row_num
-        first_data_index = first_data_row_num
-        last_data_index = last_data_row_num
-
-        input_sheet = input_book.worksheets[int(sheet_index)]
-        logging.info("input spreadsheet dimensions: %d x %d" % (input_sheet.max_row, input_sheet.max_column))
-
-        # validate input spreadsheet dimensions
-        if input_sheet.max_row < last_data_row_num:
-            fatal_error("fewer rows in input sheet than last data row: %d, exiting" % (last_data_row_num))
-        if input_sheet.max_column < self.num_input_cols():
-            fatal_error("input sheet actual columns: %d less than expected columns: %d, exiting" % (
-            input_sheet.max_column, self.num_input_cols()))
-
-        # initialize helper
-        print()
-        print("%s: INITIALIZING AND FETCHING CDB DATA ====================" % item_type)
-        print()
-        self.set_input_sheet(input_sheet)
-        self.initialize(self.api, input_sheet, first_data_index, last_data_index)
-
-        #
-        # process rows from input spreadsheet
-        #
-
-        print()
-        print("%s: PROCESSING SPREADSHEET ROWS ====================" % item_type)
-        print()
-
-        input_valid = True
-        num_input_rows = 0
-        rows = input_sheet.rows
-        row_ind = 0
-
-        # validate header and first data indexes
-        if header_index < row_ind:
-            fatal_error("invalid header_index: %d" % header_index)
-        if first_data_index <= header_index:
-            fatal_error(
-                "invalid first data row: %d less than expected header row: %d" % (first_data_index, header_index))
-
-        for row in rows:
-
-            row_ind = row_ind + 1
-
-            # skip to header row
-            if row_ind < header_index:
-                continue
-
-            # validate header row
-            elif row_ind == header_index:
-                ignored_columns = []
-                num_header_cols = 0
-                header_cell_ind = 0
-                for cell in row:
-                    header_cell_value = cell.value
-                    if header_cell_ind in self.input_columns:
-                        header_input_column = self.input_columns[header_cell_ind]
-                        if header_input_column is None:
-                            fatal_error(
-                                "unexpected actual header column: %s index: %d" % (header_cell_value, header_cell_ind))
-                        expected_header_label = header_input_column.label
-                        if expected_header_label is not None:
-                            # ignore mismatch when expected value not specified (for cases like CableSpecs where the header value changes for each tech system
-                            if header_cell_value != expected_header_label:
-                                fatal_error("actual header column: %s mismatch with expected: %s" % (
-                                header_cell_value, expected_header_label))
-                    else:
-                        if header_cell_value is not None and header_cell_value != '':
-                            ignored_columns.append(header_cell_value)
-                    num_header_cols = num_header_cols + 1
-                    header_cell_ind = header_cell_ind + 1
-                    continue
-                if len(ignored_columns) > 0:
-                    print("ignored extra input columns: %s" % ignored_columns)
-
-            # skip to first data row:
-            elif row_ind < first_data_index:
-                continue
-
-            # skip trailing rows
-            elif row_ind > last_data_index:
-                continue
-
-            # process data rows
-            else:
-
-                current_row_num = row_ind
-                num_input_rows = num_input_rows + 1
-
-                logging.debug("processing row %d from input spreadsheet" % current_row_num)
-
-                input_dict = {}
-                row_is_valid = True
-                row_valid_messages = []
-                row_error_parsed_date = False
-                row_is_comment = False
-
-                for col_ind in range(self.num_input_cols()):
-
-                    # read cell value from spreadsheet
-                    val = row[col_ind].value
-                    if val is None:
-                        val = ""
-                    if isinstance(val, datetime):
-                        # we don't want to parse anything as a date from the input sheet, this happens when a value
-                        # like rack name "03-25" gets turned into a date like "03/25/2022 00:00:00" by excel
-                        row_is_valid = False
-                        row_valid_messages.append("parsed as date from excel input sheet: %s" % str(val))
-                        val = str(val)
-                        row_error_parsed_date = True
-
-                    # check for comment row
-                    if col_ind == 0 and isinstance(val, str) and val.startswith("//"):
-                        self.num_comment_rows = self.num_comment_rows + 1
-                        row_is_comment = True
-                        break
-
-                    # parse expected columns
-                    if col_ind in self.input_columns:
-
-                        logging.debug("col: %d value: %s" % (col_ind, str(val)))
-                        self.handle_input_cell_value(input_dict=input_dict, index=col_ind, value=val,
-                                                     row_num=current_row_num)
-
-                # skip further processing of comment rows
-                if row_is_comment:
-                    continue
-
-                # count date parsing errors for display on error sheet
-                if row_error_parsed_date:
-                    self.num_rows_cell_parsed_date = self.num_rows_cell_parsed_date + 1
-
-                # ignore row if blank
-                if self.input_row_is_empty(input_dict=input_dict, row_num=current_row_num):
-                    self.num_empty_rows = self.num_empty_rows + 1
-                    continue
-
-                # validate row
-                (is_valid, valid_messages) = self.input_row_is_valid(input_dict=input_dict, row_num=row_ind)
-                if not is_valid:
-                    row_is_valid = False
-                    row_valid_messages.extend(valid_messages)
-
-                # invoke handlers
-                (handler_is_valid, handler_messages) = self.invoke_row_handlers(input_dict=input_dict,
-                                                                                row_num=row_ind)
-                if not handler_is_valid:
-                    self.num_handler_validation_errors = self.num_handler_validation_errors + 1
-                    row_is_valid = False
-                    row_valid_messages.extend(handler_messages)
-
-                if row_is_valid:
-                    self.handle_valid_row(input_dict=input_dict)
-                else:
-                    input_valid = False
-                    msg = "ERRORS found for row %d" % current_row_num
-                    logging.error(msg)
-                    self.validation_map[current_row_num] = row_valid_messages
-
-                # print progress message
-                if num_input_rows % self.progress_increment() == 0:
-                    print("processed %d spreadsheet rows" % num_input_rows, flush=True)
-
-        # print final progress message
-        print("processed %d spreadsheet rows" % num_input_rows)
-        self.set_num_input_rows(num_input_rows)
-
-        #
-        # display validation summary
-        #
-
-        print()
-        print("%s: VALIDATION SUMMARY ====================" % item_type)
-        print()
-
-        (sheet_valid, sheet_valid_string) = self.input_is_valid()
-        if not sheet_valid:
-            input_valid = False
-            msg = "ERROR validating input spreadsheet: %s" % sheet_valid_string
-            logging.error(msg)
-            print(msg)
-            print()
-
-        if len(self.validation_map) > 0:
-            print("%d validation ERROR(S) found" % len(self.validation_map))
-            print("See output workbook for additional details")
-
-        else:
-            print("no validation errors found")
-
-        if input_valid and not self.validate_only:
-            summary_msg = "PROCESSING SUCCESSFUL: processed %d input rows including %d empty rows and wrote %d output rows, see output workbook for CDB import sheets" % (
-                num_input_rows, self.num_empty_rows, len(self.output_objects))
-
-        elif not input_valid:
-            summary_msg = "PROCESSING ERROR: processed %d input rows including %d empty rows but no CDB import sheets generated, see output workbook and log for details" % (
-                num_input_rows, self.num_empty_rows)
-
-        else:
-            summary_msg = "VALIDATION ONLY: processed %d input rows including %d empty rows but no CDB import sheets generated, see output workbook for details" % (
-                num_input_rows, self.num_empty_rows)
-
-        #
-        # print summary
-        #
-
-        print()
-        print("%s: PROCESSING SUMMARY ====================" % item_type)
-        print()
-
-        print(summary_msg)
-        logging.info(summary_msg)
-        print(self.get_processing_summary())
-
-        return input_valid
-
-    # Handles cell value from input spreadsheet at specified column index for supplied input object.
-    def handle_input_cell_value(self, input_dict, index, value, row_num):
-        key = self.input_columns[index].key
-        input_dict[key] = value
-
-    def input_row_is_empty(self, input_dict, row_num):
-
-        non_empty_cols = {k: v for k, v in input_dict.items() if v is not None and v != ""}
-        non_empty_count = len(non_empty_cols)
-        blank_row_columns_allowed_dict = self.blank_row_columns_allowed_dict()
-
-        # row contains no values
-        if non_empty_count == 0:
-            return True
-
-        if self.input_row_is_empty_custom(input_dict, row_num):
-            return True
-
-        # check if values in more columns than allowed columns
-        if non_empty_count > len(blank_row_columns_allowed_dict):
-            return False
-
-        # check if value in any column not explicitly allowed
-        for column_key in non_empty_cols.keys():
-
-            if column_key not in blank_row_columns_allowed_dict:
-                return False
-
-            allowed_value = blank_row_columns_allowed_dict[column_key]
-            if allowed_value is not None:
-                if non_empty_cols[column_key] != allowed_value:
-                    return False
-
-        return True
-
-    # Returns dictionary of column keys that can contain values and the row still be considered blank.
-    # Dictionary values should be None, or a string that is the value allowed in that column if we want that constraint.
-    # Subclasses override to customize
-    @classmethod
-    def blank_row_columns_allowed_dict(cls):
-        return {}
-
-    # Returns True if the row represented by input_dict should be treated as a blank row.  Default is False.  Subclass
-    # can override to allow certain non-empty values to be treated as empty.
-    def input_row_is_empty_custom(self, input_dict, row_num):
-        return False
-
-    # Performs validation on row from input spreadsheet and returns True if the row is determined to be valid.
-    # Can return False where input is valid, but it might be better to call sys.exit() with a useful message.
-    def input_row_is_valid(self, input_dict, row_num):
-
-        is_valid = True
-        valid_messages = []
-
-        missing_required_column = False
-        for column in self.input_column_list():
-
-            required = column.required
-            if required:
-                value = input_dict[column.key]
-                if value is None or len(str(value)) == 0:
-                    is_valid = False
-                    valid_messages.append("required value missing for key: %s row index: %d" % (column.key, row_num))
-                    missing_required_column = True
-
-        if missing_required_column:
-            self.num_rows_missing_required_column = self.num_rows_missing_required_column + 1
-
-        (custom_is_valid, custom_valid_string) = self.input_row_is_valid_custom(input_dict)
-        if not custom_is_valid:
-            is_valid = False
-            valid_messages.append(custom_valid_string)
-
-        return is_valid, valid_messages
-
-    # Performs custom validation on input row.  Returns True if row is valid.  Default is to return True. Subclass
-    # can override to customize.
-    def input_row_is_valid_custom(self, input_dict):
-        return True, ""
-
-    # Provides hook for subclasses to override to validate the input before generating the output spreadsheet.
-    def input_is_valid(self):
-        return True, ""
-
-    def invoke_row_handlers(self, input_dict, row_num):
-
-        is_valid = True
-        valid_messages = []
-
-        for handler in self.input_handler_list():
-            (handler_is_valid, handler_valid_string) = handler.handle_input(input_dict)
-            if not handler_is_valid:
-                is_valid = False
-                valid_messages.append(handler_valid_string)
-
-        return is_valid, valid_messages
-
-    # Returns column label for specified column index.
-    def get_output_column_label(self, col_index):
-        return self.output_columns[col_index].label
-    
-    def get_cell_value(self, obj, method):
-        # use reflection to invoke column getter method on supplied object
-        val = getattr(obj, method)()
-        return val
-
-    def write_sheet(self, output_book, sheet_name, columns, output_objects):
-        
-        output_sheet = output_book.add_worksheet(sheet_name)
-
-        # write output spreadsheet header row
-        row_ind = 0
-        for column in columns:
-            col_ind = column.index
-            label = column.label
-            output_sheet.write(row_ind, col_ind, label)
-
-        # process rows
-        num_output_rows = 0
-        for output_obj in output_objects:
-
-            row_ind = row_ind + 1
-            num_output_rows = num_output_rows + 1
-            current_row_num = row_ind + 1
-
-            for column in columns:
-                col_ind = column.index
-                val = self.get_cell_value(output_obj, column.method)
-                output_sheet.write(row_ind, col_ind, val)
-
-        return num_output_rows
-
-    def get_summary_messages(self):
-        return ["Total rows processed in input sheet: %d" % self.num_input_rows,
-                "Blank rows in input sheet: %d" % self.num_empty_rows,
-                "Comment rows in input sheet: %d" % self.num_comment_rows]
-
-    # Subclasses override to return list of custom summary messages for summary sheet
-    def get_summary_messages_custom(self):
-        return []
-
-    def get_summary_sheet_columns(self):
-        return [], []
-
-    def write_summary_sheet(self, output_book):
-
-        summary_messages = self.get_summary_messages()
-        summary_messages.extend(self.get_summary_messages_custom())
-        summary_column_names, summary_column_values = self.get_summary_sheet_columns()
-
-        if len(summary_messages) == 0 and len(summary_column_names) == 0:
-            return
-
-        output_sheet = output_book.add_worksheet(self.item_name() + " Summary")
-        text_wrap_format = output_book.add_format({'text_wrap': True})
-
-        column_index = 0
-        if len(summary_messages) > 0:
-
-            output_sheet.write(0, 0, "summary messages")
-            output_sheet.set_column(0, 0, DEFAULT_COLUMN_WIDTH)
-
-            row_index = 1
-            for summary_message in summary_messages:
-                row_height = get_row_height_wrapped_message(summary_message)
-                output_sheet.write(row_index, 0, summary_message + "\n", text_wrap_format)
-                output_sheet.set_row(row_index, row_height)
-                row_index = row_index + 1
-
-            column_index = column_index + 1
-
-        if len(summary_column_names) > 0:
-
-            for (column_name, column_values) in zip(summary_column_names, summary_column_values):
-                maximum_column_width = 0
-                row_index = 0
-                # write column header
-                output_sheet.write(row_index, column_index, column_name)
-                if len(column_name) > maximum_column_width:
-                    maximum_column_width = len(column_name)
-                for value in column_values:
-                    row_index = row_index + 1
-                    output_sheet.write(row_index, column_index, value)
-                    if len(value) > maximum_column_width:
-                        maximum_column_width = len(value)
-
-                # set column width
-                output_sheet.set_column(column_index, column_index, maximum_column_width)
-
-                column_index = column_index + 1
-
-    # Writes content to output workbook.  Subclasses override to customize with multiple tabs
-    def write_helper_sheets(self, output_book):
-        self.write_sheet(output_book, self.item_name() + " Item Import", self.output_column_list(), self.output_objects)
-
-    def write_workbook_sheets(self, output_book):
-        self.write_summary_sheet(output_book)
-        self.write_helper_sheets(output_book)
-
-    def get_validate_only_messages(self):
-        return []
-
-    def get_validate_only_sheet_columns(self):
-        return [], []
-
-    def write_validate_only_sheet(self, output_book):
-
-        validate_only_messages = self.get_validate_only_messages()
-        validate_only_column_names, validate_only_column_values = self.get_validate_only_sheet_columns()
-
-        validate_only_messages.insert(0, "No validation errors in input sheet")
-        validate_only_messages.insert(0, "Data rows in input sheet: %d" % self.num_input_rows)
-
-        if len(validate_only_messages) == 0 and len(validate_only_column_names) == 0:
-            return
-
-        output_sheet = output_book.add_worksheet(self.item_name() + " Validate Only")
-        text_wrap_format = output_book.add_format({'text_wrap': True})
-
-        column_index = 0
-        if len(validate_only_messages) > 0:
-
-            output_sheet.write(0, 0, "validate only messages")
-            output_sheet.set_column(0, 0, DEFAULT_COLUMN_WIDTH)
-
-            row_index = 1
-            for summary_message in validate_only_messages:
-                row_height = get_row_height_wrapped_message(summary_message)
-                output_sheet.write(row_index, 0, summary_message + "\n", text_wrap_format)
-                output_sheet.set_row(row_index, row_height)
-                row_index = row_index + 1
-
-            column_index = column_index + 1
-
-        if len(validate_only_column_names) > 0:
-
-            for (column_name, column_values) in zip(validate_only_column_names, validate_only_column_values):
-                maximum_column_width = 0
-                row_index = 0
-                # write column header
-                output_sheet.write(row_index, column_index, column_name)
-                if len(column_name) > maximum_column_width:
-                    maximum_column_width = len(column_name)
-                for value in column_values:
-                    row_index = row_index + 1
-                    output_sheet.write(row_index, column_index, value)
-                    if len(value) > maximum_column_width:
-                        maximum_column_width = len(value)
-
-                # set column width
-                output_sheet.set_column(column_index, column_index, maximum_column_width)
-
-                column_index = column_index + 1
-
-    def write_validate_only_sheets(self, output_book):
-        self.write_validate_only_sheet(output_book)
-
-    # Returns value for output spreadsheet cell and supplied object at specified index.
-    def get_output_cell_value(self, obj, index):
-        # use reflection to invoke column getter method on supplied object
-        val = getattr(obj, self.output_columns[index].method)()
-        logging.debug("index: %d method: %s value: %s" % (index, self.output_columns[index].method, val))
-        return val
-
-    def get_error_messages(self):
-        return ["Rows missing required values: %d" % self.num_rows_missing_required_column,
-                "Rows with handler validation errors: %d" % self.num_handler_validation_errors,
-                "Rows with cells parsed as Excel date: %d" % self.num_rows_cell_parsed_date]
-
-    def get_error_messages_custom(self):
-        return []
-
-    def get_error_sheet_columns(self):
-        return [], []
-
-    def write_error_sheet(self, output_book):
-
-        error_messages = self.get_error_messages()
-        error_messages.extend(self.get_error_messages_custom())
-        error_column_names, error_column_values = self.get_error_sheet_columns()
-
-        if self.input_valid_message is None and len(error_messages) == 0 and len(error_column_names) == 0:
-            return
-
-        output_sheet = output_book.add_worksheet(self.item_name() + " " + "Sheet Errors")
-        text_wrap_format = output_book.add_format({'text_wrap': True})
-
-        column_index = 0
-        if self.input_valid_message is not None or len(error_messages) > 0:
-
-            output_sheet.write(0, 0, "error messages")
-            output_sheet.set_column(0, 0, DEFAULT_COLUMN_WIDTH)
-
-            row_index = 1
-            if self.input_valid_message is not None:
-                row_height = get_row_height_wrapped_message(self.input_valid_message)
-                output_sheet.write(row_index, 0, self.input_valid_message + "\n", text_wrap_format)
-                output_sheet.set_row(row_index, row_height)
-                row_index = row_index + 1
-
-            for error_message in error_messages:
-                row_height = get_row_height_wrapped_message(error_message)
-                output_sheet.write(row_index, 0, error_message + "\n", text_wrap_format)
-                output_sheet.set_row(row_index, row_height)
-                row_index = row_index + 1
-
-            column_index = column_index + 1
-
-        if len(error_column_names) > 0:
-
-            for (column_name, column_values) in zip(error_column_names, error_column_values):
-                maximum_column_width = 0
-                row_index = 0
-                # write column header
-                output_sheet.write(row_index, column_index, column_name)
-                if len(column_name) > maximum_column_width:
-                    maximum_column_width = len(column_name)
-                for value in column_values:
-                    row_index = row_index + 1
-                    output_sheet.write(row_index, column_index, value)
-                    if len(value) > maximum_column_width:
-                        maximum_column_width = len(value)
-
-                # set column width
-                output_sheet.set_column(column_index, column_index, maximum_column_width)
-
-                column_index = column_index + 1
-
-    # Writes error content to output workbook, subclasses override to customize with multiple error sheets.
-    def write_error_sheets(self, output_book):
-        self.write_error_sheet(output_book)
-
-    def write_validation_sheet(self, output_book):
-
-        if len(self.validation_map) == 0:
-            return
-
-        # create output sheet
-        output_sheet = output_book.add_worksheet(self.item_name() + " " + "Row Errors")
-
-        # write header row
-        output_sheet.write(0, 0, "input row number")
-        output_sheet.write(0, 1, "validation messages")
-
-        row_ind = 0
-        maximum_column_width = 0
-        for key in self.validation_map:
-            row_ind = row_ind + 1
-            output_sheet.write(row_ind, 0, key)
-            messages = ""
-            message_count = len(self.validation_map[key])
-            for message in self.validation_map[key]:
-                messages = messages + message + "\n"
-                if len(message) > maximum_column_width:
-                    maximum_column_width = len(message)
-            output_sheet.write(row_ind, 1, messages)
-            # set row height
-            output_sheet.set_row(row_ind, (message_count+1)*DEFAULT_FONT_HEIGHT)
-
-        # set column width
-        output_sheet.set_column(1, 1, maximum_column_width)
-
-    # Returns processing summary message.
-    def get_processing_summary(self):
-        return ""
-
-
 class ConnectedMenuManager:
 
     def __init__(self, workbook):
@@ -1071,10 +308,117 @@ class ConnectedMenuManager:
         return []
 
 
+class IdManager():
+
+    def __init__(self):
+        self.name_id_dict = {}
+
+    def set_dict(self, dict):
+        self.name_id_dict = dict
+
+    def update(self, dict):
+        self.name_id_dict.update(dict)
+
+    def set_id_for_name(self, name, id):
+        self.name_id_dict[name] = id
+
+    def get_id_for_name(self, name):
+        if name in self.name_id_dict:
+            return self.name_id_dict[name]
+        else:
+            return None
+
+
+class NameVariantManager():
+
+    def __init__(self):
+        self.name_list = []
+
+    def add_name(self, name):
+        is_valid = True
+        valid_string = ""
+        for n in self.name_list:
+            if n == name:
+                return True, ""
+            elif n.upper() == name.upper():
+                is_valid = False
+                valid_string = "%s is variation of existing name %s" % (name, n)
+        self.name_list.append(name)
+        return is_valid, valid_string
+
+
+class RackManager():
+
+    def __init__(self):
+        self.rack_dict = {}
+
+    def add_endpoint_id_for_rack(self, rack_name, endpoint_name, endpoint_id):
+        if not rack_name in self.rack_dict:
+            self.rack_dict[rack_name] = {}
+        rack_contents = self.rack_dict[rack_name]
+        rack_contents[endpoint_name] = endpoint_id
+
+    def get_endpoint_id_for_rack(self, rack_name, endpoint_name):
+        if rack_name in self.rack_dict:
+            rack_items = self.rack_dict[rack_name]
+            if endpoint_name in rack_items:
+                return rack_items[endpoint_name]
+        return None
+
+
+class ItemInfoManager():
+
+    def __init__(self, api):
+        self.api = api
+        self.connector_type_id_mgr = IdManager()
+        self.existing_connector_types = set()
+        self.new_connector_types = set()
+        self.output_connector_types = []
+        self.output_cable_type_connectors = []
+
+    def initialize(self):
+        pass
+
+    def get_connector_type_id_list(self, connector_type_name_list):
+
+        connector_type_name_list = list(connector_type_name_list)
+
+        print("fetching %d connector type id's" % (len(connector_type_name_list)))
+
+        try:
+            request_obj = ConnectorTypeIdListRequest(name_list=connector_type_name_list)
+            id_list = self.api.getConnectorTypesApi().get_connector_type_id_list(
+                connector_type_id_list_request=request_obj)
+        except ApiException as ex:
+            fatal_error("unknown api exception getting list of connector type ids")
+
+        # list sizes should match
+        if len(connector_type_name_list) != len(id_list):
+            fatal_error("api list size mismatch getting list of connector type ids")
+
+        print("fetched %d connector type id's" % (len(id_list)))
+
+        return id_list
+
+    def initialize_connector_types(self, connector_type_names):
+        id_list = self.get_connector_type_id_list(connector_type_names)
+        for connector_type_name, connector_type_id in zip(connector_type_names, id_list):
+            if connector_type_id != 0:
+                self.existing_connector_types.add(connector_type_name)
+            else:
+                if connector_type_name not in self.new_connector_types:
+                    self.new_connector_types.add(connector_type_name)
+                    self.output_connector_types.append(ConnectorTypeOutputObject(connector_type_name))
+
+    def add_output_cable_type_connector(self, output_cable_type_connector):
+        self.output_cable_type_connectors.append(output_cable_type_connector)
+
+
 class InputHandler(ABC):
 
     def __init__(self, column_key):
         self.column_key = column_key
+        self.info_manager = None
 
     # initializes handler, subclasses override to customize
     def initialize(self, api, sheet, first_row, last_row):
@@ -1399,6 +743,28 @@ class CableTypeExistenceHandler(InputHandler):
             return True, ""
 
 
+class CableTypeConnectorHandler(InputHandler):
+
+    def __init__(self, column_key, cable_end):
+        super().__init__(column_key)
+        self.cable_end = cable_end
+
+    def initialize(self, api, sheet, first_row, last_row):
+        pass
+
+    def handle_input(self, input_dict):
+
+        connector_type = input_dict[self.column_key]
+
+        if connector_type is not None and connector_type != "":
+            cable_type_name = input_dict[CABLE_TYPE_NAME_KEY]
+            connector_name = self.column_key
+            output_object = CableTypeConnectorOutputObject(cable_type_name, connector_name, self.cable_end, connector_type)
+            self.info_manager.add_output_cable_type_connector(output_object)
+
+        return True, ""
+
+
 class CableDesignExistenceHandler(InputHandler):
 
     def __init__(self, column_key, existing_cable_designs, column_index_import_id, ignore_existing):
@@ -1606,106 +972,766 @@ class OutputObject(ABC):
         return ""
 
 
-class IdManager():
+class PreImportHelper(ABC):
+    helperDict = {}
 
     def __init__(self):
-        self.name_id_dict = {}
+        self.input_columns = {}
+        self.output_columns = {}
+        self.input_handlers = []
+        self.output_objects = []
+        self.validation_map = {}
+        self.info_manager = None
+        self.api = None
+        self.validate_only = False
+        self.ignore_existing = False
+        self.first_data_row = None
+        self.last_data_row = None
+        self.input_sheet = None
+        self.input_valid_message = None
+        self.num_input_rows = None
+        self.config_preimport = None
+        self.config_group = None
+        self.num_empty_rows = 0
+        self.num_rows_missing_required_column = 0
+        self.num_handler_validation_errors = 0
+        self.num_rows_cell_parsed_date = 0
+        self.num_comment_rows = 0
 
-    def set_dict(self, dict):
-        self.name_id_dict = dict
+    # returns number of rows at which progress message should be displayed
+    @classmethod
+    def progress_increment(cls):
+        return 5
 
-    def update(self, dict):
-        self.name_id_dict.update(dict)
+    # registers helper concrete classes for lookup by tag
+    @classmethod
+    def register(cls, tag, the_class):
+        cls.helperDict[tag] = the_class
 
-    def set_id_for_name(self, name, id):
-        self.name_id_dict[name] = id
+    # returns helper class for specified tag
+    @classmethod
+    def get_helper_class(cls, tag):
+        return cls.helperDict[tag]
 
-    def get_id_for_name(self, name):
-        if name in self.name_id_dict:
-            return self.name_id_dict[name]
-        else:
-            return None
+    # checks if specified tag is valid
+    @classmethod
+    def is_valid_type(cls, tag):
+        return tag in cls.helperDict
 
+    # creates instance of class with specified tag
+    @classmethod
+    def create_helper(cls, tag, config_preimport, config_group, info_manager, api):
+        helper_class = cls.helperDict[tag]
+        helper_instance = helper_class()
+        helper_instance.set_config_preimport(config_preimport, tag)
+        helper_instance.set_config_group(config_group, tag)
+        helper_instance.info_manager = info_manager
+        helper_instance.api = api
+        return helper_instance
 
-class NameVariantManager():
-
-    def __init__(self):
-        self.name_list = []
-
-    def add_name(self, name):
-        is_valid = True
-        valid_string = ""
-        for n in self.name_list:
-            if n == name:
-                return True, ""
-            elif n.upper() == name.upper():
-                is_valid = False
-                valid_string = "%s is variation of existing name %s" % (name, n)
-        self.name_list.append(name)
-        return is_valid, valid_string
-
-
-class RackManager():
-
-    def __init__(self):
-        self.rack_dict = {}
-
-    def add_endpoint_id_for_rack(self, rack_name, endpoint_name, endpoint_id):
-        if not rack_name in self.rack_dict:
-            self.rack_dict[rack_name] = {}
-        rack_contents = self.rack_dict[rack_name]
-        rack_contents[endpoint_name] = endpoint_id
-
-    def get_endpoint_id_for_rack(self, rack_name, endpoint_name):
-        if rack_name in self.rack_dict:
-            rack_items = self.rack_dict[rack_name]
-            if endpoint_name in rack_items:
-                return rack_items[endpoint_name]
-        return None
-
-
-class ItemInfoManager():
-
-    def __init__(self, api):
-        self.api = api
-        self.connector_type_id_mgr = IdManager()
-        self.existing_connector_types = set()
-        self.new_connector_types = set()
-        self.output_connector_types = []
-
-    def initialize(self):
+    # Returns registered tag for subclass.
+    @staticmethod
+    @abstractmethod  # must be innermost decorator
+    def tag():
         pass
 
-    def get_connector_type_id_list(self, connector_type_name_list):
+    # Returns name of CDB item for helper.
+    @staticmethod
+    @abstractmethod
+    def item_name():
+        pass
 
-        connector_type_name_list = list(connector_type_name_list)
+    # Returns expected number of columns in input spreadsheet.
+    @abstractmethod
+    def num_input_cols(self):
+        pass
 
-        print("fetching %d connector type id's" % (len(connector_type_name_list)))
+    def num_output_cols(self):
+        return len(self.output_column_list())
 
-        try:
-            request_obj = ConnectorTypeIdListRequest(name_list=connector_type_name_list)
-            id_list = self.api.getConnectorTypesApi().get_connector_type_id_list(
-                connector_type_id_list_request=request_obj)
-        except ApiException as ex:
-            fatal_error("unknown api exception getting list of connector type ids")
+    # Initializes the helper.  Subclass overrides initialize_custom() to customize.
+    def initialize(self, api, sheet, first_row, last_row):
+        self.initialize_columns()
+        self.initialize_handlers(self.info_manager, api, sheet, first_row, last_row)
+        self.initialize_custom(api, sheet, first_row, last_row)
 
-        # list sizes should match
-        if len(connector_type_name_list) != len(id_list):
-            fatal_error("api list size mismatch getting list of connector type ids")
+    def initialize_columns(self):
+        self.initialize_input_columns()
+        self.initialize_output_columns()
 
-        print("fetched %d connector type id's" % (len(id_list)))
+    # Builds dictionary whose keys are column index and value is column model object.
+    def initialize_input_columns(self):
+        for col in self.generate_input_column_list():
+            self.input_columns[col.index] = col
 
-        return id_list
+    # Builds dictionary whose keys are column index and value is column model object.
+    def initialize_output_columns(self):
+        for col in self.generate_output_column_list():
+            self.output_columns[col.index] = col
 
-    def initialize_connector_types(self, connector_type_names):
-        id_list = self.get_connector_type_id_list(connector_type_names)
-        for connector_type_name, connector_type_id in zip(connector_type_names, id_list):
-            if connector_type_id != 0:
-                self.existing_connector_types.add(connector_type_name)
+    def initialize_handlers(self, info_manager, api, sheet, first_row, last_row):
+        for handler in self.generate_handler_list():
+            self.input_handlers.append(handler)
+            handler.info_manager = info_manager
+            handler.initialize(api, sheet, first_row, last_row)
+
+    def initialize_custom(self, api, sheet, first_row, last_row):
+        pass
+
+    # subclass overrides to create list of input columns
+    @abstractmethod
+    def generate_input_column_list(self):
+        pass
+
+    # subclass overrides to create list of output columns
+    @abstractmethod
+    def generate_output_column_list(self):
+        pass
+
+    # subclass overrides to create list of input handlers
+    def generate_handler_list(self):
+        pass
+
+    # Returns list of input column models.
+    def input_column_list(self):
+        return list(self.input_columns.values())
+
+    # Returns list of output column models.  Not all columns need be mapped, only the ones we wish to
+    # write values to.
+    def output_column_list(self):
+        return list(self.output_columns.values())
+
+    # Returns list of input handlers.
+    def input_handler_list(self):
+        return self.input_handlers
+
+    # Returns an output object for the specified input object, or None if the input object is duplicate.
+    @abstractmethod
+    def handle_valid_row(self, input_dict):
+        pass
+
+    def set_config_preimport(self, config, section):
+        self.config_preimport = config
+
+    def set_config_group(self, config, section):
+        self.config_group = config
+        self.validate_only = get_config_resource_boolean(config, section, 'validateOnly', False)
+        self.ignore_existing = get_config_resource_boolean(config, section, 'ignoreExisting', False)
+        self.first_data_row = int(get_config_resource(config, section, 'firstDataRow', False))
+        self.last_data_row = int(get_config_resource(config, section, 'lastDataRow', False))
+
+    def set_api(self, api):
+        self.api = api
+
+    def set_num_input_rows(self, num_input_rows):
+        self.num_input_rows = num_input_rows
+
+    def set_input_sheet(self, sheet):
+        self.input_sheet = sheet
+
+    def process_input_book(self, input_book):
+
+        item_type = self.item_name().upper()
+
+        # process sheetNumber option
+        option_sheet_number = get_config_resource(self.config_preimport, self.tag(), 'sheetNumber', True)
+
+        # process headerRow option
+        option_header_row = get_config_resource(self.config_group, self.tag(), 'headerRow', True)
+
+        # process firstDataRow option
+        option_first_data_row = get_config_resource(self.config_group, self.tag(), 'firstDataRow', True)
+
+        # process lastDataRow option
+        option_last_data_row = get_config_resource(self.config_group, self.tag(), 'lastDataRow', True)
+
+        sheet_num = int(option_sheet_number)
+        header_row_num = int(option_header_row)
+        first_data_row_num = int(option_first_data_row)
+        last_data_row_num = int(option_last_data_row)
+
+        sheet_index = sheet_num - 1
+        header_index = header_row_num
+        first_data_index = first_data_row_num
+        last_data_index = last_data_row_num
+
+        input_sheet = input_book.worksheets[int(sheet_index)]
+        logging.info("input spreadsheet dimensions: %d x %d" % (input_sheet.max_row, input_sheet.max_column))
+
+        # validate input spreadsheet dimensions
+        if input_sheet.max_row < last_data_row_num:
+            fatal_error("fewer rows in input sheet than last data row: %d, exiting" % (last_data_row_num))
+        if input_sheet.max_column < self.num_input_cols():
+            fatal_error("input sheet actual columns: %d less than expected columns: %d, exiting" % (
+                input_sheet.max_column, self.num_input_cols()))
+
+        # initialize helper
+        print()
+        print("%s: INITIALIZING AND FETCHING CDB DATA ====================" % item_type)
+        print()
+        self.set_input_sheet(input_sheet)
+        self.initialize(self.api, input_sheet, first_data_index, last_data_index)
+
+        #
+        # process rows from input spreadsheet
+        #
+
+        print()
+        print("%s: PROCESSING SPREADSHEET ROWS ====================" % item_type)
+        print()
+
+        input_valid = True
+        num_input_rows = 0
+        rows = input_sheet.rows
+        row_ind = 0
+
+        # validate header and first data indexes
+        if header_index < row_ind:
+            fatal_error("invalid header_index: %d" % header_index)
+        if first_data_index <= header_index:
+            fatal_error(
+                "invalid first data row: %d less than expected header row: %d" % (first_data_index, header_index))
+
+        for row in rows:
+
+            row_ind = row_ind + 1
+
+            # skip to header row
+            if row_ind < header_index:
+                continue
+
+            # validate header row
+            elif row_ind == header_index:
+                ignored_columns = []
+                num_header_cols = 0
+                header_cell_ind = 0
+                for cell in row:
+                    header_cell_value = cell.value
+                    if header_cell_ind in self.input_columns:
+                        header_input_column = self.input_columns[header_cell_ind]
+                        if header_input_column is None:
+                            fatal_error(
+                                "unexpected actual header column: %s index: %d" % (header_cell_value, header_cell_ind))
+                        expected_header_label = header_input_column.label
+                        if expected_header_label is not None:
+                            # ignore mismatch when expected value not specified (for cases like CableSpecs where the header value changes for each tech system
+                            if header_cell_value != expected_header_label:
+                                fatal_error("actual header column: %s mismatch with expected: %s" % (
+                                    header_cell_value, expected_header_label))
+                    else:
+                        if header_cell_value is not None and header_cell_value != '':
+                            ignored_columns.append(header_cell_value)
+                    num_header_cols = num_header_cols + 1
+                    header_cell_ind = header_cell_ind + 1
+                    continue
+                if len(ignored_columns) > 0:
+                    print("ignored extra input columns: %s" % ignored_columns)
+
+            # skip to first data row:
+            elif row_ind < first_data_index:
+                continue
+
+            # skip trailing rows
+            elif row_ind > last_data_index:
+                continue
+
+            # process data rows
             else:
-                if connector_type_name not in self.new_connector_types:
-                    self.new_connector_types.add(connector_type_name)
-                    self.output_connector_types.append(ConnectorTypeOutputObject(connector_type_name))
+
+                current_row_num = row_ind
+                num_input_rows = num_input_rows + 1
+
+                logging.debug("processing row %d from input spreadsheet" % current_row_num)
+
+                input_dict = {}
+                row_is_valid = True
+                row_valid_messages = []
+                row_error_parsed_date = False
+                row_is_comment = False
+
+                for col_ind in range(self.num_input_cols()):
+
+                    # read cell value from spreadsheet
+                    val = row[col_ind].value
+                    if val is None:
+                        val = ""
+                    if isinstance(val, datetime):
+                        # we don't want to parse anything as a date from the input sheet, this happens when a value
+                        # like rack name "03-25" gets turned into a date like "03/25/2022 00:00:00" by excel
+                        row_is_valid = False
+                        row_valid_messages.append("parsed as date from excel input sheet: %s" % str(val))
+                        val = str(val)
+                        row_error_parsed_date = True
+
+                    # check for comment row
+                    if col_ind == 0 and isinstance(val, str) and val.startswith("//"):
+                        self.num_comment_rows = self.num_comment_rows + 1
+                        row_is_comment = True
+                        break
+
+                    # parse expected columns
+                    if col_ind in self.input_columns:
+                        logging.debug("col: %d value: %s" % (col_ind, str(val)))
+                        self.handle_input_cell_value(input_dict=input_dict, index=col_ind, value=val,
+                                                     row_num=current_row_num)
+
+                # skip further processing of comment rows
+                if row_is_comment:
+                    continue
+
+                # count date parsing errors for display on error sheet
+                if row_error_parsed_date:
+                    self.num_rows_cell_parsed_date = self.num_rows_cell_parsed_date + 1
+
+                # ignore row if blank
+                if self.input_row_is_empty(input_dict=input_dict, row_num=current_row_num):
+                    self.num_empty_rows = self.num_empty_rows + 1
+                    continue
+
+                # validate row
+                (is_valid, valid_messages) = self.input_row_is_valid(input_dict=input_dict, row_num=row_ind)
+                if not is_valid:
+                    row_is_valid = False
+                    row_valid_messages.extend(valid_messages)
+
+                # invoke handlers
+                (handler_is_valid, handler_messages) = self.invoke_row_handlers(input_dict=input_dict,
+                                                                                row_num=row_ind)
+                if not handler_is_valid:
+                    self.num_handler_validation_errors = self.num_handler_validation_errors + 1
+                    row_is_valid = False
+                    row_valid_messages.extend(handler_messages)
+
+                if row_is_valid:
+                    self.handle_valid_row(input_dict=input_dict)
+                else:
+                    input_valid = False
+                    msg = "ERRORS found for row %d" % current_row_num
+                    logging.error(msg)
+                    self.validation_map[current_row_num] = row_valid_messages
+
+                # print progress message
+                if num_input_rows % self.progress_increment() == 0:
+                    print("processed %d spreadsheet rows" % num_input_rows, flush=True)
+
+        # print final progress message
+        print("processed %d spreadsheet rows" % num_input_rows)
+        self.set_num_input_rows(num_input_rows)
+
+        #
+        # display validation summary
+        #
+
+        print()
+        print("%s: VALIDATION SUMMARY ====================" % item_type)
+        print()
+
+        (sheet_valid, sheet_valid_string) = self.input_is_valid()
+        if not sheet_valid:
+            input_valid = False
+            msg = "ERROR validating input spreadsheet: %s" % sheet_valid_string
+            logging.error(msg)
+            print(msg)
+            print()
+
+        if len(self.validation_map) > 0:
+            print("%d validation ERROR(S) found" % len(self.validation_map))
+            print("See output workbook for additional details")
+
+        else:
+            print("no validation errors found")
+
+        if input_valid and not self.validate_only:
+            summary_msg = "PROCESSING SUCCESSFUL: processed %d input rows including %d empty rows and wrote %d output rows, see output workbook for CDB import sheets" % (
+                num_input_rows, self.num_empty_rows, len(self.output_objects))
+
+        elif not input_valid:
+            summary_msg = "PROCESSING ERROR: processed %d input rows including %d empty rows but no CDB import sheets generated, see output workbook and log for details" % (
+                num_input_rows, self.num_empty_rows)
+
+        else:
+            summary_msg = "VALIDATION ONLY: processed %d input rows including %d empty rows but no CDB import sheets generated, see output workbook for details" % (
+                num_input_rows, self.num_empty_rows)
+
+        #
+        # print summary
+        #
+
+        print()
+        print("%s: PROCESSING SUMMARY ====================" % item_type)
+        print()
+
+        print(summary_msg)
+        logging.info(summary_msg)
+        print(self.get_processing_summary())
+
+        return input_valid
+
+    # Handles cell value from input spreadsheet at specified column index for supplied input object.
+    def handle_input_cell_value(self, input_dict, index, value, row_num):
+        key = self.input_columns[index].key
+        input_dict[key] = value
+
+    def input_row_is_empty(self, input_dict, row_num):
+
+        non_empty_cols = {k: v for k, v in input_dict.items() if v is not None and v != ""}
+        non_empty_count = len(non_empty_cols)
+        blank_row_columns_allowed_dict = self.blank_row_columns_allowed_dict()
+
+        # row contains no values
+        if non_empty_count == 0:
+            return True
+
+        if self.input_row_is_empty_custom(input_dict, row_num):
+            return True
+
+        # check if values in more columns than allowed columns
+        if non_empty_count > len(blank_row_columns_allowed_dict):
+            return False
+
+        # check if value in any column not explicitly allowed
+        for column_key in non_empty_cols.keys():
+
+            if column_key not in blank_row_columns_allowed_dict:
+                return False
+
+            allowed_value = blank_row_columns_allowed_dict[column_key]
+            if allowed_value is not None:
+                if non_empty_cols[column_key] != allowed_value:
+                    return False
+
+        return True
+
+    # Returns dictionary of column keys that can contain values and the row still be considered blank.
+    # Dictionary values should be None, or a string that is the value allowed in that column if we want that constraint.
+    # Subclasses override to customize
+    @classmethod
+    def blank_row_columns_allowed_dict(cls):
+        return {}
+
+    # Returns True if the row represented by input_dict should be treated as a blank row.  Default is False.  Subclass
+    # can override to allow certain non-empty values to be treated as empty.
+    def input_row_is_empty_custom(self, input_dict, row_num):
+        return False
+
+    # Performs validation on row from input spreadsheet and returns True if the row is determined to be valid.
+    # Can return False where input is valid, but it might be better to call sys.exit() with a useful message.
+    def input_row_is_valid(self, input_dict, row_num):
+
+        is_valid = True
+        valid_messages = []
+
+        missing_required_column = False
+        for column in self.input_column_list():
+
+            required = column.required
+            if required:
+                value = input_dict[column.key]
+                if value is None or len(str(value)) == 0:
+                    is_valid = False
+                    valid_messages.append("required value missing for key: %s row index: %d" % (column.key, row_num))
+                    missing_required_column = True
+
+        if missing_required_column:
+            self.num_rows_missing_required_column = self.num_rows_missing_required_column + 1
+
+        (custom_is_valid, custom_valid_string) = self.input_row_is_valid_custom(input_dict)
+        if not custom_is_valid:
+            is_valid = False
+            valid_messages.append(custom_valid_string)
+
+        return is_valid, valid_messages
+
+    # Performs custom validation on input row.  Returns True if row is valid.  Default is to return True. Subclass
+    # can override to customize.
+    def input_row_is_valid_custom(self, input_dict):
+        return True, ""
+
+    # Provides hook for subclasses to override to validate the input before generating the output spreadsheet.
+    def input_is_valid(self):
+        return True, ""
+
+    def invoke_row_handlers(self, input_dict, row_num):
+
+        is_valid = True
+        valid_messages = []
+
+        for handler in self.input_handler_list():
+            (handler_is_valid, handler_valid_string) = handler.handle_input(input_dict)
+            if not handler_is_valid:
+                is_valid = False
+                valid_messages.append(handler_valid_string)
+
+        return is_valid, valid_messages
+
+    # Returns column label for specified column index.
+    def get_output_column_label(self, col_index):
+        return self.output_columns[col_index].label
+
+    def get_cell_value(self, obj, method):
+        # use reflection to invoke column getter method on supplied object
+        val = getattr(obj, method)()
+        return val
+
+    def write_sheet(self, output_book, sheet_name, columns, output_objects):
+
+        output_sheet = output_book.add_worksheet(sheet_name)
+
+        # write output spreadsheet header row
+        row_ind = 0
+        for column in columns:
+            col_ind = column.index
+            label = column.label
+            output_sheet.write(row_ind, col_ind, label)
+
+        # process rows
+        num_output_rows = 0
+        for output_obj in output_objects:
+
+            row_ind = row_ind + 1
+            num_output_rows = num_output_rows + 1
+            current_row_num = row_ind + 1
+
+            for column in columns:
+                col_ind = column.index
+                val = self.get_cell_value(output_obj, column.method)
+                output_sheet.write(row_ind, col_ind, val)
+
+        return num_output_rows
+
+    def get_summary_messages(self):
+        return ["Total rows processed in input sheet: %d" % self.num_input_rows,
+                "Blank rows in input sheet: %d" % self.num_empty_rows,
+                "Comment rows in input sheet: %d" % self.num_comment_rows]
+
+    # Subclasses override to return list of custom summary messages for summary sheet
+    def get_summary_messages_custom(self):
+        return []
+
+    def get_summary_sheet_columns(self):
+        return [], []
+
+    def write_summary_sheet(self, output_book):
+
+        summary_messages = self.get_summary_messages()
+        summary_messages.extend(self.get_summary_messages_custom())
+        summary_column_names, summary_column_values = self.get_summary_sheet_columns()
+
+        if len(summary_messages) == 0 and len(summary_column_names) == 0:
+            return
+
+        output_sheet = output_book.add_worksheet(self.item_name() + " Summary")
+        text_wrap_format = output_book.add_format({'text_wrap': True})
+
+        column_index = 0
+        if len(summary_messages) > 0:
+
+            output_sheet.write(0, 0, "summary messages")
+            output_sheet.set_column(0, 0, DEFAULT_COLUMN_WIDTH)
+
+            row_index = 1
+            for summary_message in summary_messages:
+                row_height = get_row_height_wrapped_message(summary_message)
+                output_sheet.write(row_index, 0, summary_message + "\n", text_wrap_format)
+                output_sheet.set_row(row_index, row_height)
+                row_index = row_index + 1
+
+            column_index = column_index + 1
+
+        if len(summary_column_names) > 0:
+
+            for (column_name, column_values) in zip(summary_column_names, summary_column_values):
+                maximum_column_width = 0
+                row_index = 0
+                # write column header
+                output_sheet.write(row_index, column_index, column_name)
+                if len(column_name) > maximum_column_width:
+                    maximum_column_width = len(column_name)
+                for value in column_values:
+                    row_index = row_index + 1
+                    output_sheet.write(row_index, column_index, value)
+                    if len(value) > maximum_column_width:
+                        maximum_column_width = len(value)
+
+                # set column width
+                output_sheet.set_column(column_index, column_index, maximum_column_width)
+
+                column_index = column_index + 1
+
+    # Writes content to output workbook.  Subclasses override to customize with multiple tabs
+    def write_helper_sheets(self, output_book):
+        self.write_sheet(output_book, self.item_name() + " Item Import", self.output_column_list(), self.output_objects)
+
+    def write_workbook_sheets(self, output_book):
+        self.write_summary_sheet(output_book)
+        self.write_helper_sheets(output_book)
+
+    def get_validate_only_messages(self):
+        return []
+
+    def get_validate_only_sheet_columns(self):
+        return [], []
+
+    def write_validate_only_sheet(self, output_book):
+
+        validate_only_messages = self.get_validate_only_messages()
+        validate_only_column_names, validate_only_column_values = self.get_validate_only_sheet_columns()
+
+        validate_only_messages.insert(0, "No validation errors in input sheet")
+        validate_only_messages.insert(0, "Data rows in input sheet: %d" % self.num_input_rows)
+
+        if len(validate_only_messages) == 0 and len(validate_only_column_names) == 0:
+            return
+
+        output_sheet = output_book.add_worksheet(self.item_name() + " Validate Only")
+        text_wrap_format = output_book.add_format({'text_wrap': True})
+
+        column_index = 0
+        if len(validate_only_messages) > 0:
+
+            output_sheet.write(0, 0, "validate only messages")
+            output_sheet.set_column(0, 0, DEFAULT_COLUMN_WIDTH)
+
+            row_index = 1
+            for summary_message in validate_only_messages:
+                row_height = get_row_height_wrapped_message(summary_message)
+                output_sheet.write(row_index, 0, summary_message + "\n", text_wrap_format)
+                output_sheet.set_row(row_index, row_height)
+                row_index = row_index + 1
+
+            column_index = column_index + 1
+
+        if len(validate_only_column_names) > 0:
+
+            for (column_name, column_values) in zip(validate_only_column_names, validate_only_column_values):
+                maximum_column_width = 0
+                row_index = 0
+                # write column header
+                output_sheet.write(row_index, column_index, column_name)
+                if len(column_name) > maximum_column_width:
+                    maximum_column_width = len(column_name)
+                for value in column_values:
+                    row_index = row_index + 1
+                    output_sheet.write(row_index, column_index, value)
+                    if len(value) > maximum_column_width:
+                        maximum_column_width = len(value)
+
+                # set column width
+                output_sheet.set_column(column_index, column_index, maximum_column_width)
+
+                column_index = column_index + 1
+
+    def write_validate_only_sheets(self, output_book):
+        self.write_validate_only_sheet(output_book)
+
+    # Returns value for output spreadsheet cell and supplied object at specified index.
+    def get_output_cell_value(self, obj, index):
+        # use reflection to invoke column getter method on supplied object
+        val = getattr(obj, self.output_columns[index].method)()
+        logging.debug("index: %d method: %s value: %s" % (index, self.output_columns[index].method, val))
+        return val
+
+    def get_error_messages(self):
+        return ["Rows missing required values: %d" % self.num_rows_missing_required_column,
+                "Rows with handler validation errors: %d" % self.num_handler_validation_errors,
+                "Rows with cells parsed as Excel date: %d" % self.num_rows_cell_parsed_date]
+
+    def get_error_messages_custom(self):
+        return []
+
+    def get_error_sheet_columns(self):
+        return [], []
+
+    def write_error_sheet(self, output_book):
+
+        error_messages = self.get_error_messages()
+        error_messages.extend(self.get_error_messages_custom())
+        error_column_names, error_column_values = self.get_error_sheet_columns()
+
+        if self.input_valid_message is None and len(error_messages) == 0 and len(error_column_names) == 0:
+            return
+
+        output_sheet = output_book.add_worksheet(self.item_name() + " " + "Sheet Errors")
+        text_wrap_format = output_book.add_format({'text_wrap': True})
+
+        column_index = 0
+        if self.input_valid_message is not None or len(error_messages) > 0:
+
+            output_sheet.write(0, 0, "error messages")
+            output_sheet.set_column(0, 0, DEFAULT_COLUMN_WIDTH)
+
+            row_index = 1
+            if self.input_valid_message is not None:
+                row_height = get_row_height_wrapped_message(self.input_valid_message)
+                output_sheet.write(row_index, 0, self.input_valid_message + "\n", text_wrap_format)
+                output_sheet.set_row(row_index, row_height)
+                row_index = row_index + 1
+
+            for error_message in error_messages:
+                row_height = get_row_height_wrapped_message(error_message)
+                output_sheet.write(row_index, 0, error_message + "\n", text_wrap_format)
+                output_sheet.set_row(row_index, row_height)
+                row_index = row_index + 1
+
+            column_index = column_index + 1
+
+        if len(error_column_names) > 0:
+
+            for (column_name, column_values) in zip(error_column_names, error_column_values):
+                maximum_column_width = 0
+                row_index = 0
+                # write column header
+                output_sheet.write(row_index, column_index, column_name)
+                if len(column_name) > maximum_column_width:
+                    maximum_column_width = len(column_name)
+                for value in column_values:
+                    row_index = row_index + 1
+                    output_sheet.write(row_index, column_index, value)
+                    if len(value) > maximum_column_width:
+                        maximum_column_width = len(value)
+
+                # set column width
+                output_sheet.set_column(column_index, column_index, maximum_column_width)
+
+                column_index = column_index + 1
+
+    # Writes error content to output workbook, subclasses override to customize with multiple error sheets.
+    def write_error_sheets(self, output_book):
+        self.write_error_sheet(output_book)
+
+    def write_validation_sheet(self, output_book):
+
+        if len(self.validation_map) == 0:
+            return
+
+        # create output sheet
+        output_sheet = output_book.add_worksheet(self.item_name() + " " + "Row Errors")
+
+        # write header row
+        output_sheet.write(0, 0, "input row number")
+        output_sheet.write(0, 1, "validation messages")
+
+        row_ind = 0
+        maximum_column_width = 0
+        for key in self.validation_map:
+            row_ind = row_ind + 1
+            output_sheet.write(row_ind, 0, key)
+            messages = ""
+            message_count = len(self.validation_map[key])
+            for message in self.validation_map[key]:
+                messages = messages + message + "\n"
+                if len(message) > maximum_column_width:
+                    maximum_column_width = len(message)
+            output_sheet.write(row_ind, 1, messages)
+            # set row height
+            output_sheet.set_row(row_ind, (message_count + 1) * DEFAULT_FONT_HEIGHT)
+
+        # set column width
+        output_sheet.set_column(1, 1, maximum_column_width)
+
+    # Returns processing summary message.
+    def get_processing_summary(self):
+        return ""
 
 
 class ConnectorTypeOutputObject(OutputObject):
@@ -1725,6 +1751,40 @@ class ConnectorTypeOutputObject(OutputObject):
 
     def get_name(self):
         return self.name
+
+
+class CableTypeConnectorOutputObject(OutputObject):
+
+    def __init__(self, catalog_item, connector_name, cable_end, connector_type):
+        self.catalog_item = catalog_item
+        self.connector_name = connector_name
+        self.cable_end = cable_end
+        self.connector_type = connector_type
+
+    @classmethod
+    def get_output_columns(cls):
+        column_list = [
+            OutputColumnModel(col_index=0, method="empty_column", label="Existing Item ID"),
+            OutputColumnModel(col_index=1, method="empty_column", label="Delete Existing Item"),
+            OutputColumnModel(col_index=2, method="get_catalog_item", label="Cable Catalog Item"),
+            OutputColumnModel(col_index=3, method="get_connector_name", label="Connector Name"),
+            OutputColumnModel(col_index=4, method="get_cable_end", label="Cable End"),
+            OutputColumnModel(col_index=5, method="empty_column", label="Description"),
+            OutputColumnModel(col_index=6, method="get_connector_type", label="Connector Type"),
+        ]
+        return column_list
+
+    def get_catalog_item(self):
+        return "#" + self.catalog_item
+
+    def get_connector_name(self):
+        return self.connector_name
+
+    def get_cable_end(self):
+        return self.cable_end
+
+    def get_connector_type(self):
+        return "#" + self.connector_type
 
 
 class SourceOutputObject(OutputObject):
@@ -1865,6 +1925,12 @@ class CableTypeHelper(PreImportHelper):
         handler_list = [
             NamedRangeHandler(CABLE_TYPE_NAME_KEY, self.named_range),
             UniqueNameHandler(CABLE_TYPE_NAME_KEY, self.cable_type_names),
+            CableTypeConnectorHandler(CABLE_TYPE_E1_1_KEY, 1),
+            CableTypeConnectorHandler(CABLE_TYPE_E2_1_KEY, 2),
+            CableTypeConnectorHandler(CABLE_TYPE_E1_2_KEY, 1),
+            CableTypeConnectorHandler(CABLE_TYPE_E2_2_KEY, 2),
+            CableTypeConnectorHandler(CABLE_TYPE_E1_3_KEY, 1),
+            CableTypeConnectorHandler(CABLE_TYPE_E2_3_KEY, 2),
         ]
 
         if not self.validate_only:
@@ -1948,6 +2014,11 @@ class CableTypeHelper(PreImportHelper):
                          self.source_output_objects)
 
         self.write_sheet(output_book, "Cable Catalog Item Import", self.output_column_list(), self.output_objects)
+
+        self.write_sheet(output_book,
+                         "Cable Catalog Connector Import",
+                         CableTypeConnectorOutputObject.get_output_columns(),
+                         self.info_manager.output_cable_type_connectors)
 
     # Returns processing summary message.
     def get_processing_summary(self):
