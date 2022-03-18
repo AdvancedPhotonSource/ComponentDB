@@ -232,6 +232,7 @@ class PreImportHelper(ABC):
         self.num_rows_missing_required_column = 0
         self.num_handler_validation_errors = 0
         self.num_rows_cell_parsed_date = 0
+        self.num_comment_rows = 0
 
     # returns number of rows at which progress message should be displayed
     @classmethod
@@ -481,24 +482,38 @@ class PreImportHelper(ABC):
                 row_is_valid = True
                 row_valid_messages = []
                 row_error_parsed_date = False
+                row_is_comment = False
 
                 for col_ind in range(self.num_input_cols()):
+
+                    # read cell value from spreadsheet
+                    val = row[col_ind].value
+                    if val is None:
+                        val = ""
+                    if isinstance(val, datetime):
+                        # we don't want to parse anything as a date from the input sheet, this happens when a value
+                        # like rack name "03-25" gets turned into a date like "03/25/2022 00:00:00" by excel
+                        row_is_valid = False
+                        row_valid_messages.append("parsed as date from excel input sheet: %s" % str(val))
+                        val = str(val)
+                        row_error_parsed_date = True
+
+                    # check for comment row
+                    if col_ind == 0 and isinstance(val, str) and val.startswith("//"):
+                        self.num_comment_rows = self.num_comment_rows + 1
+                        row_is_comment = True
+                        break
+
+                    # parse expected columns
                     if col_ind in self.input_columns:
-                        # read cell value from spreadsheet
-                        val = row[col_ind].value
-                        if val is None:
-                            val = ""
-                        if isinstance(val, datetime):
-                            # we don't want to parse anything as a date from the input sheet, this happens when a value
-                            # like rack name "03-25" gets turned into a date like "03/25/2022 00:00:00" by excel
-                            row_is_valid = False
-                            row_valid_messages.append("parsed as date from excel input sheet: %s" % str(val))
-                            val = str(val)
-                            row_error_parsed_date = True
 
                         logging.debug("col: %d value: %s" % (col_ind, str(val)))
                         self.handle_input_cell_value(input_dict=input_dict, index=col_ind, value=val,
                                                      row_num=current_row_num)
+
+                # skip further processing of comment rows
+                if row_is_comment:
+                    continue
 
                 # count date parsing errors for display on error sheet
                 if row_error_parsed_date:
@@ -722,7 +737,8 @@ class PreImportHelper(ABC):
 
     def get_summary_messages(self):
         return ["Total rows processed in input sheet: %d" % self.num_input_rows,
-                "Blank rows in input sheet: %d" % self.num_empty_rows]
+                "Blank rows in input sheet: %d" % self.num_empty_rows,
+                "Comment rows in input sheet: %d" % self.num_comment_rows]
 
     # Subclasses override to return list of custom summary messages for summary sheet
     def get_summary_messages_custom(self):
