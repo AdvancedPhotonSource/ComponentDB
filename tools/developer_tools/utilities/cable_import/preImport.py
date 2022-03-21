@@ -449,11 +449,15 @@ class ItemInfoManager():
                 cable_type_info.connector_names = []
             self.add_cable_type_info(cable_type_name, cable_type_info)
 
-    def get_cable_type_id(self, cable_type_name):
+    def get_cable_type_info(self, cable_type_name):
         if cable_type_name not in self.cable_type_info:
-            return 0
-        cable_type_info = self.cable_type_info[cable_type_name]
-        if cable_type_info.id is None:
+            return None
+        else:
+            return self.cable_type_info[cable_type_name]
+
+    def get_cable_type_id(self, cable_type_name):
+        cable_type_info = self.get_cable_type_info(cable_type_name)
+        if cable_type_info is None:
             return 0
         else:
             return cable_type_info.id
@@ -2468,7 +2472,11 @@ class CableDesignHelper(PreImportHelper):
             return
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_DESIGN_NAME_KEY])
-        self.output_objects.append(CableDesignOutputObject(helper=self, input_dict=input_dict, ignore_port_columns=self.ignore_port_columns))
+        cable_catalog_info = self.info_manager.get_cable_type_info(input_dict[CABLE_DESIGN_TYPE_KEY])
+        self.output_objects.append(CableDesignOutputObject(helper=self,
+                                                           input_dict=input_dict,
+                                                           cable_catalog_info = cable_catalog_info,
+                                                           ignore_port_columns=self.ignore_port_columns))
 
     def get_summary_messages_custom(self):
 
@@ -2559,8 +2567,9 @@ class CableDesignOutputObject(OutputObject):
 
     ignore_port_columns = False
 
-    def __init__(self, helper, input_dict, ignore_port_columns):
+    def __init__(self, helper, input_dict, cable_catalog_info, ignore_port_columns):
         super().__init__(helper, input_dict)
+        self.cable_catalog_info = cable_catalog_info
 
     @classmethod
     def get_output_columns(cls):
@@ -2589,7 +2598,7 @@ class CableDesignOutputObject(OutputObject):
             OutputColumnModel(col_index=13, method="get_cable_type", label="Type"),
             OutputColumnModel(col_index=14, method="get_endpoint1_id", label="Endpoint1"),
             OutputColumnModel(col_index=15, method=endpoint1_port_method, label="Endpoint1 Port"),
-            OutputColumnModel(col_index=16, method="empty_column", label="Endpoint1 Connector"),
+            OutputColumnModel(col_index=16, method="get_endpoint1_connector", label="Endpoint1 Connector"),
             OutputColumnModel(col_index=17, method="get_endpoint1_description", label="Endpoint1 Desc"),
             OutputColumnModel(col_index=18, method="get_endpoint1_route", label="Endpoint1 Route"),
             OutputColumnModel(col_index=19, method="empty_column", label="Endpoint1 End Length"),
@@ -2599,7 +2608,7 @@ class CableDesignOutputObject(OutputObject):
             OutputColumnModel(col_index=23, method="empty_column", label="Endpoint1 Drawing"),
             OutputColumnModel(col_index=24, method="get_endpoint2_id", label="Endpoint2"),
             OutputColumnModel(col_index=25, method=endpoint2_port_method, label="Endpoint2 Port"),
-            OutputColumnModel(col_index=26, method="empty_column", label="Endpoint2 Connector"),
+            OutputColumnModel(col_index=26, method="get_endpoint2_connector", label="Endpoint2 Connector"),
             OutputColumnModel(col_index=27, method="get_endpoint2_description", label="Endpoint2 Desc"),
             OutputColumnModel(col_index=28, method="get_endpoint2_route", label="Endpoint2 Route"),
             OutputColumnModel(col_index=29, method="empty_column", label="Endpoint2 End Length"),
@@ -2671,6 +2680,12 @@ class CableDesignOutputObject(OutputObject):
     def get_endpoint1_port(self):
         return self.input_dict[CABLE_DESIGN_FROM_PORT_NAME_KEY]
 
+    def get_endpoint1_connector(self):
+        if CABLE_TYPE_E1_1_KEY in self.cable_catalog_info.connector_names:
+            return CABLE_TYPE_E1_1_KEY
+        else:
+            return None
+
     def get_endpoint1_description(self):
         return str(self.input_dict[CABLE_DESIGN_SRC_LOCATION_KEY]) + ":" + \
                str(self.input_dict[CABLE_DESIGN_SRC_ANS_KEY]) + ":" + \
@@ -2686,6 +2701,12 @@ class CableDesignOutputObject(OutputObject):
 
     def get_endpoint2_port(self):
         return self.input_dict[CABLE_DESIGN_TO_PORT_NAME_KEY]
+
+    def get_endpoint2_connector(self):
+        if CABLE_TYPE_E2_1_KEY in self.cable_catalog_info.connector_names:
+            return CABLE_TYPE_E2_1_KEY
+        else:
+            return None
 
     def get_endpoint2_description(self):
         return str(self.input_dict[CABLE_DESIGN_DEST_LOCATION_KEY]) + ":" + \
