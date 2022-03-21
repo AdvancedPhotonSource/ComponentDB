@@ -707,26 +707,6 @@ class EndpointHandler(InputHandler):
         return is_valid, valid_string
 
 
-class CableTypeIdHandler(InputHandler):
-
-    def __init__(self, column_key, missing_cable_type_list):
-        super().__init__(column_key)
-        self.missing_cable_type_list = missing_cable_type_list
-
-    def initialize(self, api, sheet, first_row, last_row):
-        pass
-
-    def handle_input(self, input_dict):
-
-        cable_type_name = input_dict[self.column_key]
-        cable_type_id = self.info_manager.get_cable_type_id(cable_type_name)
-        if cable_type_id == 0:
-            self.missing_cable_type_list.add(cable_type_name)
-            return True, ""
-        else:
-            return True, ""
-
-
 class CableTypeExistenceHandler(InputHandler):
 
     def __init__(self, column_key, existing_cable_types, new_cable_types):
@@ -2341,7 +2321,6 @@ class CableDesignHelper(PreImportHelper):
         self.md_root = None
         self.cable_type_id_manager = IdManager()
         self.missing_endpoints = set()
-        self.missing_cable_types = set()
         self.nonunique_endpoints = set()
         self.existing_cable_designs = []
         self.cable_design_names = []
@@ -2446,7 +2425,6 @@ class CableDesignHelper(PreImportHelper):
 
         if not self.validate_only:
             handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.existing_cable_designs, CABLE_DESIGN_IMPORT_ID_INDEX+1, self.ignore_existing))
-            handler_list.append(CableTypeIdHandler(CABLE_DESIGN_TYPE_KEY, self.missing_cable_types))
             handler_list.append(EndpointHandler(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_FROM_DEVICE_NAME_INDEX+1, CABLE_DESIGN_SRC_ETPM_INDEX+1, "source endpoints"))
             handler_list.append(DevicePortHandler(CABLE_DESIGN_FROM_PORT_NAME_KEY, self.ignore_port_columns, self.from_port_values))
             handler_list.append(EndpointHandler(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_TO_DEVICE_NAME_INDEX+1, CABLE_DESIGN_DEST_ETPM_INDEX+1, "destination endpoints"))
@@ -2484,9 +2462,6 @@ class CableDesignHelper(PreImportHelper):
 
         messages.append("New cable design items for import to CDB: %d" % len(self.output_objects))
 
-        if len(self.missing_cable_types) > 0:
-            messages.append("Cable types not defined in CDB: %d" % len(self.missing_cable_types))
-
         num_port_values = len(self.from_port_values) + len(self.to_port_values)
         if num_port_values > 0:
             messages.append("WARNING: ignored %d non-empty values in from/to device port columns (ignorePortColumns config resource set to true)" % num_port_values)
@@ -2497,10 +2472,6 @@ class CableDesignHelper(PreImportHelper):
 
         summary_column_names = []
         summary_column_values = []
-
-        if len(self.missing_cable_types) > 0:
-            summary_column_names.append("missing cable types")
-            summary_column_values.append(sorted(self.missing_cable_types))
 
         ignored_ports = self.from_port_values + self.to_port_values
         if len(ignored_ports) > 0:
