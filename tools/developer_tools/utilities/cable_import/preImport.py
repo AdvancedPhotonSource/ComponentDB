@@ -375,6 +375,7 @@ class ItemInfoManager():
         self.new_connector_types = set()
         self.output_connector_types = []
         self.output_cable_type_connectors = []
+        self.cable_type_info = {}
 
     def initialize(self):
         pass
@@ -412,6 +413,42 @@ class ItemInfoManager():
 
     def add_output_cable_type_connector(self, output_cable_type_connector):
         self.output_cable_type_connectors.append(output_cable_type_connector)
+
+    def get_cable_type_info_list(self, cable_type_name_list):
+
+        cable_type_name_list = list(cable_type_name_list)
+
+        print("fetching %d cable type info objects" % (len(cable_type_name_list)))
+
+        try:
+            request_obj = ItemDomainCableCatalogIdListRequest(name_list=cable_type_name_list)
+            info_list = self.api.getCableImportApi().get_cable_catalog_info_list(
+                item_domain_cable_catalog_id_list_request=request_obj)
+        except ApiException as ex:
+            fatal_error("unknown api exception getting list of cable type info objects")
+
+        # list sizes should match
+        if len(cable_type_name_list) != len(info_list):
+            fatal_error("api list size mismatch getting list of cable type info objects")
+
+        print("fetched %d cable type info objects" % (len(info_list)))
+
+        return info_list
+
+    def load_existing_cable_type_info(self, cable_type_names):
+        info_list = self.get_cable_type_info_list(cable_type_names)
+        for cable_type_name, cable_type in zip(cable_type_names, info_list):
+            if cable_type is not None:
+                self.cable_type_info[cable_type_name] = cable_type
+
+    def get_cable_type_id(self, cable_type_name):
+        if cable_type_name not in self.cable_type_info:
+            return 0
+        cable_type_info = self.cable_type_info[cable_type_name]
+        if cable_type_info.id is None:
+            return 0
+        else:
+            return cable_type_info.id
 
 
 class InputHandler(ABC):
@@ -652,53 +689,17 @@ class EndpointHandler(InputHandler):
 
 class CableTypeIdHandler(InputHandler):
 
-    def __init__(self, column_index, column_key, id_manager, missing_cable_type_list):
+    def __init__(self, column_key, missing_cable_type_list):
         super().__init__(column_key)
-        self.column_index = column_index
-        self.id_manager = id_manager
         self.missing_cable_type_list = missing_cable_type_list
 
-    @staticmethod
-    def get_id_list(api, name_list, description):
-
-        name_list = list(name_list)
-
-        print("fetching %d cable type id's for %s" % (len(name_list), description))
-
-        try:
-            request_obj = ItemDomainCableCatalogIdListRequest(name_list=name_list)
-            id_list = api.getCableCatalogItemApi().get_cable_type_id_list(item_domain_cable_catalog_id_list_request=request_obj)
-        except ApiException as ex:
-            fatal_error("unknown api exception getting list of cable type ids for %s" % description)
-
-        # list sizes should match
-        if len(name_list) != len(id_list):
-            fatal_error("api list size mismatch getting list of cable type ids for %s" % description)
-
-        print("fetched %d cable type id's for %s" % (len(id_list), description))
-
-        return id_list
-
     def initialize(self, api, sheet, first_row, last_row):
-        self.initialize_id_list(api, sheet, first_row, last_row)
-
-    def initialize_id_list(self, api, sheet, first_row, last_row):
-
-        cable_type_names = set()  # use set to eliminate duplicates
-
-        for row_ind in range(first_row, last_row+1):
-            val = sheet.cell(row_ind, self.column_index).value
-            if val is not None and val != "":
-                cable_type_names.add(val)
-
-        id_list = CableTypeIdHandler.get_id_list(api, cable_type_names, "item reference lookup")
-
-        self.id_manager.set_dict(dict(zip(cable_type_names, id_list)))
+        pass
 
     def handle_input(self, input_dict):
 
         cable_type_name = input_dict[self.column_key]
-        cable_type_id = self.id_manager.get_id_for_name(cable_type_name)
+        cable_type_id = self.info_manager.get_cable_type_id(cable_type_name)
         if cable_type_id == 0:
             self.missing_cable_type_list.add(cable_type_name)
             return True, ""
@@ -708,30 +709,17 @@ class CableTypeIdHandler(InputHandler):
 
 class CableTypeExistenceHandler(InputHandler):
 
-    def __init__(self, column_key, column_index, api, existing_cable_types, new_cable_types):
+    def __init__(self, column_key, existing_cable_types, new_cable_types):
         super().__init__(column_key)
-        self.column_index = column_index
         self.existing_cable_types = existing_cable_types
         self.new_cable_types = new_cable_types
-        self.api = api
-        self.id_mgr = IdManager()
 
     def initialize(self, api, sheet, first_row, last_row):
-
-        cable_type_names = []
-
-        for row_ind in range(first_row, last_row+1):
-            val = sheet.cell(row_ind, self.column_index).value
-            if val is not None and val != "":
-                cable_type_names.append(val)
-
-        id_list = CableTypeIdHandler.get_id_list(api, cable_type_names, "existence check")
-
-        self.id_mgr.set_dict(dict(zip(cable_type_names, id_list)))
+        pass
 
     def handle_input(self, input_dict):
         cable_type_name = input_dict[self.column_key]
-        cable_type_id = self.id_mgr.get_id_for_name(cable_type_name)
+        cable_type_id = self.info_manager.get_cable_type_id(cable_type_name)
         if cable_type_id is None:
             return False, "unexpected error in id map for cable type existence check"
         if cable_type_id != 0:
@@ -1934,7 +1922,7 @@ class CableTypeHelper(PreImportHelper):
         ]
 
         if not self.validate_only:
-            handler_list.append(CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, CABLE_TYPE_NAME_INDEX+1, self.api, self.existing_cable_types, self.new_cable_types))
+            handler_list.append(CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, self.existing_cable_types, self.new_cable_types))
             handler_list.append(SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, CABLE_TYPE_MANUFACTURER_INDEX+1, self.source_id_manager, self.api, self.source_output_objects, self.existing_sources, self.new_sources))
 
         return handler_list
@@ -1944,12 +1932,20 @@ class CableTypeHelper(PreImportHelper):
         # initialize connector type information from the connector columns
         connector_type_names = set()  # use set to eliminate duplicates
         for row_ind in range(first_row, last_row + 1):
-            for col_ind in range(CABLE_TYPE_CONNECTOR_TYPE_FIRST_INDEX, CABLE_TYPE_CONNECTOR_TYPE_LAST_INDEX + 1):
+            for col_ind in range(CABLE_TYPE_CONNECTOR_TYPE_FIRST_INDEX, CABLE_TYPE_CONNECTOR_TYPE_LAST_INDEX+1):
                 # get connector type name from all connector columns and add to set
                 val = sheet.cell(row_ind, col_ind).value
                 if val is not None and val != "":
                     connector_type_names.add(val)
         self.info_manager.initialize_connector_types(connector_type_names)
+
+        # retrieve information for existing cable catalog items
+        cable_type_names = set()  # use set to eliminate duplicates
+        for row_ind in range(first_row, last_row+1):
+            val = sheet.cell(row_ind, CABLE_TYPE_NAME_INDEX+1).value
+            if val is not None and val != "":
+                cable_type_names.add(val)
+        self.info_manager.load_existing_cable_type_info(cable_type_names)
 
     def handle_valid_row(self, input_dict):
 
@@ -2429,7 +2425,7 @@ class CableDesignHelper(PreImportHelper):
 
         if not self.validate_only:
             handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.existing_cable_designs, CABLE_DESIGN_IMPORT_ID_INDEX+1, self.ignore_existing))
-            handler_list.append(CableTypeIdHandler(CABLE_DESIGN_TYPE_INDEX+1, CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.missing_cable_types))
+            handler_list.append(CableTypeIdHandler(CABLE_DESIGN_TYPE_KEY, self.missing_cable_types))
             handler_list.append(EndpointHandler(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_FROM_DEVICE_NAME_INDEX+1, CABLE_DESIGN_SRC_ETPM_INDEX+1, "source endpoints"))
             handler_list.append(DevicePortHandler(CABLE_DESIGN_FROM_PORT_NAME_KEY, self.ignore_port_columns, self.from_port_values))
             handler_list.append(EndpointHandler(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_TO_DEVICE_NAME_INDEX+1, CABLE_DESIGN_DEST_ETPM_INDEX+1, "destination endpoints"))
