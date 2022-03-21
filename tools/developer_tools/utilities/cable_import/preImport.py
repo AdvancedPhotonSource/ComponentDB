@@ -64,7 +64,7 @@ import xlsxwriter
 
 from CdbApiFactory import CdbApiFactory
 from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomainCableDesignIdListRequest, \
-    ItemDomainMachineDesignIdListRequest, SourceIdListRequest, ConnectorTypeIdListRequest
+    ItemDomainMachineDesignIdListRequest, SourceIdListRequest, ConnectorTypeIdListRequest, CableCatalogItemInfo
 
 # constants
 
@@ -435,11 +435,19 @@ class ItemInfoManager():
 
         return info_list
 
-    def load_existing_cable_type_info(self, cable_type_names):
+    def add_cable_type_info(self, cable_type_name, cable_type_info):
+        self.cable_type_info[cable_type_name] = cable_type_info
+
+    def load_cable_type_info(self, cable_type_names):
         info_list = self.get_cable_type_info_list(cable_type_names)
-        for cable_type_name, cable_type in zip(cable_type_names, info_list):
-            if cable_type is not None:
-                self.cable_type_info[cable_type_name] = cable_type
+        for cable_type_name, cable_type_info in zip(cable_type_names, info_list):
+            if cable_type_info is None:
+                # cable type doesn't exist in cdb, create info object with id=0
+                cable_type_info = CableCatalogItemInfo()
+                cable_type_info.name = cable_type_name
+                cable_type_info.id = 0
+                cable_type_info.connector_names = []
+            self.add_cable_type_info(cable_type_name, cable_type_info)
 
     def get_cable_type_id(self, cable_type_name):
         if cable_type_name not in self.cable_type_info:
@@ -449,6 +457,14 @@ class ItemInfoManager():
             return 0
         else:
             return cable_type_info.id
+
+    def handle_cable_type_connector(self, cable_type_name, connector_name, cable_end, connector_type):
+        cable_type_info = self.cable_type_info[cable_type_name]
+        if cable_type_info.id == 0:
+            # only handle connector for new cable catalog items, ignore for existing ones
+            cable_type_info.connector_names.append(connector_name)
+            output_object = CableTypeConnectorOutputObject(cable_type_name, connector_name, cable_end, connector_type)
+            self.add_output_cable_type_connector(output_object)
 
 
 class InputHandler(ABC):
@@ -747,8 +763,7 @@ class CableTypeConnectorHandler(InputHandler):
         if connector_type is not None and connector_type != "":
             cable_type_name = input_dict[CABLE_TYPE_NAME_KEY]
             connector_name = self.column_key
-            output_object = CableTypeConnectorOutputObject(cable_type_name, connector_name, self.cable_end, connector_type)
-            self.info_manager.add_output_cable_type_connector(output_object)
+            self.info_manager.handle_cable_type_connector(cable_type_name, connector_name, self.cable_end, connector_type)
 
         return True, ""
 
@@ -1945,7 +1960,7 @@ class CableTypeHelper(PreImportHelper):
             val = sheet.cell(row_ind, CABLE_TYPE_NAME_INDEX+1).value
             if val is not None and val != "":
                 cable_type_names.add(val)
-        self.info_manager.load_existing_cable_type_info(cable_type_names)
+        self.info_manager.load_cable_type_info(cable_type_names)
 
     def handle_valid_row(self, input_dict):
 
@@ -1956,7 +1971,9 @@ class CableTypeHelper(PreImportHelper):
             return
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
-        self.output_objects.append(CableTypeOutputObject(helper=self, input_dict=input_dict))
+        output_object = CableTypeOutputObject(helper=self, input_dict=input_dict)
+        self.output_objects.append(output_object)
+
 
     def get_summary_messages_custom(self):
         return ["Connector Types that already exist in CDB: %d" % len(self.info_manager.existing_connector_types),
