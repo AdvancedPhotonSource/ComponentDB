@@ -132,6 +132,15 @@ public class ImportHelperCableDesignPullList
                 0));
         
         specs.add(new StringColumnSpec(
+                "End1 Rack/Location", 
+                "endpoint1Location", 
+                null, 
+                "Name of rack or location for end1 primary device.", 
+                "getEndpoint1Location",
+                null, 
+                0));
+        
+        specs.add(new StringColumnSpec(
                 "End2 Device", 
                 "endpoint2String", 
                 null, 
@@ -164,6 +173,15 @@ public class ImportHelperCableDesignPullList
                 null, 
                 "Name of routing waypoint/penetration for end2.", 
                 "getEndpoint2Route",
+                null, 
+                0));
+        
+        specs.add(new StringColumnSpec(
+                "End2 Rack/Location", 
+                "endpoint2Location", 
+                null, 
+                "Name of rack or location for end2 primary device.", 
+                "getEndpoint2Location",
                 null, 
                 0));
         

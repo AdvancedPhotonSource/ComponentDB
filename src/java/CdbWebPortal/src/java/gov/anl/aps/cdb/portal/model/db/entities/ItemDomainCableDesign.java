@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.RelationshipTypeControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
@@ -1301,6 +1302,40 @@ public class ItemDomainCableDesign extends Item {
     public void setEndpoint2Drawing(String drawing) throws CdbException {
         endpoint2Drawing = drawing;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_DRAWING_KEY, drawing);
+    }
+    
+    @JsonIgnore
+    public String getEndpoint1Location() {
+        ItemDomainMachineDesign endpoint = (ItemDomainMachineDesign) getEndpoint1();
+        if (endpoint == null) {
+            return null;
+        } else {
+            // must manually load location details before accessing
+            LocatableItemController.getInstance().getLocationStringForItem(endpoint);
+            Item location = endpoint.getActiveLocation();
+            if (location != null) {
+                return location.getName();
+            } else {
+                return null;
+            }
+        }
+    }
+
+    @JsonIgnore
+    public String getEndpoint2Location() {
+        ItemDomainMachineDesign endpoint = (ItemDomainMachineDesign) getEndpoint2();
+        if (endpoint == null) {
+            return null;
+        } else {
+            // must manually load location details before accessing
+            LocatableItemController.getInstance().getLocationStringForItem(endpoint);
+            Item location = endpoint.getActiveLocation();
+            if (location != null) {
+                return location.getName();
+            } else {
+                return null;
+            }
+        }
     }
 
     @Override
