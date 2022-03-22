@@ -123,6 +123,15 @@ public class ImportHelperCableDesignPullList
                 0));
         
         specs.add(new StringColumnSpec(
+                "End1 Route", 
+                "endpoint1Route", 
+                null, 
+                "Name of routing waypoint/penetration for end1.", 
+                "getEndpoint1Route",
+                null, 
+                0));
+        
+        specs.add(new StringColumnSpec(
                 "End2 Device", 
                 "endpoint2String", 
                 null, 
@@ -146,6 +155,15 @@ public class ImportHelperCableDesignPullList
                 null, 
                 "Name of cable connector for end2 primary connection.", 
                 "getEndpoint2Connector",
+                null, 
+                0));
+        
+        specs.add(new StringColumnSpec(
+                "End2 Route", 
+                "endpoint2Route", 
+                null, 
+                "Name of routing waypoint/penetration for end2.", 
+                "getEndpoint2Route",
                 null, 
                 0));
         
