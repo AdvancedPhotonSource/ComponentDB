@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -35,6 +36,12 @@ public class ConnectorTypeFacade extends CdbEntityFacade<ConnectorType> {
         return (ConnectorTypeFacade) SessionUtility.findFacade(ConnectorTypeFacade.class.getSimpleName()); 
     }
     
+    @Override
+    public List<ConnectorType> findAll() {
+        return (List<ConnectorType>) em.createNamedQuery("ConnectorType.findAll")
+                .getResultList();
+    }
+
     public ConnectorType findByName(String name) {
         try {
             return (ConnectorType) em.createNamedQuery("ConnectorType.findByName")
