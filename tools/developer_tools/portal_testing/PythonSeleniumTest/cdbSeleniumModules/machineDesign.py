@@ -10,6 +10,7 @@ import csv
 
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver import ActionChains
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 from cdbSeleniumModules.cdbSeleniumModuleBase import CdbSeleniumModuleBase
@@ -28,6 +29,14 @@ class MachineDesign(CdbSeleniumModuleBase):
 	CSV_ALTERNATE_NAME_COLUMN_HEADER = 'Alternate Name'
 	CSV_ASSIGNED_CATALOG = 'Assigned Catalog'
 	CSV_ASSIGNED_CATALOG_BLANK = 'placeholder'
+	LIST_FORM_NAME = "itemMachineDesignListForm"
+	EXPORT_FORM_NAME = "exportMachineDesignForm"
+	ENTITY_TYPE_NAME = "itemMachineDesign"
+
+	EXPORT_FILE_NAME = "Machine Element Update Export.xlsx"
+
+	def __init__(self, driver):
+		super().__init__(driver)
 
 	def navigate_to_machine_design(self):
 		self._navigate_to_dropdown('designMenubarDropdownButton', 'machineDesignMenubarButton', 'itemDomainMachineDesign/list')
@@ -62,12 +71,12 @@ class MachineDesign(CdbSeleniumModuleBase):
 		tbody = self._find_by_id(MachineDesign.TBODY_ID)
 		resultingId = None
 
-		for row in tbody.find_elements_by_xpath('./tr'):
+		for row in tbody.find_elements(by=By.XPATH, value='./tr'):
 			if row.get_attribute('aria-selected') == 'true':
 				if expectedName is not None:
-					dataCells = row.find_elements_by_xpath('./td')
+					dataCells = row.find_elements(by=By.XPATH, value='./td')
 					nameCell = dataCells[MachineDesign.MACHINE_DESIGN_ROW_XPATH_NAME_IDX - 1]
-					spans = nameCell.find_elements_by_xpath('./span')
+					spans = nameCell.find_elements(by=By.XPATH, value='./span')
 					name = spans[-1].text
 					if name == expectedName:
 						resultingId = row.get_attribute('id')
@@ -98,11 +107,11 @@ class MachineDesign(CdbSeleniumModuleBase):
 				previous = None
 				try:
 					tbody = self._find_by_id(MachineDesign.TBODY_ID)
-					rows = tbody.find_elements_by_xpath('./tr')
+					rows = tbody.find_elements(by=By.XPATH, value='./tr')
 					for row in reversed(rows):
-						dataCells = row.find_elements_by_xpath('./td')
+						dataCells = row.find_elements(by=By.XPATH, value='./td')
 						nameCell = dataCells[MachineDesign.MACHINE_DESIGN_ROW_XPATH_NAME_IDX - 1]
-						spans = nameCell.find_elements_by_xpath('./span')
+						spans = nameCell.find_elements(by=By.XPATH, value='./span')
 						rowExpander = spans[0]
 
 						rowExpanderClass = rowExpander.get_attribute("class")
@@ -171,7 +180,7 @@ class MachineDesign(CdbSeleniumModuleBase):
 	@add_stale_protection
 	def _get_row_count_of_tbody(self):
 		tBody = self._wait_for_id(MachineDesign.TBODY_ID)
-		return len(tBody.find_elements_by_xpath('./tr'))
+		return len(tBody.find_elements(by=By.XPATH, value='./tr'))
 
 	def _context_click_x_path(self, xpath, menuItemXpath):
 		action = ActionChains(self.driver)
@@ -247,7 +256,7 @@ class MachineDesign(CdbSeleniumModuleBase):
 		attempts = 0
 		found = False
 		while attempts < 6:
-			resultCount = len(tBody.find_elements_by_xpath('./tr'))
+			resultCount = len(tBody.find_elements(by=By.XPATH, value='./tr'))
 			if resultCount == 1:
 				found = True;
 				break;
@@ -353,4 +362,13 @@ class MachineDesign(CdbSeleniumModuleBase):
 							break
 				lineCount += 1
 
+	def filter_machine(self, filter_string='Test Machine'):
+		filterbox_id = 'itemMachineDesignListForm:itemMachineDesignListDataTable:nameMdFilter'
+		self._wait_for_clickable_id_with_stale_protection(filterbox_id)
+		self._type_in_id(filterbox_id, filter_string + "\n")
+		self._wait_for_invisible_loading_dialog()
+
+	def export_machine(self, test):
+		self._navigate_to_export_from_list(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME)
+		self._export(self.EXPORT_FORM_NAME, self.EXPORT_FILE_NAME, test, has_levels=True)
 
