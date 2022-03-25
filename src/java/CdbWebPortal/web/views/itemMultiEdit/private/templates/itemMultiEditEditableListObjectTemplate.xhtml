@@ -129,9 +129,7 @@ See LICENSE file.
                        styleClass="fa fa-link-icon fa-exclamation-triangle" 
                        rendered="#{itemObject.persitanceErrorMessage != null}"
                        />
-        <p:overlayPanel for="itemMultiEditErrorMessageDisplayCommandLink"
-                        hideEffect="fade"
-                        showEffect="fade">
+        <p:overlayPanel for="itemMultiEditErrorMessageDisplayCommandLink">
             <h:outputText value="#{itemObject.persitanceErrorMessage}"/>
         </p:overlayPanel>
                         

@@ -41,8 +41,10 @@ public class FacesUtility {
     }
 
     public void updateToToday(Date date) {
-        Date newDate = new Date();
-        date.setTime(newDate.getTime());
+        if (date != null) {
+            Date newDate = new Date();
+            date.setTime(newDate.getTime());
+        }
     }
 
     public void setSelectOneMenu(SelectOneMenu selectOneMenu) {
@@ -92,9 +94,9 @@ public class FacesUtility {
 
         return false;
     }
-    
+
     public boolean displayFilters(List<Object> dataList, int countRows) {
-        return displayFiltersForList(dataList, countRows); 
+        return displayFiltersForList(dataList, countRows);
     }
 
     public boolean displayFilters(DataModel dataModel, int countRows) {
@@ -157,7 +159,7 @@ public class FacesUtility {
         return "";
     }
 
-    public String jumpToItemQrId() {
+    public String jumpToItemQrId(String failRemoteCommand) {
         // Remove any spaces 
         jumpToQrIdEntry = jumpToQrIdEntry.replace(" ", "");
 
@@ -167,6 +169,7 @@ public class FacesUtility {
             qrIdNum = Integer.parseInt(jumpToQrIdEntry);
         } catch (NumberFormatException ex) {
             SessionUtility.addErrorMessage("Error parsing qrid", ex.getMessage());
+            SessionUtility.executeRemoteCommand(failRemoteCommand); 
             return null;
         }
 

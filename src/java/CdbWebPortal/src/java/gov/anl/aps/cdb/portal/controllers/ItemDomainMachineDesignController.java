@@ -206,9 +206,60 @@ public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBa
         return new ItemDomainMachineDesignControllerUtility();
     }
 
+    public void saveListFilterSettings() {
+        ItemDomainMachineDesignTreeNode machineDesignTreeRootTreeNode = getMachineDesignTreeRootTreeNode();
+
+        List<ItemDomainMachineDesign> topLevelItems = machineDesignTreeRootTreeNode.getTopLevelItems();
+        String filteredMachineIds = settingObject.getFilterFilteredMachineIds();
+        filteredMachineIds = "";
+        int count = 0;
+        for (ItemDomainMachineDesign machine : topLevelItems) {
+            if (machine.isFilterMachineNode()) {
+                filteredMachineIds += machine.getId() + ",";
+                count++;
+            }
+        }
+        if (count == topLevelItems.size()) {
+            filteredMachineIds = "";
+        }
+        settingObject.setFilterFilteredMachineIds(filteredMachineIds);
+
+        String nameFilter = machineDesignTreeRootTreeNode.getNameFilter();
+        settingObject.setFilterByName(nameFilter);
+
+        settingObject.saveListSettingsForSessionSettingEntityActionListener(null);
+        SettingController instance = SettingController.getInstance();
+        instance.saveSettingListForSettingEntity();
+    }
+
     @Override
     public ItemDomainMachineDesignTreeNode loadMachineDesignRootTreeNode(List<ItemDomainMachineDesign> itemsWithoutParents) {
+        // Load is filterable setting into the top level nodes.     
+        String filteredMachineIds = settingObject.getFilterFilteredMachineIds();
+        if (filteredMachineIds != null && filteredMachineIds.isBlank() == false) {
+            String[] filterableNodeIds = filteredMachineIds.split(",");
+
+            for (ItemDomainMachineDesign machineItem : itemsWithoutParents) {
+                boolean filterable = false;
+                for (String nodeIdStr : filterableNodeIds) {
+                    int id = Integer.parseInt(nodeIdStr);
+
+                    if (id == machineItem.getId()) {
+                        filterable = true;
+                        break;
+                    }
+                }
+
+                machineItem.updateFilterMachineNode(filterable);
+            }
+        }
+
         ItemDomainMachineDesignTreeNode rootTreeNode = new ItemDomainMachineDesignTreeNode(itemsWithoutParents, getDefaultDomain(), getEntityDbFacade());
+
+        String filterByName = settingObject.getFilterByName();
+        if (filterByName != null) {
+            rootTreeNode.setNameFilter(filterByName);
+        }
 
         return rootTreeNode;
     }

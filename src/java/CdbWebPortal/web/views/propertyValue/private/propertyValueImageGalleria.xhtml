@@ -41,7 +41,8 @@ See LICENSE file.
                     circular="true"
                     showThumbnails="true"                 
                     autoPlay="true"
-                    transitionInterval="7000"                    
+                    transitionInterval="7000"    
+                    rendered="#{entityController.displayImages}"
                     style="max-width: 500px;">
             <p:graphicImage value="#{propertyValueController.getScaledImagePath(propertyValueObject)}" 
                             alt="#{propertyValueObject.description}" 

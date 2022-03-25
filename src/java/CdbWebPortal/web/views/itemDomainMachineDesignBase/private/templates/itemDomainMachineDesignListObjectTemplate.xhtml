@@ -279,6 +279,9 @@ See LICENSE file.
     <p:column styleClass="narrowColumnNoPad"
               rendered="#{hideOptionalColumns 
                           and hideSearchColumns}">
+        <f:facet name="header">
+            <ui:insert name="machineListObjectActionColumnHeader"/>
+        </f:facet>
         <p:commandLink id="#{entityTypeName}ListViewLink#{viewId}" 
                        action="#{entityController.prepareView(itemListObject)}" 
                        styleClass="fa fa-link-icon fa-info" 

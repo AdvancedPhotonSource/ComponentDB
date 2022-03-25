@@ -7,7 +7,8 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                template="private/templates/listViewTemplate.xhtml">
+                template="private/templates/listViewTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />    
     
@@ -17,6 +18,18 @@ See LICENSE file.
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainMachineDesignController.processPreRenderList()}" />
     </f:metadata>
+    
+    <ui:define name="machineListObjectActionColumnHeader">
+        <p:commandLink id="#{entityTypeName}SaveListFilters#{viewId}"
+                       action="#{entityController.saveListFilterSettings()}"
+                       styleClass="fa fa-link-icon fa-save"
+                       rendered="#{settingController.sessionUserHaveSettingsWritePermissions}"
+                       onclick="PF('loadingDialog').show()"
+                       oncomplete="PF('loadingDialog').hide()"
+                       title="View">
+            <p:tooltip for="#{entityTypeName}SaveListFilters#{viewId}" value="Save filter configurations."/>
+        </p:commandLink>
+    </ui:define>
 
 </ui:composition>
 

@@ -298,11 +298,13 @@ footer {
 .entityDataText {
     font-weight: normal;
     float: left;
+    overflow-wrap: anywhere;
 }
 
 .entityDataEmphasizedText {
     font-weight: bold;
     font-size: 105%;
+    overflow-wrap: anywhere;
 }
 
 .entityDataSelectOne {
@@ -578,6 +580,7 @@ h1 {
     color: #4e80b6;
     vertical-align: middle;
     text-align: left;
+    overflow-wrap: anywhere;
 }
 
 .sectionTitle h2 {
@@ -993,6 +996,7 @@ body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
 
 .ui-datatable td {
     overflow: visible !important; 
+    overflow-wrap: anywhere;
 }
 
 body .ui-datatable .ui-paginator.ui-paginator-top,
@@ -1377,6 +1381,18 @@ body .ui-panel .ui-panel-titlebar  {
 
 .menuBarInputText {
     height: 20px;
+}
+
+.locationRelationshipTree {
+    width: 100%;
+}
+
+.locationRelationshipTree .ui-tree{
+    padding: 0; 
+}
+
+.locationRelationshipTree div > span.ui-treenode-label.ui-corner-all {
+    width: 0px;
 }
 
 .locationTreeEditPageContainer{

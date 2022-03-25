@@ -22,10 +22,13 @@ PROPERTY_EDIT_LIST_SUPPORT_FILENAME = 'propertyEditListSupport.xhtml'
 PROPERTY_EDIT_OBJECT_SUPPORT_FILENAME = 'propertyEditObjectSupport.xhtml'
 PROPERTY_EDIT_OBJECT_VALUES_FILENAME = 'propertyEditObjectValues.xhtml'
 MULTI_EDIT_CATALOG_CONFIGURATION_FILENAME = 'catalogMultiEditConfigurations.xhtml'
+MULTI_EDIT_CABLE_INVENTORY_CONFIGURATION_FILENAME = 'cableInventoryMultiEditConfigurations.xhtml'
 MULTI_EDIT_INVENTORY_CONFIGURATION_FILENAME = 'inventoryMultiEditConfigurations.xhtml'
 MULTI_EDIT_CATALOG_LIST_OBJECT_FILENAME = 'catalogMultiEditEditableListObjects.xhtml'
+MULTI_EDIT_CABLE_INVENTORY_LIST_OBJECT_FILENAME = 'cableInventoryMultiEditEditableListObjects.xhtml'
 MULTI_EDIT_INVENTORY_LIST_OBJECT_FILENAME = 'inventoryMultiEditEditableListObjects.xhtml'
 MULTI_EDIT_CATALOG_LIST_SUPPORT_FILENAME = 'catalogMultiEditEditableListSupports.xhtml'
+MULTI_EDIT_CABLE_INVENTORY_LIST_SUPPORT_FILENAME = 'cableInventoryMultiEditEditableListSupports.xhtml'
 MULTI_EDIT_INVENTORY_LIST_SUPPORT_FILENAME = 'inventoryMultiEditEditableListSupports.xhtml'
 
 PLUGIN_ABOUT_DIALOGS_PATH = 'about/dialogs.xhtml'
@@ -46,10 +49,13 @@ PLUGIN_PROPERTY_EDIT_OBJECT_SUPPORT_PATH = 'propertyValue/editObjectSupport.xhtm
 PLUGIN_PROPERTY_EDIT_OBJECT_VALUES_PATH = 'propertyValue/editObjectValues.xhtml'
 PLUGIN_MULTI_EDIT_BASE_PATH = 'itemMultiEdit'
 PLUGIN_MULTI_EDIT_CATALOG_CONFIGURATION_PATH = '%s/catalogConfiguration.xhtml' % PLUGIN_MULTI_EDIT_BASE_PATH
+PLUGIN_MULTI_EDIT_CABLE_INVENTORY_CONFIGURATION_PATH = '%s/cableInventoryConfiguration.xhtml' % PLUGIN_MULTI_EDIT_BASE_PATH
 PLUGIN_MULTI_EDIT_INVENTORY_CONFIGURATION_PATH = '%s/inventoryConfiguration.xhtml' % PLUGIN_MULTI_EDIT_BASE_PATH
 PLUGIN_MULTI_EDIT_CATALOG_LIST_OBJECT_PATH = '%s/catalogEditableListObject.xhtml' % PLUGIN_MULTI_EDIT_BASE_PATH
+PLUGIN_MULTI_EDIT_CABLE_INVENTORY_LIST_OBJECT_PATH = '%s/cableInventoryEditableListObject.xhtml' % PLUGIN_MULTI_EDIT_BASE_PATH
 PLUGIN_MULTI_EDIT_INVENTORY_LIST_OBJECT_PATH = '%s/inventoryEditableListObject.xhtml' % PLUGIN_MULTI_EDIT_BASE_PATH
 PLUGIN_MULTI_EDIT_CATALOG_LIST_SUPPORT_PATH = '%s/catalogEditableListSupport.xhtml' % PLUGIN_MULTI_EDIT_BASE_PATH
+PLUGIN_MULTI_EDIT_CABLE_INVENTORY_LIST_SUPPORT_PATH = '%s/cableInventoryEditableListSupport.xhtml' % PLUGIN_MULTI_EDIT_BASE_PATH
 PLUGIN_MULTI_EDIT_INVENTORY_LIST_SUPPORT_PATH = '%s/inventoryEditableListSupport.xhtml' % PLUGIN_MULTI_EDIT_BASE_PATH
 
 UI_INCLUDE_SYNTAX = '   <ui:include src="%s"/>\n'
@@ -82,10 +88,13 @@ class PluginXhtmlParser():
         property_edit_object_values = ''
 
         multi_edit_catalog_configurations = ''
+        multi_edit_cable_inventory_configurations = ''
         multi_edit_inventory_configurations = ''
         multi_edit_catalog_list_objects = ''
+        multi_edit_cable_inventory_list_objects = ''
         multi_edit_inventory_list_objects = ''
         multi_edit_catalog_list_supports = ''
+        multi_edit_cable_inventory_list_supports = ''
         multi_edit_inventory_list_supports = ''
 
         for cdb_plugin in installed_plugins:
@@ -113,10 +122,13 @@ class PluginXhtmlParser():
             property_edit_object_values += self.generate_ui_inlcude(PLUGIN_PROPERTY_EDIT_OBJECT_VALUES_PATH, plugin_name)
 
             multi_edit_catalog_configurations += self.generate_ui_inlcude(PLUGIN_MULTI_EDIT_CATALOG_CONFIGURATION_PATH, plugin_name)
+            multi_edit_cable_inventory_configurations += self.generate_ui_inlcude(PLUGIN_MULTI_EDIT_CABLE_INVENTORY_CONFIGURATION_PATH, plugin_name)
             multi_edit_inventory_configurations += self.generate_ui_inlcude(PLUGIN_MULTI_EDIT_INVENTORY_CONFIGURATION_PATH, plugin_name)
             multi_edit_catalog_list_objects += self.generate_ui_inlcude(PLUGIN_MULTI_EDIT_CATALOG_LIST_OBJECT_PATH, plugin_name)
+            multi_edit_cable_inventory_list_objects += self.generate_ui_inlcude(PLUGIN_MULTI_EDIT_CABLE_INVENTORY_LIST_OBJECT_PATH, plugin_name)
             multi_edit_inventory_list_objects += self.generate_ui_inlcude(PLUGIN_MULTI_EDIT_INVENTORY_LIST_OBJECT_PATH, plugin_name)
             multi_edit_catalog_list_supports += self.generate_ui_inlcude(PLUGIN_MULTI_EDIT_CATALOG_LIST_SUPPORT_PATH, plugin_name)
+            multi_edit_cable_inventory_list_supports += self.generate_ui_inlcude(PLUGIN_MULTI_EDIT_CABLE_INVENTORY_LIST_SUPPORT_PATH, plugin_name)
             multi_edit_inventory_list_supports += self.generate_ui_inlcude(PLUGIN_MULTI_EDIT_INVENTORY_LIST_SUPPORT_PATH, plugin_name)
 
 
@@ -160,14 +172,20 @@ class PluginXhtmlParser():
             XHTML_TEMPLATE_UI_INCLUDE_KEY, property_edit_object_values)
         result[MULTI_EDIT_CATALOG_CONFIGURATION_FILENAME] = xhtml_template_file_content.replace(
             XHTML_TEMPLATE_UI_INCLUDE_KEY, multi_edit_catalog_configurations)
+        result[MULTI_EDIT_CABLE_INVENTORY_CONFIGURATION_FILENAME] = xhtml_template_file_content.replace(
+            XHTML_TEMPLATE_UI_INCLUDE_KEY, multi_edit_cable_inventory_configurations)
         result[MULTI_EDIT_INVENTORY_CONFIGURATION_FILENAME] = xhtml_template_file_content.replace(
             XHTML_TEMPLATE_UI_INCLUDE_KEY, multi_edit_inventory_configurations)
         result[MULTI_EDIT_CATALOG_LIST_OBJECT_FILENAME] = xhtml_template_file_content.replace(
             XHTML_TEMPLATE_UI_INCLUDE_KEY, multi_edit_catalog_list_objects)
+        result[MULTI_EDIT_CABLE_INVENTORY_LIST_OBJECT_FILENAME] = xhtml_template_file_content.replace(
+            XHTML_TEMPLATE_UI_INCLUDE_KEY, multi_edit_cable_inventory_list_objects)
         result[MULTI_EDIT_INVENTORY_LIST_OBJECT_FILENAME] = xhtml_template_file_content.replace(
             XHTML_TEMPLATE_UI_INCLUDE_KEY, multi_edit_inventory_list_objects)
         result[MULTI_EDIT_CATALOG_LIST_SUPPORT_FILENAME] = xhtml_template_file_content.replace(
             XHTML_TEMPLATE_UI_INCLUDE_KEY, multi_edit_catalog_list_supports)
+        result[MULTI_EDIT_CABLE_INVENTORY_LIST_SUPPORT_FILENAME] = xhtml_template_file_content.replace(
+            XHTML_TEMPLATE_UI_INCLUDE_KEY, multi_edit_cable_inventory_list_supports)
         result[MULTI_EDIT_INVENTORY_LIST_SUPPORT_FILENAME] = xhtml_template_file_content.replace(
             XHTML_TEMPLATE_UI_INCLUDE_KEY, multi_edit_inventory_list_supports)
 

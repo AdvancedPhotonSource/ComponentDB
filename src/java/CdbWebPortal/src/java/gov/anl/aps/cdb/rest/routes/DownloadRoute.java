@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.DocumentPropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
+import gov.anl.aps.cdb.portal.utilities.GalleryUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.File;
@@ -21,6 +22,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -64,51 +66,71 @@ public class DownloadRoute extends BaseRoute {
         PropertyTypeHandler propertyTypeHandler = result.getPropertyType().getPropertyTypeHandler();
 
         // false is document, true is image 
-        Boolean imageFileType = null;
+        Boolean isAttachment = null;
+        String filePath = "";
+        MediaType mediaType = null;
 
         if (propertyTypeHandler != null) {
             String name = propertyTypeHandler.getName();
             String documentHandlerName = DocumentPropertyTypeHandler.HANDLER_NAME;
             String imageHandlerName = ImagePropertyTypeHandler.HANDLER_NAME;
 
+            String imageFormat = GalleryUtility.getImageFormat(originalFileName);
+
+            if (imageFormat.equalsIgnoreCase("pdf")) {
+                mediaType = MediaType.WILDCARD_TYPE;
+            }
+
             if (name.equals(documentHandlerName)) {
-                imageFileType = false;
+                if (GalleryUtility.viewableFormat(imageFormat)) {
+                    isAttachment = false;
+                } else if (imageFormat.equalsIgnoreCase("html")) {
+                    isAttachment = false;
+                    mediaType = MediaType.TEXT_HTML_TYPE;
+                } else {
+                    isAttachment = true;
+                }
+                filePath = StorageUtility.getFileSystemPropertyValueDocumentPath(storedFileName);
             } else if (name.equals(imageHandlerName)) {
-                imageFileType = true;
+                isAttachment = false;
+                String scaling = CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION;
+                LOGGER.debug("Fetching " + scaling + " image: " + originalFileName);
+                String fullImageName = storedFileName + scaling;
+                filePath = StorageUtility.getFileSystemPropertyValueImagePath(fullImageName);
             }
         }
 
-        if (imageFileType == null) {
+        if (isAttachment == null) {
             throw new InvalidRequest("Property value provided is neither a document or image upload type property value.");
         }
-        
-        String filePath = ""; 
 
-        if (imageFileType) {
-            String scaling = CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION;
-            LOGGER.debug("Fetching " + scaling + " image: " + originalFileName);
-            String fullImageName = storedFileName + scaling;
-            filePath = StorageUtility.getFileSystemPropertyValueImagePath(fullImageName);
-        } else {
-            filePath = StorageUtility.getFileSystemPropertyValueDocumentPath(storedFileName);
-        }
-
-        return getFileResponse("Image: " + originalFileName, originalFileName, filePath, !imageFileType);
+        return getFileResponse("Upload: " + originalFileName, originalFileName, filePath, isAttachment, mediaType);
     }
 
     private Response getFileResponse(String errorFileTypeColonName, String fileName, String storageFilePath, boolean isAttachment) throws FileNotFoundException {
+        return getFileResponse(errorFileTypeColonName, fileName, storageFilePath, isAttachment, null);
+    }
+
+    private Response getFileResponse(String errorFileTypeColonName, String fileName, String storageFilePath, boolean isAttachment, MediaType mediaType) throws FileNotFoundException {
         File file = new File(storageFilePath);
 
         if (file.exists()) {
             String headerObject = "";
             if (isAttachment) {
-                headerObject += "attachment; "; 
+                headerObject += "attachment; ";
+            } else {
+                headerObject += "inline; ";
             }
-            headerObject += "filename=" + fileName; 
-            
-            ResponseBuilder response = Response.ok((Object) file);
+            headerObject += "filename=" + fileName;
+
+            ResponseBuilder response = Response.ok((Object) file, mediaType);
+
             response.header("Content-Disposition",
                     headerObject);
+            
+            // Reverse proxy can include header with value 'nosniff' causing issue where documents are not displayed correctly. 
+            response.header("X-Content-Type-Options", " ");
+            
             return response.build();
         }
 

@@ -8,7 +8,6 @@ INSERT INTO `allowed_property_domain` VALUES
 (13,1),
 (13,2),
 (13,3),
-(13,4),
 (13,5),
 (13,6),
 (13,7),
