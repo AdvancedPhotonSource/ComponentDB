@@ -330,6 +330,11 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         } else {
             // specified name must be unique
             Item item = itemConnector.getItem();
+            if (item == null) {
+                isValid = false;
+                validStr = getDisplayItemConnectorLabel() + " does not have parent catalog item";
+                return new ValidInfo(isValid, validStr);
+            }
             List<ItemConnector> connectorList = item.getItemConnectorList();
             boolean isDuplicate = false;
             for (ItemConnector otherConnector : connectorList) {

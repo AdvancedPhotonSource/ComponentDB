@@ -168,6 +168,7 @@ public abstract class ImportHelperConnectorBase extends ImportHelperBase<ItemCon
             // item must be specified
             isValid = false;
             validStr = getLabelItem() + " must be specified";
+            return new CreateInfo(new ItemConnector(), isValid, validStr);
         }
         
         if (connectorName == null || connectorName.isBlank()) {
