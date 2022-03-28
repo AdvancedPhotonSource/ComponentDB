@@ -204,7 +204,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
                             // need to create new ItemElement for relationship 
                             // between new parent and child in database, so add to collection and
                             // facade will create ItemElement when updating the item.
-                            item.getNewElementList().add(relationshipElement);
+                            item.getElementsToCreate().add(relationshipElement);
                         }
                     } catch (CdbException ex) {
                         isValid = false;

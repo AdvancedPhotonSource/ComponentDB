@@ -674,12 +674,14 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
      * @param currentElement
      * @param newAssignedItem
      */
-    private void updateTemplateReferenceForAssignedItem(Item mdItem,
+    private void updateTemplateReferenceForAssignedItem(
+            ItemDomainMachineDesign mdItem,
             Item originalContainedItem,
             Item newAssignedItem, UserInfo userInfo) throws CdbException {
+        
         if (mdItem.getIsItemTemplate()) {
-            List<ItemDomainMachineDesign> itemsCreatedFromThisTemplateItem = (List<ItemDomainMachineDesign>) (List<?>) mdItem.getItemsCreatedFromThisTemplateItem();
-            List<ItemDomainMachineDesign> itemsToUpdate = new ArrayList<>();
+            List<ItemDomainMachineDesign> itemsCreatedFromThisTemplateItem = 
+                    (List<ItemDomainMachineDesign>) (List<?>) mdItem.getItemsCreatedFromThisTemplateItem();
 
             for (ItemDomainMachineDesign item : itemsCreatedFromThisTemplateItem) {
                 Item assignedItem = item.getAssignedItem();
@@ -687,11 +689,9 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
                 // Verify if in sync with template
                 if (ObjectUtility.equals(originalContainedItem, assignedItem)) {
                     item.setAssignedItem(newAssignedItem);
-                    itemsToUpdate.add(item);
+                    mdItem.addItemToUpdate(item);
                 }
             }
-
-            updateList(itemsToUpdate, userInfo);
         }
     }
 
