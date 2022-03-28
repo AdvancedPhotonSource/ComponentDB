@@ -51,6 +51,10 @@ See LICENSE file.
             <ui:param name="endpointNum" value="1" />                
         </ui:decorate>
 
+        <ui:decorate template="private/templates/listViewEndpointLocationColumn.xhtml">
+            <ui:param name="endpointNum" value="1" />                
+        </ui:decorate>
+
         <ui:decorate template="private/templates/listViewEndpointDeviceColumn.xhtml">
             <ui:param name="endpointNum" value="2" />                
         </ui:decorate>
@@ -64,6 +68,10 @@ See LICENSE file.
         </ui:decorate>
 
         <ui:decorate template="private/templates/listViewConnectedDevicesColumn.xhtml">
+            <ui:param name="endpointNum" value="2" />                
+        </ui:decorate>
+
+        <ui:decorate template="private/templates/listViewEndpointLocationColumn.xhtml">
             <ui:param name="endpointNum" value="2" />                
         </ui:decorate>
 
@@ -94,6 +102,9 @@ See LICENSE file.
                 <ui:decorate template="private/templates/listCustomizeOptionConnectedDevices.xhtml">
                     <ui:param name="endpointNum" value="1" />                
                 </ui:decorate>
+                <ui:decorate template="private/templates/listCustomizeOptionEndpointLocation.xhtml">
+                    <ui:param name="endpointNum" value="1" />                
+                </ui:decorate>
                 <ui:decorate template="private/templates/listCustomizeOptionEndpointDevice.xhtml">
                     <ui:param name="endpointNum" value="2" />                
                 </ui:decorate>
@@ -104,6 +115,9 @@ See LICENSE file.
                     <ui:param name="endpointNum" value="2" />                
                 </ui:decorate>
                 <ui:decorate template="private/templates/listCustomizeOptionConnectedDevices.xhtml">
+                    <ui:param name="endpointNum" value="2" />                
+                </ui:decorate>
+                <ui:decorate template="private/templates/listCustomizeOptionEndpointLocation.xhtml">
                     <ui:param name="endpointNum" value="2" />                
                 </ui:decorate>
             </p:panelGrid>
