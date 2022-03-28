@@ -5,6 +5,9 @@
 package gov.anl.aps.cdb.portal.controllers.settings;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogBaseController;
+import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
+import org.primefaces.model.SortMeta;
+import org.primefaces.model.SortOrder;
 
 /**
  *
@@ -29,6 +32,9 @@ public abstract class ItemDomainCatalogBaseSettings<CatalogController extends It
 
     protected Boolean loadComponentInstanceRowExpansionPropertyValues = null;
     protected Boolean displayComponentInstanceRowExpansion = null;
+    
+    private static String DEFAULT_SORT_KEY = ItemQueryBuilder.QueryTranslator.name.getValue();
+    private static SortOrder DEFAULT_SORT_ORDER = SortOrder.ASCENDING; 
 
     public ItemDomainCatalogBaseSettings(CatalogController parentController) {
         super(parentController);
@@ -77,5 +83,18 @@ public abstract class ItemDomainCatalogBaseSettings<CatalogController extends It
     public void setDisplayItemIdentifier2(Boolean displayItemIdentifier2) {
         this.displayAlternateName = displayItemIdentifier2;
     }
+
+    @Override
+    public SortMeta getDataTableSortMeta() {
+        if (dataTableSortMeta == null) {            
+            SortMeta.Builder builder = new SortMeta().builder();
+            dataTableSortMeta = builder
+                    .field(DEFAULT_SORT_KEY)
+                    .order(DEFAULT_SORT_ORDER)
+                    .build();            
+        }
+        return dataTableSortMeta; 
+    }
+
 
 }

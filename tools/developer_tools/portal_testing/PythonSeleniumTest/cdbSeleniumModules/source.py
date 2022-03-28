@@ -13,6 +13,9 @@ class Source(CdbSeleniumModuleBase):
     IMPORT_FORM_NAME = 'importSourceForm'
     IMPORT_SOURCE_FILE_NAME = 'Source Import.xlsx'
 
+    EXPORT_FORM_NAME = 'exportSourceForm'
+    EXPORT_SOURCE_FILE_NAME = 'Source Export.xlsx'
+
     def navigate_to_source_list(self):
         self._navigate_to_dropdown('administrativeButton', 'adminSourcesButton', '%s/list' % self.VIEW_BASE_NAME)
 
@@ -35,3 +38,7 @@ class Source(CdbSeleniumModuleBase):
         test.assertEqual(len(table_results), 25, msg='25 items were imported in the spreadsheet')
 
         self._import_complete(self.IMPORT_FORM_NAME, self.VIEW_BASE_NAME)
+
+    def export_source(self, test):
+        self._navigate_to_export_from_list(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME)
+        self._export(self.EXPORT_FORM_NAME, self.EXPORT_SOURCE_FILE_NAME, test)

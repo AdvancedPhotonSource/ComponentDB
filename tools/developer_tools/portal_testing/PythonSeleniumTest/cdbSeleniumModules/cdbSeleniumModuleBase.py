@@ -23,6 +23,8 @@ GROWL_MESSAGE_CLOSE_BUTTON = GROWL_MESSAGE_CONTAINER + '/div[1]'
 class CdbSeleniumModuleBase:
 
 	WAIT_FOR_ELEMENT_TIMEOUT = 10
+	VISIBLE_ID_TIMEOUT = 10
+	LOADING_DIALOG_ID = 'loadingDialog'
 
 	def __init__(self, driver):
 		self.driver = driver
@@ -81,10 +83,10 @@ class CdbSeleniumModuleBase:
 		input.send_keys(text)
 
 	def _find_by_id(self, id):
-		return self.driver.find_element_by_id(id)
+		return self.driver.find_element(by=By.ID, value=id)
 
 	def _find_by_xpath(self, xpath):
-		return self.driver.find_element_by_xpath(xpath)
+		return self.driver.find_element(by=By.XPATH, value=xpath)
 
 	def _wait_for_id_and_click(self, id):
 		element = self._wait_for_id(id)
@@ -93,6 +95,11 @@ class CdbSeleniumModuleBase:
 	def _wait_for_visible_id(self, id):
 		return self._wait_for_visible(By.ID, id)
 
+	def _wait_for_invisible_loading_dialog(self, timeout=VISIBLE_ID_TIMEOUT):
+		# Needs to be visible before checked for invisible
+		self._wait_for_visible_id(self.LOADING_DIALOG_ID)
+		self._wait_for_invisible_by_id(self.LOADING_DIALOG_ID, timeout)
+
 	def _wait_for_visible_xpath(self, xpath):
 		return self._wait_for_visible(By.XPATH, xpath)
 
@@ -100,14 +107,14 @@ class CdbSeleniumModuleBase:
 		return WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(
 			EC.visibility_of_element_located((by, identifier)))
 
-	def _wait_for_invisible_by_id(self, identifier):
-		return self._wait_for_invisible(By.ID, identifier)
+	def _wait_for_invisible_by_id(self, identifier, timeout=VISIBLE_ID_TIMEOUT):
+		return self._wait_for_invisible(By.ID, identifier, timeout)
 
 	def _wait_for_invisible_by_xpath(self, xpath):
 		return self._wait_for_invisible(By.XPATH, xpath)
 
-	def _wait_for_invisible(self, by, identifier):
-		return WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(
+	def _wait_for_invisible(self, by, identifier, timeout=VISIBLE_ID_TIMEOUT):
+		return WebDriverWait(self.driver, timeout).until(
 			EC.invisibility_of_element((by, identifier)))
 
 	def _wait_for_clickable_id(self, id):
@@ -171,7 +178,7 @@ class CdbSeleniumModuleBase:
 		headerRowXpath = '//*[@id="%s:%sContent_head"]/tr' % (form_name, table_id)
 		header = self._wait_for_xpath(headerRowXpath)
 
-		header_cells = header.find_elements_by_tag_name("th")
+		header_cells = header.find_elements(by=By.TAG_NAME, value="th")
 		header_titles = []
 
 		for h_cell in header_cells:
@@ -180,12 +187,12 @@ class CdbSeleniumModuleBase:
 
 		data_id = "%s:%sContent_data" % (form_name, table_id)
 		data = self._find_by_id(data_id)
-		rows = data.find_elements_by_tag_name('tr')
+		rows = data.find_elements(by=By.TAG_NAME, value='tr')
 
 		table_data = []
 
 		for row in rows:
-			cells = row.find_elements_by_tag_name('td')
+			cells = row.find_elements(by=By.TAG_NAME, value='td')
 
 			row_data = {}
 			for i, val in enumerate(cells):
@@ -235,4 +242,47 @@ class CdbSeleniumModuleBase:
 		self._click_on_id_with_stale_protection(finish_id)
 
 		self._wait_for_url_contains('%s/list' % view_base_name)
+
+	def _navigate_to_export_from_list(self, list_form_name, entity_type_name):
+		self._wait_for_id_and_click('%s:%sExportButton' % (list_form_name, entity_type_name))
+
+	def _export(self, form_name, result_file_name, test, has_levels=False):
+		self._wait_for_clickable_id_with_stale_protection('%s:exportWizardSelectFormatMenu' % form_name)
+		self._click_on_id('%s:exportWizardSelectFormatMenu' % form_name)
+		self._wait_for_id_and_click('%s:exportWizardSelectFormatMenu_1' % form_name)
+
+		next_step_id = '%s:exportWizardNextButton' % form_name
+		self._wait_for_clickable_id_with_stale_protection(next_step_id)
+		self._click_on_id_with_stale_protection(next_step_id)
+
+		export_opt_radio_id = "%s:exportWizardRadioExport" % form_name
+		self._wait_for_clickable_id_with_stale_protection(export_opt_radio_id)
+		self._click_on_id_with_stale_protection(export_opt_radio_id)
+
+		if has_levels:
+			self._wait_for_clickable_id_with_stale_protection(next_step_id)
+			self._click_on_id_with_stale_protection(next_step_id)
+
+			num_levels_id = '%s:optionExportNumLevelsOption' % form_name
+			self._wait_for_id(num_levels_id)
+			self._type_in_id(num_levels_id, 9999999)
+
+		self._wait_for_clickable_id_with_stale_protection(next_step_id)
+		self._click_on_id_with_stale_protection(next_step_id)
+
+		self._wait_for_invisible_loading_dialog(timeout=50)
+
+		self._wait_for_clickable_id_with_stale_protection(next_step_id)
+		self._click_on_id_with_stale_protection(next_step_id)
+
+		self._wait_for_invisible_loading_dialog(timeout=50)
+
+		download_button_id = "%s:exportWizardFileDownloadButton" % form_name
+		self._wait_for_clickable_id_with_stale_protection(download_button_id)
+		self._click_on_id_with_stale_protection(download_button_id)
+
+		# Wait for download to complete
+		time.sleep(1)
+
+		test.verify_file_downloaded(result_file_name)
 
