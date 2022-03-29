@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -102,6 +103,7 @@ public class ImportHelperMachineHierarchy
         specs.add(MachineImportHelperCommon.sortOrderColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.assignedItemColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.assemblyPartColumnSpec(ColumnModeOptions.oCREATE()));
+        specs.add(MachineImportHelperCommon.isInstalledColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.locationColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(locationDetailsColumnSpec());
         specs.add(MachineImportHelperCommon.isTemplateColumnSpec(ColumnModeOptions.rCREATE()));        
@@ -189,6 +191,10 @@ public class ImportHelperMachineHierarchy
         
         ItemDomainMachineDesign item = getEntityController().createEntityInstance();
 
+        ItemDomainMachineDesignControllerUtility utility = new ItemDomainMachineDesignControllerUtility();
+        
+        UserInfo user = (UserInfo) rowMap.get(KEY_USER);
+
         // determine sort order
         Float itemSortOrder = (Float) rowMap.get(MachineImportHelperCommon.KEY_SORT_ORDER);
         if ((itemSortOrder == null) && (itemParent != null)) {
@@ -223,6 +229,49 @@ public class ImportHelperMachineHierarchy
             validString = "Template cannot have assigned inventory item, must use catalog item";
             return new CreateInfo(item, isValid, validString);
         }
+        
+        String assemblyPartName = (String) rowMap.get(KEY_ASSEMBLY_PART);
+        if (assemblyPartName != null) {
+            assemblyPartName = assemblyPartName.trim();
+        }
+        
+        // validate "is installed" column value
+        Boolean isInstalled = (Boolean) rowMap.get(MachineImportHelperCommon.KEY_INSTALLED);
+        if (isInstalled != null) {
+            
+            // can't specify isInstalled for template
+            if (itemIsTemplate) {
+                isValid = false;
+                validString = "'" + MachineImportHelperCommon.HEADER_INSTALLED 
+                        + "' cannot be specified for template item";
+                return new CreateInfo(item, isValid, validString);
+            }
+            
+            // can't set isInstalled if assembly part is specified
+            if (assemblyPartName != null && !assemblyPartName.isEmpty()) {
+                isValid = false;
+                validString = "'" + MachineImportHelperCommon.HEADER_INSTALLED + "' cannot be specified if '"
+                        + MachineImportHelperCommon.HEADER_ASSEMBLY_PART + "' is specified";
+                return new CreateInfo(item, isValid, validString);
+            }
+            
+            // assigned item must be inventory item
+            if (assignedItem != null && (! (assignedItem instanceof ItemDomainInventory))) {
+                isValid = false;
+                validString = "'" + MachineImportHelperCommon.HEADER_INSTALLED + "' cannot be specified unless '"
+                        + MachineImportHelperCommon.HEADER_ASSIGNED_ITEM + "' specifies an inventory item";
+                return new CreateInfo(item, isValid, validString);
+            }
+        }
+        
+        // handle assigned item
+        try {
+            utility.updateAssignedItem(item, assignedItem, user, isInstalled);
+        } catch (CdbException ex) {
+            isValid = false;
+            validString = "Error updating assigned item: " + ex.getMessage();
+            return new CreateInfo(item, isValid, validString);
+        }
 
         if (item.getIsItemTemplate()) {
             templateItemCount = templateItemCount + 1;
@@ -239,11 +288,6 @@ public class ImportHelperMachineHierarchy
                 isValid = false;
                 return new CreateInfo(item, isValid, validString);
             }
-        }
-        
-        String assemblyPartName = (String) rowMap.get(KEY_ASSEMBLY_PART);
-        if (assemblyPartName != null) {
-            assemblyPartName = assemblyPartName.trim();
         }
         
         // handling for non-promoted items
@@ -317,8 +361,6 @@ public class ImportHelperMachineHierarchy
                 return new CreateInfo(item, isValid, validString);
             }
             
-            ItemDomainMachineDesignControllerUtility utility = new ItemDomainMachineDesignControllerUtility();
-            UserInfo user = (UserInfo) rowMap.get(KEY_USER);
             boolean exception = false;
             String exceptionInfo = "";
             try {

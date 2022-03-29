@@ -53,7 +53,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient ItemDomainMachineDesign importParent = null;
     private transient String importPath = null;
     private transient String importParentPath = null;
+    private transient Item importAssignedItem = null;
     private transient String importAssemblyPart = null;
+    private transient Boolean importIsInstalled = null;
     private transient String importTemplateAndParameters = null;
     private transient Float importSortOrder = null;
     private transient String moveToTrashErrorMsg = null;
@@ -373,6 +375,34 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public void setImportParentPath(String importParentPath) {
         this.importParentPath = importParentPath;
+    }
+    
+    @JsonIgnore
+    public Item getImportAssignedItem() {
+        return importAssignedItem;
+    }
+    
+    public void setImportAssignedItem(Item assignedItem) {
+        this.importAssignedItem = assignedItem;
+    }
+    
+    @JsonIgnore
+    public String getImportAssignedItemString() {
+        Item assignedItem = getImportAssignedItem();
+        if (assignedItem == null) {
+            return "";
+        } else {
+            return assignedItem.getName();
+        }
+    }
+    
+    @JsonIgnore
+    public Boolean getImportIsInstalled() {
+        return importIsInstalled;
+    }
+    
+    public void setImportIsInstalled(Boolean isInstalled) {
+        this.importIsInstalled = isInstalled;
     }
 
     public String getAlternateName() {

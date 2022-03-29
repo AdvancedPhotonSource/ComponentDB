@@ -38,8 +38,9 @@ public class MachineImportHelperCommon {
     public static final String KEY_INDENT = "indentLevel";
     public static final String KEY_MD_ITEM = "importMdItem";
     public static final String KEY_SORT_ORDER = "importSortOrder";
-    public static final String KEY_ASSIGNED_ITEM = "assignedItemString";
+    public static final String KEY_ASSIGNED_ITEM = "importAssignedItemString";
     public static final String KEY_ASSEMBLY_PART = "importAssemblyPart";
+    public static final String KEY_INSTALLED = "importIsInstalled";
     public static final String KEY_LOCATION = "location";
     public static final String KEY_IS_TEMPLATE = "importIsTemplateString";
     public static final String KEY_TEMPLATE_INVOCATION = "importTemplateAndParameters";
@@ -53,6 +54,7 @@ public class MachineImportHelperCommon {
     public static final String HEADER_SORT_ORDER = "Sort Order";
     public static final String HEADER_ASSIGNED_ITEM = "Assigned Catalog/Inventory Item";
     public static final String HEADER_ASSEMBLY_PART = "Assembly Part";
+    public static final String HEADER_INSTALLED = "Is Installed";
     public static final String HEADER_LOCATION = "Location";
     public static final String HEADER_TEMPLATE = "Is Template?";
     public static final String HEADER_TEMPLATE_INVOCATION = "Template Instantiation";
@@ -181,7 +183,7 @@ public class MachineImportHelperCommon {
         return new MultiDomainRefColumnSpec(
                 HEADER_ASSIGNED_ITEM,
                 KEY_ASSIGNED_ITEM,
-                "setAssignedItem",
+                "setImportAssignedItem",
                 "CDB ID, QR ID or name of assigned catalog or inventory item. Name can only be used for catalog items and must be unique and prefixed with '#'. QR ID must be prefixed with 'qr:'.",
                 "getAssignedItem",
                 "getCatalogItemAttributeMap",
@@ -205,6 +207,16 @@ public class MachineImportHelperCommon {
                 0);
     }
     
+    public static BooleanColumnSpec isInstalledColumnSpec(List<ColumnModeOptions> options) {
+        return new BooleanColumnSpec(
+                HEADER_INSTALLED,
+                KEY_INSTALLED,
+                "setImportIsInstalled",
+                "True/yes if assigned inventory item is installed, false/no otherwise.",
+                "isIsHoused",
+                options);
+    }
+
     public static CustomColumnSpec locationColumnSpec(List<ColumnModeOptions> options) {
         LocationHandler locationHandler = new LocationHandler();        
         return new CustomColumnSpec(
