@@ -21,7 +21,9 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyC
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,7 +61,7 @@ public class MachineImportHelperCommon {
     public static final String HEADER_TEMPLATE = "Is Template?";
     public static final String HEADER_TEMPLATE_INVOCATION = "Template Instantiation";
     
-    public static final String OPTION_EXPORT_NUM_LEVELS = "Number of Hierarchy Levels";
+    public static final String OPTION_EXPORT_NUM_LEVELS = "Number of Hierarchy Levels (optional, leave blank to export full hierarchy)";
     
     private String optionImportRootItemName = null;
     private ItemDomainMachineDesign rootItem = null;
@@ -212,8 +214,8 @@ public class MachineImportHelperCommon {
                 HEADER_INSTALLED,
                 KEY_INSTALLED,
                 "setImportIsInstalled",
-                "True/yes if assigned inventory item is installed, false/no otherwise.",
-                "isIsHoused",
+                "Specify true/false for item with assigned inventory. Leave blank otherwise.",
+                "getImportIsInstalled",
                 options);
     }
 
@@ -455,6 +457,75 @@ public class MachineImportHelperCommon {
         }
         
         return new TemplateInvocationInfo(templateItem, varNameList, isValid, validString);
+    }
+    
+    public static ValidInfo handleAssignedItem(
+            ItemDomainMachineDesign item, 
+            Item assignedItem, 
+            String assemblyPartName,
+            UserInfo user, 
+            Boolean isInstalled) {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        Boolean itemIsTemplate = item.getIsItemTemplate();
+
+        // template items cannot have assigned inventory - only catalog
+        if (itemIsTemplate && ((assignedItem instanceof ItemDomainInventory))) {
+            isValid = false;
+            validString = "Template cannot have assigned inventory item, must use catalog item";
+            return new ValidInfo(isValid, validString);
+        }
+        
+        // validate "is installed" column value
+        if (isInstalled != null) {
+
+            // can't specify isInstalled for template
+            if (itemIsTemplate) {
+                isValid = false;
+                validString = "'" + MachineImportHelperCommon.HEADER_INSTALLED
+                        + "' cannot be specified for template item";
+                return new ValidInfo(isValid, validString);
+            }
+
+            // can't set isInstalled if assembly part is specified
+            if (assemblyPartName != null && !assemblyPartName.isEmpty()) {
+                isValid = false;
+                validString = "'" + MachineImportHelperCommon.HEADER_INSTALLED + "' cannot be specified if '"
+                        + MachineImportHelperCommon.HEADER_ASSEMBLY_PART + "' is specified";
+                return new ValidInfo(isValid, validString);
+            }
+
+            // must have assigned inventory item
+            if ((assignedItem == null) || (!(assignedItem instanceof ItemDomainInventory))) {
+                isValid = false;
+                validString = "'" + MachineImportHelperCommon.HEADER_INSTALLED + "' cannot be specified unless '"
+                        + MachineImportHelperCommon.HEADER_ASSIGNED_ITEM + "' specifies an inventory item";
+                return new ValidInfo(isValid, validString);
+            }
+            
+        } else {
+            
+            // must specify isInstalled with assigned inventory item
+            if (assignedItem != null && assignedItem instanceof ItemDomainInventory) {
+                isValid = false;
+                validString = "Must specify '" + MachineImportHelperCommon.HEADER_INSTALLED + "' with assigned inventory item.";
+                return new ValidInfo(isValid, validString);
+            }
+        }
+
+        // handle assigned item
+        ItemDomainMachineDesignControllerUtility utility = new ItemDomainMachineDesignControllerUtility();
+        try {
+            utility.updateAssignedItem(item, assignedItem, user, isInstalled);
+        } catch (CdbException ex) {
+            isValid = false;
+            validString = "Error updating assigned item: " + ex.getMessage();
+            return new ValidInfo(isValid, validString);
+        }
+
+        return new ValidInfo(isValid, validString);
     }
     
 }

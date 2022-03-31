@@ -10,9 +10,12 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignContr
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
+import static gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon.KEY_ASSEMBLY_PART;
+import static gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon.KEY_ASSIGNED_ITEM;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -105,6 +108,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
         specs.add(MachineImportHelperCommon.sortOrderColumnSpec(ColumnModeOptions.oUPDATE()));
         specs.add(MachineImportHelperCommon.assignedItemColumnSpec(ColumnModeOptions.oUPDATE()));
         specs.add(MachineImportHelperCommon.locationColumnSpec(ColumnModeOptions.oUPDATE()));
+        specs.add(MachineImportHelperCommon.isInstalledColumnSpec(ColumnModeOptions.oUPDATE()));
         specs.add(locationDetailsColumnSpec());
         specs.add(projectListColumnSpec());
         specs.add(ownerUserColumnSpec());
@@ -172,15 +176,35 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
         
         boolean validRow = (boolean) rowMap.get(KEY_IS_VALID);
         if (validRow) {
-        
-            // get parent item specified in import spreadsheet
-            ItemDomainMachineDesign newParentItem = (ItemDomainMachineDesign) rowMap.get(PROPERTY_PARENT);
-            ItemDomainMachineDesign oldParentItem = item.getParentMachineDesign();
             
-            // The following restrictions on moving items to/from root level of hierarchy
-            // are due to the persistence cascades for update.  To allow moving from the root
-            // level of the hierarchy, we'll need to call persistence create for the new ItemElement
-            // when we update the Item.  Similarly for moving to the root level, we'll
+            // retrieve column values
+            UserInfo importUser = (UserInfo) rowMap.get(KEY_USER);
+            Item newAssignedItem = (Item) rowMap.get(KEY_ASSIGNED_ITEM);
+            String assemblyPartName = (String) rowMap.get(KEY_ASSEMBLY_PART);
+            if (assemblyPartName != null) {
+                assemblyPartName = assemblyPartName.trim();
+            }
+            Boolean isInstalled = (Boolean) rowMap.get(MachineImportHelperCommon.KEY_INSTALLED);
+            Boolean isTemplate = (Boolean) rowMap.get(MachineImportHelperCommon.KEY_IS_TEMPLATE);
+            ItemDomainMachineDesign newParentItem = (ItemDomainMachineDesign) rowMap.get(PROPERTY_PARENT);
+            
+            // validate and handle "assigned item" and "is installed" columns if either has changed
+            Boolean itemIsHoused = item.getImportIsInstalled();
+            Item oldAssignedItem = item.getAssignedItem();
+            if (((itemIsHoused == null && isInstalled != null) || (itemIsHoused != null && isInstalled == null) || (itemIsHoused != null && !itemIsHoused.equals(isInstalled))) 
+                    || ((oldAssignedItem == null && newAssignedItem != null) || (oldAssignedItem != null && newAssignedItem == null) || (oldAssignedItem != null && !oldAssignedItem.equals(newAssignedItem)))) {
+
+                ValidInfo assignedItemValidInfo
+                        = MachineImportHelperCommon.handleAssignedItem(
+                                item, newAssignedItem, assemblyPartName, importUser, isInstalled);
+                if (!assignedItemValidInfo.isValid()) {
+                    return assignedItemValidInfo;
+                }
+            }
+                    
+            // validate move of item from oldParentItem to newParentItem
+            ItemDomainMachineDesign oldParentItem = item.getParentMachineDesign();            
+            // Ned said to disallow moving to root level for now. For moving to the root level, we'll
             // need to delete the existing ItemElement when we update the item.
             // In the past, similar things have been accomplished by adding the ItemElement
             // to a transient variable list like elementsToCreate/Delete, and then overriding update() in the facade
@@ -195,10 +219,10 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
                 
                 // check to see if parent item changed
                 if (!newParentItem.equals(item.getParentMachineDesign())) {
-                    UserInfo user = item.getOwnerUser();
+                    UserInfo ownerUser = item.getOwnerUser();
                     ItemElement relationshipElement = null;
                     try {
-                        relationshipElement = getControllerUtility().performMachineMove(newParentItem, item, user);
+                        relationshipElement = getControllerUtility().performMachineMove(newParentItem, item, ownerUser);
                         if (oldParentItem == null) {
                             // handle case where moving item from root level of hierarchy, 
                             // need to create new ItemElement for relationship 

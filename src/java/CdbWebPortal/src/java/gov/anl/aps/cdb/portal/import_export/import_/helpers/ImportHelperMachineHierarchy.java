@@ -222,57 +222,21 @@ public class ImportHelperMachineHierarchy
             return new CreateInfo(item, isValid, validString);
         }
 
-        // template items cannot have assigned inventory - only catalog
         Item assignedItem = (Item) rowMap.get(KEY_ASSIGNED_ITEM);
-        if ((item.getIsItemTemplate()) && ((assignedItem instanceof ItemDomainInventory))) {
-            isValid = false;
-            validString = "Template cannot have assigned inventory item, must use catalog item";
-            return new CreateInfo(item, isValid, validString);
-        }
-        
         String assemblyPartName = (String) rowMap.get(KEY_ASSEMBLY_PART);
         if (assemblyPartName != null) {
             assemblyPartName = assemblyPartName.trim();
         }
-        
-        // validate "is installed" column value
         Boolean isInstalled = (Boolean) rowMap.get(MachineImportHelperCommon.KEY_INSTALLED);
-        if (isInstalled != null) {
-            
-            // can't specify isInstalled for template
-            if (itemIsTemplate) {
-                isValid = false;
-                validString = "'" + MachineImportHelperCommon.HEADER_INSTALLED 
-                        + "' cannot be specified for template item";
-                return new CreateInfo(item, isValid, validString);
-            }
-            
-            // can't set isInstalled if assembly part is specified
-            if (assemblyPartName != null && !assemblyPartName.isEmpty()) {
-                isValid = false;
-                validString = "'" + MachineImportHelperCommon.HEADER_INSTALLED + "' cannot be specified if '"
-                        + MachineImportHelperCommon.HEADER_ASSEMBLY_PART + "' is specified";
-                return new CreateInfo(item, isValid, validString);
-            }
-            
-            // assigned item must be inventory item
-            if (assignedItem != null && (! (assignedItem instanceof ItemDomainInventory))) {
-                isValid = false;
-                validString = "'" + MachineImportHelperCommon.HEADER_INSTALLED + "' cannot be specified unless '"
-                        + MachineImportHelperCommon.HEADER_ASSIGNED_ITEM + "' specifies an inventory item";
-                return new CreateInfo(item, isValid, validString);
-            }
+        
+        // validate and handle "assigned item" and "is installed" column values
+        ValidInfo assignedItemValidInfo = 
+                MachineImportHelperCommon.handleAssignedItem(
+                        item, assignedItem, assemblyPartName, user, isInstalled);
+        if (!assignedItemValidInfo.isValid()) {
+            return new CreateInfo(item, assignedItemValidInfo);
         }
         
-        // handle assigned item
-        try {
-            utility.updateAssignedItem(item, assignedItem, user, isInstalled);
-        } catch (CdbException ex) {
-            isValid = false;
-            validString = "Error updating assigned item: " + ex.getMessage();
-            return new CreateInfo(item, isValid, validString);
-        }
-
         if (item.getIsItemTemplate()) {
             templateItemCount = templateItemCount + 1;
         } else {

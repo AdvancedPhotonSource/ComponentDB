@@ -56,6 +56,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient Item importAssignedItem = null;
     private transient String importAssemblyPart = null;
     private transient Boolean importIsInstalled = null;
+    private transient boolean importIsInstalledLoaded = false;
     private transient String importTemplateAndParameters = null;
     private transient Float importSortOrder = null;
     private transient String moveToTrashErrorMsg = null;
@@ -379,6 +380,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     
     @JsonIgnore
     public Item getImportAssignedItem() {
+        if (importAssignedItem == null) {
+            importAssignedItem = getAssignedItem();
+        }
         return importAssignedItem;
     }
     
@@ -398,6 +402,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     
     @JsonIgnore
     public Boolean getImportIsInstalled() {
+        if (!importIsInstalledLoaded) {
+            Item assignedItem = getAssignedItem();
+            if (assignedItem != null && assignedItem instanceof ItemDomainInventory) {
+                importIsInstalled = isIsHoused();
+            } else {
+                importIsInstalled = null;
+            }            
+            importIsInstalledLoaded = true;
+        }
         return importIsInstalled;
     }
     
