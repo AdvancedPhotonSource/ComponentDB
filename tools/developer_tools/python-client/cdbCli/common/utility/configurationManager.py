@@ -105,7 +105,6 @@ class ConfigurationManager:
             session_password = session_cookie_section[self.SESSION_PASSWORD]
             return (session_username, session_password)
         except Exception as e:
-            print(str(e))
             return (None, None)
 
 if __name__ == "__main__":

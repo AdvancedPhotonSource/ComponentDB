@@ -21,6 +21,12 @@ SAMPLE_CATALOG_ITEM_ALTERNATE_NAME= 'Alternate'
 
 class Catalog(ItemBase):
 
+	ENTITY_TYPE_NAME = "component"
+	LIST_FORM_NAME = "%sListForm" % ENTITY_TYPE_NAME
+	EXPORT_FORM_NAME = "exportCatalogForm"
+
+	EXPORT_FILE_NAME = "Component Catalog Export.xlsx"
+
 	def navigate_to_catalog_list(self):
 		self._navigate_to_dropdown('catalogDropdownButton', 'componentCatalogButton', 'itemDomainCatalog/list')
 
@@ -130,6 +136,10 @@ class Catalog(ItemBase):
 
 		self._click_on_id('componentEditForm:componentEditViewButton')
 		self._wait_for_url_contains('itemDomainCatalog/view')
+
+	def export_catalog(self, test):
+		self._navigate_to_export_from_list(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME)
+		self._export(self.EXPORT_FORM_NAME, self.EXPORT_FILE_NAME, test)
 
 
 

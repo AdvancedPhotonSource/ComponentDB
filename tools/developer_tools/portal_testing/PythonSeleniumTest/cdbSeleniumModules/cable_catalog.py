@@ -9,6 +9,9 @@ class CableCatalog(ItemBase):
     LIST_FORM_NAME = FORM_NAME % 'List'
     VIEW_FORM_NAME = FORM_NAME % 'View'
     EDIT_FORM_NAME = FORM_NAME % 'Edit'
+    EXPORT_FORM_NAME = "exportCableCatalogForm"
+
+    EXPORT_FILE_NAME = "Cable Type Catalog Export.xlsx"
 
     def navigate_to_cable_catalog_list(self):
         self._navigate_to_dropdown('catalogDropdownButton', 'cableCatalogButton', '%s/list' % self.VIEW_BASE_NAME)
@@ -23,3 +26,7 @@ class CableCatalog(ItemBase):
 
         self._click_on_id('%s:%sEditViewButton' % (self.EDIT_FORM_NAME, self.ENTITY_TYPE_NAME))
         self._wait_for_url_contains('%s/view' % self.VIEW_BASE_NAME)
+
+    def export_cable_catalog(self, test):
+        self._navigate_to_export_from_list(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME)
+        self._export(self.EXPORT_FORM_NAME, self.EXPORT_FILE_NAME, test)
