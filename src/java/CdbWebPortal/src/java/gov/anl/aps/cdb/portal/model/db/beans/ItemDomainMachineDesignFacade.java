@@ -41,10 +41,15 @@ public class ItemDomainMachineDesignFacade extends ItemFacadeBase<ItemDomainMach
         
         ItemDomainMachineDesign result = super.edit(entity);
         
-        for (ItemElement element : entity.getNewElementList()) {
+        for (ItemElement element : entity.getElementsToCreate()) {
             ItemElementFacade.getInstance().create(element);
         }
-        entity.clearNewElementList();
+        entity.clearElementsToCreate();
+        
+        for (ItemDomainMachineDesign item : entity.getItemsToUpdate()) {
+            this.edit(item);
+        }
+        entity.clearItemsToUpdate();
         
         return result;
     } 
