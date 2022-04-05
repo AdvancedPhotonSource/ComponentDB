@@ -7,7 +7,6 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignWizardBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import javax.enterprise.context.SessionScoped;
@@ -178,14 +177,14 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
      */
     public String save() {
 
-        if (selectionEndpoint1 == null) {
+        if (itemEnd1 == null) {
             SessionUtility.addErrorMessage(
                     "Could not save cable",
                     "Please specify first endpoint.");
             return "";
         }
 
-        if (selectionEndpoint2 == null) {
+        if (itemEnd2 == null) {
             SessionUtility.addErrorMessage(
                     "Could not save cable",
                     "Please specify second endpoint.");
@@ -206,9 +205,7 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
             return "";
         }
 
-        Item itemEndpoint1 = ((ItemElement) (selectionEndpoint1.getData())).getContainedItem();
-        Item itemEndpoint2 = ((ItemElement) (selectionEndpoint2.getData())).getContainedItem();
-
+        
         ItemDomainCableDesignController controller = ItemDomainCableDesignController.getInstance();
 
         String result = "";
@@ -216,8 +213,9 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
         switch (selectionCableType) {
 
             case cableTypeUnspecified:
-                result = controller.createCableUnspecified(itemEndpoint1,
-                        itemEndpoint2,
+                result = controller.createCableUnspecified(
+                        itemEnd1,
+                        itemEnd2,
                         inputValueName,
                         selectionProjectList,
                         selectionTechnicalSystemList);
@@ -232,8 +230,9 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
                     return "";
                     
                 } else {                    
-                    result = controller.createCableCatalog(itemEndpoint1,
-                            itemEndpoint2,
+                    result = controller.createCableCatalog(
+                            itemEnd1,
+                            itemEnd2,
                             inputValueName,
                             selectionProjectList,
                             selectionTechnicalSystemList,

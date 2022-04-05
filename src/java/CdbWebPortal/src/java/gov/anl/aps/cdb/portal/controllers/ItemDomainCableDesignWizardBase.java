@@ -111,7 +111,13 @@ public abstract class ItemDomainCableDesignWizardBase {
     protected List<ItemProject> selectionProjectList = new ArrayList<>();
     protected List<ItemCategory> selectionTechnicalSystemList = new ArrayList<>();
     protected TreeNode selectionEndpoint1 = null;
+    protected Item itemEnd1 = null;
+    protected ItemConnector portEnd1 = null;
+    protected ItemConnector connectorEnd1 = null;
     protected TreeNode selectionEndpoint2 = null;
+    protected Item itemEnd2 = null;
+    protected ItemConnector portEnd2 = null;
+    protected ItemConnector connectorEnd2 = null;
     protected List<Item> members = new ArrayList<>();
     protected Boolean disableButtonPrev = true;
     protected Boolean disableButtonNext = true;
@@ -249,10 +255,26 @@ public abstract class ItemDomainCableDesignWizardBase {
      * @link ItemDomainCableDesignWizard#getSelectionEndpoint1
      */
     public String getEndpoint1String() {
-        if (selectionEndpoint1 == null) {
+        if (itemEnd1 == null) {
             return new String();
         } else {
-            return ((ItemElement) (selectionEndpoint1.getData())).getContainedItem().toString();
+            return itemEnd1.toString();
+        }
+    }
+    
+    public String getEnd1PortString() {
+        if (portEnd1 == null) {
+            return "";
+        } else {
+            return portEnd1.getConnector().getName();
+        }
+    }
+    
+    public String getEnd1ConnectorString() {
+        if (connectorEnd1 == null) {
+            return "";
+        } else {
+            return connectorEnd1.getConnector().getName();
         }
     }
 
@@ -270,10 +292,26 @@ public abstract class ItemDomainCableDesignWizardBase {
      * @link ItemDomainCableDesignWizard#getSelectionEndpoint2
      */
     public String getEndpoint2String() {
-        if (selectionEndpoint2 == null) {
+        if (itemEnd2 == null) {
             return new String();
         } else {
-            return ((ItemElement) (selectionEndpoint2.getData())).getContainedItem().toString();
+            return itemEnd2.toString();
+        }
+    }
+
+    public String getEnd2PortString() {
+        if (portEnd2 == null) {
+            return "";
+        } else {
+            return portEnd2.getConnector().getName();
+        }
+    }
+    
+    public String getEnd2ConnectorString() {
+        if (connectorEnd2 == null) {
+            return "";
+        } else {
+            return connectorEnd2.getConnector().getName();
         }
     }
 
@@ -393,6 +431,21 @@ public abstract class ItemDomainCableDesignWizardBase {
      * from oncomplete attribute for this event tag.
      */
     public void selectListenerEndpoint1(NodeSelectEvent event) {
+        if (selectionEndpoint1 != null) {
+            ItemElement ieEnd1 = (ItemElement) selectionEndpoint1.getData();
+            Item containedItemEnd1 = ieEnd1.getContainedItem();
+            if (containedItemEnd1 instanceof ItemDomainMachineDesign) {
+                itemEnd1 = containedItemEnd1;
+            } else {
+                portEnd1 = ieEnd1.getMdConnector();
+                if (portEnd1 != null) {
+                    itemEnd1 = portEnd1.getItem();
+                }
+            }
+        } else {
+            itemEnd1 = null;
+            portEnd1 = null;
+        }
         setEnablementForCurrentTab();
     }
 
@@ -402,6 +455,8 @@ public abstract class ItemDomainCableDesignWizardBase {
      * from oncomplete attribute for this event tag.
      */
     public void unselectListenerEndpoint1(NodeUnselectEvent event) {
+        itemEnd1 = null;
+        portEnd1 = null;
         setEnablementForCurrentTab();
     }
 
@@ -411,6 +466,21 @@ public abstract class ItemDomainCableDesignWizardBase {
      * from oncomplete attribute for this event tag.
      */
     public void selectListenerEndpoint2(NodeSelectEvent event) {
+        if (selectionEndpoint2 != null) {
+            ItemElement ieEnd2 = (ItemElement) selectionEndpoint2.getData();
+            Item containedItemEnd2 = ieEnd2.getContainedItem();
+            if (containedItemEnd2 instanceof ItemDomainMachineDesign) {
+                itemEnd2 = containedItemEnd2;
+            } else {
+                portEnd2 = ieEnd2.getMdConnector();
+                if (portEnd2 != null) {
+                    itemEnd2 = portEnd2.getItem();
+                }
+            }
+        } else {
+            itemEnd2 = null;
+            portEnd2 = null;
+        }
         setEnablementForCurrentTab();
     }
 
@@ -420,6 +490,8 @@ public abstract class ItemDomainCableDesignWizardBase {
      * from oncomplete attribute for this event tag.
      */
     public void unselectListenerEndpoint2(NodeUnselectEvent event) {
+        itemEnd2 = null;
+        portEnd2 = null;
         setEnablementForCurrentTab();
     }
 
@@ -481,32 +553,8 @@ public abstract class ItemDomainCableDesignWizardBase {
             disableButtonSave = true;
             if ((selectionEndpoint1 == null) || (selectionEndpoint2 == null)) {
                 disableButtonNext = true;
-            } else if (selectionEndpoint2 != null) {
-                Object data = selectionEndpoint2.getData();
-                if (data instanceof ItemElement) {
-                    ItemElement ie = (ItemElement) data;
-                    Item containedItem = ie.getContainedItem();
-                    if (containedItem != null) {
-                        if (containedItem instanceof ItemDomainMachineDesign) {
-                            // TODO: Check if same as endpoint 1
-                            disableButtonNext = false;
-                        } else {
-                            disableButtonNext = true;
-                            SessionUtility.addWarningMessage("Invalid Selection", "New connections can only be made directly to machine designs item.");
-                        }
-                    } else {
-                        ItemConnector mdConnector = ie.getMdConnector();
-                        if (mdConnector != null) {
-                            SessionUtility.addWarningMessage("Select Machine design", "Use port mapping utility after the cable has been created.");
-                            disableButtonNext = true;
-                        } else {
-                            SessionUtility.addWarningMessage("Invalid Selection", "New connections can only be made directly to machine designs item.");
-                            disableButtonNext = true;
-                        }
-                    }
-                } else {
-                    disableButtonNext = false;
-                }
+            } else {
+                disableButtonNext = false;
             }
         } else if (tab.endsWith("CableBasicsTab")) {
             disableButtonPrev = false;

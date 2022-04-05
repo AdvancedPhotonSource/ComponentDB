@@ -35,9 +35,29 @@ See LICENSE file.
                               title="First Endpoint" 
                               styleClass="entityDataEmphasizedText" />
 
+                <p:outputLabel value="End1 Port" />
+                <h:outputText value="#{wizardController.getEnd1PortString()}"  
+                              title="Port name on endpoint1 device" 
+                              styleClass="entityDataEmphasizedText" />
+
+                <p:outputLabel value="End1 Connector" />
+                <h:outputText value="#{wizardController.getEnd1ConnectorString()}"  
+                              title="Name of cable connector for end1" 
+                              styleClass="entityDataEmphasizedText" />
+
                 <p:outputLabel value="Endpoint2" />
                 <h:outputText value="#{wizardController.getEndpoint2String()}"  
                               title="Second Endpoint" 
+                              styleClass="entityDataEmphasizedText" />
+
+                <p:outputLabel value="End2 Port" />
+                <h:outputText value="#{wizardController.getEnd2PortString()}"  
+                              title="Port name on endpoint2 device" 
+                              styleClass="entityDataEmphasizedText" />
+
+                <p:outputLabel value="End2 Connector" />
+                <h:outputText value="#{wizardController.getEnd2ConnectorString()}"  
+                              title="Name of cable connector for end2" 
                               styleClass="entityDataEmphasizedText" />
 
                 <ui:insert name="typeSpecificFields" />
