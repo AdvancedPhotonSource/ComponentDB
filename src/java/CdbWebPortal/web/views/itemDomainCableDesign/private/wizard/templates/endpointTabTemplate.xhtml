@@ -19,62 +19,58 @@ See LICENSE file.
 
             <p:panelGrid columns="2">
                 <p:column colspan="1">
-                    <p:scrollPanel style="height: 60vh">
-                        <ui:decorate template="../../../../itemDomainMachineDesignBase/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+                    <ui:decorate template="../../../../itemDomainMachineDesignBase/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
 
-                            <ui:param name="viewId" value="#{rootViewId}Endpoint1Tree" />
-                            <!-- false means true for the hideOptionalColumns and hideSearchColumns parameters-->
-                            <ui:param name="hideOptionalColumns" value="#{false}" /> 
-                            <ui:param name="valueModel" value="#{wizardController.machineDesignTreeEndpoint1}" />
-                            <ui:param name="selectionModel" value="#{wizardController.selectionEndpoint1}" /> 
-                            <ui:param name="rendered" value="#{selectEndpoint1}" />
-                            <ui:param name="scrollable" value="#{false}" />
-                            <ui:param name="resizableColumns" value="#{false}" />
-                            <ui:param name="liveResize" value="#{false}" />
-                            <ui:param name="rendredHousing" value="#{false}" />
+                        <ui:param name="viewId" value="#{rootViewId}Endpoint1Tree" />
+                        <!-- false means true for the hideOptionalColumns and hideSearchColumns parameters-->
+                        <ui:param name="hideOptionalColumns" value="#{false}" /> 
+                        <ui:param name="valueModel" value="#{wizardController.machineDesignTreeEndpoint1}" />
+                        <ui:param name="selectionModel" value="#{wizardController.selectionEndpoint1}" /> 
+                        <ui:param name="rendered" value="#{selectEndpoint1}" />
+                        <ui:param name="scrollable" value="#{false}" />
+                        <ui:param name="resizableColumns" value="#{false}" />
+                        <ui:param name="liveResize" value="#{false}" />
+                        <ui:param name="rendredHousing" value="#{false}" />
 
-                            <ui:define name="treeTableEvents">
-                                <p:ajax event="select" 
-                                        listener="#{wizardController.selectListenerEndpoint1}" 
-                                        oncomplete="update#{rootViewId}WizardButtons();" />
-                                <p:ajax event="unselect" 
-                                        listener="#{wizardController.unselectListenerEndpoint1}" 
-                                        oncomplete="update#{rootViewId}WizardButtons();" />
-                            </ui:define>
+                        <ui:define name="treeTableEvents">
+                            <p:ajax event="select" 
+                                    listener="#{wizardController.selectListenerEndpoint1}" 
+                                    oncomplete="update#{rootViewId}WizardButtons();" />
+                            <p:ajax event="unselect" 
+                                    listener="#{wizardController.unselectListenerEndpoint1}" 
+                                    oncomplete="update#{rootViewId}WizardButtons();" />
+                        </ui:define>
 
-                            <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
+                        <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
 
-                        </ui:decorate>   
-                    </p:scrollPanel>
+                    </ui:decorate>   
                 </p:column>
 
                 <p:column colspan="1">
-                    <p:scrollPanel style="height: 60vh">
-                        <ui:decorate template="../../../../itemDomainMachineDesignBase/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
-                            <ui:param name="viewId" value="#{rootViewId}Endpoint2Tree" />
-                            <!-- false means true for the hideOptionalColumns and hideSearchColumns parameters-->
-                            <ui:param name="hideOptionalColumns" value="#{false}" /> 
-                            <ui:param name="valueModel" value="#{wizardController.machineDesignTreeEndpoint2}" />
-                            <ui:param name="selectionModel" value="#{wizardController.selectionEndpoint2}" /> 
-                            <ui:param name="rendered" value="#{true}" />
-                            <ui:param name="scrollable" value="#{false}" />
-                            <ui:param name="resizableColumns" value="#{false}" />
-                            <ui:param name="liveResize" value="#{false}" />
-                            <ui:param name="rendredHousing" value="#{false}" />
+                    <ui:decorate template="../../../../itemDomainMachineDesignBase/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+                        <ui:param name="viewId" value="#{rootViewId}Endpoint2Tree" />
+                        <!-- false means true for the hideOptionalColumns and hideSearchColumns parameters-->
+                        <ui:param name="hideOptionalColumns" value="#{false}" /> 
+                        <ui:param name="valueModel" value="#{wizardController.machineDesignTreeEndpoint2}" />
+                        <ui:param name="selectionModel" value="#{wizardController.selectionEndpoint2}" /> 
+                        <ui:param name="rendered" value="#{true}" />
+                        <ui:param name="scrollable" value="#{false}" />
+                        <ui:param name="resizableColumns" value="#{false}" />
+                        <ui:param name="liveResize" value="#{false}" />
+                        <ui:param name="rendredHousing" value="#{false}" />
 
-                            <ui:define name="treeTableEvents">
-                                <p:ajax event="select" 
-                                        listener="#{wizardController.selectListenerEndpoint2}" 
-                                        oncomplete="update#{rootViewId}WizardButtons();" />
-                                <p:ajax event="unselect" 
-                                        listener="#{wizardController.unselectListenerEndpoint2}" 
-                                        oncomplete="update#{rootViewId}WizardButtons();" />
-                            </ui:define>
+                        <ui:define name="treeTableEvents">
+                            <p:ajax event="select" 
+                                    listener="#{wizardController.selectListenerEndpoint2}" 
+                                    oncomplete="update#{rootViewId}WizardButtons();" />
+                            <p:ajax event="unselect" 
+                                    listener="#{wizardController.unselectListenerEndpoint2}" 
+                                    oncomplete="update#{rootViewId}WizardButtons();" />
+                        </ui:define>
 
-                            <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
+                        <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
 
-                        </ui:decorate>
-                    </p:scrollPanel>
+                    </ui:decorate>
                 </p:column>
 
             </p:panelGrid>
