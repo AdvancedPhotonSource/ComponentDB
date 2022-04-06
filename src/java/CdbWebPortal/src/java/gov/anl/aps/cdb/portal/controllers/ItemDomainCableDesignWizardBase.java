@@ -439,7 +439,15 @@ public abstract class ItemDomainCableDesignWizardBase {
             } else {
                 portEnd1 = ieEnd1.getMdConnector();
                 if (portEnd1 != null) {
-                    itemEnd1 = portEnd1.getItem();
+                    if (portEnd1.isConnected()) {
+                        SessionUtility.addErrorMessage(
+                                "Invalid Connection",
+                                "Selected port is already in use.");
+                        itemEnd1 = null;
+                        portEnd1 = null;
+                    } else {
+                        itemEnd1 = portEnd1.getItem();
+                    }
                 }
             }
         } else {
@@ -474,7 +482,15 @@ public abstract class ItemDomainCableDesignWizardBase {
             } else {
                 portEnd2 = ieEnd2.getMdConnector();
                 if (portEnd2 != null) {
-                    itemEnd2 = portEnd2.getItem();
+                    if (portEnd2.isConnected()) {
+                        SessionUtility.addErrorMessage(
+                                "Invalid Connection",
+                                "Selected port is already in use.");
+                        itemEnd2 = null;
+                        portEnd2 = null;
+                    } else {
+                        itemEnd2 = portEnd2.getItem();
+                    }
                 }
             }
         } else {
@@ -551,7 +567,7 @@ public abstract class ItemDomainCableDesignWizardBase {
             disableButtonPrev = true;
             disableButtonCancel = false;
             disableButtonSave = true;
-            if ((selectionEndpoint1 == null) || (selectionEndpoint2 == null)) {
+            if ((itemEnd1 == null) || (itemEnd2 == null)) {
                 disableButtonNext = true;
             } else {
                 disableButtonNext = false;

@@ -215,7 +215,9 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
             case cableTypeUnspecified:
                 result = controller.createCableUnspecified(
                         itemEnd1,
+                        portEnd1,
                         itemEnd2,
+                        portEnd2,
                         inputValueName,
                         selectionProjectList,
                         selectionTechnicalSystemList);
@@ -232,7 +234,11 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
                 } else {                    
                     result = controller.createCableCatalog(
                             itemEnd1,
+                            portEnd1,
+                            connectorEnd1,
                             itemEnd2,
+                            portEnd2,
+                            connectorEnd2,
                             inputValueName,
                             selectionProjectList,
                             selectionTechnicalSystemList,

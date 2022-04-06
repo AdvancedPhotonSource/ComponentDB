@@ -19,6 +19,8 @@ import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import static gov.anl.aps.cdb.portal.model.db.entities.CdbEntity.VALUE_CABLE_END_1;
+import static gov.anl.aps.cdb.portal.model.db.entities.CdbEntity.VALUE_CABLE_END_2;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
@@ -30,7 +32,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.AdvancedFilter;
 import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
@@ -916,7 +917,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
      * @param cableName
      * @return
      */
-    private ItemDomainCableDesign createCableCommon(Item itemEndpoint1,
+    private ItemDomainCableDesign createCableCommon(
+            Item itemEndpoint1,
             Item itemEndpoint2,
             String cableName,
             List<ItemProject> projectList,
@@ -926,10 +928,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         newCable.setName(cableName);
         newCable.setItemProjectList(projectList);
         newCable.setTechnicalSystemList(technicalSystemList);
-
-        // set endpoints
-        newCable.setEndpoint1(itemEndpoint1);
-        newCable.setEndpoint2(itemEndpoint2);
 
         return newCable;
     }
@@ -943,17 +941,24 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
      * @param cableName
      * @return
      */
-    public String createCableUnspecified(Item itemEndpoint1,
+    public String createCableUnspecified(
+            Item itemEndpoint1,
+            ItemConnector portEnd1,
             Item itemEndpoint2,
+            ItemConnector portEnd2,
             String cableName,
             List<ItemProject> projectList,
             List<ItemCategory> technicalSystemList) {
 
-        ItemDomainCableDesign newCable = this.createCableCommon(itemEndpoint1,
+        ItemDomainCableDesign newCable = this.createCableCommon(
+                itemEndpoint1,
                 itemEndpoint2,
                 cableName,
                 projectList,
                 technicalSystemList);
+        
+        newCable.setPrimaryEndpoint(itemEndpoint1, portEnd1, null, VALUE_CABLE_END_1);
+        newCable.setPrimaryEndpoint(itemEndpoint2, portEnd2, null, VALUE_CABLE_END_2);
 
         return this.create();
 
@@ -968,8 +973,13 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
      * @param cableName
      * @return
      */
-    public String createCableCatalog(Item itemEndpoint1,
+    public String createCableCatalog(
+            Item itemEndpoint1,
+            ItemConnector portEnd1,
+            ItemConnector connectorEnd1,
             Item itemEndpoint2,
+            ItemConnector portEnd2,
+            ItemConnector connectorEnd2,
             String cableName,
             List<ItemProject> projectList,
             List<ItemCategory> technicalSystemList,
@@ -983,6 +993,9 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         newCable.setCatalogItem(itemCableCatalog);
 
+        newCable.setPrimaryEndpoint(itemEndpoint1, portEnd1, connectorEnd1, VALUE_CABLE_END_1);
+        newCable.setPrimaryEndpoint(itemEndpoint2, portEnd2, connectorEnd2, VALUE_CABLE_END_2);
+        
         return this.create();
 
     }
