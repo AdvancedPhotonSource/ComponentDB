@@ -289,7 +289,9 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         return itemElement;
     }
 
-    public ItemElement performMachineMove(ItemDomainMachineDesign newParent, ItemDomainMachineDesign child, UserInfo sessionUser) throws CdbException {
+    public ItemElement performMachineMove(
+            ItemDomainMachineDesign newParent, ItemDomainMachineDesign child, UserInfo sessionUser) throws CdbException {
+
         if ((newParent instanceof ItemDomainMachineDesign && child instanceof ItemDomainMachineDesign) == false) {
             throw new CdbException("Both items provided must be of type machine design");
         }
@@ -311,9 +313,14 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         }
 
         prepareAddItemElement(newParent, currentItemElement);
-
+        
+        return currentItemElement;
+    }
+    
+    public ItemElement performMachineMoveWithUpdate(
+            ItemDomainMachineDesign newParent, ItemDomainMachineDesign child, UserInfo sessionUser) throws CdbException {
+        ItemElement currentItemElement = performMachineMove(newParent, child, sessionUser);
         update(newParent, sessionUser);
-
         return currentItemElement;
     }
 
@@ -610,7 +617,11 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
                 if (item instanceof ItemDomainMachineDesign) {    
                     // Allow updates for the same item. 
                     if (!mdItem.equals(item)) {
-                        throw new CdbException("Inventory item used. Inventory item cannot be saved, used in: " + item.toString());
+                        String exMessage = "Inventory item used. Inventory item cannot be saved, used in: " + item.toString();
+                        if (item.getIsItemDeleted()) {
+                            exMessage = exMessage + " (located in trash)";
+                        }
+                        throw new CdbException(exMessage);
                     }
                 }
             }
@@ -667,12 +678,14 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
      * @param currentElement
      * @param newAssignedItem
      */
-    private void updateTemplateReferenceForAssignedItem(Item mdItem,
+    private void updateTemplateReferenceForAssignedItem(
+            ItemDomainMachineDesign mdItem,
             Item originalContainedItem,
             Item newAssignedItem, UserInfo userInfo) throws CdbException {
+        
         if (mdItem.getIsItemTemplate()) {
-            List<ItemDomainMachineDesign> itemsCreatedFromThisTemplateItem = (List<ItemDomainMachineDesign>) (List<?>) mdItem.getItemsCreatedFromThisTemplateItem();
-            List<ItemDomainMachineDesign> itemsToUpdate = new ArrayList<>();
+            List<ItemDomainMachineDesign> itemsCreatedFromThisTemplateItem = 
+                    (List<ItemDomainMachineDesign>) (List<?>) mdItem.getItemsCreatedFromThisTemplateItem();
 
             for (ItemDomainMachineDesign item : itemsCreatedFromThisTemplateItem) {
                 Item assignedItem = item.getAssignedItem();
@@ -680,11 +693,9 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
                 // Verify if in sync with template
                 if (ObjectUtility.equals(originalContainedItem, assignedItem)) {
                     item.setAssignedItem(newAssignedItem);
-                    itemsToUpdate.add(item);
+                    mdItem.addItemToUpdate(item);
                 }
             }
-
-            updateList(itemsToUpdate, userInfo);
         }
     }
 

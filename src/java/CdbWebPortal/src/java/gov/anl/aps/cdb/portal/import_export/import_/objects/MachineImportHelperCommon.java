@@ -21,7 +21,9 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyC
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,8 +40,9 @@ public class MachineImportHelperCommon {
     public static final String KEY_INDENT = "indentLevel";
     public static final String KEY_MD_ITEM = "importMdItem";
     public static final String KEY_SORT_ORDER = "importSortOrder";
-    public static final String KEY_ASSIGNED_ITEM = "assignedItemString";
+    public static final String KEY_ASSIGNED_ITEM = "importAssignedItemString";
     public static final String KEY_ASSEMBLY_PART = "importAssemblyPart";
+    public static final String KEY_INSTALLED = "importIsInstalled";
     public static final String KEY_LOCATION = "location";
     public static final String KEY_IS_TEMPLATE = "importIsTemplateString";
     public static final String KEY_TEMPLATE_INVOCATION = "importTemplateAndParameters";
@@ -53,11 +56,12 @@ public class MachineImportHelperCommon {
     public static final String HEADER_SORT_ORDER = "Sort Order";
     public static final String HEADER_ASSIGNED_ITEM = "Assigned Catalog/Inventory Item";
     public static final String HEADER_ASSEMBLY_PART = "Assembly Part";
+    public static final String HEADER_INSTALLED = "Is Installed";
     public static final String HEADER_LOCATION = "Location";
     public static final String HEADER_TEMPLATE = "Is Template?";
     public static final String HEADER_TEMPLATE_INVOCATION = "Template Instantiation";
     
-    public static final String OPTION_EXPORT_NUM_LEVELS = "Number of Hierarchy Levels";
+    public static final String OPTION_EXPORT_NUM_LEVELS = "Number of Hierarchy Levels (optional, leave blank to export full hierarchy)";
     
     private String optionImportRootItemName = null;
     private ItemDomainMachineDesign rootItem = null;
@@ -65,7 +69,12 @@ public class MachineImportHelperCommon {
     private String optionExportNumLevels = null;
 
     public static MachineItemRefColumnSpec existingMachineItemColumnSpec(
-            List<ColumnModeOptions> options, ItemDomainMachineDesign rootItem, String columnLabel, String getter) {
+            List<ColumnModeOptions> options, 
+            ItemDomainMachineDesign rootItem, 
+            String columnLabel, 
+            String domainProperty,
+            String domainSetter,
+            String domainExportGetter) {
         
         // default to parent item column header but allow override
         String label;
@@ -75,15 +84,29 @@ public class MachineImportHelperCommon {
             label = HEADER_PARENT;
         }
         
+        String propertyName;
+        if (domainProperty != null) {
+            propertyName = domainProperty;
+        } else {
+            propertyName = KEY_MD_ITEM;
+        }
+        
+        String setter;
+        if (domainSetter != null) {
+            setter = domainSetter;
+        } else {
+            setter = "setImportMdItem";
+        }
+        
         String exportGetter = null;
-        if (getter != null) {
-            exportGetter = getter;
+        if (domainExportGetter != null) {
+            exportGetter = domainExportGetter;
         }
         
         return new MachineItemRefColumnSpec(
                 label,
-                KEY_MD_ITEM,
-                "setImportMdItem",
+                propertyName,
+                setter,
                 "CDB ID, name, or path of parent machine design item. Name must be unique and prefixed with '#'. Path must be prefixed with '#', start with a '/', and use '/' as a delimiter. If name includes an embedded '/' character, escape it by preceding with a '\' character.",
                 exportGetter,
                 options,
@@ -162,7 +185,7 @@ public class MachineImportHelperCommon {
         return new MultiDomainRefColumnSpec(
                 HEADER_ASSIGNED_ITEM,
                 KEY_ASSIGNED_ITEM,
-                "setAssignedItem",
+                "setImportAssignedItem",
                 "CDB ID, QR ID or name of assigned catalog or inventory item. Name can only be used for catalog items and must be unique and prefixed with '#'. QR ID must be prefixed with 'qr:'.",
                 "getAssignedItem",
                 "getCatalogItemAttributeMap",
@@ -186,6 +209,16 @@ public class MachineImportHelperCommon {
                 0);
     }
     
+    public static BooleanColumnSpec isInstalledColumnSpec(List<ColumnModeOptions> options) {
+        return new BooleanColumnSpec(
+                HEADER_INSTALLED,
+                KEY_INSTALLED,
+                "setImportIsInstalled",
+                "Specify true/false for item with assigned inventory. Leave blank otherwise.",
+                "getImportIsInstalled",
+                options);
+    }
+
     public static CustomColumnSpec locationColumnSpec(List<ColumnModeOptions> options) {
         LocationHandler locationHandler = new LocationHandler();        
         return new CustomColumnSpec(
@@ -424,6 +457,75 @@ public class MachineImportHelperCommon {
         }
         
         return new TemplateInvocationInfo(templateItem, varNameList, isValid, validString);
+    }
+    
+    public static ValidInfo handleAssignedItem(
+            ItemDomainMachineDesign item, 
+            Item assignedItem, 
+            String assemblyPartName,
+            UserInfo user, 
+            Boolean isInstalled) {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        Boolean itemIsTemplate = item.getIsItemTemplate();
+
+        // template items cannot have assigned inventory - only catalog
+        if (itemIsTemplate && ((assignedItem instanceof ItemDomainInventory))) {
+            isValid = false;
+            validString = "Template cannot have assigned inventory item, must use catalog item";
+            return new ValidInfo(isValid, validString);
+        }
+        
+        // validate "is installed" column value
+        if (isInstalled != null) {
+
+            // can't specify isInstalled for template
+            if (itemIsTemplate) {
+                isValid = false;
+                validString = "'" + MachineImportHelperCommon.HEADER_INSTALLED
+                        + "' cannot be specified for template item";
+                return new ValidInfo(isValid, validString);
+            }
+
+            // can't set isInstalled if assembly part is specified
+            if (assemblyPartName != null && !assemblyPartName.isEmpty()) {
+                isValid = false;
+                validString = "'" + MachineImportHelperCommon.HEADER_INSTALLED + "' cannot be specified if '"
+                        + MachineImportHelperCommon.HEADER_ASSEMBLY_PART + "' is specified";
+                return new ValidInfo(isValid, validString);
+            }
+
+            // must have assigned inventory item
+            if ((assignedItem == null) || (!(assignedItem instanceof ItemDomainInventory))) {
+                isValid = false;
+                validString = "'" + MachineImportHelperCommon.HEADER_INSTALLED + "' cannot be specified unless '"
+                        + MachineImportHelperCommon.HEADER_ASSIGNED_ITEM + "' specifies an inventory item";
+                return new ValidInfo(isValid, validString);
+            }
+            
+        } else {
+            
+            // must specify isInstalled with assigned inventory item
+            if (assignedItem != null && assignedItem instanceof ItemDomainInventory) {
+                isValid = false;
+                validString = "Must specify '" + MachineImportHelperCommon.HEADER_INSTALLED + "' with assigned inventory item.";
+                return new ValidInfo(isValid, validString);
+            }
+        }
+
+        // handle assigned item
+        ItemDomainMachineDesignControllerUtility utility = new ItemDomainMachineDesignControllerUtility();
+        try {
+            utility.updateAssignedItem(item, assignedItem, user, isInstalled);
+        } catch (CdbException ex) {
+            isValid = false;
+            validString = "Error updating assigned item: " + ex.getMessage();
+            return new ValidInfo(isValid, validString);
+        }
+
+        return new ValidInfo(isValid, validString);
     }
     
 }

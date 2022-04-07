@@ -16,7 +16,6 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignDeletedItemsController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignPowerController;
-import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
@@ -51,11 +50,13 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient ItemElement combinedItemElementListParentElement;
 
     private transient ItemDomainMachineDesign importMdItem = null;
+    private transient ItemDomainMachineDesign importParent = null;
     private transient String importPath = null;
     private transient String importParentPath = null;
+    private transient Item importAssignedItem = null;
     private transient String importAssemblyPart = null;
-    private transient ItemDomainLocation importLocationItem = null;
-    private transient String importLocationItemString = null;
+    private transient Boolean importIsInstalled = null;
+    private transient boolean importIsInstalledLoaded = false;
     private transient String importTemplateAndParameters = null;
     private transient Float importSortOrder = null;
     private transient String moveToTrashErrorMsg = null;
@@ -70,6 +71,12 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     private transient PropertyValue controlInterfaceToParent = null;
     private transient ItemElementRelationship controlRelationshipToParent = null;
+    
+    // collection of ItemElements for facade to create when updating this machine design item
+    private transient List<ItemElement> elementsToCreate = null;
+    
+    // collection of machine design items to update when updating this machine design item
+    private transient List<ItemDomainMachineDesign> itemsToUpdate = null;
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
@@ -346,17 +353,69 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setImportPath(String importPath) {
         this.importPath = importPath;
     }
+    
+    @JsonIgnore
+    public ItemDomainMachineDesign getImportParent() {
+        if (importParent == null) {
+            importParent = getParentMachineDesign();
+        }
+        return importParent;
+    }
+    
+    public void setImportParent(ItemDomainMachineDesign importParent) {
+        this.importParent = importParent;
+    }
 
     @JsonIgnore
     public String getImportParentPath() {
         if (importParentPath == null) {
-            importParentPath = getParentPath();
+            importParentPath = "#" + getParentPath();
         }
         return importParentPath;
     }
 
     public void setImportParentPath(String importParentPath) {
         this.importParentPath = importParentPath;
+    }
+    
+    @JsonIgnore
+    public Item getImportAssignedItem() {
+        if (importAssignedItem == null) {
+            importAssignedItem = getAssignedItem();
+        }
+        return importAssignedItem;
+    }
+    
+    public void setImportAssignedItem(Item assignedItem) {
+        this.importAssignedItem = assignedItem;
+    }
+    
+    @JsonIgnore
+    public String getImportAssignedItemString() {
+        Item assignedItem = getImportAssignedItem();
+        if (assignedItem == null) {
+            return "";
+        } else {
+            return assignedItem.getName();
+        }
+    }
+    
+    @JsonIgnore
+    public Boolean getImportIsInstalled() {
+        if (!importIsInstalledLoaded) {
+            Item assignedItem = getAssignedItem();
+            if (assignedItem != null && assignedItem instanceof ItemDomainInventory) {
+                importIsInstalled = isIsHoused();
+            } else {
+                importIsInstalled = null;
+            }            
+            importIsInstalledLoaded = true;
+        }
+        return importIsInstalled;
+    }
+    
+    public void setImportIsInstalled(Boolean isInstalled) {
+        this.importIsInstalled = isInstalled;
     }
 
     public String getAlternateName() {
@@ -520,7 +579,44 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         this.controlInterfaceToParent = controlInterfaceToParent;
     }
 
+    @JsonIgnore
+    public List<ItemElement> getElementsToCreate() {
+        if (elementsToCreate == null) {
+            elementsToCreate = new ArrayList<>();
+        }
+        return elementsToCreate;
+    }
+    
+    public void addElementToCreate(ItemElement element) {
+        this.getElementsToCreate().add(element);
+    }
+
+    public void clearElementsToCreate() {
+        if (elementsToCreate != null) {
+            elementsToCreate.clear();
+        }
+    }
+
+    @JsonIgnore
+    public List<ItemDomainMachineDesign> getItemsToUpdate() {
+        if (itemsToUpdate == null) {
+            itemsToUpdate = new ArrayList<>();
+        }
+        return itemsToUpdate;
+    }
+    
+    public void addItemToUpdate(ItemDomainMachineDesign item) {
+        this.getItemsToUpdate().add(item);
+    }
+
+    public void clearItemsToUpdate() {
+        if (itemsToUpdate != null) {
+            itemsToUpdate.clear();
+        }
+    }
+
     // <editor-fold defaultstate="collapsed" desc="Import functionality">
+    
     @JsonIgnore
     public Float getImportSortOrder() {
         if ((importSortOrder == null) && (getId() != null)) {
@@ -601,35 +697,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     @JsonIgnore
     public String getImportAssemblyPart() {
         return importAssemblyPart;
-    }
-
-    public void setImportLocationItem(ItemDomainLocation locationItem) {
-        if (locationItem != null) {
-            LocatableItemController.getInstance().setItemLocationInfo(this);
-            LocatableItemController.getInstance().updateLocationForItem(
-                    this, locationItem, null);
-            importLocationItemString = getLocationString();
-            importLocationItem = locationItem;
-        }
-    }
-
-    @JsonIgnore
-    public ItemDomainLocation getImportLocationItem() {
-        return importLocationItem;
-    }
-
-    @JsonIgnore
-    public String getImportLocationItemString() {
-        if ((importLocationItemString == null)
-                && (getId() != null)
-                && (this.getExportLocation() != null)) {
-            return this.getExportLocation().getName();
-        }
-        return importLocationItemString;
-    }
-
-    public void setImportLocationItemString(String str) {
-        importLocationItemString = str;
     }
 
     @JsonIgnore

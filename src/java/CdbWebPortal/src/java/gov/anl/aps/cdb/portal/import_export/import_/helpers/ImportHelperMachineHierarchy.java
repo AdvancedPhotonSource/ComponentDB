@@ -25,10 +25,10 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -96,13 +96,14 @@ public class ImportHelperMachineHierarchy
         List<ColumnSpec> specs = new ArrayList<>();
         
         specs.add(MachineImportHelperCommon.existingMachineItemColumnSpec(
-                ColumnModeOptions.oCREATE(), getMachineImportHelperCommon().getRootItem(), null, null));
+                ColumnModeOptions.oCREATE(), getMachineImportHelperCommon().getRootItem(), null, null, null, null));
         specs.add(MachineImportHelperCommon.nameHierarchyColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.altNameColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.descriptionColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.sortOrderColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.assignedItemColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.assemblyPartColumnSpec(ColumnModeOptions.oCREATE()));
+        specs.add(MachineImportHelperCommon.isInstalledColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.locationColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(locationDetailsColumnSpec());
         specs.add(MachineImportHelperCommon.isTemplateColumnSpec(ColumnModeOptions.rCREATE()));        
@@ -190,6 +191,10 @@ public class ImportHelperMachineHierarchy
         
         ItemDomainMachineDesign item = getEntityController().createEntityInstance();
 
+        ItemDomainMachineDesignControllerUtility utility = new ItemDomainMachineDesignControllerUtility();
+        
+        UserInfo user = (UserInfo) rowMap.get(KEY_USER);
+
         // determine sort order
         Float itemSortOrder = (Float) rowMap.get(MachineImportHelperCommon.KEY_SORT_ORDER);
         if ((itemSortOrder == null) && (itemParent != null)) {
@@ -217,14 +222,21 @@ public class ImportHelperMachineHierarchy
             return new CreateInfo(item, isValid, validString);
         }
 
-        // template items cannot have assigned inventory - only catalog
         Item assignedItem = (Item) rowMap.get(KEY_ASSIGNED_ITEM);
-        if ((item.getIsItemTemplate()) && ((assignedItem instanceof ItemDomainInventory))) {
-            isValid = false;
-            validString = "Template cannot have assigned inventory item, must use catalog item";
-            return new CreateInfo(item, isValid, validString);
+        String assemblyPartName = (String) rowMap.get(KEY_ASSEMBLY_PART);
+        if (assemblyPartName != null) {
+            assemblyPartName = assemblyPartName.trim();
         }
-
+        Boolean isInstalled = (Boolean) rowMap.get(MachineImportHelperCommon.KEY_INSTALLED);
+        
+        // validate and handle "assigned item" and "is installed" column values
+        ValidInfo assignedItemValidInfo = 
+                MachineImportHelperCommon.handleAssignedItem(
+                        item, assignedItem, assemblyPartName, user, isInstalled);
+        if (!assignedItemValidInfo.isValid()) {
+            return new CreateInfo(item, assignedItemValidInfo);
+        }
+        
         if (item.getIsItemTemplate()) {
             templateItemCount = templateItemCount + 1;
         } else {
@@ -240,11 +252,6 @@ public class ImportHelperMachineHierarchy
                 isValid = false;
                 return new CreateInfo(item, isValid, validString);
             }
-        }
-        
-        String assemblyPartName = (String) rowMap.get(KEY_ASSEMBLY_PART);
-        if (assemblyPartName != null) {
-            assemblyPartName = assemblyPartName.trim();
         }
         
         // handling for non-promoted items
@@ -318,8 +325,6 @@ public class ImportHelperMachineHierarchy
                 return new CreateInfo(item, isValid, validString);
             }
             
-            ItemDomainMachineDesignControllerUtility utility = new ItemDomainMachineDesignControllerUtility();
-            UserInfo user = (UserInfo) rowMap.get(KEY_USER);
             boolean exception = false;
             String exceptionInfo = "";
             try {
