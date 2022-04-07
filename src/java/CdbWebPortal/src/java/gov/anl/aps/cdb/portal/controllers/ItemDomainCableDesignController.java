@@ -917,9 +917,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
      * @param cableName
      * @return
      */
-    private ItemDomainCableDesign createCableCommon(
-            Item itemEndpoint1,
-            Item itemEndpoint2,
+    public ItemDomainCableDesign createCableCommon(
             String cableName,
             List<ItemProject> projectList,
             List<ItemCategory> technicalSystemList) {
@@ -930,74 +928,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         newCable.setTechnicalSystemList(technicalSystemList);
 
         return newCable;
-    }
-
-    /**
-     * Creates cable design connecting the specified endpoints, with
-     * unspecified cable catalog type.
-     *
-     * @param itemEndpoint1
-     * @param itemEndpoint2
-     * @param cableName
-     * @return
-     */
-    public String createCableUnspecified(
-            Item itemEndpoint1,
-            ItemConnector portEnd1,
-            Item itemEndpoint2,
-            ItemConnector portEnd2,
-            String cableName,
-            List<ItemProject> projectList,
-            List<ItemCategory> technicalSystemList) {
-
-        ItemDomainCableDesign newCable = this.createCableCommon(
-                itemEndpoint1,
-                itemEndpoint2,
-                cableName,
-                projectList,
-                technicalSystemList);
-        
-        newCable.setPrimaryEndpoint(itemEndpoint1, portEnd1, null, VALUE_CABLE_END_1);
-        newCable.setPrimaryEndpoint(itemEndpoint2, portEnd2, null, VALUE_CABLE_END_2);
-
-        return this.create();
-
-    }
-
-    /**
-     * Creates cable design of specified cable catalog type
-     * connecting the specified endpoints.
-     *
-     * @param itemEndpoint1
-     * @param itemEndpoint2
-     * @param cableName
-     * @return
-     */
-    public String createCableCatalog(
-            Item itemEndpoint1,
-            ItemConnector portEnd1,
-            ItemConnector connectorEnd1,
-            Item itemEndpoint2,
-            ItemConnector portEnd2,
-            ItemConnector connectorEnd2,
-            String cableName,
-            List<ItemProject> projectList,
-            List<ItemCategory> technicalSystemList,
-            Item itemCableCatalog) {
-
-        ItemDomainCableDesign newCable = this.createCableCommon(itemEndpoint1,
-                itemEndpoint2,
-                cableName,
-                projectList,
-                technicalSystemList);
-
-        newCable.setCatalogItem(itemCableCatalog);
-
-        newCable.setPrimaryEndpoint(itemEndpoint1, portEnd1, connectorEnd1, VALUE_CABLE_END_1);
-        newCable.setPrimaryEndpoint(itemEndpoint2, portEnd2, connectorEnd2, VALUE_CABLE_END_2);
-        
-        return this.create();
-
     }
 
     public void prepareEditEndpoint(ItemElementRelationship cableRelationship) {
@@ -1191,11 +1121,14 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
     
     public List<ItemConnector> getUnmappedConnectorsForCurrent(String cableEnd) {
+        return getUnmappedConnectorsForCableItem(getCurrent(), cableEnd);
+    }
+
+    public List<ItemConnector> getUnmappedConnectorsForCableItem(ItemDomainCableDesign cableItem, String cableEnd) {
         
         List<ItemConnector> result = new ArrayList<>();
         boolean filterCableEnd = (cableEnd != null);
-        ItemDomainCableDesign current = getCurrent();
-        List<ItemConnector> unmappedConnectors = current.getSyncedConnectorList();
+        List<ItemConnector> unmappedConnectors = cableItem.getSyncedConnectorList();
         
         // filter cable end if specified to do so
         if (filterCableEnd) {

@@ -20,7 +20,8 @@ See LICENSE file.
                 <p:inputText id="cableReviewName#{rootViewId}"
                              value="#{wizardController.inputValueName}" />
 
-                <p:outputLabel value="Project" />
+                <p:outputLabel value="Project" 
+                               styleClass="entityDataEmphasizedLabel"/>
                 <h:outputText value="#{wizardController.getProjectsString()}" 
                               title="Project" 
                               styleClass="entityDataEmphasizedText" />
@@ -66,11 +67,5 @@ See LICENSE file.
         </p:panel>
 
     </p:tab>
-
-
-
-
-
-
 
 </ui:composition>

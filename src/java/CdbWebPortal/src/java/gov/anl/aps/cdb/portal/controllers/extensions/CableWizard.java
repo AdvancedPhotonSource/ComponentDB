@@ -6,9 +6,14 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignWizardBase;
+import static gov.anl.aps.cdb.portal.model.db.entities.CdbEntity.VALUE_CABLE_END_1;
+import static gov.anl.aps.cdb.portal.model.db.entities.CdbEntity.VALUE_CABLE_END_2;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
+import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
@@ -24,6 +29,8 @@ import javax.inject.Named;
 public class CableWizard extends ItemDomainCableDesignWizardBase implements Serializable {
 
     public static final String CONTROLLER_NAMED = "cableWizard";
+    
+    private ItemDomainCableDesign cableItem = null;
     
     private String selectionCableType = null;
     private Item selectionCableCatalogItem = null;
@@ -104,6 +111,15 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
         setEnablementForCurrentTab();
     }
     
+    public List<ItemConnector> getUnmappedConnectorsEnd1() {
+        return ItemDomainCableDesignController.getInstance().getUnmappedConnectorsForCableItem(
+                cableItem, VALUE_CABLE_END_1);
+    }
+
+    public List<ItemConnector> getUnmappedConnectorsEnd2() {
+        return ItemDomainCableDesignController.getInstance().getUnmappedConnectorsForCableItem(
+                cableItem, VALUE_CABLE_END_2);
+    }
     /**
      * Resets models for wizard components.
      */
@@ -111,6 +127,7 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
     protected void reset_() {
         selectionCableType = null;
         selectionCableCatalogItem = null;
+        cableItem = null;
     }
 
     /**
@@ -134,6 +151,20 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
         return nextTab;
     }
 
+    protected void handleTabStep_(String currStep, String nextStep) {
+        
+        ItemDomainCableDesignController controller = ItemDomainCableDesignController.getInstance();
+        
+        if (currStep.endsWith("CableBasicsTab") && nextStep.endsWith("CableTypeTab")) {
+            cableItem = controller.createCableCommon(
+                    inputValueName,
+                    selectionProjectList,
+                    selectionTechnicalSystemList);
+        } else if (currStep.endsWith("CableDetailsTab") && nextStep.endsWith("CableConnectorTab")) {
+            cableItem.setCatalogItem(selectionCableCatalogItem);
+        }
+    }
+    
     /**
      * Sets enable/disable state for the navigation buttons based on the current
      * tab and input elements.
@@ -168,6 +199,11 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
                 default:
                     disableButtonNext = true;
             }
+        } else if (tab.endsWith("CableConnectorTab")) {
+            disableButtonPrev = false;
+            disableButtonCancel = false;
+            disableButtonSave = true;
+            disableButtonNext = false;
         }
     }
 
@@ -191,61 +227,12 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
             return "";
         }
 
-        if (inputValueName.isEmpty()) {
-            SessionUtility.addErrorMessage(
-                    "Could not save cable",
-                    "Please specify cable name.");
-            return "";
-        }
-
-        if (selectionCableType == null) {
-            SessionUtility.addErrorMessage(
-                    "Could not save cable",
-                    "Please specify second endpoint.");
-            return "";
-        }
-
-        
         ItemDomainCableDesignController controller = ItemDomainCableDesignController.getInstance();
+        cableItem.setPrimaryEndpoint(itemEnd1, portEnd1, connectorEnd1, VALUE_CABLE_END_1);
+        cableItem.setPrimaryEndpoint(itemEnd2, portEnd2, connectorEnd2, VALUE_CABLE_END_2);
 
         String result = "";
-
-        switch (selectionCableType) {
-
-            case cableTypeUnspecified:
-                result = controller.createCableUnspecified(
-                        itemEnd1,
-                        portEnd1,
-                        itemEnd2,
-                        portEnd2,
-                        inputValueName,
-                        selectionProjectList,
-                        selectionTechnicalSystemList);
-                break;
-
-            case cableTypeCatalog:
-                
-                if (selectionCableCatalogItem == null) {
-                    SessionUtility.addErrorMessage(
-                            "Could not save cable",
-                            "Please select cable catalog item.");
-                    return "";
-                    
-                } else {                    
-                    result = controller.createCableCatalog(
-                            itemEnd1,
-                            portEnd1,
-                            connectorEnd1,
-                            itemEnd2,
-                            portEnd2,
-                            connectorEnd2,
-                            inputValueName,
-                            selectionProjectList,
-                            selectionTechnicalSystemList,
-                            selectionCableCatalogItem);
-                }
-                break;
-        }
+        result = controller.create();
 
         // get redirect before calling cleanup or it will be reset
         String redirect = "";
@@ -254,11 +241,8 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
         } else {
             redirect = getRedirectSuccess();
         }
-
         cleanupClient();
-
         this.reset();
-
         return redirect;
     }
 }
