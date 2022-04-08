@@ -28,9 +28,9 @@ public class BooleanInputHandler extends SimpleInputHandler {
             isValid = true;
             validString = "";
         } else {
-            if (stringValue.equalsIgnoreCase("true") || stringValue.equals("1") || stringValue.equals("yes")) {
+            if (stringValue.equalsIgnoreCase("true") || stringValue.equals("1") || stringValue.equalsIgnoreCase("yes")) {
                 parsedValue = true;
-            } else if (stringValue.equalsIgnoreCase("false") || stringValue.equals("0") || stringValue.equals("no")) {
+            } else if (stringValue.equalsIgnoreCase("false") || stringValue.equals("0") || stringValue.equalsIgnoreCase("no")) {
                 parsedValue = false;
             } else {
                 parsedValue = null;

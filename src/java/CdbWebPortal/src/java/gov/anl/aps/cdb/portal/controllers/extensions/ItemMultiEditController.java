@@ -112,6 +112,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     protected String currentObjectListStringRep = null;
     protected Object currentObjectValueToColumn = null;
     protected PropertyValue currentMockPropertyValueApplyValuesToColumn = null;
+    protected PropertyCreateOptions currentPropertyCreateOptApplyValuesToColumn = null; 
     protected boolean isInputValueDialogOpen;
 
     protected boolean renderMultiCreateConfigurationDialog = false;
@@ -160,6 +161,27 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
         private MultiEditMode() {
         }
+    }
+    
+    public enum PropertyCreateOptions {
+        
+        onlyUpdateExisting("Update Existing"),
+        createOnlyForNull("Create When Needed"),
+        createForAll("Create New for All");        
+        
+        private String value; 
+
+        private PropertyCreateOptions(String value) {
+            this.value = value;
+        }
+        
+        public String getValue() {
+            return value;
+        }                
+    }
+    
+    public PropertyCreateOptions[] getPropertyCreateOptions() {
+        return PropertyCreateOptions.values(); 
     }
 
     public String getPageTitle() {
@@ -1037,6 +1059,22 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
                     PropertyType currentPropertyType = currentMockPropertyValueApplyValuesToColumn.getPropertyType();
                     MultiEditPropertyRecord mepr = getMultiEditPropertyRecordForItem(currentPropertyType, item);
                     PropertyValue value = mepr.getPropertyValue();
+                    
+                    switch (currentPropertyCreateOptApplyValuesToColumn) {
+                        case createForAll:
+                            addPropertyValueForItem(mepr); 
+                            value = mepr.getPropertyValue();
+                            break;
+                        case createOnlyForNull:
+                            if (value == null) {
+                                addPropertyValueForItem(mepr); 
+                                value = mepr.getPropertyValue();
+                            }
+                            break;
+                        case onlyUpdateExisting:
+                            break; 
+                    }
+                    
                     if (value != null) {
                         value.setValue(currentMockPropertyValueApplyValuesToColumn.getValue());
                     }
@@ -1142,6 +1180,14 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
     public void setCurrentMockPropertyValueApplyValuesToColumn(PropertyValue currentMockPropertyValueApplyValuesToColumn) {
         this.currentMockPropertyValueApplyValuesToColumn = currentMockPropertyValueApplyValuesToColumn;
+    }  
+
+    public PropertyCreateOptions getCurrentPropertyCreateOptApplyValuesToColumn() {
+        return currentPropertyCreateOptApplyValuesToColumn;
+    }
+
+    public void setCurrentPropertyCreateOptApplyValuesToColumn(PropertyCreateOptions currentPropertyCreateOptApplyValuesToColumn) {
+        this.currentPropertyCreateOptApplyValuesToColumn = currentPropertyCreateOptApplyValuesToColumn;
     }
 
     public String getCurrentPrefixValueToColumn() {

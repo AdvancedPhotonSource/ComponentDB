@@ -53,7 +53,10 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient ItemDomainMachineDesign importParent = null;
     private transient String importPath = null;
     private transient String importParentPath = null;
+    private transient Item importAssignedItem = null;
     private transient String importAssemblyPart = null;
+    private transient Boolean importIsInstalled = null;
+    private transient boolean importIsInstalledLoaded = false;
     private transient String importTemplateAndParameters = null;
     private transient Float importSortOrder = null;
     private transient String moveToTrashErrorMsg = null;
@@ -69,8 +72,11 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient PropertyValue controlInterfaceToParent = null;
     private transient ItemElementRelationship controlRelationshipToParent = null;
     
-    // collection of ItemElements for facade to create when updating items
-    private transient List<ItemElement> newElementList = null;
+    // collection of ItemElements for facade to create when updating this machine design item
+    private transient List<ItemElement> elementsToCreate = null;
+    
+    // collection of machine design items to update when updating this machine design item
+    private transient List<ItemDomainMachineDesign> itemsToUpdate = null;
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
@@ -371,6 +377,46 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setImportParentPath(String importParentPath) {
         this.importParentPath = importParentPath;
     }
+    
+    @JsonIgnore
+    public Item getImportAssignedItem() {
+        if (importAssignedItem == null) {
+            importAssignedItem = getAssignedItem();
+        }
+        return importAssignedItem;
+    }
+    
+    public void setImportAssignedItem(Item assignedItem) {
+        this.importAssignedItem = assignedItem;
+    }
+    
+    @JsonIgnore
+    public String getImportAssignedItemString() {
+        Item assignedItem = getImportAssignedItem();
+        if (assignedItem == null) {
+            return "";
+        } else {
+            return assignedItem.getName();
+        }
+    }
+    
+    @JsonIgnore
+    public Boolean getImportIsInstalled() {
+        if (!importIsInstalledLoaded) {
+            Item assignedItem = getAssignedItem();
+            if (assignedItem != null && assignedItem instanceof ItemDomainInventory) {
+                importIsInstalled = isIsHoused();
+            } else {
+                importIsInstalled = null;
+            }            
+            importIsInstalledLoaded = true;
+        }
+        return importIsInstalled;
+    }
+    
+    public void setImportIsInstalled(Boolean isInstalled) {
+        this.importIsInstalled = isInstalled;
+    }
 
     public String getAlternateName() {
         return getItemIdentifier1();
@@ -533,26 +579,44 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         this.controlInterfaceToParent = controlInterfaceToParent;
     }
 
+    @JsonIgnore
+    public List<ItemElement> getElementsToCreate() {
+        if (elementsToCreate == null) {
+            elementsToCreate = new ArrayList<>();
+        }
+        return elementsToCreate;
+    }
+    
+    public void addElementToCreate(ItemElement element) {
+        this.getElementsToCreate().add(element);
+    }
+
+    public void clearElementsToCreate() {
+        if (elementsToCreate != null) {
+            elementsToCreate.clear();
+        }
+    }
+
+    @JsonIgnore
+    public List<ItemDomainMachineDesign> getItemsToUpdate() {
+        if (itemsToUpdate == null) {
+            itemsToUpdate = new ArrayList<>();
+        }
+        return itemsToUpdate;
+    }
+    
+    public void addItemToUpdate(ItemDomainMachineDesign item) {
+        this.getItemsToUpdate().add(item);
+    }
+
+    public void clearItemsToUpdate() {
+        if (itemsToUpdate != null) {
+            itemsToUpdate.clear();
+        }
+    }
+
     // <editor-fold defaultstate="collapsed" desc="Import functionality">
     
-    @JsonIgnore
-    public List<ItemElement> getNewElementList() {
-        if (newElementList == null) {
-            newElementList = new ArrayList<>();
-        }
-        return newElementList;
-    }
-    
-    public void addNewElement(ItemElement element) {
-        this.getNewElementList().add(element);
-    }
-
-    public void clearNewElementList() {
-        if (newElementList != null) {
-            newElementList.clear();
-        }
-    }
-
     @JsonIgnore
     public Float getImportSortOrder() {
         if ((importSortOrder == null) && (getId() != null)) {

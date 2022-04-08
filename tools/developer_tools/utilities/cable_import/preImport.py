@@ -207,6 +207,7 @@ def register(helper_class):
     PreImportHelper.register(helper_class.tag(), helper_class)
 
 
+
 class ConnectedMenuManager:
 
     def __init__(self, workbook):
