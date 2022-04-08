@@ -11,8 +11,6 @@ import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
-import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
-import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineAssignTemplate;
@@ -110,8 +108,6 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     private boolean displayAttachTemplateToMachine = true;
     private boolean displayMachineDesignReorderOverlayPanel = true;
     private boolean displayAddCablePanel = true;
-    private boolean displayAddCableCircuitPanel = true;
-    private boolean displayAddCableBundlePanel = true;
 
     private List<ItemDomainCatalog> catalogItemsDraggedAsChildren = null;
     private TreeNode newCatalogItemsInMachineDesignModel = null;
@@ -537,8 +533,6 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         displayAttachTemplateToMachine = false;
         displayMachineDesignReorderOverlayPanel = false;
         displayAddCablePanel = false;
-        displayAddCableCircuitPanel = false;
-        displayAddCableBundlePanel = false;
         catalogItemsDraggedAsChildren = null;
         newCatalogItemsInMachineDesignModel = null;
         currentMachineDesignListRootTreeNode = null;
@@ -639,14 +633,6 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     public boolean isDisplayAddCablePanel() {
         return displayAddCablePanel;
-    }
-
-    public boolean isDisplayAddCableCircuitPanel() {
-        return displayAddCableCircuitPanel;
-    }
-
-    public boolean isDisplayAddCableBundlePanel() {
-        return displayAddCableBundlePanel;
     }
 
     protected void updateCurrentUsingSelectedItemInTreeTable() {
@@ -1458,35 +1444,12 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         CableWizard cableWizard = CableWizard.getInstance();
         cableWizard.registerClient(this, cableWizardRedirectSuccess);
         cableWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
+        ItemElement element = (ItemElement)selectedItemInListTreeTable.getData();
+        Item endpointItem = element.getContainedItem();
+        cableWizard.setEndpoint1(endpointItem);
 
         displayListConfigurationView = true;
         displayAddCablePanel = true;
-    }
-
-    public void prepareWizardCircuit() {
-        updateCurrentUsingSelectedItemInTreeTable();
-        setCurrentEditItemElement((ItemElement) selectedItemInListTreeTable.getData());
-
-        // create model for wizard
-        CircuitWizard circuitWizard = CircuitWizard.getInstance();
-        circuitWizard.registerClient(this, cableWizardRedirectSuccess);
-        circuitWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
-
-        displayListConfigurationView = true;
-        displayAddCableCircuitPanel = true;
-    }
-
-    public void prepareWizardBundle() {
-        updateCurrentUsingSelectedItemInTreeTable();
-        setCurrentEditItemElement((ItemElement) selectedItemInListTreeTable.getData());
-
-        // create model for wizard
-        BundleWizard bundleWizard = BundleWizard.getInstance();
-        bundleWizard.registerClient(this, cableWizardRedirectSuccess);
-        bundleWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
-
-        displayListConfigurationView = true;
-        displayAddCableBundlePanel = true;
     }
 
     public void cleanupCableWizard() {

@@ -240,6 +240,10 @@ public abstract class ItemDomainCableDesignWizardBase {
         this.selectionEndpoint1 = selectionEndpoint1;
     }
     
+    public void setEndpoint1(Item itemEnd1) {
+        this.itemEnd1 = itemEnd1;
+    }
+    
     public Item getEndpoint1() {
         return itemEnd1;
     }

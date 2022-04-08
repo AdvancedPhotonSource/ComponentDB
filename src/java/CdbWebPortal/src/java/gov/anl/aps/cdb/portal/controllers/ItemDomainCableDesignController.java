@@ -6,9 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
-import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
-import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDesign;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
@@ -19,8 +17,6 @@ import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
-import static gov.anl.aps.cdb.portal.model.db.entities.CdbEntity.VALUE_CABLE_END_1;
-import static gov.anl.aps.cdb.portal.model.db.entities.CdbEntity.VALUE_CABLE_END_2;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
@@ -1004,22 +1000,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         CableWizard.getInstance().reset();
         return "/views/itemDomainCableDesign/create?faces-redirect=true";
     }
-
-    /**
-     * Prepares import wizard.
-     */
-    public String prepareWizardCircuit() {
-        CircuitWizard.getInstance().reset();
-        return "/views/itemDomainCableDesign/createCircuit?faces-redirect=true";
-    }
-
-    /**
-     * Prepares import wizard.
-     */
-    public String prepareWizardBundle() {        
-        BundleWizard.getInstance().reset();
-        return "/views/itemDomainCableDesign/createBundle?faces-redirect=true";
-    } 
 
     @Override
     public ItemDomainCableDesignLazyDataModel createItemLazyDataModel() {
