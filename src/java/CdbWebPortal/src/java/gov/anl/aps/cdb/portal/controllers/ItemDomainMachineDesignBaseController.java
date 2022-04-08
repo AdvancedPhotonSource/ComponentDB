@@ -63,6 +63,7 @@ import org.primefaces.event.DragDropEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
+import gov.anl.aps.cdb.portal.controllers.extensions.CableWizardClient;
 
 /**
  *
@@ -71,7 +72,7 @@ import org.primefaces.model.TreeNode;
  */
 public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode extends ItemDomainMachineDesignBaseTreeNode, controllerUtility extends ItemDomainMachineDesignBaseControllerUtility>
         extends ItemController<controllerUtility, ItemDomainMachineDesign, ItemDomainMachineDesignFacade, ItemDomainMachineDesignSettings, ItemGenericLazyDataModel>
-        implements ItemDomainCableDesignWizardClient {
+        implements CableWizardClient {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignBaseController.class.getName());
 
