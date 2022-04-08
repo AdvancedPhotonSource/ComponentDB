@@ -107,12 +107,6 @@ See LICENSE file.
             <ui:decorate template="templates/reviewTabTemplate.xhtml">
                 <ui:param name="viewId" value="#{rootViewId}" />
                 <ui:param name="wizardController" value="#{wizardController}" />
-                <ui:define name="typeSpecificFields">
-                    <p:outputLabel value="Cable Type" />
-                    <h:outputText value="#{cableWizard.selectionCableCatalogItem}"   
-                                  title="Selected Cable Type" 
-                                  styleClass="entityDataEmphasizedText" />
-                </ui:define>
             </ui:decorate>
 
         </p:wizard>
