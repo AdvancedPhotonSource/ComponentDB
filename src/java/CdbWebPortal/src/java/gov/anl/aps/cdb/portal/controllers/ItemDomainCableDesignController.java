@@ -992,7 +992,12 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return (!connection.getCableRelationship().isPrimaryCableConnection());
     }
     
-    /**
+    @Override
+    public String prepareCreate() {
+        return prepareWizardCable();
+    }
+    
+        /**
      * Prepares cable wizard.
      */
     public String prepareWizardCable() { 

@@ -59,14 +59,12 @@ See LICENSE file.
                                 
                                 <p:outputLabel value="End1 Cable Connector" styleClass="entityDataEmphasizedLabel"/>
                                 <p:selectOneMenu id="#{rootViewId}SelectEnd1ConnectorMenu" 
-                                                 value="#{cableWizard.end1Connector}">
-                                    <p:ajax oncomplete="update#{rootViewId}WizardButtons();"/>
+                                                 value="#{cableWizard.selectedConnectorNameEnd1}">
+                                    <p:ajax  listener="#{cableWizard.selectListenerConnectorEnd1}" 
+                                             oncomplete="update#{rootViewId}WizardButtons();"/>
                                     <f:selectItem itemLabel="unspecified" 
                                                   itemValue=""/>
-                                    <f:selectItems value="#{cableWizard.unmappedConnectorsEnd1}"
-                                                   var="connector"
-                                                   itemLabel="#{connector.connectorName}"
-                                                   itemValue="#{connector}"/>
+                                    <f:selectItems value="#{cableWizard.unmappedConnectorsEnd1}"/>
                                 </p:selectOneMenu>
                                 
                             </p:panelGrid>
@@ -94,14 +92,12 @@ See LICENSE file.
                                 
                                 <p:outputLabel value="End2 Cable Connector" styleClass="entityDataEmphasizedLabel"/>
                                 <p:selectOneMenu id="#{rootViewId}SelectEnd2ConnectorMenu" 
-                                                 value="#{cableWizard.end2Connector}">
-                                    <p:ajax oncomplete="update#{rootViewId}WizardButtons();"/>
+                                                 value="#{cableWizard.selectedConnectorNameEnd2}">
+                                    <p:ajax listener="#{cableWizard.selectListenerConnectorEnd2}" 
+                                            oncomplete="update#{rootViewId}WizardButtons();"/>
                                     <f:selectItem itemLabel="unspecified" 
                                                   itemValue=""/>
-                                    <f:selectItems value="#{cableWizard.unmappedConnectorsEnd2}"
-                                                   var="connector"
-                                                   itemLabel="#{connector.connectorName}"
-                                                   itemValue="#{connector}"/>
+                                    <f:selectItems value="#{cableWizard.unmappedConnectorsEnd2}"/>
                                 </p:selectOneMenu>
 
                             </p:panelGrid>
