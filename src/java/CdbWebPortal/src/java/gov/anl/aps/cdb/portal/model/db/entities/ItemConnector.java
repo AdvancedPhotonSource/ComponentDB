@@ -233,8 +233,16 @@ public class ItemConnector extends CdbEntity implements Serializable {
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         } else if (this.id == null && other.id == null) {
-            // New item check if connector is the same. 
-            return ObjectUtility.equals(this.connector, other.connector);             
+            // New item check if item is the same and if so, connector is the same. 
+            if (this.getItem() == null || other.getItem() == null) {
+                // this probably indicates some other problem, but return false since they are not equal
+                return false;
+            }
+            if (this.getItem().getId().equals(other.getItem().getId())) {
+                return ObjectUtility.equals(this.connector, other.connector);
+            } else {
+                return false;
+            }
         }
         return true;
     }

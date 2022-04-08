@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.primefaces.model.SortMeta;
 
 /**
  *
@@ -55,8 +56,10 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
     protected String filterByQrId = null;
     protected String filterByItemEntityType = null; 
     
+    protected SortMeta dataTableSortMeta = null; 
+    
     protected ItemElementSettings itemElementSettings = null;
-
+    
     public ItemSettings(ItemControllerBase parentController) {
         super(parentController);
     }
@@ -225,6 +228,13 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
     public boolean isDisplayListDataModelScopePropertyTypeSelection() {
         if (displayListDataModelScope != null) {
             return displayListDataModelScope.equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue());
+        }
+        return false;
+    }
+    
+    public boolean isDisplayListDataModelScopeAdvancedFilter() {
+        if (displayListDataModelScope != null) {
+            return displayListDataModelScope.equals(ItemDisplayListDataModelScope.advancedFilter.getValue());
         }
         return false;
     }
@@ -542,7 +552,7 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
 
     public void setDisplayListDataModelScope(String listDataModelMode) {
         if (!this.displayListDataModelScope.equals(listDataModelMode)) {
-            parentController.resetListDataModel();
+            parentController.listDataModelScopeChanged();
         }
         this.displayListDataModelScope = listDataModelMode;
     }
@@ -572,5 +582,13 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
     
     public PropertyType getCoreMetadataPropertyType() {
         return parentController.getCoreMetadataPropertyType();
+    }
+
+    public SortMeta getDataTableSortMeta() {        
+        return dataTableSortMeta;
+    }
+
+    public void setDataTableSortMeta(SortMeta dataTableSortMeta) {
+        this.dataTableSortMeta = dataTableSortMeta;
     }
 }

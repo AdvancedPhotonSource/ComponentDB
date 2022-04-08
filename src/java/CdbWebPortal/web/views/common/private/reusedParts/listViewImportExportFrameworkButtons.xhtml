@@ -29,7 +29,8 @@ See LICENSE file.
                          onclick="PF('loadingDialog').show();"
                          oncomplete="PF('loadingDialog').hide();"/> 
         
-        <p:commandButton value="Export"
+        <p:commandButton id="#{entityTypeName}#{viewName}ExportButton"
+                         value="Export"
                          icon="fa fa-file-excel-o"
                          action="#{entityController[exportEntityActionFunctionName]}"
                          rendered="#{entityController.entityDisplayExportButton}"

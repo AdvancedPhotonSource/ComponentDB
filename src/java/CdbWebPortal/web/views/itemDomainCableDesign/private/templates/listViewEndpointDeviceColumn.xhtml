@@ -24,7 +24,8 @@ See LICENSE file.
               filterBy="#{itemListObject[propertyName]}"
               field="ConnectionDeviceEnd#{endpointNum}"
               filterMatchMode="contains"
-              filterValue="#{entitySettingObject[filterSettingName]}">
+              filterValue="#{entitySettingObject[filterSettingName]}"
+              exportFunction="#{facesUtility.getFilterString(itemListObject[propertyName])}">
         <f:facet name="header">
             <h:outputText value="#{columnName}" />
             <p:tooltip value="#{columnDescription}"

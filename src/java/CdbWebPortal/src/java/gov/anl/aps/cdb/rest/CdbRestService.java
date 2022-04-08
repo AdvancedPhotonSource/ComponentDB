@@ -45,10 +45,12 @@ public class CdbRestService extends Application {
         resources.add(gov.anl.aps.cdb.rest.authentication.AuthenticationFilter.class);
         resources.add(gov.anl.aps.cdb.rest.provider.GenericAPIExceptionProvider.class);
         resources.add(gov.anl.aps.cdb.rest.routes.AuthenticationRoute.class);
-        resources.add(gov.anl.aps.cdb.rest.routes.ComponentCatalogtemRoute.class); 
-        resources.add(gov.anl.aps.cdb.rest.routes.ComponentInventorytemRoute.class); 
         resources.add(gov.anl.aps.cdb.rest.routes.CableCatalogItemRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.CableDesignItemRoute.class);
+        resources.add(gov.anl.aps.cdb.rest.routes.CableImportRoute.class);
+        resources.add(gov.anl.aps.cdb.rest.routes.ComponentCatalogtemRoute.class);
+        resources.add(gov.anl.aps.cdb.rest.routes.ComponentInventorytemRoute.class);
+        resources.add(gov.anl.aps.cdb.rest.routes.ConnectorTypeRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.DomainRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.DownloadRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.ItemRoute.class);

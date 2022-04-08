@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.RelationshipTypeControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
@@ -22,6 +23,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.ParameterMode;
@@ -35,6 +38,12 @@ import org.apache.logging.log4j.Logger;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_DESIGN_ID + "")
+@NamedQueries({
+    @NamedQuery(name = "ItemDomainCableDesign.filterAncestorAny",
+            query = "SELECT i FROM Item i WHERE i.domain.name = :domainName AND FUNCTION('cable_design_ancestor_filter', i.id, :nameFilterValue, '')"),
+    @NamedQuery(name = "ItemDomainCableDesign.filterAncestorByEnd",
+            query = "SELECT i FROM Item i WHERE i.domain.name = :domainName AND FUNCTION('cable_design_ancestor_filter', i.id, :end1Value, '1') AND FUNCTION('cable_design_ancestor_filter', i.id, :end2Value, '2')")
+})
 @NamedStoredProcedureQueries({
     @NamedStoredProcedureQuery(
         name = "itemCableDesign.searchItems",
@@ -1293,6 +1302,40 @@ public class ItemDomainCableDesign extends Item {
     public void setEndpoint2Drawing(String drawing) throws CdbException {
         endpoint2Drawing = drawing;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_DRAWING_KEY, drawing);
+    }
+    
+    @JsonIgnore
+    public String getEndpoint1Location() {
+        ItemDomainMachineDesign endpoint = (ItemDomainMachineDesign) getEndpoint1();
+        if (endpoint == null) {
+            return null;
+        } else {
+            // must manually load location details before accessing
+            LocatableItemController.getInstance().getLocationStringForItem(endpoint);
+            Item location = endpoint.getActiveLocation();
+            if (location != null) {
+                return location.getName();
+            } else {
+                return null;
+            }
+        }
+    }
+
+    @JsonIgnore
+    public String getEndpoint2Location() {
+        ItemDomainMachineDesign endpoint = (ItemDomainMachineDesign) getEndpoint2();
+        if (endpoint == null) {
+            return null;
+        } else {
+            // must manually load location details before accessing
+            LocatableItemController.getInstance().getLocationStringForItem(endpoint);
+            Item location = endpoint.getActiveLocation();
+            if (location != null) {
+                return location.getName();
+            } else {
+                return null;
+            }
+        }
     }
 
     @Override
