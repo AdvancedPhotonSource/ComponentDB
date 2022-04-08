@@ -329,7 +329,6 @@ public class BundleWizard extends ItemDomainCableDesignWizardBase implements Ser
     protected void setEnablement_(String tab) {
 
         if (tab.endsWith(tabBundleOptions)) {
-            disableButtonPrev = false;
             disableButtonCancel = false;
             disableButtonSave = true;
             if (addMembers || createSpares) {
@@ -338,7 +337,6 @@ public class BundleWizard extends ItemDomainCableDesignWizardBase implements Ser
                 disableButtonNext = true;
             }
         } else if (tab.endsWith(tabSpares)) {
-            disableButtonPrev = false;
             disableButtonCancel = false;
             disableButtonSave = true;
             if (spares.size() > 0) {

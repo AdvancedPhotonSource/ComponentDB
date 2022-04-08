@@ -373,7 +373,6 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
     protected void setEnablement_(String tab) {
         
         if (tab.endsWith("CableTypeTab")) {
-            disableButtonPrev = false;
             disableButtonCancel = false;
             disableButtonSave = true;
             if (selectionCableType == null) {
@@ -382,7 +381,6 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
                 disableButtonNext = false;
             }
         } else if (tab.endsWith("CableDetailsTab")) {
-            disableButtonPrev = false;
             disableButtonCancel = false;
             disableButtonSave = true;
             switch (selectionCableType) {
@@ -400,7 +398,6 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
                     disableButtonNext = true;
             }
         } else if (tab.endsWith("CableConnectorTab")) {
-            disableButtonPrev = false;
             disableButtonCancel = false;
             disableButtonSave = true;
             disableButtonNext = false;

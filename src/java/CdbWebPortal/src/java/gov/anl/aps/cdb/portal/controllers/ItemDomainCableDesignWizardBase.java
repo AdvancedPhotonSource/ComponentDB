@@ -6,20 +6,14 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
-import static gov.anl.aps.cdb.portal.model.db.entities.CdbEntity.VALUE_CABLE_END_1;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
 import org.primefaces.event.FlowEvent;
-import org.primefaces.event.NodeSelectEvent;
-import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -116,7 +110,6 @@ public abstract class ItemDomainCableDesignWizardBase {
     protected TreeNode selectionEndpoint2 = null;
     protected Item itemEnd2 = null;
     protected List<Item> members = new ArrayList<>();
-    protected Boolean disableButtonPrev = true;
     protected Boolean disableButtonNext = true;
     protected Boolean disableButtonSave = true;
     protected Boolean disableButtonCancel = false;
@@ -335,20 +328,6 @@ public abstract class ItemDomainCableDesignWizardBase {
     }
 
     /**
-     * Returns true if the previous button should be disabled.
-     */
-    public Boolean getDisableButtonPrev() {
-        return disableButtonPrev;
-    }
-
-    /**
-     * @link ItemDomainCableDesignWizard#getDisableButtonPrev
-     */
-    public void setDisableButtonPrev(Boolean disableButtonPrev) {
-        this.disableButtonPrev = disableButtonPrev;
-    }
-
-    /**
      * Returns true if the next button should be disabled.
      */
     public Boolean getDisableButtonNext() {
@@ -460,13 +439,11 @@ public abstract class ItemDomainCableDesignWizardBase {
     protected void setEnablement(String tab) {
 
         // default
-        disableButtonPrev = true;
         disableButtonCancel = false;
         disableButtonSave = true;
         disableButtonNext = true;
 
         if (tab.endsWith("EndpointTab")) {
-            disableButtonPrev = true;
             disableButtonCancel = false;
             disableButtonSave = true;
             if ((itemEnd1 == null) || (itemEnd2 == null)) {
@@ -475,7 +452,6 @@ public abstract class ItemDomainCableDesignWizardBase {
                 disableButtonNext = false;
             }
         } else if (tab.endsWith("CableBasicsTab")) {
-            disableButtonPrev = false;
             disableButtonCancel = false;
             disableButtonSave = true;
             if ((inputValueName.isEmpty()) || (selectionProjectList.isEmpty()) || (selectionTechnicalSystemList.isEmpty())) {
@@ -484,7 +460,6 @@ public abstract class ItemDomainCableDesignWizardBase {
                 disableButtonNext = false;
             }
         } else if (tab.endsWith("MembersTab")) {
-            disableButtonPrev = false;
             disableButtonCancel = false;
             disableButtonSave = true;
             if (!members.isEmpty()) {
@@ -493,7 +468,6 @@ public abstract class ItemDomainCableDesignWizardBase {
                 disableButtonNext = true;
             }
         } else if (tab.endsWith("CableReviewTab")) {
-            disableButtonPrev = false;
             disableButtonCancel = false;
             disableButtonSave = false;
             disableButtonNext = true;

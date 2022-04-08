@@ -15,14 +15,6 @@ See LICENSE file.
     <p:outputPanel id="#{rootViewId}CableWizardButtonPanel">
         <div style="float: left">
 
-            <p:commandButton value="Previous Step" 
-                             process="@this"
-                             update="@this"
-                             onstart="PF('loadingDialog').show(); PF('#{rootViewId}').back();"
-                             oncomplete="update#{rootViewId}WizardButtons(); PF('loadingDialog').hide();"
-                             disabled="#{wizardController.disableButtonPrev}"
-                             icon="fa fa-arrow-left"/>
-
             <p:commandButton id="#{rootViewId}CancelButton"
                              value="Cancel"
                              alt="Cancel"
