@@ -46,3 +46,8 @@ docs/python/_build/
 /src/python/cdb_api.egg-info
 /src/python/dist
 
+# VSC Config file
+tools/developer_tools/python-client/cdbCli/service/cli/.vscode
+
+# Temporary testing csv files
+tools/developer_tools/python-client/cdbCli/service/cli/Spreadsheets/
