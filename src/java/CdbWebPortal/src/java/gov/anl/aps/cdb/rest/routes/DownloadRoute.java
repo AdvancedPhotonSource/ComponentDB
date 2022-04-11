@@ -62,7 +62,10 @@ public class DownloadRoute extends BaseRoute {
         }
 
         String storedFileName = result.getValue();
-        String originalFileName = result.getDisplayValue();
+        String originalFileName = result.getDisplayValue();        
+        if (originalFileName == null) {
+            originalFileName = storedFileName; 
+        }
 
         PropertyTypeHandler propertyTypeHandler = result.getPropertyType().getPropertyTypeHandler();
 
