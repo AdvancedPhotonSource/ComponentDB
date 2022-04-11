@@ -894,6 +894,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
         }
         
+        int itemCount = getItemCountForCurrentMode();                
+        if (itemCount == 0) {
+            // nothing to import, this will disable the "next" button
+            validationMessage = appendToString(
+                    validationMessage, 
+                    "No rows contained in spreadsheet.");
+        }
+        
         String modeString = "";
         if (null != getImportMode()) {
             switch (getImportMode()) {

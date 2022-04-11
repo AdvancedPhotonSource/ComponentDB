@@ -18,9 +18,17 @@ See LICENSE file.
                      styleClass="leftAlignedText"
                      rendered="#{propertyValueObject != null}">
             <h:outputText value="Value"/>
-            <ui:include src="../../../propertyValue/private/propertyValueEditObjectValue.xhtml" >
+            <ui:include src="../../../propertyValue/private/propertyValueEditObjectValue.xhtml" />
 
-            </ui:include>
+            <h:outputText value="Create Option"/>
+            <p:selectOneMenu value="#{entityController.currentPropertyCreateOptApplyValuesToColumn}"> 
+                <f:selectItems value="#{entityController.propertyCreateOptions}"
+                               var="createOpt"
+                               itemLabel="#{createOpt.value}"
+                               itemValue="#{createOpt}"/>
+            </p:selectOneMenu>
+
+
         </p:panelGrid>
     </f:subview>
 
