@@ -64,6 +64,8 @@ import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizardClient;
+import static gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode.CONNECTOR_NODE_TYPE;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 
 /**
  *
@@ -651,15 +653,21 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     private ItemDomainMachineDesign getItemFromSelectedItemInTreeTable() {
         ItemElement itemElement = getItemElementFromSelectedItemInTreeTable();
+        Item item = null;
         if (itemElement != null) {
-            Item item = itemElement.getContainedItem();
-
-            if (item instanceof ItemDomainMachineDesign) {
-                return (ItemDomainMachineDesign) item;
+            if (selectedItemInListTreeTable.getType() == CONNECTOR_NODE_TYPE) {
+                ItemConnector connector = itemElement.getMdConnector();
+                item = connector.getItem();
+            } else {
+                item = itemElement.getContainedItem();
             }
         }
-
-        return null;
+        
+        if (item instanceof ItemDomainMachineDesign) {
+            return (ItemDomainMachineDesign) item;
+        } else {
+            return null;
+        }
     }
 
     public void unlinkContainedItem2ToDerivedFromItem() {
@@ -1437,17 +1445,50 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         searchResultsTreeNode = rootTreeNode;
         return searchResultsTreeNode;
     }
+    
+    public String viewCable() {
+        ItemElement element = getItemElementFromSelectedItemInTreeTable();
+        ItemDomainCableDesign cable = (ItemDomainCableDesign) element.getContainedItem();
+        if (cable != null) {
+            ItemDomainCableDesignController controller = ItemDomainCableDesignController.getInstance();
+            controller.setCurrent(cable);
+            return "/views/itemDomainCableDesign/view?id=" + cable.getId() + "faces-redirect=true";
+        } else {
+            return "";
+        }
+    }
+    
+    public boolean disableAddCableForSelection() {        
+        ItemDomainMachineDesign selectedItem = getItemFromSelectedItemInTreeTable();
+        boolean writeable = LoginController.getInstance().isEntityWriteable(selectedItem.getEntityInfo());
+        if (!writeable) {
+            return true;
+        }
+        
+        if (selectedItemInListTreeTable.getType() == CONNECTOR_NODE_TYPE) {
+            ItemElement element = (ItemElement) selectedItemInListTreeTable.getData();
+            ItemConnector connector = element.getMdConnector();
+            return connector.isConnected();
+        } else {
+            return false;
+        }
+    }
 
     public void prepareWizardCable() {
+        
         updateCurrentUsingSelectedItemInTreeTable();
-        setCurrentEditItemElement((ItemElement) selectedItemInListTreeTable.getData());
+        setCurrentEditItemElement((ItemElement) selectedItemInListTreeTable.getData());        
+        ItemDomainMachineDesign endpointItem = getItemFromSelectedItemInTreeTable();
 
         CableWizard cableWizard = CableWizard.getInstance();
         cableWizard.registerClient(this, cableWizardRedirectSuccess);
         cableWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
-        ItemElement element = (ItemElement)selectedItemInListTreeTable.getData();
-        Item endpointItem = element.getContainedItem();
         cableWizard.setEndpoint1(endpointItem);
+        if (selectedItemInListTreeTable.getType() == CONNECTOR_NODE_TYPE) {
+            ItemElement element = (ItemElement) selectedItemInListTreeTable.getData();
+            ItemConnector connector = element.getMdConnector();
+            cableWizard.setEnd1Port(connector);
+        }
 
         displayListConfigurationView = true;
         displayAddCablePanel = true;

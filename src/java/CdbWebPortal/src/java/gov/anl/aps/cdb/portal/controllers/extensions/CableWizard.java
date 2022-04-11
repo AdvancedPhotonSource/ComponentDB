@@ -618,6 +618,10 @@ public class CableWizard implements Serializable {
         setEnablementForCurrentTab();
     }
     
+    public void setEnd1Port(ItemConnector port) {
+        this.portEnd1 = port;
+    }
+    
     public String getEnd1PortString() {
         if (portEnd1 == null) {
             return "";

@@ -60,6 +60,20 @@ See LICENSE file.
             <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml"/>
         </p:contextMenu>
 
+        <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                       nodeType="Connector"
+                       id="machineDesignDualViewConnectorContextMenu"
+                       widgetVar="machineDesignDualViewConnectorContextMenuWidget">
+            <ui:include src="contextMenu/cableSubMenu.xhtml"/>
+        </p:contextMenu>
+
+        <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                       nodeType="CableDesign"
+                       id="machineDesignDualViewCableContextMenu"
+                       widgetVar="machineDesignDualViewCableContextMenuWidget">
+            <ui:include src="contextMenu/cableDesignSubMenu.xhtml"/>
+        </p:contextMenu>
+
     </ui:define>
 
 </ui:composition>

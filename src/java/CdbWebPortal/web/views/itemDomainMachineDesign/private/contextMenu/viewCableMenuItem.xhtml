@@ -8,12 +8,12 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
 
-    <p:submenu icon="ui-icon-cable-design" label="Cable"
-               disabled="#{false}"
-               rendered="#{entityController.currentViewIsStandard}">
-        <ui:include src="addCableMenuItem.xhtml" />
-    </p:submenu>
+    <ui:include src="../../../itemDomainMachineDesignBase/private/machineDesignContextMenu/genericMachineMenuItem.xhtml">
+        <ui:param name="disabledEditContextMenuItemForSelection" value="#{false}" />
+        <ui:param name="value" value="View Cable"/>
+        <ui:param name="icon" value="ui-icon-cable-design"/>
+        <ui:param name="action" value="viewCable"/> 
+        <ui:param name="disabled" value="#{false}"/> 
+    </ui:include>
 
 </ui:composition>
-
-
