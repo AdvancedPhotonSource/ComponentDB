@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.jsf.handlers.DocumentPropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
 import gov.anl.aps.cdb.portal.utilities.GalleryUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
+import gov.anl.aps.cdb.rest.constants.DownloadRouteMimeType;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,7 +37,7 @@ import org.apache.logging.log4j.Logger;
 @Tag(name = "Downloads")
 public class DownloadRoute extends BaseRoute {
 
-    private static final Logger LOGGER = LogManager.getLogger(DownloadRoute.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(DownloadRoute.class.getName());            
 
     @EJB
     PropertyValueFacade propertyValueFacade;
@@ -67,26 +68,18 @@ public class DownloadRoute extends BaseRoute {
 
         // false is document, true is image 
         Boolean isAttachment = null;
-        String filePath = "";
-        MediaType mediaType = null;
+        String filePath = "";        
 
         if (propertyTypeHandler != null) {
             String name = propertyTypeHandler.getName();
             String documentHandlerName = DocumentPropertyTypeHandler.HANDLER_NAME;
             String imageHandlerName = ImagePropertyTypeHandler.HANDLER_NAME;
 
-            String imageFormat = GalleryUtility.getImageFormat(originalFileName);
-
-            if (imageFormat.equalsIgnoreCase("pdf")) {
-                mediaType = MediaType.WILDCARD_TYPE;
-            }
+            String imageFormat = GalleryUtility.getImageFormat(originalFileName);           
 
             if (name.equals(documentHandlerName)) {
-                if (GalleryUtility.viewableFormat(imageFormat)) {
+                if (GalleryUtility.viewableFormat(imageFormat) || imageFormat.equalsIgnoreCase("html")) {
                     isAttachment = false;
-                } else if (imageFormat.equalsIgnoreCase("html")) {
-                    isAttachment = false;
-                    mediaType = MediaType.TEXT_HTML_TYPE;
                 } else {
                     isAttachment = true;
                 }
@@ -104,14 +97,10 @@ public class DownloadRoute extends BaseRoute {
             throw new InvalidRequest("Property value provided is neither a document or image upload type property value.");
         }
 
-        return getFileResponse("Upload: " + originalFileName, originalFileName, filePath, isAttachment, mediaType);
+        return getFileResponse("Upload: " + originalFileName, originalFileName, filePath, isAttachment);
     }
 
-    private Response getFileResponse(String errorFileTypeColonName, String fileName, String storageFilePath, boolean isAttachment) throws FileNotFoundException {
-        return getFileResponse(errorFileTypeColonName, fileName, storageFilePath, isAttachment, null);
-    }
-
-    private Response getFileResponse(String errorFileTypeColonName, String fileName, String storageFilePath, boolean isAttachment, MediaType mediaType) throws FileNotFoundException {
+    private Response getFileResponse(String errorFileTypeColonName, String fileName, String storageFilePath, boolean isAttachment) throws FileNotFoundException {        
         File file = new File(storageFilePath);
 
         if (file.exists()) {
@@ -122,14 +111,14 @@ public class DownloadRoute extends BaseRoute {
                 headerObject += "inline; ";
             }
             headerObject += "filename=" + fileName;
-
-            ResponseBuilder response = Response.ok((Object) file, mediaType);
-
-            response.header("Content-Disposition",
-                    headerObject);
             
-            // Reverse proxy can include header with value 'nosniff' causing issue where documents are not displayed correctly. 
-            response.header("X-Content-Type-Options", " ");
+            ResponseBuilder response = null;
+                        
+            String typeForFilename = DownloadRouteMimeType.getTypeForFilename(fileName);                                
+            response = Response.ok((Object) file, typeForFilename);            
+            
+            response.header("Content-Disposition",
+                    headerObject);                        
             
             return response.build();
         }
