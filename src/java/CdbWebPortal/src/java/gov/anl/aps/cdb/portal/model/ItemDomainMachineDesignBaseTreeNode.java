@@ -161,7 +161,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
         if (item instanceof ItemDomainMachineDesign) {
             mdItem = (ItemDomainMachineDesign) item;
         } else if (item instanceof ItemDomainCableDesign) {
-            this.setType(ItemDomainName.cableDesign.getValue());
+            this.setType("CableDesign");
             return;
         }
         String domain = item.getDomain().getName();

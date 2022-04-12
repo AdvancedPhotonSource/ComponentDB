@@ -14,43 +14,117 @@ See LICENSE file.
     
     <p:tab id="#{rootViewId}CableReviewTab">
         <p:panel header="Review and save cable">
-            <p:panelGrid columns="2">
+            <p:outputPanel id="#{rootViewId}ReviewPanel">
+                <p:panelGrid columns="1">
+                    
+                    <p:panel>
+                        <f:facet name="header" >
+                            <p:row>
+                                <p:column colspan="2">
+                                    <h:outputText value="Cable Details"/>                            
+                                </p:column>
+                            </p:row>
+                        </f:facet>
+                        <p:row>
+                            <p:panelGrid columns="2">
 
-                <p:outputLabel for="cableReviewName#{rootViewId}" value="Name" />
-                <p:inputText id="cableReviewName#{rootViewId}"
-                             value="#{wizardController.inputValueName}" />
+                                <p:outputLabel for="cableReviewName#{rootViewId}" 
+                                               value="Name" 
+                                               styleClass="entityDataEmphasizedLabel"/>
+                                <p:inputText id="cableReviewName#{rootViewId}"
+                                             value="#{wizardController.inputValueName}" />
 
-                <p:outputLabel value="Project" />
-                <h:outputText value="#{wizardController.getProjectsString()}" 
-                              title="Project" 
-                              styleClass="entityDataEmphasizedText" />
+                                <p:outputLabel value="Cable Type" 
+                                               styleClass="entityDataEmphasizedLabel"/>
+                                <h:outputLink value="../item/view.xhtml?id=#{wizardController.selectionCableCatalogItem.id}"
+                                              styleClass="entityDataText"
+                                              target="_blank">
+                                    <h:outputText value="#{wizardController.selectionCableCatalogItem}"/>
+                                </h:outputLink>
 
-                <p:outputLabel value="Technical System" />
-                <h:outputText value="#{wizardController.getTechnicalSystemsString()}" 
-                              title="Technical System" 
-                              styleClass="entityDataEmphasizedText" />
+                                <p:outputLabel value="Project" 
+                                               styleClass="entityDataEmphasizedLabel"/>
+                                <h:outputText value="#{wizardController.getProjectsString()}" 
+                                              title="Project" 
+                                              styleClass="entityDataText" />
 
-                <p:outputLabel value="Endpoint1" />
-                <h:outputText value="#{wizardController.getEndpoint1String()}"  
-                              title="First Endpoint" 
-                              styleClass="entityDataEmphasizedText" />
+                                <p:outputLabel value="Technical System" 
+                                               styleClass="entityDataEmphasizedLabel"/>
+                                <h:outputText value="#{wizardController.getTechnicalSystemsString()}" 
+                                              title="Technical System" 
+                                              styleClass="entityDataText" />
+                            </p:panelGrid>
+                        </p:row>
+                    </p:panel>
+                    
+                    <p:panel>
+                        <f:facet name="header">
+                            <p:row>
+                                <p:column>End1 Connection</p:column>
+                            </p:row>
+                        </f:facet>
+                        <p:row>
+                            <p:panelGrid columns="2">
 
-                <p:outputLabel value="Endpoint2" />
-                <h:outputText value="#{wizardController.getEndpoint2String()}"  
-                              title="Second Endpoint" 
-                              styleClass="entityDataEmphasizedText" />
+                                <p:outputLabel value="Endpoint1" 
+                                               styleClass="entityDataEmphasizedLabel"/>
+                                <h:outputLink value="../item/view.xhtml?id=#{cableWizard.endpoint1.id}"
+                                              styleClass="entityDataText"
+                                              target="_blank">
+                                    <h:outputText value="#{cableWizard.endpoint1String}"/>
+                                </h:outputLink>
 
-                <ui:insert name="typeSpecificFields" />
+                                <p:outputLabel value="End1 Port" 
+                                               styleClass="entityDataEmphasizedLabel"/>
+                                <h:outputText value="#{wizardController.getEnd1PortString()}"  
+                                              title="Port name on endpoint1 device" 
+                                              styleClass="entityDataText" />
 
-            </p:panelGrid>
+                                <p:outputLabel value="End1 Connector" 
+                                               styleClass="entityDataEmphasizedLabel"/>
+                                <h:outputText value="#{wizardController.getEnd1ConnectorString()}"  
+                                              title="Name of cable connector for end1" 
+                                              styleClass="entityDataText" />
+                            </p:panelGrid>
+                        </p:row>
+                    </p:panel>
+                    
+                    <p:panel>
+                        <f:facet name="header">
+                            <p:row>
+                                <p:column>End2 Connection</p:column>
+                            </p:row>
+                        </f:facet>
+                        <p:row>
+                            <p:panelGrid columns="2">
+                                <p:outputLabel value="Endpoint2" 
+                                               styleClass="entityDataEmphasizedLabel"/>
+                                <h:outputLink value="../item/view.xhtml?id=#{cableWizard.endpoint2.id}"
+                                              styleClass="entityDataText"
+                                              target="_blank">
+                                    <h:outputText value="#{cableWizard.endpoint2String}"/>
+                                </h:outputLink>
+
+                                <p:outputLabel value="End2 Port" 
+                                               styleClass="entityDataEmphasizedLabel"/>
+                                <h:outputText value="#{wizardController.getEnd2PortString()}"  
+                                              title="Port name on endpoint2 device" 
+                                              styleClass="entityDataText" />
+
+                                <p:outputLabel value="End2 Connector" 
+                                               styleClass="entityDataEmphasizedLabel"/>
+                                <h:outputText value="#{wizardController.getEnd2ConnectorString()}"  
+                                              title="Name of cable connector for end2" 
+                                              styleClass="entityDataText" />
+
+                            </p:panelGrid>
+                        </p:row>
+                    </p:panel>
+
+                </p:panelGrid>
+            </p:outputPanel>
         </p:panel>
 
     </p:tab>
-
-
-
-
-
-
 
 </ui:composition>

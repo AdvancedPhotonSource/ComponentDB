@@ -21,6 +21,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import gov.anl.aps.cdb.portal.controllers.extensions.CableWizardClient;
 
 /**
  *
@@ -28,7 +29,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Named(ItemDomainMachineDesignController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignControllerUtility> implements ItemDomainCableDesignWizardClient {
+public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignControllerUtility> implements CableWizardClient {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignController.class.getName());
 
