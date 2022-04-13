@@ -27,6 +27,7 @@ import org.primefaces.model.TreeNode;
  */
 public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBaseTreeNode<MachineTreeConfiguration> {
 
+    public static final String CONNECTOR_NODE_TYPE = "Connector";
     boolean assemblyElementsLoaded = false;
     boolean cablesLoaded = false;
     boolean cableRelatedNode = false;
@@ -56,7 +57,7 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
         ItemElement mockIE = new ItemElement();
         mockIE.setMdConnector(itemConnector);
         ItemDomainMachineDesignTreeNode connectorNode = this.createChildNode(mockIE);
-        connectorNode.setType("Connector");
+        connectorNode.setType(CONNECTOR_NODE_TYPE);
         connectorNode.cableRelatedNode = true;
 
         return connectorNode;

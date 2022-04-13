@@ -42,6 +42,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1719,8 +1720,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         ReleasedForm latestForm = null;
         ReleasedForm noPrefForm = null;
         if (includeSelectLatestDefault) {
-            noPrefForm = ReleasedForm.createCustomAlwaysSelectLatest();
-            releasedForms.add(0, noPrefForm);
+            noPrefForm = ReleasedForm.createCustomAlwaysSelectLatest();            
             latestForm = noPrefForm;
         }
 
@@ -1767,9 +1767,15 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
         int releasedFormsSize = releasedForms.size();
 
-        if (releasedFormsSize == 0 && quiet == false) {
+        if (noPrefForm == null && releasedFormsSize == 0 && quiet == false) {
             SessionUtility.addInfoMessage("No Released Templates",
                     "No templates were released for this template. Please create a released version of this template before proceeding.");
+        } else {
+            // Latest should be on top.
+            Collections.reverse(releasedForms);
+            if (noPrefForm != null) {                
+                releasedForms.add(0, noPrefForm);
+            }
         }
     }
 

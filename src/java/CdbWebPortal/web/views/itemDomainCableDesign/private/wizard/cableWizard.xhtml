@@ -10,7 +10,7 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">    
 
-    <p:panel>
+    <p:outputPanel>
 
         <ui:param name="rootViewId" value="cableWizard" />
         <ui:param name="wizardController" value="#{cableWizard}" />
@@ -98,16 +98,15 @@ See LICENSE file.
                 </p:panel>
 
             </p:tab>
+            
+            <ui:decorate template="templates/connectorTabTemplate.xhtml">
+                <ui:param name="viewId" value="#{rootViewId}" />
+                <ui:param name="wizardController" value="#{wizardController}" />
+            </ui:decorate>
 
             <ui:decorate template="templates/reviewTabTemplate.xhtml">
                 <ui:param name="viewId" value="#{rootViewId}" />
                 <ui:param name="wizardController" value="#{wizardController}" />
-                <ui:define name="typeSpecificFields">
-                    <p:outputLabel value="Cable Type" />
-                    <h:outputText value="#{cableWizard.selectionCableCatalogItem}"   
-                                  title="Selected Cable Type" 
-                                  styleClass="entityDataEmphasizedText" />
-                </ui:define>
             </ui:decorate>
 
         </p:wizard>
@@ -122,6 +121,6 @@ See LICENSE file.
         <p:remoteCommand name="update#{rootViewId}WizardButtons" 
                          update="#{rootViewId}CableWizardButtonPanel"/>
 
-    </p:panel>
+    </p:outputPanel>
 
 </ui:composition>

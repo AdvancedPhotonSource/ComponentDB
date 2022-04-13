@@ -116,11 +116,12 @@ while [ $lockCnt -lt $nTableLocks ]; do
     grep -n "LOCK TABLES" $fullBackupFilePath | head -$headLine | tail -$tailLine > $processingFile
     dbTable=`cat $processingFile | head -1 | awk '{print $3}' | sed 's?\`??g'`
     firstLine=`cat $processingFile | head -1 | cut -f1 -d':'`
-    lastLine=`cat $processingFile | tail -1 | cut -f1 -d':'`
+    lastLine=`cat $processingFile | tail -1 | cut -f1 -d':'`    
     echo "Creating sql script for $dbTable"
     targetFile=$CDB_BACKUP_DIR/populate_$dbTable.sql
     cat $fullBackupFilePath | sed -n ${firstLine},${lastLine}p > $targetFile
     cat $targetFile | sed 's?VALUES ?VALUES\n?g' | sed 's?),(?),\n(?g' > $targetFile.2 && mv $targetFile.2 $targetFile
+    sed -i '2i SET SESSION FOREIGN_KEY_CHECKS=0;' $targetFile
 done
 rm -f $processingFile
 

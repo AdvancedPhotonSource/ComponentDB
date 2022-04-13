@@ -6,9 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
-import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
-import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDesign;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
@@ -30,7 +28,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.AdvancedFilter;
 import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
@@ -916,8 +913,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
      * @param cableName
      * @return
      */
-    private ItemDomainCableDesign createCableCommon(Item itemEndpoint1,
-            Item itemEndpoint2,
+    public ItemDomainCableDesign createCableCommon(
             String cableName,
             List<ItemProject> projectList,
             List<ItemCategory> technicalSystemList) {
@@ -927,64 +923,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         newCable.setItemProjectList(projectList);
         newCable.setTechnicalSystemList(technicalSystemList);
 
-        // set endpoints
-        newCable.setEndpoint1(itemEndpoint1);
-        newCable.setEndpoint2(itemEndpoint2);
-
         return newCable;
-    }
-
-    /**
-     * Creates cable design connecting the specified endpoints, with
-     * unspecified cable catalog type.
-     *
-     * @param itemEndpoint1
-     * @param itemEndpoint2
-     * @param cableName
-     * @return
-     */
-    public String createCableUnspecified(Item itemEndpoint1,
-            Item itemEndpoint2,
-            String cableName,
-            List<ItemProject> projectList,
-            List<ItemCategory> technicalSystemList) {
-
-        ItemDomainCableDesign newCable = this.createCableCommon(itemEndpoint1,
-                itemEndpoint2,
-                cableName,
-                projectList,
-                technicalSystemList);
-
-        return this.create();
-
-    }
-
-    /**
-     * Creates cable design of specified cable catalog type
-     * connecting the specified endpoints.
-     *
-     * @param itemEndpoint1
-     * @param itemEndpoint2
-     * @param cableName
-     * @return
-     */
-    public String createCableCatalog(Item itemEndpoint1,
-            Item itemEndpoint2,
-            String cableName,
-            List<ItemProject> projectList,
-            List<ItemCategory> technicalSystemList,
-            Item itemCableCatalog) {
-
-        ItemDomainCableDesign newCable = this.createCableCommon(itemEndpoint1,
-                itemEndpoint2,
-                cableName,
-                projectList,
-                technicalSystemList);
-
-        newCable.setCatalogItem(itemCableCatalog);
-
-        return this.create();
-
     }
 
     public void prepareEditEndpoint(ItemElementRelationship cableRelationship) {
@@ -1049,29 +988,18 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return (!connection.getCableRelationship().isPrimaryCableConnection());
     }
     
-    /**
+    @Override
+    public String prepareCreate() {
+        return prepareWizardCable();
+    }
+    
+        /**
      * Prepares cable wizard.
      */
     public String prepareWizardCable() { 
         CableWizard.getInstance().reset();
         return "/views/itemDomainCableDesign/create?faces-redirect=true";
     }
-
-    /**
-     * Prepares import wizard.
-     */
-    public String prepareWizardCircuit() {
-        CircuitWizard.getInstance().reset();
-        return "/views/itemDomainCableDesign/createCircuit?faces-redirect=true";
-    }
-
-    /**
-     * Prepares import wizard.
-     */
-    public String prepareWizardBundle() {        
-        BundleWizard.getInstance().reset();
-        return "/views/itemDomainCableDesign/createBundle?faces-redirect=true";
-    } 
 
     @Override
     public ItemDomainCableDesignLazyDataModel createItemLazyDataModel() {
@@ -1178,11 +1106,14 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
     
     public List<ItemConnector> getUnmappedConnectorsForCurrent(String cableEnd) {
+        return getUnmappedConnectorsForCableItem(getCurrent(), cableEnd);
+    }
+
+    public List<ItemConnector> getUnmappedConnectorsForCableItem(ItemDomainCableDesign cableItem, String cableEnd) {
         
         List<ItemConnector> result = new ArrayList<>();
         boolean filterCableEnd = (cableEnd != null);
-        ItemDomainCableDesign current = getCurrent();
-        List<ItemConnector> unmappedConnectors = current.getSyncedConnectorList();
+        List<ItemConnector> unmappedConnectors = cableItem.getSyncedConnectorList();
         
         // filter cable end if specified to do so
         if (filterCableEnd) {

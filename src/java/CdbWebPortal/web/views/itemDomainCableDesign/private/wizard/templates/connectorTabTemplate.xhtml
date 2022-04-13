@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">    
+
+    <ui:param name="rootViewId" value="#{viewId}"/>
+    
+    <p:tab id="#{rootViewId}CableConnectorTab">
+        <p:panel header="Specify cable connectors">
+            <p:outputPanel id="#{rootViewId}ConnectorPanel">
+                <p:panelGrid columns="1">
+                    <p:panel>
+                        <f:facet name="header" >
+                            <p:row>
+                                <p:column colspan="2">
+                                    <h:outputText value="Cable Details"/>                            
+                                </p:column>
+                            </p:row>
+                        </f:facet>
+                        <p:row>
+                            <p:panelGrid columns="2">
+                                
+                                <p:outputLabel value="Cable Type" styleClass="entityDataEmphasizedLabel"/>
+                                <h:outputLink value="../item/view.xhtml?id=#{cableWizard.selectionCableCatalogItem.id}"
+                                              styleClass="entityDataText"
+                                              target="_blank">
+                                    <h:outputText value="#{cableWizard.selectionCableCatalogItem}"/>
+                                </h:outputLink>
+                                
+                            </p:panelGrid>
+                        </p:row>
+                    </p:panel>
+                    <p:panel>
+                        <f:facet name="header">
+                            <p:row>
+                                <p:column>End1 Connection</p:column>
+                            </p:row>
+                        </f:facet>
+                        <p:row>
+                            <p:panelGrid columns="2">
+                                
+                                <p:outputLabel value="End1 Device" styleClass="entityDataEmphasizedLabel"/>
+                                <h:outputLink value="../item/view.xhtml?id=#{cableWizard.endpoint1.id}"
+                                              styleClass="entityDataText"
+                                              target="_blank">
+                                    <h:outputText value="#{cableWizard.endpoint1String}"/>
+                                </h:outputLink>
+                                
+                                <p:outputLabel value="End1 Port" styleClass="entityDataEmphasizedLabel"/>
+                                <h:outputText value="#{cableWizard.end1PortString}"
+                                              styleClass="entityDataText"/>
+                                
+                                <p:outputLabel value="End1 Cable Connector" styleClass="entityDataEmphasizedLabel"/>
+                                <p:selectOneMenu id="#{rootViewId}SelectEnd1ConnectorMenu" 
+                                                 value="#{cableWizard.selectedConnectorNameEnd1}">
+                                    <p:ajax  listener="#{cableWizard.selectListenerConnectorEnd1}" 
+                                             oncomplete="update#{rootViewId}WizardButtons();"/>
+                                    <f:selectItem itemLabel="unspecified" 
+                                                  itemValue=""/>
+                                    <f:selectItems value="#{cableWizard.unmappedConnectorsEnd1}"/>
+                                </p:selectOneMenu>
+                                
+                            </p:panelGrid>
+                        </p:row>
+                    </p:panel>
+                    <p:panel>
+                        <f:facet name="header">
+                            <p:row>
+                                <p:column>End2 Connection</p:column>
+                            </p:row>
+                        </f:facet>
+                        <p:row>
+                            <p:panelGrid columns="2">
+
+                                <p:outputLabel value="End2 Device" styleClass="entityDataEmphasizedLabel"/>
+                                <h:outputLink value="../item/view.xhtml?id=#{cableWizard.endpoint2.id}"
+                                              styleClass="entityDataText"
+                                              target="_blank">
+                                    <h:outputText value="#{cableWizard.endpoint2String}"/>
+                                </h:outputLink>
+
+                                <p:outputLabel value="End2 Port" styleClass="entityDataEmphasizedLabel"/>
+                                <h:outputText value="#{cableWizard.end2PortString}"
+                                              styleClass="entityDataText"/>
+                                
+                                <p:outputLabel value="End2 Cable Connector" styleClass="entityDataEmphasizedLabel"/>
+                                <p:selectOneMenu id="#{rootViewId}SelectEnd2ConnectorMenu" 
+                                                 value="#{cableWizard.selectedConnectorNameEnd2}">
+                                    <p:ajax listener="#{cableWizard.selectListenerConnectorEnd2}" 
+                                            oncomplete="update#{rootViewId}WizardButtons();"/>
+                                    <f:selectItem itemLabel="unspecified" 
+                                                  itemValue=""/>
+                                    <f:selectItems value="#{cableWizard.unmappedConnectorsEnd2}"/>
+                                </p:selectOneMenu>
+
+                            </p:panelGrid>
+                        </p:row>
+                    </p:panel>
+                </p:panelGrid>
+            </p:outputPanel>
+        </p:panel>
+
+    </p:tab>
+
+</ui:composition>

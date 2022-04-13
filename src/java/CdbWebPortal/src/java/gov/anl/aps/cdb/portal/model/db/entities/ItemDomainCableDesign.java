@@ -387,7 +387,7 @@ public class ItemDomainCableDesign extends Item {
         getDeletedIerList().add(cableRelationship);
     }
 
-    private void setPrimaryEndpoint(
+    public void setPrimaryEndpoint(
             Item itemEndpoint,
             ItemConnector endpointConnector,
             ItemConnector cableConnector,

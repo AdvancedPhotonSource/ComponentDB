@@ -8,10 +8,10 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
 
-    <p:submenu icon="ui-icon-cable-design" label="Cable"
+    <p:submenu icon="ui-icon-cable-design" label="Cable Design"
                disabled="#{false}"
-               rendered="#{entityController.currentViewIsStandard}">
-        <ui:include src="addCableMenuItem.xhtml" />
+               rendered="#{true}">
+        <ui:include src="viewCableMenuItem.xhtml" />
     </p:submenu>
 
 </ui:composition>
