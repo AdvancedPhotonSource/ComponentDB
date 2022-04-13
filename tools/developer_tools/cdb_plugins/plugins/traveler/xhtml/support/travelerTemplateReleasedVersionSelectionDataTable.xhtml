@@ -13,6 +13,8 @@ See LICENSE file.
                   value="#{selectedTemplate.releasedForms}" /> 
 
         <p:dataTable id="travelerTemplateReleasedVersionSelectionDataTable#{viewName}"
+                     paginatorAlwaysVisible="false"
+                     paginator="true"
                      rows="5"
                      emptyMessage="No released templates were found."
                      value="#{releasedFormsObject.releasedForms}"

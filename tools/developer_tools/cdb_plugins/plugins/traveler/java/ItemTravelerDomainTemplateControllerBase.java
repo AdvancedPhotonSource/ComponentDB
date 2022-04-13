@@ -88,9 +88,8 @@ public abstract class ItemTravelerDomainTemplateControllerBase extends ItemTrave
         selectedTravelersCreatedFromTemplate = null; 
         travelersForTemplateArchiveOptionsEnabled = false;
         this.showArchived = showArchived; 
-
-        Item current = getCurrent();
-        List<Item> itemList = current.getDerivedFromItemList();
+        
+        List<Item> itemList = getItemListForTravelersCreatedFromTemplate(); 
 
         String templateId = selectedTemplateForTravelersCreatedFromTemplate.getId();
         String latestVer = "";
@@ -120,6 +119,11 @@ public abstract class ItemTravelerDomainTemplateControllerBase extends ItemTrave
             }
 
         }
+    }
+    
+    protected List<Item> getItemListForTravelersCreatedFromTemplate() {
+        Item current = getCurrent();
+        return current.getDerivedFromItemList();
     }
 
     private void populateTravelersCreatedFromTemplate(String templateId, List<Traveler> travelerList, Item item, String latestVersion) {
