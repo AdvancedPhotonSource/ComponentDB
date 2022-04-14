@@ -38,7 +38,6 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
     private ItemDomainMachineDesignControllerUtility controllerUtility = null;
     
     private Map<Integer, ItemDomainMachineDesign> itemMap = new HashMap<>();
-    private List<ItemDomainMachineDesign> itemList = new ArrayList<>();
     
     private MachineImportHelperCommon getMachineImportHelperCommon() {
         if (machineImportHelperCommon == null) {
@@ -260,9 +259,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
         List<ItemElement> elementsToDelete = new ArrayList<>();
         controller.collectItemsFromHierarchy(entity, itemsMovingToTrash, elementsToDelete, true, true);
         
-        // eliminate items already contained in itemMap (e.g., the input spreadsheet might contain overlapping
-        // hierarchies with common children where one row is an ancestor of another)
-        List<ItemDomainMachineDesign> newItems = new ArrayList<>();
+        // mark row as invalid if it has children in common with a previous spreadsheet row
         ItemDomainMachineDesign rootItem = null;
         for (ItemDomainMachineDesign item : itemsMovingToTrash) {
             // save reference to rootItem so that we can update its parent later
@@ -270,13 +267,18 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
                 rootItem = item;
             }
             // eliminate items we've already processed and update data structures for new items
-            if (!itemMap.containsKey(item.getId())) {
-                newItems.add(item);
+            if (itemMap.containsKey(item.getId())) {
+                isValid = false;
+                validStr = "Hierarchy for row overlaps a previous spreadsheet row.";
+                return new ValidInfo(isValid, validStr);
+            } else {
                 itemMap.put(item.getId(), item);
-                itemList.add(item);
+                if (!item.getId().equals(entity.getId())) {
+                    // add item to list of items to update for entity
+                    entity.addItemToUpdate(item);
+                }
             }
         }
-        itemsMovingToTrash = newItems;
         if (rootItem == null) {
             // this shouldn't happen, indicates problem with collectItemsFromHierarchy
             isValid = false;
