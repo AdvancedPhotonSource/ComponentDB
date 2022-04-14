@@ -98,6 +98,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
         List<ColumnSpec> specs = new ArrayList<>();
 
         specs.add(existingItemIdColumnSpec());
+        specs.add(deleteExistingItemColumnSpec());
         
         specs.add(MachineImportHelperCommon.existingMachineItemColumnSpec(
                 ColumnModeOptions.rUPDATErCOMPARE(),
@@ -311,4 +312,22 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
         return new ValidInfo(isValid, validStr);
     }
 
+    /**
+     * Override so that we use updateList for persistence moving to trash instead of deleteList
+     * which would permanently delete the items.
+     */
+    protected void deleteList() throws CdbException, RuntimeException {
+
+        List<ItemDomainMachineDesign> deleteEntities = new ArrayList<>();
+        for (ItemDomainMachineDesign entity : rows) {
+            if (entity.getImportDeleteExistingItem()) {
+                deleteEntities.add(entity);
+            }
+        }
+
+        ItemDomainMachineDesignController controller = this.getEntityController();
+        if (!deleteEntities.isEmpty()) {
+            controller.updateList(deleteEntities, getCreateMessageTypeName());
+        }
+    }
 }
