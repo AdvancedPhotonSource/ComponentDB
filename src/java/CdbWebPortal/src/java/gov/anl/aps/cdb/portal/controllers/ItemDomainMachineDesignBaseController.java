@@ -64,6 +64,8 @@ import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizardClient;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidWarningInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.WarningInfo;
 import static gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode.CONNECTOR_NODE_TYPE;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 
@@ -2638,51 +2640,33 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     public TreeNode getMoveToTrashNode() {
         return moveToTrashNode;
     }        
+    
+    public ValidWarningInfo validateItemsMovingToTrash(List<ItemDomainMachineDesign> itemsMovingToTrash) {
+        
+        boolean isValid = true;
+        boolean isWarning = false;
 
-    /**
-     * Prepares dialog for move to trash operation.
-     */
-    public void prepareMoveToTrash() {
-
-        updateCurrentUsingSelectedItemInTreeTable();
-
-        ItemDomainMachineDesign itemToDelete = findById(getCurrent().getId());
-        if (itemToDelete == null) {
-            return;
-        }
-
-        moveToTrashNode = null;
-        moveToTrashDisplayName = itemToDelete.getName();
-        moveToTrashMessage = "";
-        moveToTrashHasWarnings = false;
-
-        // collect list of items to delete, for use here in applying restrictions
-        // and in moveToTrash for executing the operation
-        moveToTrashItemsToUpdate = new ArrayList<>();
-        moveToTrashElementsToDelete = new ArrayList<>();
-        collectItemsFromHierarchy(itemToDelete, moveToTrashItemsToUpdate, moveToTrashElementsToDelete, true, true);
-
-        // check each item for restriction violations
-        moveToTrashAllowed = true;
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        for (ItemDomainMachineDesign itemToCheck : moveToTrashItemsToUpdate) {
-            String errorString = "";
-            String warningString = "";
+
+        for (ItemDomainMachineDesign itemToCheck : itemsMovingToTrash) {
+
+            String validStr = "";
+            String warningStr = "";
 
             // don't allow move to trash for template with instances
             List<Item> templateInstances = itemToCheck.getItemsCreatedFromThisTemplateItem();
             if ((templateInstances != null) && (templateInstances.size() > 0)) {
-                moveToTrashAllowed = false;
-                errorString = errorString + "Item is a template with instances. ";
+                isValid = false;
+                validStr = validStr + "Item is a template with instances. ";
             }
 
             // don't allow move to trash for item in multiple assemblies
             List<ItemElement> childMemberList = itemToCheck.getItemElementMemberList();
             if (childMemberList.size() > 1) {
                 // this code assumes that a child machine design item has only one 'membership'
-                moveToTrashAllowed = false;
-                errorString = errorString + "Item is a child of multiple parent items or templates (e.g., it might be an unfulfilled template placeholder).";
+                isValid = false;
+                validStr = validStr + "Item is a child of multiple parent items or templates (e.g., it might be an unfulfilled template placeholder).";
             }
 
             // check for various relationships
@@ -2706,10 +2690,10 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
                 } else if (relType.equals(RelationshipTypeFacade.getRelationshipTypeMaarc())) {
                     hasMaarcRelationship = true;
                 } else {
-                    moveToTrashAllowed = false;
+                    isValid = false;
                     String relTypeName = relType.getName();
                     if (relTypeName != null) {
-                        errorString = errorString + "Item has " + relTypeName + " relationship. ";
+                        validStr = validStr + "Item has " + relTypeName + " relationship. ";
                     } else {
                         hasOtherRelationship = true;
                     }
@@ -2717,58 +2701,100 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             }
             if (hasCableRelationship) {
                 // don't allow move to trash for cable endpoints
-                moveToTrashAllowed = false;
-                errorString = errorString + "Item is an endpoint for one or more cables. ";
+                isValid = false;
+                validStr = validStr + "Item is an endpoint for one or more cables. ";
             }
             if (hasMaarcRelationship) {
                 // don't allow move to trash for MAARC relationships
-                moveToTrashAllowed = false;
-                errorString = errorString + "Item has one or more MAARC items. ";
+                isValid = false;
+                validStr = validStr + "Item has one or more MAARC items. ";
             }
             if (hasOtherRelationship) {
                 // don't allow move to trash for other relationships (generic check for now, add specific handling as encountered)
-                errorString = errorString + "Item has one or more relationships of unspecified type. ";
+                validStr = validStr + "Item has one or more relationships of unspecified type. ";
             }
 
             // check permissions for current user
             if (sessionRole != CdbRole.ADMIN) {
                 if (!AuthorizationUtility.isEntityWriteableByUser(itemToCheck, sessionUser)) {
-                    moveToTrashAllowed = false;
-                    errorString = errorString + "Current user does not have permission to delete item. ";
+                    isValid = false;
+                    validStr = validStr + "Current user does not have permission to delete item. ";
                 }
             }
 
             // check if need to warn about property values
             List<PropertyValue> itemProperties = itemToCheck.getPropertyValueList();
             if (itemProperties != null && !itemProperties.isEmpty()) {
-                moveToTrashHasWarnings = true;
-                warningString = warningString
+                isWarning = true;
+                warningStr = warningStr
                         + "Item has property values and/or traveler templates/instances, including: (";
                 for (PropertyValue propValue : itemProperties) {
                     PropertyType propType = propValue.getPropertyType();
                     if (propType != null && propType.getName() != null) {
-                        warningString = warningString
+                        warningStr = warningStr
                                 + propValue.getPropertyType().getName() + ", ";
                     }
-                    warningString = warningString.substring(0, warningString.length() - 2) + "). ";
+                    warningStr = warningStr.substring(0, warningStr.length() - 2) + "). ";
                 }
             }
 
             // check if need to warn about log entries
             List<Log> itemLogs = itemToCheck.getLogList();
             if (itemLogs != null && !itemLogs.isEmpty()) {
-                moveToTrashHasWarnings = true;
-                warningString = warningString + "Item has log entries. ";
+                isWarning = true;
+                warningStr = warningStr + "Item has log entries. ";
             }
 
-            if (!errorString.isEmpty()) {
-                itemToCheck.setMoveToTrashErrorMsg(errorString);
+            if (!validStr.isEmpty()) {
+                itemToCheck.setMoveToTrashErrorMsg(validStr);
             }
-            if (!warningString.isEmpty()) {
-                itemToCheck.setMoveToTrashWarningMsg(warningString);
+            if (!warningStr.isEmpty()) {
+                itemToCheck.setMoveToTrashWarningMsg(warningStr);
             }
         }
+        
+        String rootValidStr = "";
+        if (!isValid) {
+            rootValidStr = "Item children have move to trash validation issues";
+        }
+        String rootWarningStr = "";
+        if (isWarning) {
+            rootWarningStr = "Item child have move to trash warnings";
+        }
+        ValidInfo validInfo = new ValidInfo(isValid, rootValidStr);
+        WarningInfo warningInfo = new WarningInfo(isWarning, rootWarningStr);
+        return new ValidWarningInfo(validInfo, warningInfo);
+    }
 
+    /**
+     * Prepares dialog for move to trash operation.
+     */
+    public void prepareMoveToTrash() {
+
+        updateCurrentUsingSelectedItemInTreeTable();
+
+        ItemDomainMachineDesign itemToDelete = findById(getCurrent().getId());
+        if (itemToDelete == null) {
+            return;
+        }
+
+        moveToTrashNode = null;
+        moveToTrashDisplayName = itemToDelete.getName();
+        moveToTrashMessage = "";
+        moveToTrashHasWarnings = false;
+        moveToTrashAllowed = true;
+
+        // collect list of items to delete, for use here in applying restrictions
+        // and in moveToTrash for executing the operation
+        moveToTrashItemsToUpdate = new ArrayList<>();
+        moveToTrashElementsToDelete = new ArrayList<>();
+        collectItemsFromHierarchy(itemToDelete, moveToTrashItemsToUpdate, moveToTrashElementsToDelete, true, true);
+
+        // check each item moving to trash for restriction violations
+        ValidWarningInfo info = validateItemsMovingToTrash(moveToTrashItemsToUpdate);
+        moveToTrashAllowed = info.isValid();
+        moveToTrashHasWarnings = info.isWarning();
+        
         // build tree node hierarchy for dialog
         if (moveToTrashItemsToUpdate.size() > 1 || !moveToTrashAllowed || moveToTrashHasWarnings) {
             moveToTrashNode = new DefaultTreeNode();
@@ -2806,6 +2832,37 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             }
         }
     }
+    
+    public ValidInfo handleMoveToTrash(
+            List<ItemDomainMachineDesign> itemsMovingToTrash, 
+            List<ItemElement> relationshipElements) {
+        
+        boolean isValid = true;
+        String validStr = "";
+        
+        // mark all items as deleted entity type (moves them to "trash")
+        for (ItemDomainMachineDesign item : itemsMovingToTrash) {
+            performMoveToTrashOperationsForItem(item);
+        }
+
+        // remove relationship for root item to its parent and 
+        // add container item to list of items to update
+        if (relationshipElements.size() > 1) {
+            // should be 0 for a top-level item or 1 for internal node
+            isValid = false;
+            validStr = "Item has unexpected relationships to other items";
+            
+        } else if (relationshipElements.size() == 1) {
+            ItemElement ie = relationshipElements.get(0);
+            Item childItem = ie.getContainedItem();
+            Item ieParentItem = ie.getParentItem();
+            ieParentItem.removeItemElement(ie);
+            childItem.getItemElementMemberList().remove(ie);
+            ie.setMarkedForDeletion(true);
+        }
+        
+        return new ValidInfo(isValid, validStr);
+    }
 
     /**
      * Executes move to trash operation initiated by 'Yes' button on dialog.
@@ -2819,25 +2876,18 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
         ItemDomainMachineDesign current = getCurrent();
         ItemDomainMachineDesign parentMachineDesign = current.getParentMachineDesign();
-
-        // mark all items as deleted entity type (moves them to "trash")
-        for (ItemDomainMachineDesign item : moveToTrashItemsToUpdate) {
-            performMoveToTrashOperationsForItem(item);
-        }
-
-        // remove relationship for root item to its parent and 
-        // add container item to list of items to update
-        if (moveToTrashElementsToDelete.size() > 1) {
-            // should be 0 for a top-level item or 1 for internal node
-            SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - unexpected relationships exist in hierarchy");
+        
+        // mark items moving to trash as deleted and remove relationship between root item and its parent
+        ValidInfo moveValidInfo = handleMoveToTrash(moveToTrashItemsToUpdate, moveToTrashElementsToDelete);
+        if (!moveValidInfo.isValid()) {
+            SessionUtility.addErrorMessage("Error", moveValidInfo.getValidString());
             return;
-        } else if (moveToTrashElementsToDelete.size() == 1) {
+        }
+        
+        // need to update parentItem if removing relationship
+        if (moveToTrashElementsToDelete.size() == 1) {
             ItemElement ie = moveToTrashElementsToDelete.get(0);
-            Item childItem = ie.getContainedItem();
             Item ieParentItem = ie.getParentItem();
-            ieParentItem.removeItemElement(ie);
-            childItem.getItemElementMemberList().remove(ie);
-            ie.setMarkedForDeletion(true);
             moveToTrashItemsToUpdate.add((ItemDomainMachineDesign) ieParentItem);
         }
 
