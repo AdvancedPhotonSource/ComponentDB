@@ -260,12 +260,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
         controller.collectItemsFromHierarchy(entity, itemsMovingToTrash, elementsToDelete, true, true);
         
         // mark row as invalid if it has children in common with a previous spreadsheet row
-        ItemDomainMachineDesign rootItem = null;
         for (ItemDomainMachineDesign item : itemsMovingToTrash) {
-            // save reference to rootItem so that we can update its parent later
-            if (item.getId().equals(entity.getId())) {
-                rootItem = item;
-            }
             // eliminate items we've already processed and update data structures for new items
             if (itemMap.containsKey(item.getId())) {
                 isValid = false;
@@ -273,41 +268,58 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
                 return new ValidInfo(isValid, validStr);
             } else {
                 itemMap.put(item.getId(), item);
-                if (!item.getId().equals(entity.getId())) {
-                    // add item to list of items to update for entity
-                    entity.addItemToUpdate(item);
-                }
             }
-        }
-        if (rootItem == null) {
-            // this shouldn't happen, indicates problem with collectItemsFromHierarchy
-            isValid = false;
-            validStr = "Unexpected error retrieving children of specified item";
-            return new ValidInfo(isValid, validStr);
         }
                 
         // validate list of items to move to trash
         ValidWarningInfo info = controller.validateItemsMovingToTrash(itemsMovingToTrash);
         isValid = info.isValid();
-        validStr = info.validString();
-        validStr = appendToString(validStr, info.warningString());
+        boolean isWarning = info.isWarning();
+        
+        // generate validation and warning message strings from children
+        for (ItemDomainMachineDesign item : itemsMovingToTrash) {
+            if (!isValid) {
+                String childErrorMsg = item.getMoveToTrashErrorMsg();
+                if (childErrorMsg != null && !childErrorMsg.isEmpty()) {
+                    String childMessage = "Child item '" + item.getName() + "': " + childErrorMsg;
+                    validStr = appendToString(validStr, childMessage);
+                }
+            } else if (isWarning) {
+                String childWarningMsg = item.getMoveToTrashWarningMsg();
+                if (childWarningMsg != null && !childWarningMsg.isEmpty()) {
+                    String childMessage = "Child item '" + item.getName() + "': " + childWarningMsg;
+                    validStr = appendToString(validStr, childMessage);
+                }
+            }
+        }
         
         if (isValid) {
             ValidInfo moveValidInfo = controller.handleMoveToTrash(itemsMovingToTrash, elementsToDelete);
             if (!moveValidInfo.isValid()) {
                 isValid = false;
                 validStr = appendToString(validStr, moveValidInfo.getValidString());
-            }
-        }
-        
-        // Size of list is 1 for interior node, 0 for root node.  Greater than one is an
-        // unexpected error handled by handleMoveToTrash().  For interior node, we need to update
-        // the parent item since a relationship is removed from it
-        if (elementsToDelete.size() == 1) {
-            ItemElement ie = elementsToDelete.get(0);
-            ItemDomainMachineDesign ieParentItem = (ItemDomainMachineDesign) ie.getParentItem();
-            if (ieParentItem != null) {
-                rootItem.addItemToUpdate(ieParentItem);
+            } else {
+            
+                // Add child items to list of itemsToUpdate in the root item moving to trash
+                // so that facade updates children when it updates root.
+                for (ItemDomainMachineDesign item : itemsMovingToTrash) {
+                    if (!item.getId().equals(entity.getId())) {
+                        // add item to list of items to update for entity
+                        entity.addItemToUpdate(item);
+                    }
+                }
+
+                // Size of list is 1 for interior node, 0 for root node.  Greater than one is an
+                // unexpected error handled by handleMoveToTrash().  For interior node, we need to update
+                // the parent item since a relationship is removed from it so add it to root item's
+                // list of itemsToUpdate.
+                if (elementsToDelete.size() == 1) {
+                    ItemElement ie = elementsToDelete.get(0);
+                    ItemDomainMachineDesign ieParentItem = (ItemDomainMachineDesign) ie.getParentItem();
+                    if (ieParentItem != null) {
+                        entity.addItemToUpdate(ieParentItem);
+                    }
+                }
             }
         }
         

@@ -2746,9 +2746,11 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             }
 
             if (!validStr.isEmpty()) {
+                isValid = false;
                 itemToCheck.setMoveToTrashErrorMsg(validStr);
             }
             if (!warningStr.isEmpty()) {
+                isWarning = true;
                 itemToCheck.setMoveToTrashWarningMsg(warningStr);
             }
         }
@@ -2759,7 +2761,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         }
         String rootWarningStr = "";
         if (isWarning) {
-            rootWarningStr = "Item child have move to trash warnings";
+            rootWarningStr = "Item children have move to trash warnings";
         }
         ValidInfo validInfo = new ValidInfo(isValid, rootValidStr);
         WarningInfo warningInfo = new WarningInfo(isWarning, rootWarningStr);
