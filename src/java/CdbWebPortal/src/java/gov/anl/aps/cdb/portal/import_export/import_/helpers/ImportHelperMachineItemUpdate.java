@@ -38,6 +38,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
     private ItemDomainMachineDesignControllerUtility controllerUtility = null;
     
     private Map<Integer, ItemDomainMachineDesign> itemMap = new HashMap<>();
+    private int totalNumItemsMovingToTrash = 0;
     
     private MachineImportHelperCommon getMachineImportHelperCommon() {
         if (machineImportHelperCommon == null) {
@@ -258,6 +259,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
         List<ItemDomainMachineDesign> itemsMovingToTrash = new ArrayList<>();
         List<ItemElement> elementsToDelete = new ArrayList<>();
         controller.collectItemsFromHierarchy(entity, itemsMovingToTrash, elementsToDelete, true, true);
+        int numItemsMovingToTrash = itemsMovingToTrash.size();
         
         // mark row as invalid if it has children in common with a previous spreadsheet row
         for (ItemDomainMachineDesign item : itemsMovingToTrash) {
@@ -320,6 +322,9 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
                         entity.addItemToUpdate(ieParentItem);
                     }
                 }
+                
+                validStr = appendToString(validStr, numItemsMovingToTrash + " items will be moved to trash");
+                totalNumItemsMovingToTrash = totalNumItemsMovingToTrash + numItemsMovingToTrash;
             }
         }
         
@@ -330,6 +335,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
      * Override so that we use updateList for persistence moving to trash instead of deleteList
      * which would permanently delete the items.
      */
+    @Override
     protected void deleteList() throws CdbException, RuntimeException {
 
         List<ItemDomainMachineDesign> deleteEntities = new ArrayList<>();
@@ -343,5 +349,10 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
         if (!deleteEntities.isEmpty()) {
             controller.updateList(deleteEntities, getCreateMessageTypeName());
         }
+    }
+    
+    @Override
+    protected int getItemCountForDeleteMode() {
+        return totalNumItemsMovingToTrash;
     }
 }

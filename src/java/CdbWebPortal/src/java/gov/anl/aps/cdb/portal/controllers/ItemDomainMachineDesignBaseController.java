@@ -2480,7 +2480,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
                 "Machine Template Instantiation Format", ImportHelperMachineTemplateInstantiation.class
         ));
         formatInfo.add(new ImportExportFormatInfo(
-                "Machine Element Update Format", ImportHelperMachineItemUpdate.class
+                "Machine Element Update/Compare/Delete Format", ImportHelperMachineItemUpdate.class
         ));
         formatInfo.add(new ImportExportFormatInfo(
                 "Machine Element Assign Template Format", ImportHelperMachineAssignTemplate.class
@@ -2502,7 +2502,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
 
         formatInfo.add(new ImportExportFormatInfo(
-                "Machine Element Update Format", ImportHelperMachineItemUpdate.class));
+                "Machine Element Update/Compare/Delete Format", ImportHelperMachineItemUpdate.class));
         formatInfo.add(new ImportExportFormatInfo(
                 "Machine Hierarchy Transfer Format", ImportHelperMachineHierarchy.class));
 
