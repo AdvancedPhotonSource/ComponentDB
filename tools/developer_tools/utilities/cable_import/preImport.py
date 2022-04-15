@@ -86,11 +86,11 @@ LABEL_CABLES_DEST_ANSU = "A/N/S/U"
 LABEL_CABLES_DEST_ETPMC = "E/T/P/M/C"
 LABEL_CABLES_DEST_ADDRESS = "Address"
 LABEL_CABLES_DEST_DESCRIPTION = "Description"
-LABEL_CABLES_LEGACY_ID = "Legacy cable ID"
-LABEL_CABLES_FROM_DEVICE = "FROM (device)"
-LABEL_CABLES_FROM_PORT = "FROM (port)"
-LABEL_CABLES_TO_DEVICE = "TO (device)"
-LABEL_CABLES_TO_PORT = "TO (port)"
+LABEL_CABLES_CABLE_ID = "Cable ID"
+LABEL_CABLES_END1_DEVICE = "End1 device"
+LABEL_CABLES_END1_PORT = "End1 port"
+LABEL_CABLES_END2_DEVICE = "End2 device"
+LABEL_CABLES_END2_PORT = "End2 port"
 LABEL_CABLES_IMPORT_ID = "Import cable ID"
 LABEL_CABLES_FIRST_WAYPOINT = "First waypoint"
 LABEL_CABLES_FINAL_WAYPOINT = "Final waypoint"
@@ -182,11 +182,11 @@ CABLE_DESIGN_DEST_ANS_KEY = "destANS"
 CABLE_DESIGN_DEST_ETPM_KEY = "destETPM"
 CABLE_DESIGN_DEST_ADDRESS_KEY = "destAddress"
 CABLE_DESIGN_DEST_DESCRIPTION_KEY = "destDescription"
-CABLE_DESIGN_LEGACY_ID_KEY = "legacyId"
-CABLE_DESIGN_FROM_DEVICE_NAME_KEY = "fromDeviceName"
-CABLE_DESIGN_FROM_PORT_NAME_KEY = "fromPortName"
-CABLE_DESIGN_TO_DEVICE_NAME_KEY = "toDeviceName"
-CABLE_DESIGN_TO_PORT_NAME_KEY = "toPortName"
+CABLE_DESIGN_CABLE_ID_KEY = "cableId"
+CABLE_DESIGN_END1_DEVICE_NAME_KEY = "end1Device"
+CABLE_DESIGN_END1_PORT_NAME_KEY = "end1Port"
+CABLE_DESIGN_END2_DEVICE_NAME_KEY = "end2Device"
+CABLE_DESIGN_END2_PORT_NAME_KEY = "end2Port"
 CABLE_DESIGN_IMPORT_ID_KEY = "importId"
 CABLE_DESIGN_VIA_ROUTE_KEY = "via"
 CABLE_DESIGN_WAYPOINT_ROUTE_KEY = "waypoint"
@@ -195,9 +195,9 @@ CABLE_DESIGN_NOTES_KEY = "notes"
 CABLE_DESIGN_TYPE_INDEX = 4
 CABLE_DESIGN_SRC_ETPM_INDEX = 7
 CABLE_DESIGN_DEST_ETPM_INDEX = 12
-CABLE_DESIGN_LEGACY_ID_INDEX = 15
-CABLE_DESIGN_FROM_DEVICE_NAME_INDEX = 16
-CABLE_DESIGN_TO_DEVICE_NAME_INDEX = 18
+CABLE_DESIGN_CABLE_ID_INDEX = 15
+CABLE_DESIGN_END1_DEVICE_NAME_INDEX = 16
+CABLE_DESIGN_END2_DEVICE_NAME_INDEX = 18
 CABLE_DESIGN_IMPORT_ID_INDEX = 20
 
 name_manager = None
@@ -755,10 +755,11 @@ class CableTypeConnectorHandler(InputHandler):
 
 class CableDesignExistenceHandler(InputHandler):
 
-    def __init__(self, column_key, existing_cable_designs, column_index_import_id, ignore_existing):
+    def __init__(self, column_key, existing_cable_designs, column_index_cable_id, column_index_import_id, ignore_existing):
         super().__init__(column_key)
         self.existing_cable_designs = existing_cable_designs
         self.id_mgr = IdManager()
+        self.column_index_cable_id = column_index_cable_id
         self.column_index_import_id = column_index_import_id
         self.ignore_existing = ignore_existing
 
@@ -772,9 +773,9 @@ class CableDesignExistenceHandler(InputHandler):
 
         cable_design_names = []
         for row_ind in range(first_row, last_row+1):
+            cable_id = sheet.cell(row_ind, self.column_index_cable_id).value
             import_id = sheet.cell(row_ind, self.column_index_import_id).value
-            if import_id is not None and import_id != "":
-                cable_design_names.append(CableDesignOutputObject.get_name_cls(None, import_id))
+            cable_design_names.append(CableDesignOutputObject.get_name_cls(None, cable_id, import_id))
         print("fetching %d cable design id's" % len(cable_design_names))
 
         preapi_time = datetime.now()
@@ -2221,11 +2222,11 @@ class CableInventoryHelper(PreImportHelper):
             InputColumnModel(col_index=CABLE_DESIGN_DEST_ETPM_INDEX, label=LABEL_CABLES_DEST_ETPMC),
             InputColumnModel(col_index=13, label=LABEL_CABLES_DEST_ADDRESS),
             InputColumnModel(col_index=14, label=LABEL_CABLES_DEST_DESCRIPTION),
-            InputColumnModel(col_index=CABLE_DESIGN_LEGACY_ID_INDEX, key=CABLE_DESIGN_LEGACY_ID_KEY, label=LABEL_CABLES_LEGACY_ID),
-            InputColumnModel(col_index=CABLE_DESIGN_FROM_DEVICE_NAME_INDEX, label=LABEL_CABLES_FROM_DEVICE),
-            InputColumnModel(col_index=17, label=LABEL_CABLES_FROM_PORT),
-            InputColumnModel(col_index=CABLE_DESIGN_TO_DEVICE_NAME_INDEX, label=LABEL_CABLES_TO_DEVICE),
-            InputColumnModel(col_index=19, label=LABEL_CABLES_TO_PORT),
+            InputColumnModel(col_index=CABLE_DESIGN_CABLE_ID_INDEX, key=CABLE_DESIGN_CABLE_ID_KEY, label=LABEL_CABLES_CABLE_ID),
+            InputColumnModel(col_index=CABLE_DESIGN_END1_DEVICE_NAME_INDEX, label=LABEL_CABLES_END1_DEVICE),
+            InputColumnModel(col_index=17, label=LABEL_CABLES_END1_PORT),
+            InputColumnModel(col_index=CABLE_DESIGN_END2_DEVICE_NAME_INDEX, label=LABEL_CABLES_END2_DEVICE),
+            InputColumnModel(col_index=19, label=LABEL_CABLES_END2_PORT),
             InputColumnModel(col_index=CABLE_DESIGN_IMPORT_ID_INDEX, key=CABLE_DESIGN_IMPORT_ID_KEY, label=LABEL_CABLES_IMPORT_ID, required=True),
             InputColumnModel(col_index=21, label=LABEL_CABLES_FIRST_WAYPOINT),
             InputColumnModel(col_index=22, label=LABEL_CABLES_FINAL_WAYPOINT),
@@ -2390,11 +2391,11 @@ class CableDesignHelper(PreImportHelper):
             InputColumnModel(col_index=CABLE_DESIGN_DEST_ETPM_INDEX, key=CABLE_DESIGN_DEST_ETPM_KEY, label=LABEL_CABLES_DEST_ETPMC, required=True),
             InputColumnModel(col_index=13, key=CABLE_DESIGN_DEST_ADDRESS_KEY, label=LABEL_CABLES_DEST_ADDRESS, required=True),
             InputColumnModel(col_index=14, key=CABLE_DESIGN_DEST_DESCRIPTION_KEY, label=LABEL_CABLES_DEST_DESCRIPTION, required=True),
-            InputColumnModel(col_index=CABLE_DESIGN_LEGACY_ID_INDEX, key=CABLE_DESIGN_LEGACY_ID_KEY, label=LABEL_CABLES_LEGACY_ID),
-            InputColumnModel(col_index=CABLE_DESIGN_FROM_DEVICE_NAME_INDEX, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, label=LABEL_CABLES_FROM_DEVICE, required=True),
-            InputColumnModel(col_index=17, key=CABLE_DESIGN_FROM_PORT_NAME_KEY, label=LABEL_CABLES_FROM_PORT, required=False),
-            InputColumnModel(col_index=CABLE_DESIGN_TO_DEVICE_NAME_INDEX, key=CABLE_DESIGN_TO_DEVICE_NAME_KEY, label=LABEL_CABLES_TO_DEVICE, required=True),
-            InputColumnModel(col_index=19, key=CABLE_DESIGN_TO_PORT_NAME_KEY, label=LABEL_CABLES_TO_PORT, required=False),
+            InputColumnModel(col_index=CABLE_DESIGN_CABLE_ID_INDEX, key=CABLE_DESIGN_CABLE_ID_KEY, label=LABEL_CABLES_CABLE_ID),
+            InputColumnModel(col_index=CABLE_DESIGN_END1_DEVICE_NAME_INDEX, key=CABLE_DESIGN_END1_DEVICE_NAME_KEY, label=LABEL_CABLES_END1_DEVICE, required=True),
+            InputColumnModel(col_index=17, key=CABLE_DESIGN_END1_PORT_NAME_KEY, label=LABEL_CABLES_END1_PORT, required=False),
+            InputColumnModel(col_index=CABLE_DESIGN_END2_DEVICE_NAME_INDEX, key=CABLE_DESIGN_END2_DEVICE_NAME_KEY, label=LABEL_CABLES_END2_DEVICE, required=True),
+            InputColumnModel(col_index=19, key=CABLE_DESIGN_END2_PORT_NAME_KEY, label=LABEL_CABLES_END2_PORT, required=False),
             InputColumnModel(col_index=CABLE_DESIGN_IMPORT_ID_INDEX, key=CABLE_DESIGN_IMPORT_ID_KEY, label=LABEL_CABLES_IMPORT_ID, required=True),
             InputColumnModel(col_index=21, key=CABLE_DESIGN_VIA_ROUTE_KEY, label=LABEL_CABLES_FIRST_WAYPOINT, required=False),
             InputColumnModel(col_index=22, key=CABLE_DESIGN_WAYPOINT_ROUTE_KEY, label=LABEL_CABLES_FINAL_WAYPOINT, required=False),
@@ -2425,11 +2426,15 @@ class CableDesignHelper(PreImportHelper):
         ]
 
         if not self.validate_only:
-            handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.existing_cable_designs, CABLE_DESIGN_IMPORT_ID_INDEX+1, self.ignore_existing))
-            handler_list.append(EndpointHandler(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_FROM_DEVICE_NAME_INDEX+1, CABLE_DESIGN_SRC_ETPM_INDEX+1, "source endpoints"))
-            handler_list.append(DevicePortHandler(CABLE_DESIGN_FROM_PORT_NAME_KEY, self.ignore_port_columns, self.from_port_values))
-            handler_list.append(EndpointHandler(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_TO_DEVICE_NAME_INDEX+1, CABLE_DESIGN_DEST_ETPM_INDEX+1, "destination endpoints"))
-            handler_list.append(DevicePortHandler(CABLE_DESIGN_TO_PORT_NAME_KEY, self.ignore_port_columns, self.to_port_values))
+            handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY,
+                                                            self.existing_cable_designs,
+                                                            CABLE_DESIGN_CABLE_ID_INDEX+1,
+                                                            CABLE_DESIGN_IMPORT_ID_INDEX+1,
+                                                            self.ignore_existing))
+            handler_list.append(EndpointHandler(CABLE_DESIGN_END1_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_END1_DEVICE_NAME_INDEX + 1, CABLE_DESIGN_SRC_ETPM_INDEX + 1, "source endpoints"))
+            handler_list.append(DevicePortHandler(CABLE_DESIGN_END1_PORT_NAME_KEY, self.ignore_port_columns, self.from_port_values))
+            handler_list.append(EndpointHandler(CABLE_DESIGN_END2_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_END2_DEVICE_NAME_INDEX + 1, CABLE_DESIGN_DEST_ETPM_INDEX + 1, "destination endpoints"))
+            handler_list.append(DevicePortHandler(CABLE_DESIGN_END2_PORT_NAME_KEY, self.ignore_port_columns, self.to_port_values))
 
         return handler_list
 
@@ -2560,7 +2565,7 @@ class CableDesignOutputObject(OutputObject):
             OutputColumnModel(col_index=3, method="get_alt_name", label="Alt Name"),
             OutputColumnModel(col_index=4, method="get_ext_name", label="Ext Cable Name"),
             OutputColumnModel(col_index=5, method="get_import_id", label="Import Cable ID"),
-            OutputColumnModel(col_index=6, method="get_alt_id", label="Alternate Cable ID"),
+            OutputColumnModel(col_index=6, method="empty_column", label="Alternate Cable ID"),
             OutputColumnModel(col_index=7, method="empty_column", label="Description"),
             OutputColumnModel(col_index=8, method="get_laying", label="Laying"),
             OutputColumnModel(col_index=9, method="get_voltage", label="Voltage"),
@@ -2596,20 +2601,24 @@ class CableDesignOutputObject(OutputObject):
         return column_list
 
     @classmethod
-    def get_name_cls(cls, row_dict, import_id=None):
+    def get_name_cls(cls, row_dict, cable_id=None, import_id=None):
 
-        # use import_id prefixed with "CA "
-        if row_dict is not None:
-            import_id = str(cls.get_import_id_cls(row_dict))
-        elif import_id is not None:
+        if import_id is not None:
             import_id = str(import_id)
-        else:
-            import_id = ""
-        return "CA " + import_id
 
-    @classmethod
-    def get_import_id_cls(cls, row_dict):
-        return str(row_dict[CABLE_DESIGN_IMPORT_ID_KEY])
+        if cable_id is None and import_id is None:
+            if row_dict is not None:
+                cable_id = row_dict[CABLE_DESIGN_CABLE_ID_KEY]
+                import_id = str(row_dict[CABLE_DESIGN_IMPORT_ID_KEY])
+            else:
+                return ""
+
+        if cable_id is not None and cable_id != "":
+            return cable_id
+        else:
+            if import_id is None:
+                import_id = ""
+            return "CA " + import_id
 
     def get_name(self):
         return self.get_name_cls(self.input_dict)
@@ -2623,10 +2632,7 @@ class CableDesignOutputObject(OutputObject):
         return self.input_dict[CABLE_DESIGN_NAME_KEY]
 
     def get_import_id(self):
-        return self.get_import_id_cls(self.input_dict)
-
-    def get_alt_id(self):
-        return self.input_dict[CABLE_DESIGN_LEGACY_ID_KEY]
+        return str(self.input_dict[CABLE_DESIGN_IMPORT_ID_KEY])
 
     def get_laying(self):
         return self.input_dict[CABLE_DESIGN_LAYING_KEY]
@@ -2647,10 +2653,10 @@ class CableDesignOutputObject(OutputObject):
         return self.helper.rack_manager.get_endpoint_id_for_rack(container_name, endpoint_name)
 
     def get_endpoint1_id(self):
-        return self.get_endpoint_id(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY)
+        return self.get_endpoint_id(CABLE_DESIGN_END1_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY)
 
     def get_endpoint1_port(self):
-        return self.input_dict[CABLE_DESIGN_FROM_PORT_NAME_KEY]
+        return self.input_dict[CABLE_DESIGN_END1_PORT_NAME_KEY]
 
     def get_endpoint1_connector(self):
         if CABLE_TYPE_E1_1_KEY in self.cable_catalog_info.connector_names:
@@ -2669,10 +2675,10 @@ class CableDesignOutputObject(OutputObject):
         return str(self.input_dict[CABLE_DESIGN_VIA_ROUTE_KEY])
 
     def get_endpoint2_id(self):
-        return self.get_endpoint_id(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY)
+        return self.get_endpoint_id(CABLE_DESIGN_END2_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY)
 
     def get_endpoint2_port(self):
-        return self.input_dict[CABLE_DESIGN_TO_PORT_NAME_KEY]
+        return self.input_dict[CABLE_DESIGN_END2_PORT_NAME_KEY]
 
     def get_endpoint2_connector(self):
         if CABLE_TYPE_E2_1_KEY in self.cable_catalog_info.connector_names:
