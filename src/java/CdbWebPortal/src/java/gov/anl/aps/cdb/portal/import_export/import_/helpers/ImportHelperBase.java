@@ -816,17 +816,33 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return true;
     }
     
+    /**
+     * Allows subclass to customize number of items to be deleted, e.g., for machine item update
+     * helper's move to trash operation, where each row of the input spreadsheet can delete multiple
+     * items since the data are hierarchical.
+     * @return 
+     */
+    protected int getItemCountForDeleteMode() {
+        return -1;
+    }
+    
     private int getItemCountForCurrentMode() {
         
         if (itemCountForCurrentMode == -1) {
             int itemCount = 0;
+            
             if (getImportMode() == ImportMode.DELETE) {
-                for (EntityType entity : rows) {
-                    if ((entity.getImportDeleteExistingItem() != null) && (entity.getImportDeleteExistingItem())) {
-                        itemCount = itemCount + 1;
+                int deleteCount = getItemCountForDeleteMode();
+                if (deleteCount == -1) {
+                    for (EntityType entity : rows) {
+                        if ((entity.getImportDeleteExistingItem() != null) && (entity.getImportDeleteExistingItem())) {
+                            itemCount = itemCount + 1;
+                        }
                     }
+                } else {
+                    itemCount = deleteCount;
                 }
-
+                
             } else if (getImportMode() == ImportMode.UPDATE) {
                 for (EntityType entity : rows) {
                     if (entity.hasImportUpdates()) {
@@ -1093,8 +1109,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         CreateInfo handleCreateInfo = handleParsedRow(rowDict);
         if (!handleCreateInfo.getValidInfo().isValid()) {
             isValid = false;
-            validString = appendToString(validString, handleCreateInfo.getValidInfo().getValidString());
         }
+        validString = appendToString(validString, handleCreateInfo.getValidInfo().getValidString());
 
         entity = (EntityType) handleCreateInfo.getEntity();
         if (entity == null) {
@@ -1211,23 +1227,23 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         // allow subclass to determine if deleting entity is valid
         ValidInfo deleteEntityValidInfo = validateDeleteEntityInstance(entity, rowDict);
         if (!deleteEntityValidInfo.isValid()) {
-            validString = appendToString(validString, deleteEntityValidInfo.getValidString());
             isValid = false;
         }
+        validString = appendToString(validString, deleteEntityValidInfo.getValidString());
         
         // allow subclass to take appropriate action on deleting the entity, beyond calling destroy
         ValidInfo deleteEntityInfo = deleteEntityInstance(entity, rowDict);
         if (!deleteEntityInfo.isValid()) {
             isValid = false;
-            validString = appendToString(validString, deleteEntityInfo.getValidString());
         }
+        validString = appendToString(validString, deleteEntityInfo.getValidString());
 
         // invoke each input handler to update the entity with row dictionary values
         ValidInfo updateValidInfo = invokeHandlersToUpdateEntity(entity, rowDict);
         if (!updateValidInfo.isValid()) {
-            validString = appendToString(validString, updateValidInfo.getValidString());
             isValid = false;
         }
+        validString = appendToString(validString, updateValidInfo.getValidString());
         
         // display field values as diffs
         String diffString = "";

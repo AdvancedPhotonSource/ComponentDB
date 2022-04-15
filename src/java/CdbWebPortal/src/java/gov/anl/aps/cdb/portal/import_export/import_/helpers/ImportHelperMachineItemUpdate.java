@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperC
 import static gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon.KEY_ASSEMBLY_PART;
 import static gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon.KEY_ASSIGNED_ITEM;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidWarningInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -20,6 +21,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +36,9 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
     private MachineImportHelperCommon machineImportHelperCommon = null;
     
     private ItemDomainMachineDesignControllerUtility controllerUtility = null;
+    
+    private Map<Integer, ItemDomainMachineDesign> itemMap = new HashMap<>();
+    private int totalNumItemsMovingToTrash = 0;
     
     private MachineImportHelperCommon getMachineImportHelperCommon() {
         if (machineImportHelperCommon == null) {
@@ -93,6 +98,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
         List<ColumnSpec> specs = new ArrayList<>();
 
         specs.add(existingItemIdColumnSpec());
+        specs.add(deleteExistingItemColumnSpec());
         
         specs.add(MachineImportHelperCommon.existingMachineItemColumnSpec(
                 ColumnModeOptions.rUPDATErCOMPARE(),
@@ -148,7 +154,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
      */
     @Override
     public boolean supportsModeDelete() {
-        return false;
+        return true;
     }
 
     @Override
@@ -241,4 +247,112 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
         return new ValidInfo(isValid, validString);
     }
     
+    @Override
+    protected ValidInfo deleteEntityInstance(ItemDomainMachineDesign entity, Map<String, Object> rowMap) {
+        
+        boolean isValid = true;
+        String validStr = "";
+        
+        ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
+        
+        // collect list of items to update (mark deleted) and elements (relationships) to delete for this row
+        List<ItemDomainMachineDesign> itemsMovingToTrash = new ArrayList<>();
+        List<ItemElement> elementsToDelete = new ArrayList<>();
+        controller.collectItemsFromHierarchy(entity, itemsMovingToTrash, elementsToDelete, true, true);
+        int numItemsMovingToTrash = itemsMovingToTrash.size();
+        
+        // mark row as invalid if it has children in common with a previous spreadsheet row
+        for (ItemDomainMachineDesign item : itemsMovingToTrash) {
+            // eliminate items we've already processed and update data structures for new items
+            if (itemMap.containsKey(item.getId())) {
+                isValid = false;
+                validStr = "Hierarchy for row overlaps a previous spreadsheet row.";
+                return new ValidInfo(isValid, validStr);
+            } else {
+                itemMap.put(item.getId(), item);
+            }
+        }
+                
+        // validate list of items to move to trash
+        ValidWarningInfo info = controller.validateItemsMovingToTrash(itemsMovingToTrash);
+        isValid = info.isValid();
+        boolean isWarning = info.isWarning();
+        
+        // generate validation and warning message strings from children
+        for (ItemDomainMachineDesign item : itemsMovingToTrash) {
+            if (!isValid) {
+                String childErrorMsg = item.getMoveToTrashErrorMsg();
+                if (childErrorMsg != null && !childErrorMsg.isEmpty()) {
+                    String childMessage = "Child item '" + item.getName() + "': " + childErrorMsg;
+                    validStr = appendToString(validStr, childMessage);
+                }
+            } else if (isWarning) {
+                String childWarningMsg = item.getMoveToTrashWarningMsg();
+                if (childWarningMsg != null && !childWarningMsg.isEmpty()) {
+                    String childMessage = "Child item '" + item.getName() + "': " + childWarningMsg;
+                    validStr = appendToString(validStr, childMessage);
+                }
+            }
+        }
+        
+        if (isValid) {
+            ValidInfo moveValidInfo = controller.handleMoveToTrash(itemsMovingToTrash, elementsToDelete);
+            if (!moveValidInfo.isValid()) {
+                isValid = false;
+                validStr = appendToString(validStr, moveValidInfo.getValidString());
+            } else {
+            
+                // Add child items to list of itemsToUpdate in the root item moving to trash
+                // so that facade updates children when it updates root.
+                for (ItemDomainMachineDesign item : itemsMovingToTrash) {
+                    if (!item.getId().equals(entity.getId())) {
+                        // add item to list of items to update for entity
+                        entity.addItemToUpdate(item);
+                    }
+                }
+
+                // Size of list is 1 for interior node, 0 for root node.  Greater than one is an
+                // unexpected error handled by handleMoveToTrash().  For interior node, we need to update
+                // the parent item since a relationship is removed from it so add it to root item's
+                // list of itemsToUpdate.
+                if (elementsToDelete.size() == 1) {
+                    ItemElement ie = elementsToDelete.get(0);
+                    ItemDomainMachineDesign ieParentItem = (ItemDomainMachineDesign) ie.getParentItem();
+                    if (ieParentItem != null) {
+                        entity.addItemToUpdate(ieParentItem);
+                    }
+                }
+                
+                validStr = appendToString(validStr, numItemsMovingToTrash + " items will be moved to trash");
+                totalNumItemsMovingToTrash = totalNumItemsMovingToTrash + numItemsMovingToTrash;
+            }
+        }
+        
+        return new ValidInfo(isValid, validStr);
+    }
+
+    /**
+     * Override so that we use updateList for persistence moving to trash instead of deleteList
+     * which would permanently delete the items.
+     */
+    @Override
+    protected void deleteList() throws CdbException, RuntimeException {
+
+        List<ItemDomainMachineDesign> deleteEntities = new ArrayList<>();
+        for (ItemDomainMachineDesign entity : rows) {
+            if (entity.getImportDeleteExistingItem()) {
+                deleteEntities.add(entity);
+            }
+        }
+
+        ItemDomainMachineDesignController controller = this.getEntityController();
+        if (!deleteEntities.isEmpty()) {
+            controller.updateList(deleteEntities, getCreateMessageTypeName());
+        }
+    }
+    
+    @Override
+    protected int getItemCountForDeleteMode() {
+        return totalNumItemsMovingToTrash;
+    }
 }
