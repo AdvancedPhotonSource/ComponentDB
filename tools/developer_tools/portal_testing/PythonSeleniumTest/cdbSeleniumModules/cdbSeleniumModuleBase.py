@@ -286,3 +286,47 @@ class CdbSeleniumModuleBase:
 
 		test.verify_file_downloaded(result_file_name)
 
+	def _add_log_to_item(self, form_name, entity_name, log_entry, needs_toggler=True):
+		if needs_toggler:
+			self._click_on_id('%s:%sViewLogEntriesPanel_toggler' % (form_name, entity_name))
+		self._wait_for_id_and_click('%s:%sLogAddButton' % (form_name, entity_name))
+		logEntry = self._wait_for_id('%s:logEntryValue' % form_name)
+
+		logEntry.send_keys(log_entry)
+		self._click_on_id('%s:%sSaveLogButton' % (form_name, entity_name))
+
+		newLogEntrySelector = "#%s\\3a %sLogListDataTable\\3a 0\\3a logEntryColumnCellEditor > div.ui-cell-editor-output" % (form_name, entity_name)
+		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, newLogEntrySelector), log_entry))
+
+	def _add_property_to_item(self, test, form_name, entity_name, prop_value_text, needs_toggler=True):
+		if needs_toggler:
+			toggle_id = '%s:%sViewPropertiesPanel_toggler' % (form_name, entity_name)
+			self._click_on_id(toggle_id)
+
+		add_btn_id = '%s:%sPropertyAddButton' % (form_name, entity_name)
+		self._wait_for_id_and_click(add_btn_id)
+		categorySelectionXpath = "//div[@id='%s:filterViewItemCategorySelection']/div[2]/ul/li" % form_name
+		categorySel = self._wait_for_visible_xpath(categorySelectionXpath)
+		categorySel.click()
+
+		property_type_selection_xpath = "//tbody[@id='%s:%sPropertySelectDataTable_data']/tr[1]/td[4]" % (form_name, entity_name)
+		self._wait_for_xpath(property_type_selection_xpath)
+		self._click_on_x_path_with_stale_protection(property_type_selection_xpath)
+		
+		done_btn_id = '%s:%sSinglePropertySelectDialogDoneButton' % (form_name, entity_name)
+		self._click_on_id(done_btn_id)
+
+		property_value_input_id = "%s:freeFormTextValue" % form_name
+		self._wait_for_id(property_value_input_id)
+		self._type_in_id(property_value_input_id, prop_value_text)
+
+		save_btn_id = "%s:%sSinglePropertyEditSaveButton" % (form_name, entity_name)
+		self._click_on_id(save_btn_id)	
+
+		time.sleep(1)
+
+		expected_value_box_id = "%s:%sPropertyListDataTable:0:propertyValueListObjectValueFreeFormOutputText" % (form_name, entity_name) 
+		value_element = self._find_by_id(expected_value_box_id)
+
+		test.assertEqual(value_element.text, prop_value_text, msg='%s found but expected %s for new property value.' % (value_element.text,prop_value_text ))
+
