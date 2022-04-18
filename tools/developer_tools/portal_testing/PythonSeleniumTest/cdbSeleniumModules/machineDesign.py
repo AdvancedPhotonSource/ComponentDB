@@ -22,6 +22,14 @@ class MachineDesign(CdbSeleniumModuleBase):
 	TBODY_ID = 'itemMachineDesignListForm:itemMachineDesignListDataTable_data'
 	NAME_MACHINE_DESIGN_ROW_XPATH_FORMULA = '//*[@id="itemMachineDesignListForm:itemMachineDesignListDataTable:%s:draggableMachineDesign"]/span[2]'
 	ROW_TOGGLER_MACHINE_DESIGN_ROW_XPATH_FORMULA = '//*[@id="itemMachineDesignListForm:itemMachineDesignListDataTable_node_%s"]/td[1]/span'
+	
+	MACHINE_DESIGN_CONTEXT_MENU_ID_FORMULA = "machineDesign%sDualViewMachineDesignContextMenu"
+	MACHINE_DESIGN_CONTEXT_MENU_ID = MACHINE_DESIGN_CONTEXT_MENU_ID_FORMULA % ''
+	MACHINE_DESIGN_CATALOG_CONTEXT_MENU_ID = MACHINE_DESIGN_CONTEXT_MENU_ID_FORMULA % 'Catalog'
+	MACHINE_DESIGN_CONTEXT_MENU_XPATH_FORMULA = '//*[@id="itemMachineDesignListForm:%s"]/ul/li[%d]/a'
+	MACHINE_DESIGN_CONTEXT_MENU_DETAILS_INX = 3
+
+	
 	MACHINE_DESIGN_ROW_XPATH_NAME_IDX = 1
 
 	CSV_NAME_COLUMN_HEADER = 'Machine Design Item Name'
@@ -29,9 +37,10 @@ class MachineDesign(CdbSeleniumModuleBase):
 	CSV_ALTERNATE_NAME_COLUMN_HEADER = 'Alternate Name'
 	CSV_ASSIGNED_CATALOG = 'Assigned Catalog'
 	CSV_ASSIGNED_CATALOG_BLANK = 'placeholder'
-	LIST_FORM_NAME = "itemMachineDesignListForm"
-	EXPORT_FORM_NAME = "exportMachineDesignForm"
 	ENTITY_TYPE_NAME = "itemMachineDesign"
+	LIST_FORM_NAME = "%sListForm" % ENTITY_TYPE_NAME	
+	EXPORT_FORM_NAME = "exportMachineDesignForm"
+	
 
 	EXPORT_FILE_NAME = "Machine Element Update Export.xlsx"
 
@@ -361,6 +370,16 @@ class MachineDesign(CdbSeleniumModuleBase):
 										self.assign_catalog_to_machine_design(itemXpath, assignedCatalogName)
 							break
 				lineCount += 1
+
+	def test_detail_page(self, test):
+		#first_item_xpath = '//*[@id="itemMachineDesignListForm:itemMachineDesignListDataTable_node_0"]/td[1]'
+		first_item_xpath = self.ROW_TOGGLER_MACHINE_DESIGN_ROW_XPATH_FORMULA % (0)
+		context_item_xpath = self.MACHINE_DESIGN_CONTEXT_MENU_XPATH_FORMULA % (self.MACHINE_DESIGN_CATALOG_CONTEXT_MENU_ID, self.MACHINE_DESIGN_CONTEXT_MENU_DETAILS_INX)
+		self._context_click_x_path(first_item_xpath, context_item_xpath)
+		time.sleep(2)
+		self._add_log_to_item(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, 'Machine Design Log!', False)
+		self._add_property_to_item(test, self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, "Machine Prop", False)
+		
 
 	def filter_machine(self, filter_string='Test Machine'):
 		filterbox_id = 'itemMachineDesignListForm:itemMachineDesignListDataTable:nameMdFilter'
