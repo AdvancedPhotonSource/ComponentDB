@@ -92,6 +92,7 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
         self.catalog.display_more_columns()
         self.catalog.search_for_sample_catalog_item()
         self.catalog.add_log_to_catalog_item()
+        self.catalog.add_property_to_catalog_item(self)
 
         self.catalog.delete_current_item()
 
@@ -104,6 +105,10 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
         self.machine_design.navigate_to_machine_design()
         self.machine_design.filter_machine()
         self.machine_design.export_machine(self)
+
+    def test_machine_design_details_page(self):
+        self.machine_design.navigate_to_machine_design()
+        self.machine_design.test_detail_page(self)
 
     def test_browse_by_function_pages(self):
         self.browse_by.navigate_to_browse_by_function()
@@ -129,6 +134,10 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
         self.cable_catalog.navigate_to_cable_catalog_list()
         self.cable_catalog.test_cable_catalog_pages()
 
+    def test_cable_catalog_detail_page(self):
+        self.cable_catalog.navigate_to_cable_catalog_list()
+        self.cable_catalog.test_cable_catalog_detail_page(self)
+
     def test_cable_catalog_export(self):
         self.cable_catalog.navigate_to_cable_catalog_list()
         self.cable_catalog.export_cable_catalog(self)
@@ -137,13 +146,25 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
         self.inventory.navigate_to_inventory_list()
         self.inventory.test_inventory_pages()
 
+    def test_inventory_detail_page(self):
+        self.inventory.navigate_to_inventory_list()
+        self.inventory.test_inventory_detail_page(self)
+
     def test_cable_inventory_pages(self):
         self.cable_inventory.navigate_to_cable_inventory_list()
         self.cable_inventory.test_cable_inventory_pages()
 
+    def test_cable_inventory_detail_page(self):
+        self.cable_inventory.navigate_to_cable_inventory_list()
+        self.cable_inventory.test_cable_inventory_detail_page(self)
+
     def test_cable_design_pages(self):
         self.cable_design.navigate_to_cable_design_list()
         self.cable_design.test_cable_design_pages()
+
+    def test_cable_design_detail_page(self):
+        self.cable_design.navigate_to_cable_design_list()
+        self.cable_design.test_cable_design_detail_page(self)
 
     def test_cable_design_export(self):
         self.cable_design.navigate_to_cable_design_list()
