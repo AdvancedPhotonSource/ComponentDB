@@ -1,4 +1,5 @@
 .idea
+.vscode
 src/python/.loglogin
 
 # Compiled files 
@@ -11,7 +12,6 @@ tools/developer_tools/portal_testing/CdbFunctionalTester/nbproject/private/
 /tools/developer_tools/code_testing/CdbWebPortalTest/target/
 /tools/developer_tools/portal_testing/PythonSeleniumTest/support_bin/
 /tools/developer_tools/portal_testing/PythonSeleniumTest/dw-data/
-/tools/developer_tools/portal_testing/PythonSeleniumTest/.vscode
 /tools/developer_tools/python-client/*
 /tools/developer_tools/python-client/**/.DS_Store
 !/tools/developer_tools/python-client/generatePyClient.sh
@@ -45,9 +45,6 @@ docs/python/_build/
 # Python REST Api Dist
 /src/python/cdb_api.egg-info
 /src/python/dist
-
-# VSC Config file
-tools/developer_tools/python-client/cdbCli/service/cli/.vscode
 
 # Temporary testing csv files
 tools/developer_tools/python-client/cdbCli/service/cli/Spreadsheets/
