@@ -40,8 +40,12 @@ public abstract class CdbQueryBuilder {
 
         if (object != null && object instanceof String) {
             if (comparator.equalsIgnoreCase(QUERY_LIKE)) {
-                value = ((String)value).replace('*', '%'); 
-                value = "%" + value + "%";
+                if (value.contains("*") || value.contains("?")) {
+                    value = ((String)value).replace('*', '%');                     
+                    value = ((String)value).replace('?', '_');   
+                } else {
+                    value = "%" + value + "%";
+                }
             }
 
             value = "'" + escapeCharacters(value) + "'";
