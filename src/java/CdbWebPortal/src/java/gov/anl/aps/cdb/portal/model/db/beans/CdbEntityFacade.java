@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 /**
  *
@@ -77,6 +78,12 @@ public abstract class CdbEntityFacade<T> {
         javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
         return getEntityManager().createQuery(cq).getResultList();
+    }
+    
+    public void clearCache() {
+        EntityManager entityManager = getEntityManager();
+        EntityManagerFactory entityManagerFactory = entityManager.getEntityManagerFactory();
+        entityManagerFactory.getCache().evict(entityClass);
     }
     
     public List<T> searchEntities(String searchString) {
