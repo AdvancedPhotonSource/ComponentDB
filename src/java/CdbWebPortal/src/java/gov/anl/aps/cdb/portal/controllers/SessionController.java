@@ -16,6 +16,10 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+import javax.persistence.Cache;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpSession;
 
 @Named(SessionController.controllerNamed)
@@ -27,6 +31,9 @@ public class SessionController {
     public static final String INVALIDATED_SESSION = "Invalidated Session"; 
 
     public static final long BROWSER_LAST_CONNECTED_MIN_TIME = 25000;
+    
+    @PersistenceContext(unitName = "CdbWebPortalPU")
+    private EntityManager em;
 
     private Set<HttpSession> allSessions;
 
@@ -143,7 +150,7 @@ public class SessionController {
             SessionUtility.addErrorMessage("Error", "Cannot invalidate a connected session");
         }
     }
-
+ 
     public void clearInvalidated() {
         List<HttpSession> sessionsToRemove = new ArrayList<>();
         for (HttpSession session : allSessions) {
@@ -153,10 +160,16 @@ public class SessionController {
                 sessionsToRemove.add(session);
             }
         }
-
+  
         allSessions.removeAll(sessionsToRemove);
+    }    
+    
+    public void clearCaches() {
+        EntityManagerFactory entityManagerFactory = em.getEntityManagerFactory();
+        Cache cache = entityManagerFactory.getCache();
+        cache.evictAll(); 
     }
-
+    
     public void updateStats() {
         List<Long> activeSessionTimes = new ArrayList<>();
         for (HttpSession session : allSessions) {

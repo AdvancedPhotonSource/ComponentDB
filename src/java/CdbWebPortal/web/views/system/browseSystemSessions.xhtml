@@ -41,7 +41,13 @@ See LICENSE file.
             <br/>
             <p:commandButton value="Clear Invalidated"
                              action="#{sessionController.clearInvalidated()}"
-                             update="@form"/>  
+                             update="@form"
+                             onclick="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"/>  
+            <p:commandButton value="Clear EJB Caches"
+                             action="#{sessionController.clearCaches()}"
+                             onclick="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"/>  
             <br/>
             <br/>
 
