@@ -18,7 +18,7 @@ from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id_hel
 #                                                                                              #
 ################################################################################################
 def set_machine_install_state_helper(
-    factory, item_api, machine_api, machine_item, item_id, install_state
+    factory, item_api, machine_api, machine_item, item_id, install_state, stdout_done=False, add_item_log=False
 ):
 
     machine_item_child_id = machine_item.assigned_item.id
@@ -30,10 +30,13 @@ def set_machine_install_state_helper(
                 is_installed=install_state,
             )
             machine_api.update_assigned_item(machine_item_info)
+
+            if stdout_done:
+                print("Updated machine %s for assigned item %s to install state %r" % (machine_item.name, item_id, install_state))
         except ApiException as ex:
             exObj = factory.parseApiException(ex)
             raise Exception("%s - %s" % (exObj.simple_name, exObj.message))
-        else:
+        if add_item_log:
             log = (
                 "Machine item: "
                 + str(machine_item.id)
@@ -45,10 +48,8 @@ def set_machine_install_state_helper(
             )
     else:
         print(
-            "Machine item: "
-            + str(machine_item.id)
-            + " does not have child id: "
-            + item_id
+            "Machine item %s is assigned item is not %s. It is " 
+                % (str(machine_item.name), item_id)
         )
 
 
@@ -63,10 +64,20 @@ def set_machine_install_state_helper(
     "--item-id-type",
     default="id",
     type=click.Choice(["id", "qr_id"], case_sensitive=False),
-    help="Allowed values are 'id'(default) or 'qr_id'",
+    help="Assigned item identifier provided.",
+)
+@click.option(
+    "--installed",
+    is_flag=True,
+    help="Add this switch to set items as installed otherwise it defaults to planned.",
+)
+@click.option(
+    "--add_log_to_item",
+    is_flag=True,
+    help="Add a log entry to the machine item after the change is made."
 )
 @click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
-def set_machine_install_state(input_file, item_id_type, dist=None):
+def set_machine_install_state(input_file, item_id_type, installed, add_log_to_item, dist=None):
 
     """Set new status for items if id matches child of machine design, otherwise print mismatch
     to console. Id is specified by type
@@ -74,16 +85,15 @@ def set_machine_install_state(input_file, item_id_type, dist=None):
     \b
     Example (file): set-machine-install-statuses --input-file filename.csv --item-id-type=qr_id
     Example (stdin): cat filename.csv | set-machine-install-statuses
-    Example (terminal): set-machine-install-statuses
-                        header
-                        <Machine Design Name>,<Item ID>"""
+    Example (terminal): set-machine-install-statuses                        
+                        <Machine Design Name>,<Item <item-id-type>>"""
     """
 
         Input is either through a named csv file or through STDIN.   Default is STDIN
         The format of the input data is an intended row to be removed followed by
         <Machine Design Name>,<Item ID>   where the ID is by the type specified by the command line."""
 
-    cli = CliBase(dist)
+    cli = CliBase(dist)    
 
     try:
         factory = cli.require_authenticated_api()
@@ -92,31 +102,49 @@ def set_machine_install_state(input_file, item_id_type, dist=None):
         return
 
     item_api = factory.getItemApi()
-    machine_api = factory.getMachineDesignItemApi()
-
+    machine_api = factory.getMachineDesignItemApi()    
+    
     reader = csv.reader(input_file)
-
-    # Removes header located in first row
-    next(reader)
+    stdin_tty_mode = (input_file == sys.stdin) and sys.stdin.isatty()
+    
+    if stdin_tty_mode:
+        print("STDIN mode. Entry per line: <Machine_Design_Name>,<Assigned_Item_%s>" % item_id_type)
+    else:
+        # Removes header located in first row
+        next(reader)
 
     # Parse machine design names and item codes
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
         if not row[0]:
             continue
 
         design_name = row[0]
         item_id = row[1]
-        machine_item = machine_api.get_machine_design_items_by_name(
-            design_name
-        ).__getitem__(0)
 
-        # Get ids if we were given QR Codes
-        if item_id_type == "qr_id":
-            item_id = str(item_api.get_item_by_qr_id(int(item_id)).id)
+        try:
+            results = machine_api.get_machine_design_items_by_name(
+                design_name
+            )
+
+            if results.__len__() > 1:
+                print("Skipping machine %s, found %d results with this name" % (design_name, results.__len__()), file=sys.stderr)
+                continue
+            machine_item = results[0]
+
+            # Get ids if we were given QR Codes
+            if item_id_type == "qr_id":
+                item_id = str(item_api.get_item_by_qr_id(int(item_id)).id)
+        except ApiException as ex:
+            exObj = factory.parseApiException(ex)
+            print("Skipping machine %s, an error ocurred. %s" % (design_name, exObj.message), file=sys.stderr)
+            continue        
 
         # Update corresponding item statuses, or print potential mismatch
         set_machine_install_state_helper(
-            factory, item_api, machine_api, machine_item, item_id, False
+            factory, item_api, machine_api, machine_item, 
+            item_id, installed, stdout_done=True, add_item_log=add_log_to_item
         )
 
 
