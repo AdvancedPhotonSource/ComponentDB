@@ -21,12 +21,15 @@ SAMPLE_CATALOG_ITEM_ALTERNATE_NAME= 'Alternate'
 
 class Catalog(ItemBase):
 
+	VIEW_BASE_NAME = "itemDomainCatalog"
 	ENTITY_TYPE_NAME = "component"
 	LIST_FORM_NAME = "%sListForm" % ENTITY_TYPE_NAME
 	VIEW_FORM_NAME = "%sViewForm" % ENTITY_TYPE_NAME
+	IMPORT_FORM_NAME = 'importCableCatalogForm'
 	EXPORT_FORM_NAME = "exportCatalogForm"
 
 	EXPORT_FILE_NAME = "Component Catalog Export.xlsx"
+	IMPORT_FILE_NAME = "Catalog Import.xlsx"
 
 	def navigate_to_catalog_list(self):
 		self._navigate_to_dropdown('catalogDropdownButton', 'componentCatalogButton', 'itemDomainCatalog/list')
@@ -126,6 +129,13 @@ class Catalog(ItemBase):
 	def export_catalog(self, test):
 		self._navigate_to_export_from_list(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME)
 		self._export(self.EXPORT_FORM_NAME, self.EXPORT_FILE_NAME, test)
+	
+	def test_import_create(self, test):
+		self._wait_for_id_and_click('%s:componentImportButton' % self.LIST_FORM_NAME)
+		table_results = self._import_navigate_to_verification_data_table(self.IMPORT_FORM_NAME, self.IMPORT_FILE_NAME)
+		test.assertEqual(len(table_results), 10, msg='10 items were imported in the spreadsheet')
+		self._import_complete(self.IMPORT_FORM_NAME, self.VIEW_BASE_NAME)
+
 
 
 

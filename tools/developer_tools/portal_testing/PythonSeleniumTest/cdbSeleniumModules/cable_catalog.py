@@ -2,16 +2,18 @@ from cdbSeleniumModules.itemBase import ItemBase
 
 
 class CableCatalog(ItemBase):
-
+    
     VIEW_BASE_NAME = 'itemDomainCableCatalog'
     ENTITY_TYPE_NAME = 'cableCatalog'
     FORM_NAME = ENTITY_TYPE_NAME + '%sForm'
     LIST_FORM_NAME = FORM_NAME % 'List'
     VIEW_FORM_NAME = FORM_NAME % 'View'
     EDIT_FORM_NAME = FORM_NAME % 'Edit'
+    IMPORT_FORM_NAME = 'importCableCatalogForm'
     EXPORT_FORM_NAME = "exportCableCatalogForm"
 
     EXPORT_FILE_NAME = "Cable Type Catalog Export.xlsx"
+    IMPORT_SOURCE_FILE_NAME = "Cable Catalog Import.xlsx"
 
     DATA_TABLE_XPATH_FORMULA = '//*[@id="%s:%sListDataTable_data"]/tr[1]/td[2]/a'
 
@@ -41,3 +43,9 @@ class CableCatalog(ItemBase):
     def export_cable_catalog(self, test):
         self._navigate_to_export_from_list(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME)
         self._export(self.EXPORT_FORM_NAME, self.EXPORT_FILE_NAME, test)
+
+    def test_import_create(self, test):
+        self._wait_for_id_and_click('%s:cableCatalogImportButton' % self.LIST_FORM_NAME)
+        table_results = self._import_navigate_to_verification_data_table(self.IMPORT_FORM_NAME, self.IMPORT_SOURCE_FILE_NAME)
+        test.assertEqual(len(table_results), 19, msg='19 items were imported in the spreadsheet')
+        self._import_complete(self.IMPORT_FORM_NAME, self.VIEW_BASE_NAME)

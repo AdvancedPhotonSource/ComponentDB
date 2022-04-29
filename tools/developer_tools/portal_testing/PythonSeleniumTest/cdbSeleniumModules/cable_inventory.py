@@ -10,6 +10,9 @@ class CableInventory(ItemBase):
     LIST_FORM_NAME = FORM_NAME % 'List'
     VIEW_FORM_NAME = FORM_NAME % 'View'
     EDIT_FORM_NAME = FORM_NAME % 'Edit'
+    IMPORT_FORM_NAME = "importCableInventoryForm"
+    
+    IMPORT_FILE_NAME = "Cable Inventory Import.xlsx"
 
     DATA_TABLE_XPATH_FORMULA = '//*[@id="%s:%sListDataTable_data"]/tr[1]/td[%d]/a'
 
@@ -35,3 +38,9 @@ class CableInventory(ItemBase):
         self._clear_notifications()
         self._add_property_to_item(test, self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, "Cable Inventory Property.")
         self._add_image_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME)
+
+    def test_import_create(self, test):
+        self._wait_for_id_and_click('%s:%sImportButton' % (self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME))
+        table_results = self._import_navigate_to_verification_data_table(self.IMPORT_FORM_NAME, self.IMPORT_FILE_NAME)
+        test.assertEqual(len(table_results), 25, msg='25 items were imported in the spreadsheet')
+        self._import_complete(self.IMPORT_FORM_NAME, self.VIEW_BASE_NAME)
