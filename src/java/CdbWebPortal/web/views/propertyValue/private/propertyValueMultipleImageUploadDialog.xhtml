@@ -31,7 +31,8 @@ See LICENSE file.
             </p:column>
         </p:panelGrid>
 
-        <p:fileUpload listener="#{propertyValueImageUploadBean.handleFileUpload}"
+        <p:fileUpload id="propertyValueMultipleImageFileUpload"
+                      listener="#{propertyValueImageUploadBean.handleFileUpload}"
                       widgetVar="propertyValueMultipleImageFileUploadWidget"
                       multiple="true"
                       sizeLimit="4000000"
