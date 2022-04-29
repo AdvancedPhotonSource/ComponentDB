@@ -110,6 +110,9 @@ class Catalog(ItemBase):
 
 		self._add_property_to_item(test, self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, prop_value_text)
 
+	def add_image_to_catalog_item(self):
+		self._add_image_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME)
+
 	def test_catalog_pages(self):
 		self._click_on_xpath('//*[@id="componentListForm:componentListDataTable_data"]/tr[1]/td[2]/a')
 		self._wait_for_url_contains('itemDomainCatalog/view')

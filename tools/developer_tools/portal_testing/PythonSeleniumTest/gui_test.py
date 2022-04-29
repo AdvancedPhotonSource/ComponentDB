@@ -90,9 +90,10 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
         self.catalog.finish_create_sample_catalog_item()
 
         self.catalog.display_more_columns()
-        self.catalog.search_for_sample_catalog_item()
+        self.catalog.search_for_sample_catalog_item()        
         self.catalog.add_log_to_catalog_item()
         self.catalog.add_property_to_catalog_item(self)
+        self.catalog.add_image_to_catalog_item()
 
         self.catalog.delete_current_item()
 

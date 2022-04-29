@@ -35,7 +35,8 @@ class CableCatalog(ItemBase):
 
         self._add_log_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, "Cable Catalog Log.")
         self._clear_notifications()
-        self._add_property_to_item(test, self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, "Cable Catalog Property.")        
+        self._add_property_to_item(test, self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, "Cable Catalog Property.")
+        self._add_image_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME)
 
     def export_cable_catalog(self, test):
         self._navigate_to_export_from_list(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME)

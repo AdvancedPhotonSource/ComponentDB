@@ -32,4 +32,5 @@ class Inventory(ItemBase):
 
         self._add_log_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, "Inventory Log.")
         self._clear_notifications()
-        self._add_property_to_item(test, self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, "Inventory Property.")        
+        self._add_property_to_item(test, self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, "Inventory Property.")
+        self._add_image_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME)

@@ -29,8 +29,9 @@ class CableInventory(ItemBase):
 
     def test_cable_inventory_detail_page(self, test): 
         self._click_on_xpath(self.DATA_TABLE_XPATH_FORMULA % (self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, self.COLUMN_IDX))
-        self._wait_for_url_contains('%s/view' % self.VIEW_BASE_NAME)
+        self._wait_for_url_contains('%s/view' % self.VIEW_BASE_NAME)        
 
         self._add_log_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, "Cable Inventory Log.")
         self._clear_notifications()
         self._add_property_to_item(test, self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, "Cable Inventory Property.")
+        self._add_image_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME)
