@@ -48,7 +48,7 @@ def set_machine_install_state_helper(
             )
     else:
         print(
-            "Machine item %s is assigned item is not %s. It is " 
+            "Machine item %s assigned item is not %s." 
                 % (str(machine_item.name), item_id)
         )
 
@@ -72,7 +72,7 @@ def set_machine_install_state_helper(
     help="Add this switch to set items as installed otherwise it defaults to planned.",
 )
 @click.option(
-    "--add_log_to_item",
+    "--add-log-to-item",
     is_flag=True,
     help="Add a log entry to the machine item after the change is made."
 )
