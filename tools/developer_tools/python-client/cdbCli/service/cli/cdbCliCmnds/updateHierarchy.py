@@ -7,6 +7,7 @@ import click
 
 from rich import print
 from cdbApi import ApiException
+from cdbCli.common.cli import cliBase
 
 from cdbCli.common.cli.cliBase import CliBase
 from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id_helper
@@ -17,7 +18,7 @@ from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id_hel
 #                            Update Assembly Part Name                                         #
 #                                                                                              #
 ################################################################################################
-def update_item_assembly_help(item_api, item_id, part_name, assigned_item_id):
+def update_item_assembly_help(item_api, item_id, part_name, assigned_item_id, add_log_to_item):
     """
     This function updates fields on a CDB item
 
@@ -63,15 +64,16 @@ def update_item_assembly_help(item_api, item_id, part_name, assigned_item_id):
                 + matches[0][:-2]
             )
     else:
-        log = (
-            "ItemId: "
-            + str(item_id)
-            + ", New ("
-            + part_name
-            + "): "
-            + str(element_dict_after[part_name])
-        )
-        set_item_log_by_id_helper(item_api=item_api, item_id=item_id, log_entry=log)
+        if add_log_to_item:
+            log = (
+                "ItemId: "
+                + str(item_id)
+                + ", New ("
+                + part_name
+                + "): "
+                + str(element_dict_after[part_name])
+            )
+            set_item_log_by_id_helper(item_api=item_api, item_id=item_id, log_entry=log)
 
 
 @click.command()
@@ -93,8 +95,9 @@ def update_item_assembly_help(item_api, item_id, part_name, assigned_item_id):
     type=click.Choice(["id", "qr_id"], case_sensitive=False),
     help="Allowed values are 'id'(default) or 'qr_id'",
 )
+@cliBase.wrap_common_cli_click_options
 @click.pass_obj
-def update_hierarchy(cli, input_file, item_id_type, assigned_item_id_type):
+def update_hierarchy(cli, input_file, item_id_type, assigned_item_id_type, add_log_to_item):
     """Updates item hierarchy (e.g. assemblies)
 
     \b
@@ -132,7 +135,7 @@ def update_hierarchy(cli, input_file, item_id_type, assigned_item_id_type):
         if assigned_item_id_type == "qr_id":
             assigned_item_id = item_api.get_item_by_qr_id(int(assigned_item_id)).id
 
-        update_item_assembly_help(item_api, item_id, part_name, assigned_item_id)
+        update_item_assembly_help(item_api, item_id, part_name, assigned_item_id, add_log_to_item)
 
 
 if __name__ == "__main__":

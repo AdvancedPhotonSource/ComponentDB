@@ -7,6 +7,8 @@ from click import prompt,echo
 
 from getpass import getpass
 
+import click
+
 from CdbApiFactory import CdbApiFactory
 from cdbApi import ApiException
 from cdbCli.common.utility.configurationManager import ConfigurationManager
@@ -112,6 +114,14 @@ class CliBase:
             next(reader)
 
         return reader, stdin_tty_mode
+
+def wrap_common_cli_click_options(function):    
+    function = click.option(
+        "--add-log-to-item",
+        is_flag=True,
+        help="Add a log entry to the machine item after the change is made."
+    )(function)
+    return function
 
 if __name__ == "__main__":
     cli = CliBase()

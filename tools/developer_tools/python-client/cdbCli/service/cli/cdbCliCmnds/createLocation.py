@@ -10,7 +10,6 @@ from cdbApi import ApiException
 from cdbApi.models.new_location_information import NewLocationInformation
 
 from cdbCli.common.cli.cliBase import CliBase
-from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id_helper
 
 
 ################################################################################################

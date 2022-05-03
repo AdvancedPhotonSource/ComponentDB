@@ -9,13 +9,14 @@ from rich.traceback import install
 from cdbApi import ApiException
 
 from CdbApiFactory import CdbApiFactory
+from cdbCli.common.cli import cliBase
 
 from cdbCli.common.cli.cliBase import CliBase
 from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id_helper
 
 
 def add_document_file_helper(
-    item_api, item_id, property_tag, property_description, upload_filename
+    item_api, item_id, property_tag, property_description, upload_filename, add_item_log=False
 ):
     """Helper function to upload a file to a given item id
 
@@ -45,8 +46,9 @@ def add_document_file_helper(
         document_property.tag = property_tag
         document_property.description = property_description
         item_api.update_item_property_value(item_id, property_value=document_property)
-        log = "File uploaded to Item ID :" + str(item_id) + " successfully"
-        set_item_log_by_id_helper(item_api=item_api, item_id=item_id, log_entry=log)
+        if add_item_log:
+            log = "File uploaded to Item ID :" + str(item_id) + " successfully"
+            set_item_log_by_id_helper(item_api=item_api, item_id=item_id, log_entry=log)
 
 
 @click.command()
@@ -62,8 +64,9 @@ def add_document_file_helper(
     type=click.Choice(["id", "qr_id"], case_sensitive=False),
     help="Allowed values are 'id'(default) or 'qr_id'",
 )
+@cliBase.wrap_common_cli_click_options
 @click.pass_obj
-def add_document_file(cli, input_file, item_id_type):
+def add_document_file(cli, input_file, item_id_type, add_log_to_item):
     """Uploads a document to a Document Property of the item.
 
     \b
@@ -102,7 +105,7 @@ def add_document_file(cli, input_file, item_id_type):
             item_id = str(item_api.get_item_by_qr_id(int(item_id)).id)
 
         add_document_file_helper(
-            item_api, item_id, property_tag, property_description, upload_filename
+            item_api, item_id, property_tag, property_description, upload_filename, add_log_to_item
         )
 
 

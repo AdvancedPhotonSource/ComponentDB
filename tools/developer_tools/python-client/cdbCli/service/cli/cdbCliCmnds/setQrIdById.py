@@ -6,6 +6,7 @@ import re
 import click
 
 from cdbApi import ApiException
+from cdbCli.common.cli import cliBase
 
 
 from cdbCli.common.cli.cliBase import CliBase
@@ -17,7 +18,7 @@ from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id_hel
 #                             Set the QR ID of an inventory item                             #
 #                                                                                            #
 ##############################################################################################
-def set_qr_id_by_id_helper(item_api, item_id, qr_id):
+def set_qr_id_by_id_helper(item_api, item_id, qr_id, add_log_to_item):
     """
     This function sets a new QR ID for a given item
 
@@ -55,9 +56,10 @@ def set_qr_id_by_id_helper(item_api, item_id, qr_id):
                 + ", New QRId: "
                 + str(qr_id)
             )
-            set_item_log_by_id_helper(
-                item_api=item_api, item_id=item_id, log_entry=echo_string
-            )
+            if add_log_to_item:
+                set_item_log_by_id_helper(
+                    item_api=item_api, item_id=item_id, log_entry=echo_string
+                )
             print(echo_string)
 
 
@@ -68,8 +70,9 @@ def set_qr_id_by_id_helper(item_api, item_id, qr_id):
     type=click.File("r"),
     default=sys.stdin,
 )
+@cliBase.wrap_common_cli_click_options
 @click.pass_obj
-def set_qr_id_by_id(cli, input_file):
+def set_qr_id_by_id(cli, input_file, add_log_to_item):
     """Assigns QR Ids to a set of Item IDs.  This will overwrite QR Codes if already assigned, but
     but throws an error if new QR Code is already assigned.
 
@@ -102,7 +105,7 @@ def set_qr_id_by_id(cli, input_file):
 
         item_id = row[0]
         qr_id = row[1]
-        set_qr_id_by_id_helper(item_api, item_id, qr_id)
+        set_qr_id_by_id_helper(item_api, item_id, qr_id, add_log_to_item)
 
 
 if __name__ == "__main__":

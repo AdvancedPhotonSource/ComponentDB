@@ -9,6 +9,7 @@ import click
 from cdbApi import SimpleLocationInformation
 from cdbApi import ApiException
 from rich import print
+from cdbCli.common.cli import cliBase
 
 from cdbCli.common.cli.cliBase import CliBase
 from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id_helper
@@ -19,7 +20,7 @@ from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id_hel
 #                                 Set new location of item                                     #
 #                                                                                              #
 ################################################################################################
-def set_item_location_helper(item_api, item_id, location_id):
+def set_item_location_helper(item_api, item_id, location_id, add_log_to_item=False):
     """
     This function sets a new location for a given inventory item
 
@@ -65,16 +66,16 @@ def set_item_location_helper(item_api, item_id, location_id):
             )
             print(error)
     else:
-
-        log = (
-            "ItemId: "
-            + str(item_id)
-            + ", PriorLocationID: "
-            + str(current_location_id)
-            + ", NewLocationID: "
-            + str(location_id)
-        )
-        set_item_log_by_id_helper(item_api=item_api, item_id=item_id, log_entry=log)
+        if add_log_to_item:
+            log = (
+                "ItemId: "
+                + str(item_id)
+                + ", PriorLocationID: "
+                + str(current_location_id)
+                + ", NewLocationID: "
+                + str(location_id)
+            )
+            set_item_log_by_id_helper(item_api=item_api, item_id=item_id, log_entry=log)
 
 
 @click.command()
@@ -96,8 +97,9 @@ def set_item_location_helper(item_api, item_id, location_id):
     type=click.Choice(["name", "id", "qr_id"], case_sensitive=False),
     help="Allowed values are name(default) 'id' or 'qr_id'",
 )
+@cliBase.wrap_common_cli_click_options
 @click.pass_obj
-def set_item_location(cli, input_file, item_id_type, location_id_type):
+def set_item_location(cli, input_file, item_id_type, location_id_type, add_log_to_item):
     """Set new location for single or multiple items.  Locations can be specified
     with ids(default) or QRCodes and locations can be specified by name(default),
     QRCodes or ids.
@@ -144,7 +146,7 @@ def set_item_location(cli, input_file, item_id_type, location_id_type):
                 0
             ].id
 
-        set_item_location_helper(item_api, item_id, location_id)
+        set_item_location_helper(item_api, item_id, location_id, add_log_to_item)
 
 
 if __name__ == "__main__":

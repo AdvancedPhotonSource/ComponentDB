@@ -37,16 +37,17 @@ def set_machine_install_state_helper(
         except ApiException as ex:
             exObj = factory.parseApiException(ex)
             raise Exception("%s - %s" % (exObj.simple_name, exObj.message))
-        if add_item_log:
-            log = (
-                "Machine item: "
-                + str(machine_item.id)
-                + " has install state set to "
-                + str(install_state)
-            )
-            set_item_log_by_id_helper(
-                item_api=item_api, item_id=machine_item.id, log_entry=log
-            )
+        else:
+            if add_item_log:
+                log = (
+                    "Machine item: "
+                    + str(machine_item.id)
+                    + " has install state set to "
+                    + str(install_state)
+                )
+                set_item_log_by_id_helper(
+                    item_api=item_api, item_id=machine_item.id, log_entry=log
+                )
     else:
         print(
             "Machine item %s assigned item is not %s." 
@@ -72,9 +73,9 @@ def set_machine_install_state_helper(
     is_flag=True,
     help="Add this switch to set items as installed otherwise it defaults to planned.",
 )
+@cliBase.wrap_common_cli_click_options
 @click.pass_obj
-def set_machine_install_state(cli, input_file, item_id_type, installed, add_log_to_item=False):
-
+def set_machine_install_state(cli, input_file, item_id_type, installed, add_log_to_item=False):    
     """Set new status for items if id matches child of machine design, otherwise print mismatch
     to console. Id is specified by type
 
