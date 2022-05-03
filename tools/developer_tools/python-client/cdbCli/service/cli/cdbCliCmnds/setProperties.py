@@ -30,6 +30,7 @@ from cdbCli.common.cli.cliBase import CliBase
     type=click.Choice(["yes", "echo", "no"]),
     default="echo",
 )
+@click.pass_obj
 def set_properties_helper(cli, inputfile, changemeta, changeproperty):
     """Takes a headered csv file with change data for the properties"""
 

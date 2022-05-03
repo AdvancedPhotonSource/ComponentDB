@@ -45,8 +45,7 @@ def add_document_property_helper(
     """
 
     try:
-
-        http_property_type = prop_type_api.get_property_type_by_name(prop_name)
+        http_property_type = prop_type_api.get_property_type_by_name(prop_name)        
 
         # Check to see if property exists and must be unique
         if unique_flag:
@@ -104,6 +103,7 @@ def add_document_property_helper(
 @click.option(
     "--unique-flag/--no-unique-flag", default=True, help="Prevent duplicate tags [True]"
 )
+@click.pass_obj
 def add_document_property(cli, input_file, item_id_type, prop, unique_flag):
     """Adds a Property with an http link handler to a CDB Item.   Property Type
     is selected via the doc_type flag.   If the unique flag is true,
@@ -129,20 +129,19 @@ def add_document_property(cli, input_file, item_id_type, prop, unique_flag):
 
     item_api = factory.getItemApi()
     prop_type_api = factory.getPropertyTypeApi()
-
+    
     if prop == "web_documentation":
-        prop_name = "Documentation (Web)"
-        print("Setting prop_name")
+        prop_name = "Documentation (Web)"        
     elif prop == "related_cdb_item":
         prop_name = "Related CDB Item"
 
-    reader = csv.reader(input_file)
+    stdin_msg = "Entry per line: <Item_%s>.<Tag>,<Url>,<Display_Value>,<Description>" % item_id_type
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)    
 
-    # Remove header of csv input
-    next(reader)
-
-    # Parse each row in csv file
+    # Parse lines of csv
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
         item_id = row[0]
         tag = row[1]
         url = row[2]

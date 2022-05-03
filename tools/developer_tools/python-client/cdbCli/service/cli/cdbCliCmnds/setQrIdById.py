@@ -68,6 +68,7 @@ def set_qr_id_by_id_helper(item_api, item_id, qr_id):
     type=click.File("r"),
     default=sys.stdin,
 )
+@click.pass_obj
 def set_qr_id_by_id(cli, input_file):
     """Assigns QR Ids to a set of Item IDs.  This will overwrite QR Codes if already assigned, but
     but throws an error if new QR Code is already assigned.
@@ -89,13 +90,13 @@ def set_qr_id_by_id(cli, input_file):
         click.echo("Unauthorized User/ Wrong Username or Password. Try again.")
         return
 
-    reader = csv.reader(input_file)
+    stdin_msg = "Entry per line: <Item_ID>,<QR_Code>"
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)    
 
-    # Removes header located in first row
-    next(reader)
-
-    # Parse parse lines of csv
+    # Parse lines of csv
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
         if not row[0]:
             continue
 

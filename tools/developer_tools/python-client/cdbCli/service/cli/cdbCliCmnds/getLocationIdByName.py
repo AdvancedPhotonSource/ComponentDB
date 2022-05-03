@@ -68,6 +68,7 @@ def get_location_id_by_name_helper(item_api, location_name):
     prompt="Location Name:",
     help="Location Name (use wildcards ? and *)",
 )
+@click.pass_obj
 def get_location_id_by_name(cli, location_name):
     """Gets the corresponding ID for a location name
 

@@ -31,7 +31,7 @@ def update_item_assembly_help(item_api, item_id, part_name, assigned_item_id):
         item_hierarchy = item_api.get_item_hierarchy_by_id(item_id)
         element_dict = {
             item_hierarchy.child_items[i]
-            .element_name: item_hierarchy.child_items[i]
+            .derived_element_name: item_hierarchy.child_items[i]
             .element_id
             for i in range(len(item_hierarchy.child_items))
         }
@@ -40,7 +40,7 @@ def update_item_assembly_help(item_api, item_id, part_name, assigned_item_id):
         )
         element_dict_after = {
             item_hierarchy_after_assignment.child_items[i]
-            .element_name: item_hierarchy_after_assignment.child_items[i]
+            .derived_element_name: item_hierarchy_after_assignment.child_items[i]
             .element_id
             for i in range(len(item_hierarchy_after_assignment.child_items))
         }
@@ -76,7 +76,7 @@ def update_item_assembly_help(item_api, item_id, part_name, assigned_item_id):
 
 @click.command()
 @click.option(
-    "--inputfile",
+    "--input-file",
     help="Input csv file with id, part name, assigned id. default is STDIN",
     type=click.File("r"),
     default=sys.stdin,
@@ -93,7 +93,8 @@ def update_item_assembly_help(item_api, item_id, part_name, assigned_item_id):
     type=click.Choice(["id", "qr_id"], case_sensitive=False),
     help="Allowed values are 'id'(default) or 'qr_id'",
 )
-def update_hierarchy(cli, inputfile, item_id_type, assigned_item_id_type):
+@click.pass_obj
+def update_hierarchy(cli, input_file, item_id_type, assigned_item_id_type):
     """Updates item hierarchy (e.g. assemblies)
 
     \b
@@ -114,13 +115,13 @@ def update_hierarchy(cli, inputfile, item_id_type, assigned_item_id_type):
 
     item_api = factory.getItemApi()
 
-    reader = csv.reader(inputfile)
+    stdin_msg = "Entry per line: <Item_%s>,<Part_Name>,<assigned_item_%s>" % (item_id_type, assigned_item_id_type)
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)    
 
-    # Remove header of input stream
-    next(reader)
-
-    # Parse data of csv
+    # Parse lines of csv
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
         item_id = row[0]
         part_name = row[1]
         assigned_item_id = row[2]

@@ -140,6 +140,7 @@ def set_item_details_helper(
     type=click.Choice(["description", "serial", "status"], case_sensitive=False),
     help="Allowed values are description(default), 'serial', or 'status; ",
 )
+@click.pass_obj
 def set_item_details(cli, input_file, item_id_type, detail_type):
     """Updates select item details (e.g. description, serial number )
 
@@ -163,13 +164,13 @@ def set_item_details(cli, input_file, item_id_type, detail_type):
     item_api = factory.getItemApi()
     prop_type_api = factory.getPropertyTypeApi()
 
-    reader = csv.reader(input_file)
+    stdin_msg = "Entry per line: <item_%s>,<%s>" % (item_id_type, detail_type)
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)    
 
-    # Removes header located in first row
-    next(reader)
-
-    # Parse parse lines of csv and set item details accordingly
+    # Parse lines of csv
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
         if not row[0]:
             continue
 

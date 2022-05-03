@@ -62,6 +62,7 @@ def add_document_file_helper(
     type=click.Choice(["id", "qr_id"], case_sensitive=False),
     help="Allowed values are 'id'(default) or 'qr_id'",
 )
+@click.pass_obj
 def add_document_file(cli, input_file, item_id_type):
     """Uploads a document to a Document Property of the item.
 
@@ -83,13 +84,15 @@ def add_document_file(cli, input_file, item_id_type):
         return
 
     item_api = factory.getItemApi()
-    reader = csv.reader(input_file, delimiter=",")
-
-    # Removes header located in first row
-    next(reader)
+    
+    stdin_msg = "Entry per line: <Item_%s>,<Property_Tag>,<Property_Description>,<Filename_to_upload>" % item_id_type
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)    
 
     # Parse lines of csv
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
+
         item_id = row[0]
         property_tag = row[1]
         property_description = row[2]

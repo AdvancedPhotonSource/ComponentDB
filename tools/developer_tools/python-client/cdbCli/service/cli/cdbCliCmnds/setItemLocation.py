@@ -3,6 +3,7 @@
 import sys
 import re
 import csv
+from tkinter.messagebox import NO
 import click
 
 from cdbApi import SimpleLocationInformation
@@ -30,13 +31,18 @@ def set_item_location_helper(item_api, item_id, location_id):
     # Note:  Parameter validation is was done by click
 
     # Do not attempt to change a location if we are already at that location
-    current_location = item_api.get_item_location(item_id).location_item.id
-    if current_location == location_id:
+    current_location = item_api.get_item_location(item_id)    
+    if current_location.location_item:
+        current_location_id = current_location.location_item.id
+    else:
+        current_location_id = -1
+
+    if current_location_id == location_id:
         print(
             "ItemId: "
             + str(item_id)
             + ", PriorLocationID: "
-            + str(current_location)
+            + str(current_location_id)
             + ", NewLocationID: "
             + str(location_id)
         )
@@ -64,7 +70,7 @@ def set_item_location_helper(item_api, item_id, location_id):
             "ItemId: "
             + str(item_id)
             + ", PriorLocationID: "
-            + str(current_location)
+            + str(current_location_id)
             + ", NewLocationID: "
             + str(location_id)
         )
@@ -90,6 +96,7 @@ def set_item_location_helper(item_api, item_id, location_id):
     type=click.Choice(["name", "id", "qr_id"], case_sensitive=False),
     help="Allowed values are name(default) 'id' or 'qr_id'",
 )
+@click.pass_obj
 def set_item_location(cli, input_file, item_id_type, location_id_type):
     """Set new location for single or multiple items.  Locations can be specified
     with ids(default) or QRCodes and locations can be specified by name(default),
@@ -115,13 +122,13 @@ def set_item_location(cli, input_file, item_id_type, location_id_type):
     item_api = factory.getItemApi()
     location_item_api = factory.getLocationItemApi()
 
-    reader = csv.reader(input_file)
+    stdin_msg = "Entry per line: <item_%s>,<location_%s>" % (item_id_type, location_id_type)
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)    
 
-    # Remove header row
-    next(reader)
-
-    # Set item location for each row in csv
+    # Parse lines of csv
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
         item_id = row[0]
         location_id = row[1]
 
@@ -137,7 +144,7 @@ def set_item_location(cli, input_file, item_id_type, location_id_type):
                 0
             ].id
 
-        set_item_location_helper(item_api, item_id, location_id, cli)
+        set_item_location_helper(item_api, item_id, location_id)
 
 
 if __name__ == "__main__":

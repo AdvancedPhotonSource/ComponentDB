@@ -75,9 +75,10 @@ def set_item_status_by_id_helper(item_api, prop_type_api, item_id, status):
 @click.option(
     "--status",
     required=True,
-    prompt="Item Status (? for options)",
+    prompt="Item Status",
     help="New Status of Item",
 )
+@click.pass_obj
 def set_item_status_by_id(cli, input_file, status):
     """Updates item status of item with the given ID and updates item log
 
@@ -100,13 +101,13 @@ def set_item_status_by_id(cli, input_file, status):
     item_api = factory.getItemApi()
     prop_type_api = factory.getPropertyTypeApi()
 
-    reader = csv.reader(input_file)
+    stdin_msg = "Entry per line: <item_id>"
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)    
 
-    # Removes header located in first row
-    next(reader)
-
-    # Parse parse lines of csv and update corresponding item status
+    # Parse lines of csv
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
         if not row[0]:
             continue
 

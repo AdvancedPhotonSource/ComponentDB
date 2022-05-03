@@ -8,6 +8,7 @@ from cdbApi import UpdateMachineAssignedItemInformation
 from cdbApi import ApiException
 
 from rich import print
+from cdbCli.common.cli import cliBase
 
 from cdbCli.common.cli.cliBase import CliBase
 from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id_helper
@@ -71,13 +72,8 @@ def set_machine_install_state_helper(
     is_flag=True,
     help="Add this switch to set items as installed otherwise it defaults to planned.",
 )
-@click.option(
-    "--add-log-to-item",
-    is_flag=True,
-    help="Add a log entry to the machine item after the change is made."
-)
-@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
-def set_machine_install_state(input_file, item_id_type, installed, add_log_to_item, dist=None):
+@click.pass_obj
+def set_machine_install_state(cli, input_file, item_id_type, installed, add_log_to_item=False):
 
     """Set new status for items if id matches child of machine design, otherwise print mismatch
     to console. Id is specified by type
@@ -92,9 +88,7 @@ def set_machine_install_state(input_file, item_id_type, installed, add_log_to_it
         Input is either through a named csv file or through STDIN.   Default is STDIN
         The format of the input data is an intended row to be removed followed by
         <Machine Design Name>,<Item ID>   where the ID is by the type specified by the command line."""
-
-    cli = CliBase(dist)    
-
+    
     try:
         factory = cli.require_authenticated_api()
     except ApiException:
@@ -104,14 +98,8 @@ def set_machine_install_state(input_file, item_id_type, installed, add_log_to_it
     item_api = factory.getItemApi()
     machine_api = factory.getMachineDesignItemApi()    
     
-    reader = csv.reader(input_file)
-    stdin_tty_mode = (input_file == sys.stdin) and sys.stdin.isatty()
-    
-    if stdin_tty_mode:
-        print("STDIN mode. Entry per line: <Machine_Design_Name>,<Assigned_Item_%s>" % item_id_type)
-    else:
-        # Removes header located in first row
-        next(reader)
+    stdin_msg = "Entry per line: <Machine_Design_Name>,<Assigned_Item_%s>" % item_id_type
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)
 
     # Parse machine design names and item codes
     for row in reader:

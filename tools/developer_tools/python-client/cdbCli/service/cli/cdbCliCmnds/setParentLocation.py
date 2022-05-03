@@ -61,6 +61,7 @@ def set_parent_location_helper(
     type=click.Choice(["id", "qr_id"], case_sensitive=False),
     help="Allowed values are 'id'(default) or 'qr_id'",
 )
+@click.pass_obj
 def set_parent_location(cli, input_file, item_id_type):
     """Essentially moves one location under another (parent).
 
@@ -84,13 +85,13 @@ def set_parent_location(cli, input_file, item_id_type):
     item_api = factory.getItemApi()
     loc_item_api = factory.getLocationItemApi()
 
-    reader = csv.reader(input_file)
+    stdin_msg = "Entry per line: <item_%s>,<location_parent_id>" % (item_id_type)
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)    
 
-    # Removes header located in first row
-    next(reader)
-
-    # Parse parse lines of csv
+    # Parse lines of csv
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
         if not row[0]:
             continue
 

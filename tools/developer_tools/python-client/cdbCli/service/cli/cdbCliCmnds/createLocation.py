@@ -53,12 +53,13 @@ def create_location_helper(
 
 @click.command()
 @click.option(
-    "--inputfile",
+    "--input-file",
     help="Input csv file with new location parameters, see help, default is STDIN",
     type=click.File("r"),
     default=sys.stdin,
 )
-def create_location(cli, inputfile):
+@click.pass_obj
+def create_location(cli, input_file):
     """Creates a new location with id, qr_id, name, type, and description
 
     \b
@@ -81,13 +82,13 @@ def create_location(cli, inputfile):
 
     item_api = factory.getItemApi()
 
-    reader = csv.reader(inputfile)
+    stdin_msg = "Entry per line: <Parent_Location_ID>,<Location_Name>,<qr_id>,<location_type>,<location_description>"
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)    
 
-    # Remove header row
-    next(reader)
-
-    # Parse through csv and create new location for each row
+    # Parse lines of csv
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
         location_id = row[0]
         location_name = row[1]
         location_qr_id = row[2]

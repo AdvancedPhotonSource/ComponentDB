@@ -299,6 +299,7 @@ def get_catalog_items_by_name_helper(item_api, name, field, inventory):
     "--inventory",
     help='Inventory items to be included by name (use "all" to get all inventory for that catalog item',
 )
+@click.pass_obj
 def get_catalog_items_by_name(cli, name, field, inventory):
     """Gets given field(s) and inventory item(s) for given catalog item
 
