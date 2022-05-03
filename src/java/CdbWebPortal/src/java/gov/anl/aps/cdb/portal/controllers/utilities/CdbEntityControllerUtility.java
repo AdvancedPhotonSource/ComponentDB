@@ -56,6 +56,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             addCreatedSystemLog(entity, createdByUserInfo);
             entity.setPersitanceErrorMessage(null);
             
+            clearCaches();
             return entity; 
         } catch (CdbException ex) {
             logger.error("Could not create " + getDisplayEntityTypeName() + ": " + ex.getMessage());
@@ -80,7 +81,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             
             addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Created " + entities.size() + " entities.", createdByUserInfo);            
             setPersistenceErrorMessageForList(entities, null);
-
+            clearCaches();
         } catch (CdbException ex) {
             logger.error("Could not create " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             setPersistenceErrorMessageForList(entities, ex.getMessage());
@@ -92,7 +93,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             setPersistenceErrorMessageForList(entities, ex.getMessage());
             addCdbEntityWarningSystemLog("Failed to create list of entities: " + getDisplayEntityTypeName(), ex, null, createdByUserInfo);
             throw ex;
-        }
+        }        
     }
     
     public EntityType update(EntityType entity, UserInfo updatedByUserInfo) throws CdbException, RuntimeException {
@@ -102,6 +103,31 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             EntityType updatedEntity = getEntityDbFacade().edit(entity);
             addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Updated: " + entity.getSystemLogString(), updatedByUserInfo);
             entity.setPersitanceErrorMessage(null);
+            
+            clearCaches();
+            return updatedEntity; 
+        } catch (CdbException ex) {
+            entity.setPersitanceErrorMessage(ex.getMessage());
+            addCdbEntityWarningSystemLog("Failed to update", ex, entity, updatedByUserInfo);
+            logger.error("Could not update " + getDisplayEntityTypeName() + " "
+                    + getEntityInstanceName(entity)+ ": " + ex.getMessage());
+            throw ex;
+        } catch (RuntimeException ex) {
+            Throwable t = ExceptionUtils.getRootCause(ex);            
+            logger.error("Could not update " + getDisplayEntityTypeName() + " "
+                    + getEntityInstanceName(entity)+ ": " + t.getMessage());
+            addCdbEntityWarningSystemLog("Failed to update", ex, entity, updatedByUserInfo);
+            entity.setPersitanceErrorMessage(t.getMessage());
+            throw ex;
+        }        
+    }
+    
+    public EntityType updateOnRemoval(EntityType entity, UserInfo updatedByUserInfo) throws CdbException, RuntimeException {
+        try {
+            logger.debug("Updating " + getDisplayEntityTypeName() + " " + getEntityInstanceName(entity));
+            prepareEntityUpdateOnRemoval(entity);
+            EntityType updatedEntity = getEntityDbFacade().edit(entity);
+            clearCaches();
             
             return updatedEntity; 
         } catch (CdbException ex) {
@@ -117,30 +143,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             addCdbEntityWarningSystemLog("Failed to update", ex, entity, updatedByUserInfo);
             entity.setPersitanceErrorMessage(t.getMessage());
             throw ex;
-        }
-    }
-    
-    public EntityType updateOnRemoval(EntityType entity, UserInfo updatedByUserInfo) throws CdbException, RuntimeException {
-        try {
-            logger.debug("Updating " + getDisplayEntityTypeName() + " " + getEntityInstanceName(entity));
-            prepareEntityUpdateOnRemoval(entity);
-            EntityType updatedEntity = getEntityDbFacade().edit(entity);
-                        
-            return updatedEntity; 
-        } catch (CdbException ex) {
-            entity.setPersitanceErrorMessage(ex.getMessage());
-            addCdbEntityWarningSystemLog("Failed to update", ex, entity, updatedByUserInfo);
-            logger.error("Could not update " + getDisplayEntityTypeName() + " "
-                    + getEntityInstanceName(entity)+ ": " + ex.getMessage());
-            throw ex;
-        } catch (RuntimeException ex) {
-            Throwable t = ExceptionUtils.getRootCause(ex);            
-            logger.error("Could not update " + getDisplayEntityTypeName() + " "
-                    + getEntityInstanceName(entity)+ ": " + t.getMessage());
-            addCdbEntityWarningSystemLog("Failed to update", ex, entity, updatedByUserInfo);
-            entity.setPersitanceErrorMessage(t.getMessage());
-            throw ex;
-        }
+        }        
     }
     
     public void updateList(List<EntityType> entities, UserInfo updatedByUserInfo) throws CdbException, RuntimeException {
@@ -153,7 +156,8 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             for (EntityType entity : entities) {                
                 entity.setPersitanceErrorMessage(null);
                 addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Updated: " + entity.getSystemLogString(), updatedByUserInfo);
-            }            
+            }
+            clearCaches();
         } catch (CdbException ex) {
             logger.error("Could not update " + getDisplayEntityTypeName() + " entities: " + ex.getMessage());
             setPersistenceErrorMessageForList(entities, ex.getMessage());
@@ -165,7 +169,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             addCdbEntityWarningSystemLog("Failed to update list of " + getDisplayEntityTypeName(), ex, null, updatedByUserInfo); 
             setPersistenceErrorMessageForList(entities, t.getMessage());
             throw ex;
-        }
+        }        
     }
     
     public void destroy(EntityType entity, UserInfo destroyedByUserInfo) throws CdbException, RuntimeException {
@@ -174,6 +178,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             getEntityDbFacade().remove(entity);
             
             addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Deleted: " + entity.getSystemLogString(), destroyedByUserInfo);            
+            clearCaches();
         } catch (CdbException ex) {
             entity.setPersitanceErrorMessage(ex.getMessage());
             addCdbEntityWarningSystemLog("Failed to destroy", ex, entity, destroyedByUserInfo);
@@ -187,7 +192,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             addCdbEntityWarningSystemLog("Failed to destroy", ex, entity, destroyedByUserInfo);
             entity.setPersitanceErrorMessage(t.getMessage());
             throw ex;
-        }
+        }        
     }
     
     public void destroyList(
@@ -210,6 +215,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
 
             addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Deleted: " + entities.size() + " entities.", destroyedByUserInfo);
             setPersistenceErrorMessageForList(entities, null);
+            clearCaches();
         } catch (CdbException ex) {
             logger.error("Could not delete list of " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             setPersistenceErrorMessageForList(entities, ex.getMessage());
@@ -220,7 +226,13 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             setPersistenceErrorMessageForList(entities, ex.getMessage());
             addCdbEntityWarningSystemLog("Failed to delete list of " + getDisplayEntityTypeName(), ex, updateEntity, destroyedByUserInfo);
             throw ex;
-        }
+        }        
+    }
+    
+    /**
+     * On database operation clear cache of related cached entity when needed. 
+     */
+    protected void clearCaches() {        
     }
     
     /**

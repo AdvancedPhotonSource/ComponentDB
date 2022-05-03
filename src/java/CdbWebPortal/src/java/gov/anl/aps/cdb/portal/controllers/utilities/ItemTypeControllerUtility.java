@@ -13,10 +13,22 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
  * @author darek
  */
 public class ItemTypeControllerUtility extends ItemTypeCategoryControllerUtility<ItemType, ItemTypeFacade> {
+    
+    ItemCategoryFacade itemCategoryFacade; 
+
+    public ItemTypeControllerUtility() {
+        itemCategoryFacade = ItemCategoryFacade.getInstance(); 
+    }        
 
     @Override
     protected ItemTypeFacade getEntityDbFacade() {
         return ItemTypeFacade.getInstance(); 
+    }
+
+    @Override
+    protected void clearCaches() {
+        super.clearCaches(); 
+        itemCategoryFacade.clearCache(); 
     }
     
     @Override

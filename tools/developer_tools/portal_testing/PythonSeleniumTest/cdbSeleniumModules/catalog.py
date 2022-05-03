@@ -23,6 +23,7 @@ class Catalog(ItemBase):
 
 	ENTITY_TYPE_NAME = "component"
 	LIST_FORM_NAME = "%sListForm" % ENTITY_TYPE_NAME
+	VIEW_FORM_NAME = "%sViewForm" % ENTITY_TYPE_NAME
 	EXPORT_FORM_NAME = "exportCatalogForm"
 
 	EXPORT_FILE_NAME = "Component Catalog Export.xlsx"
@@ -101,31 +102,13 @@ class Catalog(ItemBase):
 	def add_log_to_catalog_item(self):
 		logEntryText = 'My Awesome New Log Entry!!!'
 
-		self._click_on_id('componentViewForm:componentViewLogEntriesPanel_toggler')
-		self._wait_for_id_and_click('componentViewForm:componentLogAddButton')
-		logEntry = self._wait_for_id('componentViewForm:logEntryValue')
+		self._add_log_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, logEntryText)
 
-		logEntry.send_keys(logEntryText)
-		self._click_on_id('componentViewForm:componentSaveLogButton')
+	def add_property_to_catalog_item(self, test):
+		self._clear_notifications()		
+		prop_value_text = "Catalog Test Property"
 
-		newLogEntrySelector = "#componentViewForm\\3a componentLogListDataTable\\3a 0\\3a logEntryColumnCellEditor > div.ui-cell-editor-output"
-		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, newLogEntrySelector), logEntryText))
-
-
-	def add_property_to_catalog_item(self):
-		self._click_on_id('componentViewForm:componentViewPropertiesPanel_toggler')
-
-		self._wait_for_id_and_click('componentViewForm:componentPropertyAddButton')
-
-		categorySelectionXpath = "//div[@id='componentViewForm:filterViewItemCategorySelection']/div[2]/ul/li[2]"
-		categorySel = self._wait_for_visible_xpath(categorySelectionXpath)
-		categorySel.click()
-
-		self._wait_for_xpath("//tbody[@id='componentViewForm:componentPropertySelectDataTable_data']/tr[1]/td[4]").click()
-
-		import time
-		time.sleep(5)
-		pass
+		self._add_property_to_item(test, self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, prop_value_text)
 
 	def test_catalog_pages(self):
 		self._click_on_xpath('//*[@id="componentListForm:componentListDataTable_data"]/tr[1]/td[2]/a')
