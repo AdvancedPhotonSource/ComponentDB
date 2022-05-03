@@ -229,6 +229,12 @@ public class CableWizard implements Serializable {
         }
     }
     
+    public void expandEndpoint1TreeAndSelectNode() {
+        ItemDomainMachineDesignTreeNode endpoint1Tree = getMachineDesignTreeEndpoint1();
+        selectionEndpoint1 = ItemDomainMachineDesignController.expandToItemOrPort(
+                endpoint1Tree, (ItemDomainMachineDesign) getEndpoint1(), getEnd1Port());
+    }
+    
     /**
      * Returns the cable's second endpoint. This is set by the wizard's endpoint
      * selection tab, and is the selection model for the machine design tree
@@ -507,27 +513,29 @@ public class CableWizard implements Serializable {
      * Resets models for wizard components.
      */
     public void reset() {
-        currentTab = "EndpointTab";
-        machineDesignTreeEndpoint1 = null;
-        machineDesignTreeEndpoint2 = null;
-        inputValueName = "";
-        selectionEndpoint1 = null;
-        selectionEndpoint2 = null;
-        itemEnd1 = null;
-        itemEnd2 = null;
-        selectionProjectList = null;
-        selectionTechnicalSystemList = null;
-        members.clear();
-        selectionCableType = null;
-        selectionCableCatalogItem = null;
-        cableItem = null;
-        portEnd1 = null;
-        connectorEnd1 = null;
-        portEnd2 = null;
-        connectorEnd2 = null;
-        selectedConnectorNameEnd1 = null;
-        selectedConnectorNameEnd2 = null;            
-        connectorMap.clear();
+        if (client == null) {
+            currentTab = "EndpointTab";
+            machineDesignTreeEndpoint1 = null;
+            machineDesignTreeEndpoint2 = null;
+            inputValueName = "";
+            selectionEndpoint1 = null;
+            selectionEndpoint2 = null;
+            itemEnd1 = null;
+            itemEnd2 = null;
+            selectionProjectList = null;
+            selectionTechnicalSystemList = null;
+            members.clear();
+            selectionCableType = null;
+            selectionCableCatalogItem = null;
+            cableItem = null;
+            portEnd1 = null;
+            connectorEnd1 = null;
+            portEnd2 = null;
+            connectorEnd2 = null;
+            selectedConnectorNameEnd1 = null;
+            selectedConnectorNameEnd2 = null;
+            connectorMap.clear();
+        }
     }
 
     protected void cleanupClient() {
@@ -543,9 +551,14 @@ public class CableWizard implements Serializable {
      * navigation button.
      */
     public String cancel() {
+        // get redirect before calling cleanup or it will be reset
+        String redirect = "list";
+        if (!getRedirectSuccess().isEmpty()) {
+            redirect = getRedirectSuccess();
+        }
         cleanupClient();
         this.reset();
-        return "list";
+        return redirect;
     }
 
     protected Domain getDomain() {
@@ -620,6 +633,10 @@ public class CableWizard implements Serializable {
     
     public void setEnd1Port(ItemConnector port) {
         this.portEnd1 = port;
+    }
+    
+    public ItemConnector getEnd1Port() {
+        return portEnd1;
     }
     
     public String getEnd1PortString() {

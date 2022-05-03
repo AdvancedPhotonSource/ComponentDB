@@ -66,6 +66,7 @@ import org.primefaces.model.TreeNode;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizardClient;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidWarningInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.WarningInfo;
+import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import static gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode.CONNECTOR_NODE_TYPE;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 
@@ -112,7 +113,6 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     private boolean displayUpdateInstalledInventoryStateDialogContents = true;
     private boolean displayAttachTemplateToMachine = true;
     private boolean displayMachineDesignReorderOverlayPanel = true;
-    private boolean displayAddCablePanel = true;
 
     private List<ItemDomainCatalog> catalogItemsDraggedAsChildren = null;
     private TreeNode newCatalogItemsInMachineDesignModel = null;
@@ -537,7 +537,6 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         displayUpdateInstalledInventoryStateDialogContents = false;
         displayAttachTemplateToMachine = false;
         displayMachineDesignReorderOverlayPanel = false;
-        displayAddCablePanel = false;
         catalogItemsDraggedAsChildren = null;
         newCatalogItemsInMachineDesignModel = null;
         currentMachineDesignListRootTreeNode = null;
@@ -634,10 +633,6 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     public boolean isDisplayMachineDesignReorderOverlayPanel() {
         return displayMachineDesignReorderOverlayPanel;
-    }
-
-    public boolean isDisplayAddCablePanel() {
-        return displayAddCablePanel;
     }
 
     protected void updateCurrentUsingSelectedItemInTreeTable() {
@@ -945,6 +940,33 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
         ItemDomainMachineDesignBaseTreeNode selectedNode = expandToSpecificMachineDesignItem(machineDesignTreeRootTreeNode, item);
         selectedItemInListTreeTable = (MachineTreeNode) selectedNode;
+    }
+    
+    public static TreeNode expandToItemOrPort(
+            ItemDomainMachineDesignTreeNode tree, ItemDomainMachineDesign item, ItemConnector port) {
+        TreeNode selection = null;
+        TreeNode selectedNode = ItemDomainMachineDesignController.expandToSpecificMachineDesignItem(
+                tree,
+                (ItemDomainMachineDesign) item);
+        if ((selectedNode != null) && (port != null)) {
+            selectedNode.setSelected(false);
+            selectedNode.setExpanded(true);
+            List<TreeNode> children = selectedNode.getChildren();
+            for (TreeNode child : children) {
+                if (child.getType().equals("Connector")) {
+                    ItemConnector connectorChild
+                            = ((ItemElement) (child.getData())).getMdConnector();
+                    if (connectorChild.equals(item)) {
+                        child.setSelected(true);
+                        selection = child;
+                        break;
+                    }
+                }
+            }
+        } else {
+            selection = selectedNode;
+        }
+        return selection;
     }
 
     /**
@@ -1476,7 +1498,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         }
     }
 
-    public void prepareWizardCable() {
+    public String prepareWizardCable() {
         
         updateCurrentUsingSelectedItemInTreeTable();
         setCurrentEditItemElement((ItemElement) selectedItemInListTreeTable.getData());        
@@ -1484,16 +1506,16 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
         CableWizard cableWizard = CableWizard.getInstance();
         cableWizard.registerClient(this, cableWizardRedirectSuccess);
-        cableWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
+//        cableWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
         cableWizard.setEndpoint1(endpointItem);
         if (selectedItemInListTreeTable.getType() == CONNECTOR_NODE_TYPE) {
             ItemElement element = (ItemElement) selectedItemInListTreeTable.getData();
             ItemConnector connector = element.getMdConnector();
             cableWizard.setEnd1Port(connector);
         }
+        cableWizard.expandEndpoint1TreeAndSelectNode();
 
-        displayListConfigurationView = true;
-        displayAddCablePanel = true;
+        return "/views/itemDomainCableDesign/create?faces-redirect=true";
     }
 
     public void cleanupCableWizard() {

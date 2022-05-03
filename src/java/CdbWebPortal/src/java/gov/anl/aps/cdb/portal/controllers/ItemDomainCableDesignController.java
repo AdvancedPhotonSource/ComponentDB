@@ -525,36 +525,13 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         }
 
         private void expandTreeAndSelectNode() {
-
             ItemDomainMachineDesignTreeNode machineDesignTreeRootTreeNode = getMdTree();
-
             if (selectedMdTreeNode != null) {
                 selectedMdTreeNode.setSelected(false);
                 selectedMdTreeNode = null;
-            }
-
-            TreeNode selectedNode = ItemDomainMachineDesignController.expandToSpecificMachineDesignItem(
-                    machineDesignTreeRootTreeNode, 
-                    (ItemDomainMachineDesign)getOrigMdItem());
-            
-            if ((selectedNode != null) && (getOrigMdConnector() != null)) {
-                selectedNode.setSelected(false);
-                selectedNode.setExpanded(true);
-                List<TreeNode> children = selectedNode.getChildren();
-                for (TreeNode child : children) {
-                    if (child.getType().equals("Connector")) {
-                        ItemConnector connectorChild = 
-                                ((ItemElement) (child.getData())).getMdConnector();
-                        if (connectorChild.equals(getOrigMdConnector())) {
-                            child.setSelected(true);
-                            selectedMdTreeNode = child;
-                            break;
-                        }
-                    }
-                }
-            } else {
-                selectedMdTreeNode = selectedNode;
-            }
+            }           
+            selectedMdTreeNode = ItemDomainMachineDesignController.expandToItemOrPort(
+                    machineDesignTreeRootTreeNode, (ItemDomainMachineDesign) getOrigMdItem(), getOrigMdConnector());
         }
         
         /**
