@@ -61,8 +61,7 @@ def set_parent_location_helper(
     type=click.Choice(["id", "qr_id"], case_sensitive=False),
     help="Allowed values are 'id'(default) or 'qr_id'",
 )
-@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
-def set_parent_location(input_file, item_id_type, dist=None):
+def set_parent_location(cli, input_file, item_id_type):
     """Essentially moves one location under another (parent).
 
     \b
@@ -75,8 +74,7 @@ def set_parent_location(input_file, item_id_type, dist=None):
     CSV input is on STDIN(default) or a file and the csv format is
     File has the format
     <location ID>,<parent id>"""
-
-    cli = CliBase(dist)
+    
     try:
         factory = cli.require_authenticated_api()
     except ApiException:

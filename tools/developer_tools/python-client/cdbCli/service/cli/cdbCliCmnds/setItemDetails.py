@@ -140,8 +140,7 @@ def set_item_details_helper(
     type=click.Choice(["description", "serial", "status"], case_sensitive=False),
     help="Allowed values are description(default), 'serial', or 'status; ",
 )
-@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
-def set_item_details(input_file, item_id_type, detail_type, dist=None):
+def set_item_details(cli, input_file, item_id_type, detail_type):
     """Updates select item details (e.g. description, serial number )
 
     \b
@@ -155,7 +154,6 @@ def set_item_details(input_file, item_id_type, detail_type, dist=None):
     The format of the input data is
     <Item ID>,<New Detail Value>   where the ID is by the type specified by the commandline."""
 
-    cli = CliBase(dist)
     try:
         factory = cli.require_authenticated_api()
     except ApiException:

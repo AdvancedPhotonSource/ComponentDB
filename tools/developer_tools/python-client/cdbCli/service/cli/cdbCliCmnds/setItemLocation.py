@@ -90,8 +90,7 @@ def set_item_location_helper(item_api, item_id, location_id):
     type=click.Choice(["name", "id", "qr_id"], case_sensitive=False),
     help="Allowed values are name(default) 'id' or 'qr_id'",
 )
-@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
-def set_item_location(input_file, item_id_type, location_id_type, dist=None):
+def set_item_location(cli, input_file, item_id_type, location_id_type):
     """Set new location for single or multiple items.  Locations can be specified
     with ids(default) or QRCodes and locations can be specified by name(default),
     QRCodes or ids.
@@ -106,8 +105,7 @@ def set_item_location(input_file, item_id_type, location_id_type, dist=None):
     Input is either through a named file or through STDIN.   Default is STDIN
     The format of the input data is
     <Item ID>,<Location ID>   where the ID is by the type specified by the commandline."""
-
-    cli = CliBase(dist)
+    
     try:
         factory = cli.require_authenticated_api()
     except ApiException:

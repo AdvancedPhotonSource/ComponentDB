@@ -104,8 +104,7 @@ def add_document_property_helper(
 @click.option(
     "--unique-flag/--no-unique-flag", default=True, help="Prevent duplicate tags [True]"
 )
-@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
-def add_document_property(input_file, item_id_type, prop, unique_flag, dist=None):
+def add_document_property(cli, input_file, item_id_type, prop, unique_flag):
     """Adds a Property with an http link handler to a CDB Item.   Property Type
     is selected via the doc_type flag.   If the unique flag is true,
     then the property is not added if there is already a document propety
@@ -122,9 +121,6 @@ def add_document_property(input_file, item_id_type, prop, unique_flag, dist=None
     The format of the input data is
     <Item ID>.<Tag>,<Url>,<URL Display Value>,<Description>
     where the ID is by the type specified on the commandline."""
-
-    cli = CliBase(dist)
-
     try:
         factory = cli.require_authenticated_api()
     except ApiException:

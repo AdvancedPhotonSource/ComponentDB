@@ -78,8 +78,7 @@ def set_item_status_by_id_helper(item_api, prop_type_api, item_id, status):
     prompt="Item Status (? for options)",
     help="New Status of Item",
 )
-@click.option("--dist", help="Change the CDB distribution (sandbox, dev, prod)")
-def set_item_status_by_id(input_file, status, dist=None):
+def set_item_status_by_id(cli, input_file, status):
     """Updates item status of item with the given ID and updates item log
 
     \b
@@ -92,7 +91,6 @@ def set_item_status_by_id(input_file, status, dist=None):
     The format of the input data is an intended row to be removed followed by
     <Item ID>.
     """
-    cli = CliBase(dist)
     try:
         factory = cli.require_authenticated_api()
     except ApiException:

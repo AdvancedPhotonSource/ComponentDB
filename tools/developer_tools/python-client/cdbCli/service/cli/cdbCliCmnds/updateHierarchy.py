@@ -93,8 +93,7 @@ def update_item_assembly_help(item_api, item_id, part_name, assigned_item_id):
     type=click.Choice(["id", "qr_id"], case_sensitive=False),
     help="Allowed values are 'id'(default) or 'qr_id'",
 )
-@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
-def update_hierarchy(inputfile, item_id_type, assigned_item_id_type, dist=None):
+def update_hierarchy(cli, inputfile, item_id_type, assigned_item_id_type):
     """Updates item hierarchy (e.g. assemblies)
 
     \b
@@ -106,9 +105,7 @@ def update_hierarchy(inputfile, item_id_type, assigned_item_id_type, dist=None):
 
     Input is either through a named file or through STDIN.   Default is STDIN
     The format of the input data is
-    <Item ID>,<Part Name>,<Item ID to Assign to Part>   where the ID is by the type specified by the commandline."""
-
-    cli = CliBase(dist)
+    <Item ID>,<Part Name>,<Item ID to Assign to Part>   where the ID is by the type specified by the commandline."""    
     try:
         factory = cli.require_authenticated_api()
     except ApiException:

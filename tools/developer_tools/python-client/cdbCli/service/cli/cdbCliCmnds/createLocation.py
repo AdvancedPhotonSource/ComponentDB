@@ -58,8 +58,7 @@ def create_location_helper(
     type=click.File("r"),
     default=sys.stdin,
 )
-@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
-def create_location(inputfile, dist=None):
+def create_location(cli, inputfile):
     """Creates a new location with id, qr_id, name, type, and description
 
     \b
@@ -73,8 +72,7 @@ def create_location(inputfile, dist=None):
     Create new location from csv on STDIN(default) or a file
     File has the format
     <Parent Location ID>,<location_name>,<location qr code>,<location_type>,<location description>"""
-
-    cli = CliBase(dist)
+    
     try:
         factory = cli.require_authenticated_api()
     except ApiException:

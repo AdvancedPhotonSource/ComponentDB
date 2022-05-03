@@ -62,8 +62,7 @@ def add_document_file_helper(
     type=click.Choice(["id", "qr_id"], case_sensitive=False),
     help="Allowed values are 'id'(default) or 'qr_id'",
 )
-@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
-def add_document_file(input_file, item_id_type, dist=None):
+def add_document_file(cli, input_file, item_id_type):
     """Uploads a document to a Document Property of the item.
 
     \b
@@ -76,8 +75,7 @@ def add_document_file(input_file, item_id_type, dist=None):
     Input is either through a named file or through STDIN.   Default is STDIN
     The format of the input data is
     <Item ID>,<Property Tag>,<Property Description>,<Filename to upload>"""
-
-    cli = CliBase(dist)
+    
     try:
         factory = cli.require_authenticated_api()
     except ApiException:

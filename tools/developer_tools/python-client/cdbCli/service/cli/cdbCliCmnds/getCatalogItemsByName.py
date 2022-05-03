@@ -299,8 +299,7 @@ def get_catalog_items_by_name_helper(item_api, name, field, inventory):
     "--inventory",
     help='Inventory items to be included by name (use "all" to get all inventory for that catalog item',
 )
-@click.option("--dist", help="Change the CDB distribution (sandbox, dev, prod)")
-def get_catalog_items_by_name(name, field, inventory, dist=None):
+def get_catalog_items_by_name(cli, name, field, inventory):
     """Gets given field(s) and inventory item(s) for given catalog item
 
     \b
@@ -312,8 +311,7 @@ def get_catalog_items_by_name(name, field, inventory, dist=None):
     \b
     Example: get-catalog-items-by-name --name "001 - CDB*" --field id --inventory "unit: 1*"
     Example: get-catalog-items-by-name --name "001 ? CDB Test Component" --field "qr_id, description"
-    """
-    cli = CliBase(dist)
+    """    
     try:
         factory = cli.require_authenticated_api()
     except ApiException:

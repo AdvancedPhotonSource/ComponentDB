@@ -68,8 +68,7 @@ def set_qr_id_by_id_helper(item_api, item_id, qr_id):
     type=click.File("r"),
     default=sys.stdin,
 )
-@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
-def set_qr_id_by_id(input_file, dist=None):
+def set_qr_id_by_id(cli, input_file):
     """Assigns QR Ids to a set of Item IDs.  This will overwrite QR Codes if already assigned, but
     but throws an error if new QR Code is already assigned.
 
@@ -82,8 +81,7 @@ def set_qr_id_by_id(input_file, dist=None):
 
     CSV input is on STDIN(default) or a file and the csv format is
     <Item ID>,<QR Code>"""
-
-    cli = CliBase(dist)
+    
     try:
         factory = cli.require_authenticated_api()
         item_api = factory.getItemApi()
