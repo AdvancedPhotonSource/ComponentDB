@@ -11,7 +11,9 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:selectOneMenu value="#{currentItemConnector.connector.connectorType}"
+    <p:selectOneMenu value="#{currentItemConnector != null 
+                              ? currentItemConnector.connector.connectorType 
+                              : null}"
                      disabled="#{disabled}"
                      var="connector">            
         <p:ajax oncomplete="#{onChangeConnector}" />
