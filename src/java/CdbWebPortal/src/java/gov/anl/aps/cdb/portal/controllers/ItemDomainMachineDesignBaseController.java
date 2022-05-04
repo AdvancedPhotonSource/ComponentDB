@@ -956,7 +956,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
                 if (child.getType().equals("Connector")) {
                     ItemConnector connectorChild
                             = ((ItemElement) (child.getData())).getMdConnector();
-                    if (connectorChild.equals(item)) {
+                    if (connectorChild.equals(port)) {
                         child.setSelected(true);
                         selection = child;
                         break;
