@@ -727,8 +727,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public class CatalogDialog {
 
         private Boolean disableButtonSave = true;
-        private Item itemCatalog = null;
-        private Item selectionModelCatalog = null;
+        private ItemDomainCableCatalog itemCatalog = null;
+        private ItemDomainCableCatalog selectionModelCatalog = null;
         
         public Boolean getDisableButtonSave() {
             return disableButtonSave;
@@ -738,13 +738,13 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             this.disableButtonSave = disableButtonSave;
         }
 
-        public Item getItemCatalog() {
+        public ItemDomainCableCatalog getItemCatalog() {
             return itemCatalog;
         }
 
-        public void setItemCatalog(Item itemCatalog) {
+        public void setItemCatalog(ItemDomainCableCatalog itemCatalog) {
             this.itemCatalog = itemCatalog;
-            selectCatalogItem((ItemDomainCableCatalog) itemCatalog);
+            selectCatalogItem(itemCatalog);
         }
 
         public String getItemCatalogString() {
@@ -755,11 +755,11 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             }
         }
 
-        public Item getSelectionModelCatalog() {
+        public ItemDomainCableCatalog getSelectionModelCatalog() {
             return selectionModelCatalog;
         }
 
-        public void setSelectionModelCatalog(Item selectionModelCatalog) {
+        public void setSelectionModelCatalog(ItemDomainCableCatalog selectionModelCatalog) {
             this.selectionModelCatalog = selectionModelCatalog;
         }
 

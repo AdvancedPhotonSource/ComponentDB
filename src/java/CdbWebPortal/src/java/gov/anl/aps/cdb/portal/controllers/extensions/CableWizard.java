@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -74,7 +75,7 @@ public class CableWizard implements Serializable {
     private ItemDomainCableDesign cableItem = null;
     
     private String selectionCableType = null;
-    private Item selectionCableCatalogItem = null;
+    private ItemDomainCableCatalog selectionCableCatalogItem = null;
     
     protected ItemConnector portEnd1 = null;
     protected ItemConnector connectorEnd1 = null;
@@ -605,14 +606,14 @@ public class CableWizard implements Serializable {
     /**
      * Returns the selection model for the cable catalog data table.
      */
-    public Item getSelectionCableCatalogItem() {
+    public ItemDomainCableCatalog getSelectionCableCatalogItem() {
         return selectionCableCatalogItem;
     }
 
     /**
      * @link ItemDomainCableDesignWizard#getSelectedCableCatalogItem
      */
-    public void setSelectionCableCatalogItem(Item selectionCableCatalogItem) {
+    public void setSelectionCableCatalogItem(ItemDomainCableCatalog selectionCableCatalogItem) {
         this.selectionCableCatalogItem = selectionCableCatalogItem;
     }
 

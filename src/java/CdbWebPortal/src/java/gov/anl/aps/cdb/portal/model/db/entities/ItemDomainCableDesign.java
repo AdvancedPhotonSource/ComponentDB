@@ -877,32 +877,43 @@ public class ItemDomainCableDesign extends Item {
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_NOTES_KEY, notes);
     }
 
-    public void setCatalogItem(Item itemCableCatalog) {
-        // "assign" catalog item to cable design
+    public Item getAssignedItem() {
+        ItemElement selfElement = getSelfElement();
+        if (selfElement == null) {
+            return null;
+        } else {
+            return selfElement.getContainedItem2();
+        }
+    }
+
+    private void setAssignedItem(Item assignedItem) {
         ItemElement selfElement = this.getSelfElement();
-        Item assignedItem = selfElement.getContainedItem2();
-        if (((itemCableCatalog == null) && (assignedItem != null)) 
-                || ((itemCableCatalog != null) && (!itemCableCatalog.equals(assignedItem)))) {
+        selfElement.setContainedItem2(assignedItem);
+    }
+
+    public void setCatalogItem(ItemDomainCableCatalog itemCableCatalog) {
+        // "assign" catalog item to cable design
+        Item currCatalogItem = getCatalogItem();
+        if (((itemCableCatalog == null) && (currCatalogItem != null)) 
+                || ((itemCableCatalog != null) && (!itemCableCatalog.equals(currCatalogItem)))) {
             
             // if changing catalog item, we need to remove cable connectors since they are inherited from catalog item
             clearCableConnectors();
         }
-        selfElement.setContainedItem2(itemCableCatalog);
+        setAssignedItem(itemCableCatalog);
     }
 
-    public void setCatalogItemId(String catalogItemId) {
-        ItemDomainCableCatalog catalogItem = (ItemDomainCableCatalog) (getEntityById(catalogItemId));
-
-        if (catalogItem != null) {
-            setCatalogItem(catalogItem);
-        } else {
-            LOGGER.error("setCatalogItemId() unknown cable catalog item id " + catalogItemId);
+    public ItemDomainCableCatalog getCatalogItem() {
+        Item assignedItem = getAssignedItem();
+        ItemDomainCableCatalog catalogItem = null;
+        if (assignedItem == null) {
+            return null;
+        } else if (assignedItem instanceof ItemDomainCableInventory) {
+            catalogItem = ((ItemDomainCableInventory) assignedItem).getCatalogItem();
+        } else if (assignedItem instanceof ItemDomainCableCatalog) {
+            catalogItem = (ItemDomainCableCatalog) assignedItem;
         }
-     }
-
-    public Item getCatalogItem() {
-        ItemElement selfElementCable = this.getSelfElement();
-        return selfElementCable.getContainedItem2();
+        return catalogItem;
     }
 
     public String getCatalogItemString() {
@@ -924,6 +935,23 @@ public class ItemDomainCableDesign extends Item {
         }
     }
     
+    public void setInventoryItem(ItemDomainCableInventory inventoryItem) {
+        // "assign" inventory item to cable design
+        Item currCatalogItem = getCatalogItem();
+        setAssignedItem(inventoryItem);
+    }
+
+    public ItemDomainCableInventory getInventoryItem() {
+        Item assignedItem = getAssignedItem();
+        ItemDomainCableInventory inventoryItem = null;
+        if (assignedItem == null) {
+            return null;
+        } else if (assignedItem instanceof ItemDomainCableInventory) {
+            inventoryItem = (ItemDomainCableInventory) assignedItem;
+        }
+        return inventoryItem;
+    }
+
     @JsonIgnore
     public Item getPrimaryEndpoint(String cableEnd) {
         ItemElementRelationship cableRelationship = getPrimaryRelationshipForCableEnd(cableEnd);
