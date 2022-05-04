@@ -26,19 +26,21 @@ See LICENSE file.
             <p:column headerText="Housing">
                 <p:tree value="#{locatableItemController.getHousingTreeForLocationHistoryObject(itemElementLocationRelationshipHistoryObject)}"
                         var="node"
-                        styleClass="transparent-tree">
-                    <ui:param name="itemObject"
-                              value="#{node}"/> 
-                    <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" />
+                        styleClass="transparent-tree">                    
+                    <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" >
+                        <ui:param name="itemObject"
+                                  value="#{node}"/> 
+                    </ui:include>
                 </p:tree>
             </p:column>
             <p:column headerText="Location">
                 <p:tree value="#{locatableItemController.getLocationTreeForLocationHistoryObject(itemElementLocationRelationshipHistoryObject)}"
                         var="node"
-                        styleClass="transparent-tree">
-                    <ui:param name="itemObject"
-                              value="#{node}"/> 
-                    <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" />
+                        styleClass="transparent-tree">                    
+                    <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" >
+                        <ui:param name="itemObject"
+                                  value="#{node}"/> 
+                    </ui:include>
                 </p:tree>
             </p:column>
             <p:column headerText="Location Details">
