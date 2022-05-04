@@ -17,7 +17,7 @@ See LICENSE file.
                   value="#{useDefaultLocationSelectionValue
                            ? itemDomainLocationController.selectedLocationTreeNode
                            : locationSelectionValue}" />
-        
+
         <!-- PF10 tree pre-render solution -->         
         <ui:param name="locationSelectionTreeValue"
                   value="#{locatableItemLocationSelectTreeRendered 
@@ -29,12 +29,12 @@ See LICENSE file.
                 var="node"
                 selectionMode="single"
                 style="width: 635px; background: none; border: none;"
-                selection="#{locationSelectionValue}">
-            
-            <ui:param name="itemObject"
-                      value="#{node.containedItem}"/> 
-            
-            <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" />
+                selection="#{locationSelectionValue}">                        
+
+            <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" >
+                <ui:param name="itemObject"
+                          value="#{node.containedItem}"/> 
+            </ui:include>
         </p:tree>
     </p:scrollPanel>
 

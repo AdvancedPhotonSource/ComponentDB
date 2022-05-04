@@ -330,3 +330,26 @@ class CdbSeleniumModuleBase:
 
 		test.assertEqual(value_element.text, prop_value_text, msg='%s found but expected %s for new property value.' % (value_element.text,prop_value_text ))
 
+	def _add_image_to_item(self, form_name, entity_name, sample_file_name='AnlLogo.png', needs_toggler=True):
+		if needs_toggler:
+			toggle_id = "%s:%sViewGalleryPanel_toggler" % (form_name, entity_name)
+			self._click_on_id(toggle_id)
+		
+		add_btn_id = "%s:%sPropertyAddImagesCommandButton" % (form_name, entity_name)
+		self._wait_for_id_and_click(add_btn_id)
+		
+		upload_input_id = "%s:propertyValueMultipleImageFileUpload_input" % form_name
+		upload_input = self._wait_for_id(upload_input_id)
+
+		rel_path = 'data/' + sample_file_name
+		abs_path = os.path.abspath(rel_path)
+		upload_input.send_keys(abs_path)
+
+		upload_btn_xpath = '//*[@id="%s:propertyValueMultipleImageFileUpload"]/div[1]/button[1]' % form_name
+		self._wait_for_clickable_xpath(upload_btn_xpath)
+		self._click_on_xpath(upload_btn_xpath)
+
+		# Wait for AJAX 
+		time.sleep(2)
+
+

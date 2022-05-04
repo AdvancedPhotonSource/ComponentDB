@@ -375,11 +375,10 @@ class MachineDesign(CdbSeleniumModuleBase):
 		#first_item_xpath = '//*[@id="itemMachineDesignListForm:itemMachineDesignListDataTable_node_0"]/td[1]'
 		first_item_xpath = self.ROW_TOGGLER_MACHINE_DESIGN_ROW_XPATH_FORMULA % (0)
 		context_item_xpath = self.MACHINE_DESIGN_CONTEXT_MENU_XPATH_FORMULA % (self.MACHINE_DESIGN_CATALOG_CONTEXT_MENU_ID, self.MACHINE_DESIGN_CONTEXT_MENU_DETAILS_INX)
-		self._context_click_x_path(first_item_xpath, context_item_xpath)
-		time.sleep(2)
-		self._add_log_to_item(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, 'Machine Design Log!', False)
-		self._add_property_to_item(test, self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, "Machine Prop", False)
-		
+		self._context_click_x_path(first_item_xpath, context_item_xpath)		
+		self._add_log_to_item(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, 'Machine Design Log!', False)		
+		self._add_property_to_item(test, self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, "Machine Prop", False)		
+		self._add_image_to_item(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, needs_toggler=False)		
 
 	def filter_machine(self, filter_string='Test Machine'):
 		filterbox_id = 'itemMachineDesignListForm:itemMachineDesignListDataTable:nameMdFilter'

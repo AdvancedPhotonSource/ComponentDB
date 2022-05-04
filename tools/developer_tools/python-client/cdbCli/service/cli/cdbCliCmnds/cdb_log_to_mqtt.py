@@ -166,6 +166,7 @@ def get_cdb_logs(delta_minutes, logApi):
 @click.argument("mqtt_user")
 @click.argument("mqtt_password")
 def cdb_log_to_mqtt(
+    cli,
     cdb_server,
     mqtt_server,
     mqtt_port,
@@ -211,8 +212,7 @@ def cdb_log_to_mqtt(
     )
 
     # And now the CDB Authorization
-    #    apiFactory = CdbApiFactory(cdb_server)
-    cli = CliBase()
+    #    apiFactory = CdbApiFactory(cdb_server)    
     try:
         cli.api_factory = CdbApiFactory(cdb_server)
         apiFactory = cli.require_authenticated_api(

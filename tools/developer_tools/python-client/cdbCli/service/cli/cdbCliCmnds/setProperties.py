@@ -14,7 +14,6 @@ from cdbCli.common.cli.cliBase import CliBase
 
 
 @click.command()
-@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
 @click.option(
     "--inputfile",
     help="Input csv file with item info and properties, default is STDOUT",
@@ -31,11 +30,11 @@ from cdbCli.common.cli.cliBase import CliBase
     type=click.Choice(["yes", "echo", "no"]),
     default="echo",
 )
-def set_properties_helper(inputfile, changemeta, changeproperty, dist=None):
+@click.pass_obj
+def set_properties_helper(cli, inputfile, changemeta, changeproperty):
     """Takes a headered csv file with change data for the properties"""
 
-    install()
-    cli = CliBase(dist)
+    install()    
     factory = cli.require_authenticated_api()
     itemApi = factory.getItemApi()
     cableCatalogApi = factory.getCableCatalogItemApi()
@@ -103,7 +102,7 @@ def set_properties_helper(inputfile, changemeta, changeproperty, dist=None):
                             print(meta_dict)
 
 
-def set_properties(property, inputfile, qr_id, itemnumbers, dist=None):
+def set_properties(cli, property, inputfile, qr_id, itemnumbers):
     """Takes a csv file of CDB Item, and Property Names and returns a
     dataframe of the current values in CDB or it can scan the CDB inventory for items
     that have the property and return that in the dataframe
@@ -111,14 +110,12 @@ def set_properties(property, inputfile, qr_id, itemnumbers, dist=None):
     Args:
         property (str): _description_
         inputfile (file descripter): _description_
-        itemnumbers (boolean): Take item number input from input file handler or scan CDB
-        dist (str, optional): CDB Distribution. Defaults to None.
+        itemnumbers (boolean): Take item number input from input file handler or scan CDB        
 
     Returns:
         Pandas Dataframe:  Dataframe with results
     """
-
-    cli = CliBase(dist)
+    
     factory = cli.require_api()
     itemApi = factory.getItemApi()
     cableCatalogApi = factory.getCableCatalogItemApi()

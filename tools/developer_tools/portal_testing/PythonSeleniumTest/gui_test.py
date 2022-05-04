@@ -90,9 +90,10 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
         self.catalog.finish_create_sample_catalog_item()
 
         self.catalog.display_more_columns()
-        self.catalog.search_for_sample_catalog_item()
+        self.catalog.search_for_sample_catalog_item()        
         self.catalog.add_log_to_catalog_item()
         self.catalog.add_property_to_catalog_item(self)
+        self.catalog.add_image_to_catalog_item()
 
         self.catalog.delete_current_item()
 
@@ -130,6 +131,10 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
         self.catalog.navigate_to_catalog_list()
         self.catalog.export_catalog(self)
 
+    def test_catalog_import(self):
+        self.catalog.navigate_to_catalog_list()
+        self.catalog.test_import_create(self)
+
     def test_cable_catalog_pages(self):
         self.cable_catalog.navigate_to_cable_catalog_list()
         self.cable_catalog.test_cable_catalog_pages()
@@ -142,6 +147,10 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
         self.cable_catalog.navigate_to_cable_catalog_list()
         self.cable_catalog.export_cable_catalog(self)
 
+    def test_cable_catalog_import(self):
+        self.cable_catalog.navigate_to_cable_catalog_list()
+        self.cable_catalog.test_import_create(self)
+
     def test_inventory_pages(self):
         self.inventory.navigate_to_inventory_list()
         self.inventory.test_inventory_pages()
@@ -150,6 +159,10 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
         self.inventory.navigate_to_inventory_list()
         self.inventory.test_inventory_detail_page(self)
 
+    def test_inventory_import(self):
+        self.inventory.navigate_to_inventory_list()
+        self.inventory.test_import_create(self)
+
     def test_cable_inventory_pages(self):
         self.cable_inventory.navigate_to_cable_inventory_list()
         self.cable_inventory.test_cable_inventory_pages()
@@ -157,6 +170,10 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
     def test_cable_inventory_detail_page(self):
         self.cable_inventory.navigate_to_cable_inventory_list()
         self.cable_inventory.test_cable_inventory_detail_page(self)
+
+    def test_cable_inventory_import(self):
+        self.cable_inventory.navigate_to_cable_inventory_list()
+        self.cable_inventory.test_import_create(self)
 
     def test_cable_design_pages(self):
         self.cable_design.navigate_to_cable_design_list()
@@ -169,6 +186,10 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
     def test_cable_design_export(self):
         self.cable_design.navigate_to_cable_design_list()
         self.cable_design.export_cable_design(self)
+
+    def test_cable_design_import(self):
+        self.cable_design.navigate_to_cable_design_list()
+        self.cable_design.test_import_create(self)        
 
     def test_source_pages(self):
         self.source.navigate_to_source_list()

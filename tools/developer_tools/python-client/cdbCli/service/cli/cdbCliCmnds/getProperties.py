@@ -24,9 +24,8 @@ from cdbCli.common.cli.cliBase import CliBase
     help="itemnumbers reads item numbers from input, otherwise scans entire database [d:--no-itemnumbers]",
     default=False,
 )
-@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
 @click.option(
-    "--inputfile",
+    "--input-file",
     help="Input for itemnumbers when --itemnumber selected, default is STDIN",
     type=click.File("r"),
     default=sys.stdin,
@@ -37,7 +36,7 @@ from cdbCli.common.cli.cliBase import CliBase
     default=True,
 )
 @click.option(
-    "--outputfile",
+    "--output-file",
     help="Output csv file with item info and properties, default is STDOUT",
     type=click.File("r"),
     default=sys.stdout,
@@ -54,28 +53,29 @@ from cdbCli.common.cli.cliBase import CliBase
     type=click.Choice(["catalog", "inventory"], case_sensitive=False),
     help="Allowed cdb types are 'inventory'(default) or 'catalog' for full scan",
 )
+@click.pass_obj
 def get_properties(
+    cli,
     property,
-    outputfile,
-    inputfile,
+    output_file,
+    input_file,
     itemnumbers,
     item_id_type,
     item_type,
-    printheader,
-    dist=None,
+    printheader    
 ):
     """Inspects CDB for inventory with the selected property name and outputs a
     CSV of the current values in CDB.  It can scan the CDB inventory for items
     that have the property or take selected id or qr ids from a file."""
     install(show_locals=True)
     resultDF = get_properties_helper(
-        property, inputfile, item_id_type, item_type, itemnumbers, dist
+        cli, property, input_file, item_id_type, item_type, itemnumbers
     )
-    resultDF.to_csv(outputfile, index=False, header=printheader)
+    resultDF.to_csv(output_file, index=False, header=printheader)
 
 
 def get_properties_helper(
-    property, inputfile, item_id_type, item_type, itemnumbers, dist=None
+    cli, property, input_file, item_id_type, item_type, itemnumbers
 ):
     """Takes a csv file of CDB Item, and Property Names and returns a
     dataframe of the current values in CDB or it can scan the CDB inventory for items
@@ -84,14 +84,11 @@ def get_properties_helper(
     Args:
         property (str): _description_
         inputfile (file descripter): _description_
-        itemnumbers (boolean): Take item number input from input file handler or scan CDB
-        dist (str, optional): CDB Distribution. Defaults to None.
+        itemnumbers (boolean): Take item number input from input file handler or scan CDB        
 
     Returns:
         Pandas Dataframe:  Dataframe with results
-    """
-
-    cli = CliBase(dist)
+    """    
     factory = cli.require_api()
     itemApi = factory.getItemApi()
     cableCatalogApi = factory.getCableCatalogItemApi()
@@ -122,7 +119,7 @@ def get_properties_helper(
             if len(property_dicts) > 0:
                 list_of_property_dicts = list_of_property_dicts + property_dicts
     else:
-        for itemnumberstr in inputfile:
+        for itemnumberstr in input_file:
             item_number = int(itemnumberstr.rstrip())
             if item_id_type == "qr_id":
                 item = itemApi.get_item_by_qr_id(item_number)

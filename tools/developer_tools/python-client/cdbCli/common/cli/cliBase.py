@@ -1,9 +1,13 @@
 #!/usr/bin/env python
+import csv
 import os
+import sys
 
 from click import prompt,echo
 
 from getpass import getpass
+
+import click
 
 from CdbApiFactory import CdbApiFactory
 from cdbApi import ApiException
@@ -98,6 +102,26 @@ class CliBase:
         echo(cdb_object)
 
     # TODO Add a print list cdb of cdb object
+
+    def prepare_cli_input_csv_reader(self, input_file, stdin_prompt):
+        reader = csv.reader(input_file)
+        stdin_tty_mode = (input_file == sys.stdin) and sys.stdin.isatty()
+    
+        if stdin_tty_mode:
+            print(stdin_prompt)
+        else:
+            # Removes header located in first row
+            next(reader)
+
+        return reader, stdin_tty_mode
+
+def wrap_common_cli_click_options(function):    
+    function = click.option(
+        "--add-log-to-item",
+        is_flag=True,
+        help="Add a log entry to the machine item after the change is made."
+    )(function)
+    return function
 
 if __name__ == "__main__":
     cli = CliBase()

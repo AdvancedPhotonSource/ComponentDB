@@ -8,8 +8,6 @@ import sys
 from cdbApi import ItemStatusBasicObject
 from cdbApi import ApiException
 
-from cdbCli.common.cli.cliBase import CliBase
-from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id_helper
 
 ##############################################################################################
 #                                                                                            #
@@ -75,11 +73,11 @@ def set_item_status_by_id_helper(item_api, prop_type_api, item_id, status):
 @click.option(
     "--status",
     required=True,
-    prompt="Item Status (? for options)",
+    prompt="Item Status",
     help="New Status of Item",
 )
-@click.option("--dist", help="Change the CDB distribution (sandbox, dev, prod)")
-def set_item_status_by_id(input_file, status, dist=None):
+@click.pass_obj
+def set_item_status_by_id(cli, input_file, status):
     """Updates item status of item with the given ID and updates item log
 
     \b
@@ -92,7 +90,6 @@ def set_item_status_by_id(input_file, status, dist=None):
     The format of the input data is an intended row to be removed followed by
     <Item ID>.
     """
-    cli = CliBase(dist)
     try:
         factory = cli.require_authenticated_api()
     except ApiException:
@@ -102,13 +99,13 @@ def set_item_status_by_id(input_file, status, dist=None):
     item_api = factory.getItemApi()
     prop_type_api = factory.getPropertyTypeApi()
 
-    reader = csv.reader(input_file)
+    stdin_msg = "Entry per line: <item_id>"
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)    
 
-    # Removes header located in first row
-    next(reader)
-
-    # Parse parse lines of csv and update corresponding item status
+    # Parse lines of csv
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
         if not row[0]:
             continue
 

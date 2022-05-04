@@ -8,8 +8,8 @@ import click
 from rich import print
 
 from cdbApi import ApiException
+from cdbCli.common.cli import cliBase
 
-from cdbCli.common.cli.cliBase import CliBase
 from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id_helper
 from cdbApi.models.property_value import PropertyValue
 
@@ -29,6 +29,7 @@ def add_document_property_helper(
     prop_value,
     display_value,
     description,
+    add_log_to_item = False
 ):
     """This function adds a http property to a given item
 
@@ -45,8 +46,7 @@ def add_document_property_helper(
     """
 
     try:
-
-        http_property_type = prop_type_api.get_property_type_by_name(prop_name)
+        http_property_type = prop_type_api.get_property_type_by_name(prop_name)        
 
         # Check to see if property exists and must be unique
         if unique_flag:
@@ -78,8 +78,9 @@ def add_document_property_helper(
             )
             print(error)
     else:
-        log = "Item Id: " + item_id + "successfully uploaded with properties"
-        set_item_log_by_id_helper(item_api=item_api, item_id=item_id, log_entry=log)
+        if add_log_to_item:
+            log = "Item Id: " + item_id + "successfully uploaded with properties"
+            set_item_log_by_id_helper(item_api=item_api, item_id=item_id, log_entry=log)
 
 
 @click.command()
@@ -104,8 +105,9 @@ def add_document_property_helper(
 @click.option(
     "--unique-flag/--no-unique-flag", default=True, help="Prevent duplicate tags [True]"
 )
-@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
-def add_document_property(input_file, item_id_type, prop, unique_flag, dist=None):
+@cliBase.wrap_common_cli_click_options
+@click.pass_obj
+def add_document_property(cli, input_file, item_id_type, prop, unique_flag, add_log_to_item):
     """Adds a Property with an http link handler to a CDB Item.   Property Type
     is selected via the doc_type flag.   If the unique flag is true,
     then the property is not added if there is already a document propety
@@ -122,9 +124,6 @@ def add_document_property(input_file, item_id_type, prop, unique_flag, dist=None
     The format of the input data is
     <Item ID>.<Tag>,<Url>,<URL Display Value>,<Description>
     where the ID is by the type specified on the commandline."""
-
-    cli = CliBase(dist)
-
     try:
         factory = cli.require_authenticated_api()
     except ApiException:
@@ -133,20 +132,19 @@ def add_document_property(input_file, item_id_type, prop, unique_flag, dist=None
 
     item_api = factory.getItemApi()
     prop_type_api = factory.getPropertyTypeApi()
-
+    
     if prop == "web_documentation":
-        prop_name = "Documentation (Web)"
-        print("Setting prop_name")
+        prop_name = "Documentation (Web)"        
     elif prop == "related_cdb_item":
         prop_name = "Related CDB Item"
 
-    reader = csv.reader(input_file)
+    stdin_msg = "Entry per line: <Item_%s>.<Tag>,<Url>,<Display_Value>,<Description>" % item_id_type
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)    
 
-    # Remove header of csv input
-    next(reader)
-
-    # Parse each row in csv file
+    # Parse lines of csv
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
         item_id = row[0]
         tag = row[1]
         url = row[2]
@@ -166,6 +164,7 @@ def add_document_property(input_file, item_id_type, prop, unique_flag, dist=None
             url,
             display_value,
             description,
+            add_log_to_item
         )
 
 

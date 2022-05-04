@@ -53,7 +53,8 @@ See LICENSE file.
 
                 <p/>
 
-                <p:panel header="Gallery" 
+                <p:panel id="#{entityTypeName}ViewGalleryPanel"
+                         header="Gallery" 
                          rendered="#{entityController.entityDisplayItemGallery}"
                          toggleable="true" 
                          collapsed="#{!entityController.displayImages}">
