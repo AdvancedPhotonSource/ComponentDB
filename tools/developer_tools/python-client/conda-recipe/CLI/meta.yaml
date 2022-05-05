@@ -1,0 +1,40 @@
+{% set name = "ComponentDB-CLI" %}
+{% set version = "3.14.0.dev2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 9858486206a1b5d17b5c4e0bb404e4a1969911af14fe9166bbe3ad8923c89e63 
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+
+requirements:
+  build:
+   - python
+   - pip
+  run:
+    - python
+    - python-dateutil
+    - urllib3
+    - six    
+    - click
+    - pandas
+    - rich    
+    - paho-mqtt
+    - componentdb-api==3.14.0.dev01
+    #- componentdb-api=={{ version }}
+
+test:
+  imports:
+    - cdbCli
+
+about:
+  home: "https://github.com/AdvancedPhotonSource/ComponentDB"
+  license: "Copyright (c) UChicago Argonne, LLC. All rights reserved."    
+  summary: "Command line utilities for Component DB"
