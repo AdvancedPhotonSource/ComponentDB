@@ -718,7 +718,7 @@ public class ItemDomainCableDesign extends Item {
         }
     }
     
-    private void clearCableConnectors() {
+    public void clearCableConnectors() {
         
         // null out connectors used in cable relationships
         ItemElement selfElement = this.getSelfElement();
@@ -886,20 +886,12 @@ public class ItemDomainCableDesign extends Item {
         }
     }
 
-    private void setAssignedItem(Item assignedItem) {
+    public void setAssignedItem(Item assignedItem) {
         ItemElement selfElement = this.getSelfElement();
         selfElement.setContainedItem2(assignedItem);
     }
 
     public void setCatalogItem(ItemDomainCableCatalog itemCableCatalog) {
-        // "assign" catalog item to cable design
-        Item currCatalogItem = getCatalogItem();
-        if (((itemCableCatalog == null) && (currCatalogItem != null)) 
-                || ((itemCableCatalog != null) && (!itemCableCatalog.equals(currCatalogItem)))) {
-            
-            // if changing catalog item, we need to remove cable connectors since they are inherited from catalog item
-            clearCableConnectors();
-        }
         setAssignedItem(itemCableCatalog);
     }
 
@@ -936,8 +928,6 @@ public class ItemDomainCableDesign extends Item {
     }
     
     public void setInventoryItem(ItemDomainCableInventory inventoryItem) {
-        // "assign" inventory item to cable design
-        Item currCatalogItem = getCatalogItem();
         setAssignedItem(inventoryItem);
     }
 
@@ -950,6 +940,16 @@ public class ItemDomainCableDesign extends Item {
             inventoryItem = (ItemDomainCableInventory) assignedItem;
         }
         return inventoryItem;
+    }
+
+    public boolean isIsHoused() {
+        ItemElement selfElement = getSelfElement();
+        return selfElement.getIsHoused();
+    }
+
+    public void setIsHoused(boolean isHoused) {
+        ItemElement selfElement = getSelfElement();
+        selfElement.setIsHoused(isHoused);
     }
 
     @JsonIgnore
