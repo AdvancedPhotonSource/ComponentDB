@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
@@ -28,6 +29,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
@@ -37,6 +39,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -47,6 +51,7 @@ import javax.inject.Named;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -620,7 +625,15 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             // catalog item changed, update cable and save
             if (!selectionModelCatalog.equals(getItemCatalog())) {
                 
-                getCurrent().setCatalogItem(selectionModelCatalog);
+                UserInfo user = SessionUtility.getUser();
+                ItemDomainCableDesignControllerUtility utility = getControllerUtility();
+                
+                try {
+                    utility.updateAssignedItem(getCurrent(), selectionModelCatalog, user, null);
+                } catch (CdbException ex) {
+                    SessionUtility.addErrorMessage("Error", ex.getMessage());
+                    return view();
+                }
 
                 String updateResult = update();
 
@@ -688,6 +701,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         private Boolean disableButtonSave = true;
         private ItemDomainCableInventory itemInventory = null;
         private ItemDomainCableInventory selectionModelInventory = null;
+        private Boolean inventoryIsInstalled = null;
+        private Boolean selectionModelIsInstalled = null;
         
         public Boolean getDisableButtonSave() {
             return disableButtonSave;
@@ -714,6 +729,10 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             }
         }
 
+        private void selectInventoryItem(ItemDomainCableInventory item) {
+            selectionModelInventory = item;
+        }
+
         public ItemDomainCableInventory getSelectionModelInventory() {
             return selectionModelInventory;
         }
@@ -721,17 +740,111 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         public void setSelectionModelInventory(ItemDomainCableInventory selectionModelInventory) {
             this.selectionModelInventory = selectionModelInventory;
         }
+        
+        public void selectListenerInventory(SelectEvent<ItemDomainCableInventory> event) {
+            setEnablement();
+        }
+
+        public void unselectListenerInventory(UnselectEvent<ItemDomainCableInventory> event) {
+            setEnablement();
+        }
+
+        public Boolean getInventoryIsInstalled() {
+            return inventoryIsInstalled;
+        }
+        
+        public void setInventoryIsInstalled(Boolean isInstalled) {
+            inventoryIsInstalled = isInstalled;
+            setSelectionModelIsInstalled(isInstalled);
+        }
+
+        public Boolean getSelectionModelIsInstalled() {
+            return selectionModelIsInstalled;
+        }
+
+        public void setSelectionModelIsInstalled(Boolean isInstalled) {
+            selectionModelIsInstalled = isInstalled;
+        }
+
+        public void selectListenerIsInstalled() {
+            setEnablement();
+        }
+
+        /**
+         * Resets the dialog components when closing.
+         */
+        public void reset() {
+            setSelectionModelInventory(null);
+        }
+
+        /**
+         * Enables save button when a valid selection, different from the
+         * original inventory item, is made.
+         */
+        private void setEnablement() {
+
+            boolean changedInventory
+                    = ((selectionModelInventory == null) && (getItemInventory() != null))
+                    || ((selectionModelInventory != null) && (getItemInventory() == null))
+                    || ((selectionModelInventory != null) && (!selectionModelInventory.equals(getItemInventory())));
+
+            boolean changedInstalledStatus
+                    = ((selectionModelIsInstalled == null) && (getInventoryIsInstalled() != null))
+                    || ((selectionModelIsInstalled != null) && (getInventoryIsInstalled() == null))
+                    || ((selectionModelIsInstalled != null) && (!selectionModelIsInstalled.equals(getInventoryIsInstalled())));
+
+            if (changedInventory || changedInstalledStatus) {
+                setDisableButtonSave((Boolean) false);
+            } else {
+                setDisableButtonSave((Boolean) true);
+            }
+        }
 
         /**
          * Determines whether inventory item changed, and calls update if it did.
          */
         public String save(String remoteCommandSuccess) {
 
-            // inventory item changed, update cable and save
-            if (!selectionModelInventory.equals(getItemInventory())) {
-                
-                getCurrent().setInventoryItem(selectionModelInventory);
+            boolean changedInventory
+                    = ((selectionModelInventory == null) && (getItemInventory() != null))
+                    || ((selectionModelInventory != null) && (getItemInventory() == null))
+                    || ((selectionModelInventory != null) && (!selectionModelInventory.equals(getItemInventory())));
 
+            boolean changedInstalledStatus
+                    = ((selectionModelIsInstalled == null) && (getInventoryIsInstalled() != null))
+                    || ((selectionModelIsInstalled != null) && (getInventoryIsInstalled() == null))
+                    || ((selectionModelIsInstalled != null) && (!selectionModelIsInstalled.equals(getInventoryIsInstalled())));
+
+            if (changedInventory || changedInstalledStatus) {
+                                
+                Boolean installationStatus = selectionModelIsInstalled;
+                ItemDomainCableInventory origInventoryItem = getItemInventory();
+                Item assignedItem = selectionModelInventory;
+                
+                if (selectionModelInventory == null) {
+                    
+                    // use null installationStatus if no inventory item is selected
+                    if (installationStatus != null) {
+                        installationStatus = null;
+                    }
+                    
+                    // if changing from assigned inventory to null inventory, use catalog item for assigned item
+                    // so we don't lose cable type
+                    if (origInventoryItem != null) {
+                        assignedItem = origInventoryItem.getCatalogItem();
+                    }
+                }
+                
+                UserInfo user = SessionUtility.getUser();
+                ItemDomainCableDesignControllerUtility utility = getControllerUtility();
+
+                try {
+                    utility.updateAssignedItem(getCurrent(), assignedItem, user, installationStatus);
+                } catch (CdbException ex) {
+                    SessionUtility.addErrorMessage("Error", ex.getMessage());
+                    return view();
+                }
+                
                 String updateResult = update();
 
                 // An error occured, reload the page with correct information. 
@@ -747,48 +860,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         public void cancel() {
         }
 
-        /**
-         * Handles select events generated by the data table
-         * component. Must call client side remoteCommand to update button state
-         * from oncomplete attribute for this event tag.
-         */
-        public void selectListenerInventory() {
-            setEnablement();
-        }
-
         public void actionListenerSaveSuccess() {
-        }
-
-        /**
-         * Resets the dialog components when closing.
-         */
-        public void reset() {
-            setSelectionModelInventory(null);
-            setEnablement();
-        }
-
-        /**
-         * Enables save button when a valid selection, different from the
-         * original inventory item, is made.
-         */
-        private void setEnablement() {
-
-            if (selectionModelInventory == null) {
-
-                setDisableButtonSave((Boolean) true);
-
-            } else {
-
-                if (selectionModelInventory.equals(getItemInventory())) {
-                    setDisableButtonSave((Boolean) true);
-                } else {
-                    setDisableButtonSave((Boolean) false);
-                }
-            }
-        }
-
-        private void selectInventoryItem(ItemDomainCableInventory item) {
-            selectionModelInventory = item;
         }
 
     }
@@ -874,6 +946,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public void prepareDialogInventory() {
         dialogInventory.reset();
         dialogInventory.setItemInventory(getCurrent().getInventoryItem());
+        dialogInventory.setInventoryIsInstalled(getCurrent().isIsHoused());
     }
 
     public DataModel getInventoryForCableType() {

@@ -951,6 +951,19 @@ public class ItemDomainCableDesign extends Item {
         ItemElement selfElement = getSelfElement();
         selfElement.setIsHoused(isHoused);
     }
+    
+    @JsonIgnore
+    public String getInstalledStatusString() {
+        if (getInventoryItem() != null) {
+            if (isIsHoused()) {
+                return "installed";
+            } else {
+                return "planned";
+            }
+        } else {
+            return null;
+        }
+    }
 
     @JsonIgnore
     public Item getPrimaryEndpoint(String cableEnd) {

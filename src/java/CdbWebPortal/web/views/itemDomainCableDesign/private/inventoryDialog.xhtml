@@ -10,26 +10,43 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:dialog header="Select Assigned Inventory Item (Current: #{entityController.dialogInventory.itemInventoryString})" 
+    <p:dialog header="Click row to select inventory item, ctrl-click to unselect. (Current: #{entityController.dialogInventory.itemInventoryString})" 
               id="dialogInventory"
               widgetVar="inventoryDialog" 
               modal="true"
               closable="false">
 
         <ui:decorate template="inventorySelectDataTable.xhtml">
-
             <ui:param name="cableInventoryDataTableSelectionModel" 
                       value="#{entityController.dialogInventory.selectionModelInventory}" /> 
             <ui:param name="viewId" 
                       value="cableDesignInventoryDialog" />
-
             <ui:define name="cableInventoryDataTableEvents">
-                <p:ajax event="rowSelectRadio"
+                <p:ajax event="rowSelect"
                         listener="#{entityController.dialogInventory.selectListenerInventory}"
                         oncomplete="updateButtonsDialogInventory();"/>
+                <p:ajax event="rowUnselect"
+                        listener="#{entityController.dialogInventory.unselectListenerInventory}"
+                        oncomplete="updateButtonsDialogInventory();"/>
             </ui:define>
-
         </ui:decorate>
+
+        <p:selectBooleanButton id="cableDesignInventoryIsInstalledFlagButton" 
+                               value="#{entityController.dialogInventory.selectionModelIsInstalled}" 
+                               offLabel="Planned"
+                               onLabel="Installed">
+            <p:ajax listener="#{entityController.dialogInventory.selectListenerIsInstalled}"
+                    oncomplete="updateButtonsDialogInventory();"/>
+            <p:tooltip for="cableDesignInventoryIsInstalledFlagButton" >
+                Indicates if the assigned inventory is "installed" or "planned" for this cable design.
+
+                <br/>
+                <br/><b>Installed (Default)</b>
+                <br/>Item is installed and its location is determined based on machine node. 
+                <br/><b>Planned</b>
+                <br/>Item stays in its location but is marked to be installed on machine node in the future.
+            </p:tooltip>
+        </p:selectBooleanButton>
 
         <f:facet name="footer" class="dialog">
 

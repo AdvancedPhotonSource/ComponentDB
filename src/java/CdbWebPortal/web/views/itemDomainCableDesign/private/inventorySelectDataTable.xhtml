@@ -14,13 +14,12 @@ See LICENSE file.
                  value="#{entityController.inventoryForCableType}"
                  var="itemListObject"
                  rowKey="#{itemListObject.id}"
+                 selectionMode="single"
                  selection="#{cableInventoryDataTableSelectionModel}"
                  rows="#{resources.SelectDataTableNumberOfRows}"
                  sortMode="single"
                  stripedRows="true"
                  paginator="true">         
-
-        <p:column selectionMode="single" style="width:16px;text-align:center"/>
 
         <ui:include src="../../item/private/itemListObject.xhtml" >
             <ui:param name="entityController"
@@ -29,8 +28,9 @@ See LICENSE file.
                       value="#{true}"/>
             <ui:param name="sortable"
                       value="#{false}"/>
+            <ui:param name="itemListDisplayDerivedFromItem" value="#{false}" />
         </ui:include>
-        
+
         <ui:insert name="cableInventoryDataTableEvents" />
 
     </p:dataTable>

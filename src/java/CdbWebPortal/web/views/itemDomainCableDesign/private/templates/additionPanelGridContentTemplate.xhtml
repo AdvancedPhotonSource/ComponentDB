@@ -77,6 +77,23 @@ See LICENSE file.
             </ui:include>            
         </p:outputPanel>
 
+        <p:outputLabel value="Installed Status" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:outputPanel styleClass="inlineFlexOutputPanel">
+            <p:commandLink id="installedStatusEditShowButton"
+                           styleClass="fa-link-icon fa-icon fa fa-pencil"
+                           oncomplete="PF('inventoryDialog').show();"
+                           action='#{entityController.prepareDialogInventory()}'
+                           rendered="#{isEntityWriteable and entityController.renderInventoryEdit}"
+                           update="dialogInventory">
+                <p:tooltip for="installedStatusEditShowButton"
+                           value="Modify Installed Status" />
+            </p:commandLink>
+            <h:outputText value="#{itemObject.installedStatusString}" 
+                          title="Installed Status" 
+                          styleClass="entityDataEmphasizedText" />
+        </p:outputPanel>
+        
         <ui:include src="../catalogDialog.xhtml" >
         </ui:include>
 
