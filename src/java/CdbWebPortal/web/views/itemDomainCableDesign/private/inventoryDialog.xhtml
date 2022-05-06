@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog header="Select Assigned Inventory Item (Current: #{entityController.dialogInventory.itemInventoryString})" 
+              id="dialogInventory"
+              widgetVar="inventoryDialog" 
+              modal="true"
+              closable="false">
+
+        <ui:decorate template="inventorySelectDataTable.xhtml">
+
+            <ui:param name="cableInventoryDataTableSelectionModel" 
+                      value="#{entityController.dialogInventory.selectionModelInventory}" /> 
+            <ui:param name="viewId" 
+                      value="cableDesignInventoryDialog" />
+
+            <ui:define name="cableInventoryDataTableEvents">
+                <p:ajax event="rowSelectRadio"
+                        listener="#{entityController.dialogInventory.selectListenerInventory}"
+                        oncomplete="updateButtonsDialogInventory();"/>
+            </ui:define>
+
+        </ui:decorate>
+
+        <f:facet name="footer" class="dialog">
+
+            <p:outputPanel id="dialogInventoryButtonPanel">
+
+                <p:commandButton  action="#{entityController.dialogInventory.save('saveInventorySuccess()')}"
+                                  id="inventoryDialogSaveButton"
+                                  value="Save" 
+                                  alt="Save" 
+                                  update="dialogInventory"
+                                  disabled="#{entityController.dialogInventory.disableButtonSave}"
+                                  icon="fa fa-save"/>
+
+                <p:commandButton action="#{entityController.dialogInventory.cancel()}" 
+                                 immediate="true" 
+                                 value="Cancel" alt="Cancel" 
+                                 update="dialogInventory"
+                                 icon="fa fa-close" />
+
+                <p:remoteCommand name="saveInventorySuccess"                             
+                                 actionListener="#{entityController.dialogInventory.actionListenerSaveSuccess}"
+                                 update="@form"
+                                 onstart="PF('inventoryDialog').hide()" />
+
+            </p:outputPanel>
+        </f:facet>
+
+        <p:remoteCommand name="updateButtonsDialogInventory" 
+                         update="dialogInventoryButtonPanel"/>
+
+    </p:dialog>
+
+
+</ui:composition>

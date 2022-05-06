@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui">   
+    
+    <!-- Must provide params: viewId, cableInventoryDataTableSelectionModel -->
+    
+    <p:dataTable id="cableInventoryDataTable-#{viewId}"
+                 value="#{entityController.inventoryForCableType}"
+                 var="itemListObject"
+                 rowKey="#{itemListObject.id}"
+                 selection="#{cableInventoryDataTableSelectionModel}"
+                 rows="#{resources.SelectDataTableNumberOfRows}"
+                 sortMode="single"
+                 stripedRows="true"
+                 paginator="true">         
+
+        <p:column selectionMode="single" style="width:16px;text-align:center"/>
+
+        <ui:include src="../../item/private/itemListObject.xhtml" >
+            <ui:param name="entityController"
+                      value="#{itemDomainCableInventoryController}" /> 
+            <ui:param name="filterable"
+                      value="#{true}"/>
+            <ui:param name="sortable"
+                      value="#{false}"/>
+        </ui:include>
+        
+        <ui:insert name="cableInventoryDataTableEvents" />
+
+    </p:dataTable>
+
+</ui:composition>
