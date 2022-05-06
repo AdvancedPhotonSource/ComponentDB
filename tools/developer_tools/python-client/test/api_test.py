@@ -6,6 +6,7 @@ from cdbApi import OpenApiException, ItemStatusBasicObject, NewLocationInformati
     LogEntryEditInformation, PropertyValue, PropertyMetadata, ConciseItemOptions, NewMachinePlaceholderOptions, \
     NewCatalogInformation, NewInventoryInformation, NewCatalogElementInformation, NewControlRelationshipInformation, \
     UpdateMachineAssignedItemInformation, PromoteMachineElementInformation
+from cdbApi.models.allowed_property_value import AllowedPropertyValue
 
 
 class MyTestCase(unittest.TestCase):
@@ -31,6 +32,7 @@ class MyTestCase(unittest.TestCase):
     MD_CONTROL_NAME_TOP_LEVEL_2 = "Another Control Node"
     MD_CONTROL_NAME = "ioctest"
     TEST_PROPERTY_TYPE_NAME = "Test Property"
+    CONTROL_INTERFACE_PROPERTY_TYPE_ID = "14"
     LOCATION_QRID_TESTUSER_PERMISSIONS = 101111101
     TEST_NEW_CATALOG_ITEM_NAME = "new catalog from test"
     TEST_NEW_INVENTORY_ITEM_TAG = "TEST_TAG"
@@ -722,6 +724,23 @@ class MyTestCase(unittest.TestCase):
             self.fail(msg=ex.body)
 
         self.assertEqual(result.tag, self.TEST_NEW_INVENTORY_ITEM_TAG, msg="tag name kept from API entered.")
+
+    def test_add_allowed_property_value(self):
+        self.loginAsAdmin()
+        av = AllowedPropertyValue(value='TEST', units="units", description='description', sort_order=1)
+        result = self.propertyTypeApi.add_allowed_value(self.CONTROL_INTERFACE_PROPERTY_TYPE_ID, allowed_property_value=av)  
+        self.assertNotEqual(result, None, msg="Failed to return newly created allowed value.")
+
+        updatedProp = self.propertyTypeApi.get_property_type_by_id(self.CONTROL_INTERFACE_PROPERTY_TYPE_ID)
+        allowed_values = updatedProp.sorted_allowed_property_value_list
+
+        found = False
+        for allowed_value in allowed_values:
+            if allowed_value.value == av.value:
+                found = True
+                break
+        
+        self.assertEquals(found, True, msg="The allowed value was not found under the updated property type. ")
 
 if __name__ == '__main__':
     unittest.main()
