@@ -107,6 +107,10 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
         self.machine_design.filter_machine()
         self.machine_design.export_machine(self)
 
+    def test_machine_design_import(self):
+        self.machine_design.navigate_to_machine_design()
+        self.machine_design.import_machine(self) 
+
     def test_machine_design_details_page(self):
         self.machine_design.navigate_to_machine_design()
         self.machine_design.test_detail_page(self)
