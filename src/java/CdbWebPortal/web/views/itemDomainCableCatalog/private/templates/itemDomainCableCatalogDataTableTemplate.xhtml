@@ -15,12 +15,11 @@ See LICENSE file.
                  var="itemListObject"
                  rowKey="#{itemListObject.id}"
                  selection="#{cableCatalogDataTableSelectionModel}"
+                 selectionMode="single"
                  rows="#{resources.SelectDataTableNumberOfRows}"
                  sortMode="single"
                  stripedRows="true"
                  paginator="true">         
-
-        <p:column selectionMode="single" style="width:16px;text-align:center"/>
 
         <ui:include src="../../../item/private/itemListObject.xhtml" >
             <ui:param name="entityController"

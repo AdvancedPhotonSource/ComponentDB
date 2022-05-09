@@ -24,8 +24,11 @@ See LICENSE file.
                       value="cableDesignCatalogDialog" />
 
             <ui:define name="cableCatalogDataTableEvents">
-                <p:ajax event="rowSelectRadio"
+                <p:ajax event="rowSelect"
                         listener="#{entityController.dialogCatalog.selectListenerCatalog}"
+                        oncomplete="updateButtonsDialogCatalog();"/>
+                <p:ajax event="rowUnselect"
+                        listener="#{entityController.dialogCatalog.unselectListenerCatalog}"
                         oncomplete="updateButtonsDialogCatalog();"/>
             </ui:define>
 
