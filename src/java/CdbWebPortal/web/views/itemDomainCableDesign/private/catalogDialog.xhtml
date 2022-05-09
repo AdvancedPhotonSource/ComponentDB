@@ -63,10 +63,20 @@ See LICENSE file.
         <p:remoteCommand name="updateButtonsDialogCatalog" 
                          update="dialogCatalogButtonPanel"/>
 
-        <p:remoteCommand name="updateDataTableCatalog" 
-                         update="cableCatalogDataTable-cableDesignCatalogDialog"/>
+        <p:remoteCommand name="scrollToSelectedCableTypeCommand"
+                         update="cableCatalogDataTable-cableDesignCatalogDialog"
+                         oncomplete="scrollToSelectedNode();" />
+        
+        <script type="text/javascript">
+            function scrollToSelectedNode() {
+                selectedRows = document.getElementsByClassName('ui-widget-content ui-datatable-selectable ui-state-highlight');
+                if (selectedRows.length > 0) {
+                    row = selectedRows[0];
+                    row.scrollIntoView({'behavior': 'smooth', 'block': 'center'});
+                }
+            }
+        </script>
 
     </p:dialog>
-
 
 </ui:composition>

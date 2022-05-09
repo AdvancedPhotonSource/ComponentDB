@@ -16,10 +16,9 @@ See LICENSE file.
                  rowKey="#{itemListObject.id}"
                  selection="#{cableCatalogDataTableSelectionModel}"
                  selectionMode="single"
-                 rows="#{resources.SelectDataTableNumberOfRows}"
                  sortMode="single"
-                 stripedRows="true"
-                 paginator="true">         
+                 scrollable="true"
+                 scrollHeight="500">         
 
         <ui:include src="../../../item/private/itemListObject.xhtml" >
             <ui:param name="entityController"

@@ -40,10 +40,10 @@ See LICENSE file.
             <p:commandLink id="catalogEditShowButton"
                            styleClass="fa-link-icon fa-icon fa fa-pencil"
                            onstart="PF('loadingDialog').show()"
-                           oncomplete="PF('loadingDialog').hide();PF('catalogDialog').show();"
+                           oncomplete="PF('loadingDialog').hide();PF('catalogDialog').show();scrollToSelectedCableTypeCommand();"
                            action='#{entityController.prepareDialogCatalog()}'
                            rendered="#{isEntityWriteable}"
-                           update="dialogCatalog">
+                           update="dialogCatalog cableCatalogDataTable-cableDesignCatalogDialog">
                 <p:tooltip for="catalogEditShowButton"
                            value="Edit Cable Type" />
             </p:commandLink>
@@ -61,10 +61,10 @@ See LICENSE file.
         <p:outputPanel styleClass="inlineFlexOutputPanel">
             <p:commandLink id="inventoryEditShowButton"
                            styleClass="fa-link-icon fa-icon fa fa-pencil"
-                           oncomplete="PF('inventoryDialog').show();"
+                           oncomplete="PF('inventoryDialog').show();scrollToSelectedInventoryCommand();"
                            action='#{entityController.prepareDialogInventory()}'
                            rendered="#{isEntityWriteable and entityController.renderInventoryEdit}"
-                           update="dialogInventory">
+                           update="dialogInventory cableInventoryDataTable-cableDesignInventoryDialog">
                 <p:tooltip for="inventoryEditShowButton"
                            value="Assign Inventory Item" />
             </p:commandLink>
