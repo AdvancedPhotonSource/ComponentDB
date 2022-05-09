@@ -50,13 +50,13 @@ SELECT item.id as inventory_item_id, item.name as inventory_item_name, loc_item.
 FROM v_item_extras item 
 INNER JOIN item_element_relationship AS ier ON ier.first_item_element_id = item.self_element_id 
 INNER JOIN v_item_extras AS loc_item ON loc_item.self_element_id = ier.second_item_element_id 
-WHERE ier.relationship_type_id = 1 and item.domain_id = 3 
+WHERE ier.relationship_type_id = 1 and  (item.domain_id = 3 or item.domain_id = 8)
 AND item.id not in (
 	SELECT item.id 
 	FROM item, item_element ie 
 	WHERE (ie.contained_item_id1 = item.id or ie.contained_item_id2 = item.id) 
 	AND ie.is_housed = true 
-	AND item.id is not NULL and item.domain_id = 3
+	AND item.id is not NULL and (item.domain_id = 3 or item.domain_id = 8)
 );
 
 DROP VIEW IF EXISTS v_item_domain_inventory_connector_status;
