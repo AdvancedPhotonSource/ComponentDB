@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">   
+
+    <p:column id="endpointsColumn"
+              rendered="#{entitySettingObject.displayEndpoints}"
+              sortBy="#{itemListObject.endpointsString}"
+              field="Endpoints"
+              filterable="#{true}"
+              filterValue="#{entitySettingObject.filterEndpoints}"
+              filterBy="#{itemListObject.endpointsString}" 
+              filterMatchMode="contains"
+              exportFunction="#{facesUtility.getFilterString(itemListObject.endpointsString)}">
+        <f:facet name="header">
+            <h:outputText value="Endpoints" />
+            <p:tooltip value="Cable endpoint devices"
+                       for="endpointsColumn"/>
+        </f:facet> 
+        <h:outputText value="#{itemListObject.endpointsString}" /> 
+    </p:column>   
+
+    <p:column id="cableTypeColumn"
+              rendered="#{entitySettingObject.displayCatalogItem}"
+              sortBy="#{itemListObject.catalogItemString}"
+              field="CableType"
+              filterable="#{true}"
+              filterValue="#{entitySettingObject.filterCatalogItem}"
+              filterBy="#{itemListObject.catalogItemString}" 
+              filterMatchMode="contains"
+              exportFunction="#{facesUtility.getFilterString(itemListObject.catalogItemString)}">
+        <f:facet name="header">
+            <h:outputText value="Cable Type" />
+            <p:tooltip value="Asssigned cable catalog type"
+                       for="cableTypeColumn"/>
+        </f:facet> 
+        <h:outputText value="#{itemListObject.catalogItemString}" /> 
+    </p:column>
+
+    <p:column id="assignedInventoryColumn"
+              rendered="#{entitySettingObject.displayAssignedInventory}"
+              sortBy="#{itemListObject.inventoryItemString}"
+              field="AssignedInventory"
+              filterable="#{false}"
+              exportFunction="#{facesUtility.getFilterString(itemListObject.inventoryItemString)}">
+        <f:facet name="header">
+            <h:outputText value="Assigned Inventory" />
+            <p:tooltip value="Asssigned cable inventory unit"
+                       for="assignedInventoryColumn"/>
+        </f:facet> 
+        <h:outputText value="#{itemListObject.inventoryItemString}" /> 
+    </p:column>
+
+    <p:column id="installationStatusColumn"
+              rendered="#{entitySettingObject.displayInstallationStatus}"
+              sortBy="#{itemListObject.installedStatusString}"
+              field="InstallationStatus"
+              filterable="#{false}"
+              exportFunction="#{facesUtility.getFilterString(itemListObject.installedStatusString)}">
+        <f:facet name="header">
+            <h:outputText value="Installation Status" />
+            <p:tooltip value="Inventory unit installation status (planned/installed)"
+                       for="installationStatusColumn"/>
+        </f:facet> 
+        <h:outputText value="#{itemListObject.installedStatusString}" /> 
+    </p:column>
+
+    <ui:decorate template="listViewEndpointDeviceColumn.xhtml">
+        <ui:param name="endpointNum" value="1" />                
+    </ui:decorate>
+
+    <ui:decorate template="listViewEndpointPortColumn.xhtml">
+        <ui:param name="endpointNum" value="1" />                
+    </ui:decorate>
+
+    <ui:decorate template="listViewEndpointConnectorColumn.xhtml">
+        <ui:param name="endpointNum" value="1" />                
+    </ui:decorate>
+
+    <ui:decorate template="listViewConnectedDevicesColumn.xhtml">
+        <ui:param name="endpointNum" value="1" />                
+    </ui:decorate>
+
+    <ui:decorate template="listViewEndpointLocationColumn.xhtml">
+        <ui:param name="endpointNum" value="1" />                
+    </ui:decorate>
+
+    <ui:decorate template="listViewEndpointDeviceColumn.xhtml">
+        <ui:param name="endpointNum" value="2" />                
+    </ui:decorate>
+
+    <ui:decorate template="listViewEndpointPortColumn.xhtml">
+        <ui:param name="endpointNum" value="2" />                
+    </ui:decorate>
+
+    <ui:decorate template="listViewEndpointConnectorColumn.xhtml">
+        <ui:param name="endpointNum" value="2" />                
+    </ui:decorate>
+
+    <ui:decorate template="listViewConnectedDevicesColumn.xhtml">
+        <ui:param name="endpointNum" value="2" />                
+    </ui:decorate>
+
+    <ui:decorate template="listViewEndpointLocationColumn.xhtml">
+        <ui:param name="endpointNum" value="2" />                
+    </ui:decorate>
+
+</ui:composition>

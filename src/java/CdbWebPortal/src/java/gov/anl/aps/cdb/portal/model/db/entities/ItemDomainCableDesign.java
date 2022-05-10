@@ -908,6 +908,7 @@ public class ItemDomainCableDesign extends Item {
         return catalogItem;
     }
 
+    @JsonIgnore
     public String getCatalogItemString() {
         Item iCatalog = this.getCatalogItem();
         if (iCatalog != null) {
@@ -952,6 +953,16 @@ public class ItemDomainCableDesign extends Item {
         selfElement.setIsHoused(isHoused);
     }
     
+    @JsonIgnore
+    public String getInventoryItemString() {
+        ItemDomainCableInventory assignedInventory = this.getInventoryItem();
+        if (assignedInventory != null) {
+            return assignedInventory.getName();
+        } else {
+            return "";
+        }
+    }
+
     @JsonIgnore
     public String getInstalledStatusString() {
         if (getInventoryItem() != null) {

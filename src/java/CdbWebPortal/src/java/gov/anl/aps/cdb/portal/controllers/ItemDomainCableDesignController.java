@@ -39,8 +39,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -675,14 +673,14 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     utility.updateAssignedItem(getCurrent(), selectionModelCatalog, user, null);
                 } catch (CdbException ex) {
                     SessionUtility.addErrorMessage("Error", ex.getMessage());
-                    return view();
+                    return null;
                 }
 
                 String updateResult = update();
 
                 // An error occured, reload the page with correct information. 
                 if (updateResult == null) {                    
-                    return view();
+                    return null;
                 }
 
                 SessionUtility.executeRemoteCommand(remoteCommandSuccess);
@@ -844,14 +842,14 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     utility.updateAssignedItem(getCurrent(), assignedItem, user, installationStatus);
                 } catch (CdbException ex) {
                     SessionUtility.addErrorMessage("Error", ex.getMessage());
-                    return view();
+                    return null;
                 }
                 
                 String updateResult = update();
 
                 // An error occured, reload the page with correct information. 
                 if (updateResult == null) {                    
-                    return view();
+                    return null;
                 }
 
                 SessionUtility.executeRemoteCommand(remoteCommandSuccess);
