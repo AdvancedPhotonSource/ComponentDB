@@ -9,13 +9,14 @@ from rich.traceback import install
 from cdbApi import ApiException
 
 from CdbApiFactory import CdbApiFactory
+from cdbCli.common.cli import cliBase
 
 from cdbCli.common.cli.cliBase import CliBase
 from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id_helper
 
 
 def add_document_file_helper(
-    item_api, item_id, property_tag, property_description, upload_filename
+    item_api, item_id, property_tag, property_description, upload_filename, add_item_log=False
 ):
     """Helper function to upload a file to a given item id
 
@@ -45,8 +46,9 @@ def add_document_file_helper(
         document_property.tag = property_tag
         document_property.description = property_description
         item_api.update_item_property_value(item_id, property_value=document_property)
-        log = "File uploaded to Item ID :" + str(item_id) + " successfully"
-        set_item_log_by_id_helper(item_api=item_api, item_id=item_id, log_entry=log)
+        if add_item_log:
+            log = "File uploaded to Item ID :" + str(item_id) + " successfully"
+            set_item_log_by_id_helper(item_api=item_api, item_id=item_id, log_entry=log)
 
 
 @click.command()
@@ -62,8 +64,9 @@ def add_document_file_helper(
     type=click.Choice(["id", "qr_id"], case_sensitive=False),
     help="Allowed values are 'id'(default) or 'qr_id'",
 )
-@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
-def add_document_file(input_file, item_id_type, dist=None):
+@cliBase.wrap_common_cli_click_options
+@click.pass_obj
+def add_document_file(cli, input_file, item_id_type, add_log_to_item):
     """Uploads a document to a Document Property of the item.
 
     \b
@@ -76,8 +79,7 @@ def add_document_file(input_file, item_id_type, dist=None):
     Input is either through a named file or through STDIN.   Default is STDIN
     The format of the input data is
     <Item ID>,<Property Tag>,<Property Description>,<Filename to upload>"""
-
-    cli = CliBase(dist)
+    
     try:
         factory = cli.require_authenticated_api()
     except ApiException:
@@ -85,13 +87,15 @@ def add_document_file(input_file, item_id_type, dist=None):
         return
 
     item_api = factory.getItemApi()
-    reader = csv.reader(input_file, delimiter=",")
-
-    # Removes header located in first row
-    next(reader)
+    
+    stdin_msg = "Entry per line: <Item_%s>,<Property_Tag>,<Property_Description>,<Filename_to_upload>" % item_id_type
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)    
 
     # Parse lines of csv
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
+
         item_id = row[0]
         property_tag = row[1]
         property_description = row[2]
@@ -101,7 +105,7 @@ def add_document_file(input_file, item_id_type, dist=None):
             item_id = str(item_api.get_item_by_qr_id(int(item_id)).id)
 
         add_document_file_helper(
-            item_api, item_id, property_tag, property_description, upload_filename
+            item_api, item_id, property_tag, property_description, upload_filename, add_log_to_item
         )
 
 

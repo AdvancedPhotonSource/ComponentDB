@@ -6,9 +6,7 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                template="../../itemDomainInventoryBase/private/itemDomainInventoryBaseListDataTable.xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                template="../../itemDomainInventoryBase/private/itemDomainInventoryBaseListDataTable.xhtml">
     
     <ui:param name="entityController" value="#{childEntityController}" />
     <ui:param name="itemListDataTableValue" value="#{itemListDataTableValue != null 
@@ -18,6 +16,7 @@ See LICENSE file.
     
     <ui:param name="updateTarget" value="#{updateTarget != null ? updateTarget : '@form'}" />
     
+    <ui:param name="itemListDataTableLazy" value="#{false}" />     
     <ui:param name="isEntityCloneable" value="#{false}" />
     <ui:param name="isEntityWriteable" value="#{false}" />
     

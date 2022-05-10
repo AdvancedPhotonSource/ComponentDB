@@ -7,6 +7,7 @@ import click
 
 from cdbApi import ItemStatusBasicObject
 from cdbApi import ApiException
+from cdbCli.common.cli import cliBase
 
 from cdbCli.common.cli.cliBase import CliBase
 from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id_helper
@@ -67,7 +68,7 @@ def set_item_status_by_id_helper(item_api, prop_type_api, item_id, status):
 #                                                                                              #
 ################################################################################################
 def set_item_details_helper(
-    item_api, prop_type_api, item_id, detail_type, new_detail_value
+    item_api, prop_type_api, item_id, detail_type, new_detail_value, add_log_to_item=False
 ):
     """
     This function updates fields on a CDB item
@@ -117,8 +118,9 @@ def set_item_details_helper(
             + "): "
             + str(new_detail_value)
         )
-        set_item_log_by_id_helper(item_api, item_id, log_entry=response)
-        click.echo(response)
+        if add_log_to_item:
+            set_item_log_by_id_helper(item_api, item_id, log_entry=response)
+            click.echo(response)
 
 
 @click.command()
@@ -140,8 +142,9 @@ def set_item_details_helper(
     type=click.Choice(["description", "serial", "status"], case_sensitive=False),
     help="Allowed values are description(default), 'serial', or 'status; ",
 )
-@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
-def set_item_details(input_file, item_id_type, detail_type, dist=None):
+@cliBase.wrap_common_cli_click_options
+@click.pass_obj
+def set_item_details(cli, input_file, item_id_type, detail_type, add_log_to_item):
     """Updates select item details (e.g. description, serial number )
 
     \b
@@ -155,7 +158,6 @@ def set_item_details(input_file, item_id_type, detail_type, dist=None):
     The format of the input data is
     <Item ID>,<New Detail Value>   where the ID is by the type specified by the commandline."""
 
-    cli = CliBase(dist)
     try:
         factory = cli.require_authenticated_api()
     except ApiException:
@@ -165,13 +167,13 @@ def set_item_details(input_file, item_id_type, detail_type, dist=None):
     item_api = factory.getItemApi()
     prop_type_api = factory.getPropertyTypeApi()
 
-    reader = csv.reader(input_file)
+    stdin_msg = "Entry per line: <item_%s>,<%s>" % (item_id_type, detail_type)
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)    
 
-    # Removes header located in first row
-    next(reader)
-
-    # Parse parse lines of csv and set item details accordingly
+    # Parse lines of csv
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
         if not row[0]:
             continue
 
@@ -183,7 +185,7 @@ def set_item_details(input_file, item_id_type, detail_type, dist=None):
             item_id = str(item_api.get_item_by_qr_id(int(item_id)).id)
 
         set_item_details_helper(
-            item_api, prop_type_api, item_id, detail_type, new_detail_value
+            item_api, prop_type_api, item_id, detail_type, new_detail_value, add_log_to_item
         )
 
 

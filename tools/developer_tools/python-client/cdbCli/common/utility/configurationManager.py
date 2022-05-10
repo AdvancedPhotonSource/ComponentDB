@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
+from multiprocessing.spawn import prepare
 import os
 from configparser import ConfigParser
 
 
 class ConfigurationManager:
     CDB_INSTALL_DIR_ENV_NAME = 'CDB_INSTALL_DIR'
+    CDB_CLI_CONFIG_FILE_ENV_NAME = 'CDB_CLI_CONFIG_FILE'
     CDB_PROD_CONFIG_SUBDIR = '%s/etc/cdb.conf'
     CONFIG_WEB_PORTAL_SECTION_NAME = 'WebPortal'
     CONFIG_PORTAL_VALUE_NAME = 'portalWebAddress'
@@ -31,24 +33,40 @@ class ConfigurationManager:
             raise ConfigurationManager.__instance
         ConfigurationManager.__instance = self
 
-        home_dot_dir_config = os.path.expanduser("~/.cdb/cdb.conf")
-        current_dir_config = os.path.expanduser("./cdb.conf")
+        if self.CDB_CLI_CONFIG_FILE_ENV_NAME in os.environ:
+            config_path = os.environ[self.CDB_CLI_CONFIG_FILE_ENV_NAME]
+            if os.path.exists(config_path):
+                self.configuration = ConfigParser()
+                self.configuration.read(config_path)
+            else:
+                raise Exception("Path (%s) was not found using the enviornment variable '%s'. Please clear (`unset %s`) variable or specify an appropriate path." 
+                    % (config_path, self.CDB_CLI_CONFIG_FILE_ENV_NAME, self.CDB_CLI_CONFIG_FILE_ENV_NAME))
+        else:
+            home_dot_dir_config = os.path.expanduser("~/.cdb/cdb.conf")
+            current_dir_config = os.path.expanduser("./cdb.conf")
 
-        allowed_files = [home_dot_dir_config,
-                         current_dir_config]
+            config_paths = [home_dot_dir_config,
+                            current_dir_config]
 
-        try:
-            install_path = os.environ[self.CDB_INSTALL_DIR_ENV_NAME]
-            configuration_file_path = self.CDB_PROD_CONFIG_SUBDIR % install_path
-            allowed_files.append(configuration_file_path)
-        except:
-            pass
+            try:
+                install_path = os.environ[self.CDB_INSTALL_DIR_ENV_NAME]
+                configuration_file_path = self.CDB_PROD_CONFIG_SUBDIR % install_path
+                config_paths.append(configuration_file_path)
+            except:
+                pass
 
-        config_file_exists = [os.path.exists(config_file) for config_file in allowed_files]
+            self.prepare_configuration(config_paths)
+
+    def prepare_configuration(self, config_paths):
+        '''
+        Read or generate configuration
+        '''
+
+        config_file_exists = [os.path.exists(config_file) for config_file in config_paths]        
 
         if any(config_file_exists):
             self.configuration = ConfigParser()
-            self.configuration.read(allowed_files)
+            self.configuration.read(config_paths)
         else:
             print("Greetings!!!,  you need a minimal cdb.conf file to run these scripts.")
             print("The file can be in one of the following locations and it helps specify ")
@@ -56,11 +74,11 @@ class ConfigurationManager:
             print("access credentials for CDB")
             print("")
 
-            for i, path in enumerate(allowed_files):
+            for i, path in enumerate(config_paths):
                 print("%i: %s" % (i, os.path.dirname(path)))
 
             config_file_dir_selection = input("Enter the directory to store cdb.conf & other required files [0]: ") or 0
-            config_filename = allowed_files[int(config_file_dir_selection)]
+            config_filename = config_paths[int(config_file_dir_selection)]
 
             print("To get you started, you will need to enter the address of the default ")
             print("CDB Server.  You can add more server definitions by editing the cdb.conf file ")
@@ -82,7 +100,7 @@ class ConfigurationManager:
                     self.configuration.write(configfile)
             except Exception as e:
                 print(" Sorry, can't save your cdb.conf file, try again")
-                print(str(e))
+                print(str(e))        
 
     def get_portal_address(self, portal_key=CONFIG_PORTAL_VALUE_NAME):
         web_portal_section = self.configuration[self.CONFIG_WEB_PORTAL_SECTION_NAME]

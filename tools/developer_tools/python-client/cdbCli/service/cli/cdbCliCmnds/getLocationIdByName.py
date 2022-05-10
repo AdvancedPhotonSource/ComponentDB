@@ -68,8 +68,8 @@ def get_location_id_by_name_helper(item_api, location_name):
     prompt="Location Name:",
     help="Location Name (use wildcards ? and *)",
 )
-@click.option("--dist", help="Change the CDB distribution (sandbox, dev, prod)")
-def get_location_id_by_name(location_name, dist=None):
+@click.pass_obj
+def get_location_id_by_name(cli, location_name):
     """Gets the corresponding ID for a location name
 
     \b
@@ -80,8 +80,7 @@ def get_location_id_by_name(location_name, dist=None):
 
     Example: get-location-id-by-name --location-name 335*
     Example: get-location-id-by-name --location-name "335?C?shelf 9"
-    """
-    cli = CliBase(dist)
+    """    
     try:
         factory = cli.require_authenticated_api()
     except ApiException:

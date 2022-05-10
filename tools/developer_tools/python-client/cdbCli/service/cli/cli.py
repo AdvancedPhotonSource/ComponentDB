@@ -2,6 +2,8 @@
 
 import click
 
+from cdbCli.common.cli.cliBase import CliBase
+
 from cdbCli.service.cli.cdbCliCmnds.addDocumentFile import add_document_file
 from cdbCli.service.cli.cdbCliCmnds.addDocumentProperty import add_document_property
 from cdbCli.service.cli.cdbCliCmnds.cdb_log_to_mqtt import cdb_log_to_mqtt
@@ -35,8 +37,10 @@ class AliasedGroup(click.Group):
 
 
 @click.group(cls=AliasedGroup)
-def entry_point():
-    pass
+@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
+@click.pass_context
+def entry_point(ctx, dist=None):
+    ctx.obj = CliBase(dist)
 
 def main():
     entry_point.add_command(add_document_file)

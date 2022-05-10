@@ -203,21 +203,27 @@ class CdbSeleniumModuleBase:
 
 		return table_data
 
-	def _import_navigate_to_verification_data_table(self, form_name, import_file_name):
-		# self.module._wait_for_clickable_id('importSourceForm:importWizardSelectFormatMenu')
-		self._wait_for_clickable_id_with_stale_protection('%s:importWizardSelectFormatMenu' % form_name)
-		self._click_on_id('%s:importWizardSelectFormatMenu' % form_name)
-		self._wait_for_id_and_click('%s:importWizardSelectFormatMenu_1' % form_name)
-
+	def _import_next_step(self, form_name):
 		next_step_id = '%s:importWizardNextButton' % form_name
 		self._wait_for_clickable_id_with_stale_protection(next_step_id)
 		self._click_on_id_with_stale_protection(next_step_id)
 
+
+	def _import_navigate_to_verification_data_table(self, form_name, import_file_name, additional_pre_file_step=None):		
+		# Select Format
+		self._wait_for_clickable_id_with_stale_protection('%s:importWizardSelectFormatMenu' % form_name)
+		self._click_on_id('%s:importWizardSelectFormatMenu' % form_name)
+		self._wait_for_id_and_click('%s:importWizardSelectFormatMenu_1' % form_name)	
+		self._import_next_step(form_name)
+
+		# Select Mode
 		self._wait_for_id_and_click('%s:importWizardRadioCreate' % form_name)
+		self._import_next_step(form_name)		
 
-		self._wait_for_clickable_id_with_stale_protection(next_step_id)
-		self._click_on_id_with_stale_protection(next_step_id)
+		if additional_pre_file_step:
+			additional_pre_file_step()
 
+		# Enter file into upload
 		upload_input_id = '%s:importWizardSelectFileUpload_input' % form_name
 		upload_input = self._wait_for_id(upload_input_id)
 
@@ -225,8 +231,7 @@ class CdbSeleniumModuleBase:
 		abs_path = os.path.abspath(rel_path)
 		upload_input.send_keys(abs_path)
 
-		self._wait_for_clickable_id_with_stale_protection(next_step_id)
-		self._click_on_id_with_stale_protection(next_step_id)
+		self._import_next_step(form_name)
 
 		table_data = self._read_data_table(form_name, 'importWizardTable')
 
@@ -329,4 +334,27 @@ class CdbSeleniumModuleBase:
 		value_element = self._find_by_id(expected_value_box_id)
 
 		test.assertEqual(value_element.text, prop_value_text, msg='%s found but expected %s for new property value.' % (value_element.text,prop_value_text ))
+
+	def _add_image_to_item(self, form_name, entity_name, sample_file_name='AnlLogo.png', needs_toggler=True):
+		if needs_toggler:
+			toggle_id = "%s:%sViewGalleryPanel_toggler" % (form_name, entity_name)
+			self._click_on_id(toggle_id)
+		
+		add_btn_id = "%s:%sPropertyAddImagesCommandButton" % (form_name, entity_name)
+		self._wait_for_id_and_click(add_btn_id)
+		
+		upload_input_id = "%s:propertyValueMultipleImageFileUpload_input" % form_name
+		upload_input = self._wait_for_id(upload_input_id)
+
+		rel_path = 'data/' + sample_file_name
+		abs_path = os.path.abspath(rel_path)
+		upload_input.send_keys(abs_path)
+
+		upload_btn_xpath = '//*[@id="%s:propertyValueMultipleImageFileUpload"]/div[1]/button[1]' % form_name
+		self._wait_for_clickable_xpath(upload_btn_xpath)
+		self._click_on_xpath(upload_btn_xpath)
+
+		# Wait for AJAX 
+		time.sleep(2)
+
 

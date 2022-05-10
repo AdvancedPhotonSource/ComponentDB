@@ -4,16 +4,24 @@
  */
 package gov.anl.aps.cdb.rest.routes;
 
+import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.SystemPropertyTypeNames;
+import gov.anl.aps.cdb.portal.controllers.utilities.AllowedPropertyValueControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.rest.authentication.Secured;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import javax.ejb.EJB;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -84,5 +92,26 @@ public class PropertyTypeRoute extends BaseRoute {
         LOGGER.debug("Fetching operty type: " + propertyTypeName);
         return propertyTypeFacade.findByName(propertyTypeName); 
     }
+    
+    @PUT
+    @Path("/ById/{id}/AllowedValue")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Secured
+    public AllowedPropertyValue addAllowedValue(@PathParam("id") int propertyTypeId, AllowedPropertyValue allowedPropertyValue) throws AuthorizationError, CdbException {
+        boolean currentRequestUserAdmin = isCurrentRequestUserAdmin();
+        if (!currentRequestUserAdmin) {
+            AuthorizationError ex = new AuthorizationError("Only admins can create new allowed values.");
+            LOGGER.error(ex);
+            throw ex;
+        }
+        UserInfo createdByUserInfo = getCurrentRequestUserInfo();
+        PropertyType propertyType = getPropertyTypeById(propertyTypeId); 
+        AllowedPropertyValueControllerUtility utility = new AllowedPropertyValueControllerUtility();
+        allowedPropertyValue.setPropertyType(propertyType);
+        AllowedPropertyValue newAllowedValue = utility.create(allowedPropertyValue, createdByUserInfo);
+        return newAllowedValue; 
+    }
+    
     
 }

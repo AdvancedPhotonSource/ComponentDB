@@ -10,7 +10,6 @@ from cdbApi import ApiException
 from cdbApi.models.new_location_information import NewLocationInformation
 
 from cdbCli.common.cli.cliBase import CliBase
-from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id_helper
 
 
 ################################################################################################
@@ -53,13 +52,13 @@ def create_location_helper(
 
 @click.command()
 @click.option(
-    "--inputfile",
+    "--input-file",
     help="Input csv file with new location parameters, see help, default is STDIN",
     type=click.File("r"),
     default=sys.stdin,
 )
-@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
-def create_location(inputfile, dist=None):
+@click.pass_obj
+def create_location(cli, input_file):
     """Creates a new location with id, qr_id, name, type, and description
 
     \b
@@ -73,8 +72,7 @@ def create_location(inputfile, dist=None):
     Create new location from csv on STDIN(default) or a file
     File has the format
     <Parent Location ID>,<location_name>,<location qr code>,<location_type>,<location description>"""
-
-    cli = CliBase(dist)
+    
     try:
         factory = cli.require_authenticated_api()
     except ApiException:
@@ -83,13 +81,13 @@ def create_location(inputfile, dist=None):
 
     item_api = factory.getItemApi()
 
-    reader = csv.reader(inputfile)
+    stdin_msg = "Entry per line: <Parent_Location_ID>,<Location_Name>,<qr_id>,<location_type>,<location_description>"
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)    
 
-    # Remove header row
-    next(reader)
-
-    # Parse through csv and create new location for each row
+    # Parse lines of csv
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
         location_id = row[0]
         location_name = row[1]
         location_qr_id = row[2]

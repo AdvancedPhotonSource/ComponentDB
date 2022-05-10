@@ -53,8 +53,8 @@ def set_item_log_by_id_helper(item_api, item_id, log_entry, effective_date=None)
 @click.option(
     "--effective-date", is_flag=True, help="Set if effective date is listed in input"
 )
-@click.option("--dist", help="Change the CDB distribution (sandbox, dev, prod)")
-def set_item_log_by_id(input_file, effective_date=False, dist=None):
+@click.pass_obj
+def set_item_log_by_id(cli, input_file, effective_date=False):
     """Adds a log entry to the given item ids with optional effective date
 
     \b
@@ -67,8 +67,7 @@ def set_item_log_by_id(input_file, effective_date=False, dist=None):
     The format of the input data is an intended row to be removed followed by
     <Item ID>,<Log Data>,<Effective Date>.
     """
-
-    cli = CliBase(dist)
+    
     try:
         factory = cli.require_authenticated_api()
     except ApiException:
@@ -77,13 +76,13 @@ def set_item_log_by_id(input_file, effective_date=False, dist=None):
 
     item_api = factory.getItemApi()
 
-    reader = csv.reader(input_file)
+    stdin_msg = "Entry per line: <item_id>,<log_text>"
+    reader, stdin_tty_mode = cli.prepare_cli_input_csv_reader(input_file, stdin_msg)    
 
-    # Removes header located in first row
-    next(reader)
-
-    # Parse lines of csv and update corresponding item log
+    # Parse lines of csv
     for row in reader:
+        if row.__len__() == 0 and stdin_tty_mode:
+            break
         if not row[0]:
             continue
 

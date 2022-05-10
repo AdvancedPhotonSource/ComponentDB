@@ -6,13 +6,11 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="../../item/private/templates/itemListDataTableTemplate.xhtml"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                template="../../item/private/templates/itemListDataTableTemplate.xhtml">        
 
     <ui:param name="itemListDataTableValue" value="#{itemListDataTableValue != null 
                                                      ? itemListDataTableValue 
-                                                     : itemDomainInventoryController.scopedListDataModel}" />
+                                                     : itemDomainInventoryController.scopedListDataModel}" />        
 
     <ui:define name="itemColumns">
         <ui:include src="itemDomainInventoryBaseListObject.xhtml" />

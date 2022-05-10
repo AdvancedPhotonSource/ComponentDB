@@ -37,11 +37,13 @@ class MachineDesign(CdbSeleniumModuleBase):
 	CSV_ALTERNATE_NAME_COLUMN_HEADER = 'Alternate Name'
 	CSV_ASSIGNED_CATALOG = 'Assigned Catalog'
 	CSV_ASSIGNED_CATALOG_BLANK = 'placeholder'
+	VIEW_BASE_NAME = 'itemDomainMachineDesign'
 	ENTITY_TYPE_NAME = "itemMachineDesign"
 	LIST_FORM_NAME = "%sListForm" % ENTITY_TYPE_NAME	
 	EXPORT_FORM_NAME = "exportMachineDesignForm"
+	IMPORT_FORM_NAME = "importMachineDesignForm"
 	
-
+	IMPORT_FILE_NAME = "Machine Design Import.xlsx"
 	EXPORT_FILE_NAME = "Machine Element Update Export.xlsx"
 
 	def __init__(self, driver):
@@ -375,11 +377,10 @@ class MachineDesign(CdbSeleniumModuleBase):
 		#first_item_xpath = '//*[@id="itemMachineDesignListForm:itemMachineDesignListDataTable_node_0"]/td[1]'
 		first_item_xpath = self.ROW_TOGGLER_MACHINE_DESIGN_ROW_XPATH_FORMULA % (0)
 		context_item_xpath = self.MACHINE_DESIGN_CONTEXT_MENU_XPATH_FORMULA % (self.MACHINE_DESIGN_CATALOG_CONTEXT_MENU_ID, self.MACHINE_DESIGN_CONTEXT_MENU_DETAILS_INX)
-		self._context_click_x_path(first_item_xpath, context_item_xpath)
-		time.sleep(2)
-		self._add_log_to_item(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, 'Machine Design Log!', False)
-		self._add_property_to_item(test, self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, "Machine Prop", False)
-		
+		self._context_click_x_path(first_item_xpath, context_item_xpath)		
+		self._add_log_to_item(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, 'Machine Design Log!', False)		
+		self._add_property_to_item(test, self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, "Machine Prop", False)		
+		self._add_image_to_item(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, needs_toggler=False)		
 
 	def filter_machine(self, filter_string='Test Machine'):
 		filterbox_id = 'itemMachineDesignListForm:itemMachineDesignListDataTable:nameMdFilter'
@@ -390,4 +391,14 @@ class MachineDesign(CdbSeleniumModuleBase):
 	def export_machine(self, test):
 		self._navigate_to_export_from_list(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME)
 		self._export(self.EXPORT_FORM_NAME, self.EXPORT_FILE_NAME, test, has_levels=True)
+
+	def import_machine(self, test):
+		self._wait_for_id_and_click('%s:%sImportButton' % (self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME))
+		table_results = self._import_navigate_to_verification_data_table(self.IMPORT_FORM_NAME, self.IMPORT_FILE_NAME, additional_pre_file_step=self.__additional_pre_file_import_step)
+		test.assertEqual(len(table_results), 6, msg='6 items were imported in the spreadsheet')
+		self._import_complete(self.IMPORT_FORM_NAME, self.VIEW_BASE_NAME)
+
+	def __additional_pre_file_import_step(self):
+		self._import_next_step(self.IMPORT_FORM_NAME)
+
 
