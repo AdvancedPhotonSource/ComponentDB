@@ -347,7 +347,11 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     
     @Override
     public DataModel getListDataModel() {
-        return getItemController().getListDataModel(); 
+        return getItemController().getListDataModel();         
+    } 
+    
+    public boolean isDataTableScopeLazy() {
+        return getItemController().isDataTableScopeLazy(); 
     }
     
     @Override
