@@ -718,7 +718,7 @@ public class ItemDomainCableDesign extends Item {
         }
     }
     
-    private void clearCableConnectors() {
+    public void clearCableConnectors() {
         
         // null out connectors used in cable relationships
         ItemElement selfElement = this.getSelfElement();
@@ -877,34 +877,38 @@ public class ItemDomainCableDesign extends Item {
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_NOTES_KEY, notes);
     }
 
-    public void setCatalogItem(Item itemCableCatalog) {
-        // "assign" catalog item to cable design
-        ItemElement selfElement = this.getSelfElement();
-        Item assignedItem = selfElement.getContainedItem2();
-        if (((itemCableCatalog == null) && (assignedItem != null)) 
-                || ((itemCableCatalog != null) && (!itemCableCatalog.equals(assignedItem)))) {
-            
-            // if changing catalog item, we need to remove cable connectors since they are inherited from catalog item
-            clearCableConnectors();
-        }
-        selfElement.setContainedItem2(itemCableCatalog);
-    }
-
-    public void setCatalogItemId(String catalogItemId) {
-        ItemDomainCableCatalog catalogItem = (ItemDomainCableCatalog) (getEntityById(catalogItemId));
-
-        if (catalogItem != null) {
-            setCatalogItem(catalogItem);
+    public Item getAssignedItem() {
+        ItemElement selfElement = getSelfElement();
+        if (selfElement == null) {
+            return null;
         } else {
-            LOGGER.error("setCatalogItemId() unknown cable catalog item id " + catalogItemId);
+            return selfElement.getContainedItem2();
         }
-     }
-
-    public Item getCatalogItem() {
-        ItemElement selfElementCable = this.getSelfElement();
-        return selfElementCable.getContainedItem2();
     }
 
+    public void setAssignedItem(Item assignedItem) {
+        ItemElement selfElement = this.getSelfElement();
+        selfElement.setContainedItem2(assignedItem);
+    }
+
+    public void setCatalogItem(ItemDomainCableCatalog itemCableCatalog) {
+        setAssignedItem(itemCableCatalog);
+    }
+
+    public ItemDomainCableCatalog getCatalogItem() {
+        Item assignedItem = getAssignedItem();
+        ItemDomainCableCatalog catalogItem = null;
+        if (assignedItem == null) {
+            return null;
+        } else if (assignedItem instanceof ItemDomainCableInventory) {
+            catalogItem = ((ItemDomainCableInventory) assignedItem).getCatalogItem();
+        } else if (assignedItem instanceof ItemDomainCableCatalog) {
+            catalogItem = (ItemDomainCableCatalog) assignedItem;
+        }
+        return catalogItem;
+    }
+
+    @JsonIgnore
     public String getCatalogItemString() {
         Item iCatalog = this.getCatalogItem();
         if (iCatalog != null) {
@@ -924,6 +928,54 @@ public class ItemDomainCableDesign extends Item {
         }
     }
     
+    public void setInventoryItem(ItemDomainCableInventory inventoryItem) {
+        setAssignedItem(inventoryItem);
+    }
+
+    public ItemDomainCableInventory getInventoryItem() {
+        Item assignedItem = getAssignedItem();
+        ItemDomainCableInventory inventoryItem = null;
+        if (assignedItem == null) {
+            return null;
+        } else if (assignedItem instanceof ItemDomainCableInventory) {
+            inventoryItem = (ItemDomainCableInventory) assignedItem;
+        }
+        return inventoryItem;
+    }
+
+    public boolean isIsHoused() {
+        ItemElement selfElement = getSelfElement();
+        return selfElement.getIsHoused();
+    }
+
+    public void setIsHoused(boolean isHoused) {
+        ItemElement selfElement = getSelfElement();
+        selfElement.setIsHoused(isHoused);
+    }
+    
+    @JsonIgnore
+    public String getInventoryItemString() {
+        ItemDomainCableInventory assignedInventory = this.getInventoryItem();
+        if (assignedInventory != null) {
+            return assignedInventory.getName();
+        } else {
+            return "";
+        }
+    }
+
+    @JsonIgnore
+    public String getInstalledStatusString() {
+        if (getInventoryItem() != null) {
+            if (isIsHoused()) {
+                return "installed";
+            } else {
+                return "planned";
+            }
+        } else {
+            return null;
+        }
+    }
+
     @JsonIgnore
     public Item getPrimaryEndpoint(String cableEnd) {
         ItemElementRelationship cableRelationship = getPrimaryRelationshipForCableEnd(cableEnd);

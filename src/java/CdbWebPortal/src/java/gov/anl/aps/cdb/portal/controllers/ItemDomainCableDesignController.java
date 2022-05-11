@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
@@ -22,11 +23,13 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
@@ -40,10 +43,13 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -57,160 +63,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     @Override
     protected ItemDomainCableDesignControllerUtility createControllerUtilityInstance() {
         return new ItemDomainCableDesignControllerUtility(); 
-    }
-
-    public class EndpointDialog {
-
-        private Boolean disableButtonSave = true;
-        private ItemElementRelationship cableRelationship = null;
-        private Item itemEndpoint = null;
-        private ItemDomainMachineDesignTreeNode valueModelTree = null;
-        private TreeNode selectionModelEndpoint = null;
-        
-        public Boolean getDisableButtonSave() {
-            return disableButtonSave;
-        }
-
-        public void setDisableButtonSave(Boolean disableButtonSave) {
-            this.disableButtonSave = disableButtonSave;
-        }
-        
-        public ItemElementRelationship getCableRelationship() {
-            return cableRelationship;
-        }
-        
-        public void setCableRelationship(ItemElementRelationship cableRelationship) {
-            this.cableRelationship = cableRelationship;
-            setItemEndpoint(cableRelationship.getFirstItemElement().getParentItem());
-        }
-
-        public Item getItemEndpoint() {
-            return itemEndpoint;
-        }
-
-        public void setItemEndpoint(Item itemEndpoint) {
-            this.itemEndpoint = itemEndpoint;
-            expandToSpecificMachineDesignItem((ItemDomainMachineDesign) itemEndpoint);
-        }
-
-        public String getItemEndpointString() {
-            if (itemEndpoint == null) {
-                return "";
-            } else {
-                return itemEndpoint.getName();
-            }
-        }
-
-        public ItemDomainMachineDesignTreeNode getValueModelTree() {
-            if (valueModelTree == null) {
-                ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
-                valueModelTree = controller.loadMachineDesignRootTreeNode();
-            }
-            return valueModelTree;
-        }
-
-        public void setValueModelTree(ItemDomainMachineDesignTreeNode valueModelTree) {
-            this.valueModelTree = valueModelTree;
-        }
-
-        public TreeNode getSelectionModelEndpoint() {
-            return selectionModelEndpoint;
-        }
-
-        public void setSelectionModelEndpoint(TreeNode selectionModelEndpoint) {
-            this.selectionModelEndpoint = selectionModelEndpoint;
-        }
-
-        /**
-         * Determines whether endpoint changed, and call update if it did to
-         * save the change.
-         */
-        public String save(String remoteCommandSuccess) {
-
-            Item selectedItemEndpoint
-                    = ((ItemElement) (selectionModelEndpoint.getData())).getContainedItem();
-
-            // endpoint changed, update cable and save
-            if (!selectedItemEndpoint.equals(getItemEndpoint())) {
-                
-                getCurrent().updateCableRelationship(cableRelationship, itemEndpoint, null, null, null);
-
-                String updateResult = update();
-
-                // An error occured, reload the page with correct information. 
-                if (updateResult == null) {
-                    reloadCurrent();
-                    return view();
-                }
-
-                refreshConnectionListForCurrent(true);
-
-                SessionUtility.executeRemoteCommand(remoteCommandSuccess);
-            }
-            return null;
-        }
-
-        public void cancel() {
-        }
-
-        /**
-         * Handles select events generated by the machine design tree table
-         * component. Must call client side remoteCommand to update button state
-         * from oncomplete attribute for this event tag.
-         */
-        public void selectListenerEndpoint(NodeSelectEvent event) {
-            setEnablement();
-        }
-
-        public void actionListenerSaveSuccess() {
-        }
-
-        /**
-         * Resets the dialog components when closing.
-         */
-        public void reset() {
-            setSelectionModelEndpoint(null);
-            valueModelTree = null;
-            setEnablement();
-        }
-
-        /**
-         * Enables save button when a valid selection, different from the
-         * original endpoint, is made.
-         */
-        private void setEnablement() {
-
-            if (selectionModelEndpoint == null) {
-
-                setDisableButtonSave((Boolean) true);
-
-            } else {
-
-                Item selectedItemEndpoint
-                        = ((ItemElement) (selectionModelEndpoint.getData())).getContainedItem();
-
-                if (selectedItemEndpoint.equals(getItemEndpoint())) {
-                    setDisableButtonSave((Boolean) true);
-                } else {
-                    setDisableButtonSave((Boolean) false);
-                }
-            }
-        }
-
-        private void expandToSpecificMachineDesignItem(ItemDomainMachineDesign item) {
-
-            ItemDomainMachineDesignTreeNode machineDesignTreeRootTreeNode = getValueModelTree();
-
-            if (selectionModelEndpoint != null) {
-                selectionModelEndpoint.setSelected(false);
-                selectionModelEndpoint = null;
-            }
-
-            TreeNode selectedNode = ItemDomainMachineDesignController.
-                    expandToSpecificMachineDesignItem(machineDesignTreeRootTreeNode, item);
-            selectionModelEndpoint = selectedNode;
-        }
-
     }
 
     public class ConnectionEditDialog {
@@ -525,36 +377,13 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         }
 
         private void expandTreeAndSelectNode() {
-
             ItemDomainMachineDesignTreeNode machineDesignTreeRootTreeNode = getMdTree();
-
             if (selectedMdTreeNode != null) {
                 selectedMdTreeNode.setSelected(false);
                 selectedMdTreeNode = null;
-            }
-
-            TreeNode selectedNode = ItemDomainMachineDesignController.expandToSpecificMachineDesignItem(
-                    machineDesignTreeRootTreeNode, 
-                    (ItemDomainMachineDesign)getOrigMdItem());
-            
-            if ((selectedNode != null) && (getOrigMdConnector() != null)) {
-                selectedNode.setSelected(false);
-                selectedNode.setExpanded(true);
-                List<TreeNode> children = selectedNode.getChildren();
-                for (TreeNode child : children) {
-                    if (child.getType().equals("Connector")) {
-                        ItemConnector connectorChild = 
-                                ((ItemElement) (child.getData())).getMdConnector();
-                        if (connectorChild.equals(getOrigMdConnector())) {
-                            child.setSelected(true);
-                            selectedMdTreeNode = child;
-                            break;
-                        }
-                    }
-                }
-            } else {
-                selectedMdTreeNode = selectedNode;
-            }
+            }           
+            selectedMdTreeNode = ItemDomainMachineDesignController.expandToItemOrPort(
+                    machineDesignTreeRootTreeNode, (ItemDomainMachineDesign) getOrigMdItem(), getOrigMdConnector());
         }
         
         /**
@@ -750,8 +579,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public class CatalogDialog {
 
         private Boolean disableButtonSave = true;
-        private Item itemCatalog = null;
-        private Item selectionModelCatalog = null;
+        private ItemDomainCableCatalog itemCatalog = null;
+        private ItemDomainCableCatalog selectionModelCatalog = null;
         
         public Boolean getDisableButtonSave() {
             return disableButtonSave;
@@ -761,13 +590,17 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             this.disableButtonSave = disableButtonSave;
         }
 
-        public Item getItemCatalog() {
+        public ItemDomainCableCatalog getItemCatalog() {
             return itemCatalog;
         }
 
-        public void setItemCatalog(Item itemCatalog) {
+        public void setItemCatalog(ItemDomainCableCatalog itemCatalog) {
             this.itemCatalog = itemCatalog;
-            selectCatalogItem((ItemDomainCableCatalog) itemCatalog);
+            selectCatalogItem(itemCatalog);
+        }
+
+        private void selectCatalogItem(ItemDomainCableCatalog item) {
+            selectionModelCatalog = item;
         }
 
         public String getItemCatalogString() {
@@ -778,49 +611,20 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             }
         }
 
-        public Item getSelectionModelCatalog() {
+        public ItemDomainCableCatalog getSelectionModelCatalog() {
             return selectionModelCatalog;
         }
 
-        public void setSelectionModelCatalog(Item selectionModelCatalog) {
+        public void setSelectionModelCatalog(ItemDomainCableCatalog selectionModelCatalog) {
             this.selectionModelCatalog = selectionModelCatalog;
         }
 
-        /**
-         * Determines whether catalog item changed, and calls update if it did.
-         */
-        public String save(String remoteCommandSuccess) {
-
-            // catalog item changed, update cable and save
-            if (!selectionModelCatalog.equals(getItemCatalog())) {
-                
-                getCurrent().setCatalogItem(selectionModelCatalog);
-
-                String updateResult = update();
-
-                // An error occured, reload the page with correct information. 
-                if (updateResult == null) {                    
-                    return view();
-                }
-
-                SessionUtility.executeRemoteCommand(remoteCommandSuccess);
-            }
-            return null;
-        }
-
-        public void cancel() {
-        }
-
-        /**
-         * Handles select events generated by the data table
-         * component. Must call client side remoteCommand to update button state
-         * from oncomplete attribute for this event tag.
-         */
-        public void selectListenerCatalog() {
+        public void selectListenerCatalog(SelectEvent<ItemDomainCableCatalog> event) {
             setEnablement();
         }
 
-        public void actionListenerSaveSuccess() {
+        public void unselectListenerCatalog(UnselectEvent<ItemDomainCableCatalog> event) {
+            setEnablement();
         }
 
         /**
@@ -836,23 +640,227 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
          * original catalog item, is made.
          */
         private void setEnablement() {
+            
+            boolean changedCableType =
+                    ((selectionModelCatalog == null) && (getItemCatalog() != null))
+                    || ((selectionModelCatalog != null) && (getItemCatalog() == null))
+                    || ((selectionModelCatalog != null) && (!selectionModelCatalog.equals(getItemCatalog())));
 
-            if (selectionModelCatalog == null) {
-
-                setDisableButtonSave((Boolean) true);
-
+            if (changedCableType) {
+                setDisableButtonSave((Boolean) false);
             } else {
-
-                if (selectionModelCatalog.equals(getItemCatalog())) {
-                    setDisableButtonSave((Boolean) true);
-                } else {
-                    setDisableButtonSave((Boolean) false);
-                }
+                setDisableButtonSave((Boolean) true);
             }
         }
 
-        private void selectCatalogItem(ItemDomainCableCatalog item) {
-            selectionModelCatalog = item;
+        /**
+         * Determines whether catalog item changed, and calls update if it did.
+         */
+        public String save(String remoteCommandSuccess) {
+
+            boolean changedCableType
+                    = ((selectionModelCatalog == null) && (getItemCatalog() != null))
+                    || ((selectionModelCatalog != null) && (getItemCatalog() == null))
+                    || ((selectionModelCatalog != null) && (!selectionModelCatalog.equals(getItemCatalog())));
+
+            // catalog item changed, update cable and save
+            if (changedCableType) {
+                
+                UserInfo user = SessionUtility.getUser();
+                ItemDomainCableDesignControllerUtility utility = getControllerUtility();
+                
+                try {
+                    utility.updateAssignedItem(getCurrent(), selectionModelCatalog, user, null);
+                } catch (CdbException ex) {
+                    SessionUtility.addErrorMessage("Error", ex.getMessage());
+                    return null;
+                }
+
+                String updateResult = update();
+
+                // An error occured, reload the page with correct information. 
+                if (updateResult == null) {                    
+                    return null;
+                }
+
+                SessionUtility.executeRemoteCommand(remoteCommandSuccess);
+            }
+            return null;
+        }
+
+        public void cancel() {
+        }
+
+        public void actionListenerSaveSuccess() {
+        }
+
+    }
+
+    public class InventoryDialog {
+
+        private Boolean disableButtonSave = true;
+        private ItemDomainCableInventory itemInventory = null;
+        private ItemDomainCableInventory selectionModelInventory = null;
+        private Boolean inventoryIsInstalled = null;
+        private Boolean selectionModelIsInstalled = null;
+        
+        public Boolean getDisableButtonSave() {
+            return disableButtonSave;
+        }
+
+        public void setDisableButtonSave(Boolean disableButtonSave) {
+            this.disableButtonSave = disableButtonSave;
+        }
+
+        public ItemDomainCableInventory getItemInventory() {
+            return itemInventory;
+        }
+
+        public void setItemInventory(ItemDomainCableInventory itemInventory) {
+            this.itemInventory = itemInventory;
+            selectInventoryItem(itemInventory);
+        }
+
+        public String getItemInventoryString() {
+            if (itemInventory == null) {
+                return "";
+            } else {
+                return itemInventory.getName();
+            }
+        }
+
+        private void selectInventoryItem(ItemDomainCableInventory item) {
+            selectionModelInventory = item;
+        }
+
+        public ItemDomainCableInventory getSelectionModelInventory() {
+            return selectionModelInventory;
+        }
+
+        public void setSelectionModelInventory(ItemDomainCableInventory selectionModelInventory) {
+            this.selectionModelInventory = selectionModelInventory;
+        }
+        
+        public void selectListenerInventory(SelectEvent<ItemDomainCableInventory> event) {
+            setEnablement();
+        }
+
+        public void unselectListenerInventory(UnselectEvent<ItemDomainCableInventory> event) {
+            setEnablement();
+        }
+
+        public Boolean getInventoryIsInstalled() {
+            return inventoryIsInstalled;
+        }
+        
+        public void setInventoryIsInstalled(Boolean isInstalled) {
+            inventoryIsInstalled = isInstalled;
+            setSelectionModelIsInstalled(isInstalled);
+        }
+
+        public Boolean getSelectionModelIsInstalled() {
+            return selectionModelIsInstalled;
+        }
+
+        public void setSelectionModelIsInstalled(Boolean isInstalled) {
+            selectionModelIsInstalled = isInstalled;
+        }
+
+        public void selectListenerIsInstalled() {
+            setEnablement();
+        }
+
+        /**
+         * Resets the dialog components when closing.
+         */
+        public void reset() {
+            setSelectionModelInventory(null);
+        }
+
+        /**
+         * Enables save button when a valid selection, different from the
+         * original inventory item, is made.
+         */
+        private void setEnablement() {
+
+            boolean changedInventory
+                    = ((selectionModelInventory == null) && (getItemInventory() != null))
+                    || ((selectionModelInventory != null) && (getItemInventory() == null))
+                    || ((selectionModelInventory != null) && (!selectionModelInventory.equals(getItemInventory())));
+
+            boolean changedInstalledStatus
+                    = ((selectionModelIsInstalled == null) && (getInventoryIsInstalled() != null))
+                    || ((selectionModelIsInstalled != null) && (getInventoryIsInstalled() == null))
+                    || ((selectionModelIsInstalled != null) && (!selectionModelIsInstalled.equals(getInventoryIsInstalled())));
+
+            if (changedInventory || changedInstalledStatus) {
+                setDisableButtonSave((Boolean) false);
+            } else {
+                setDisableButtonSave((Boolean) true);
+            }
+        }
+
+        /**
+         * Determines whether inventory item changed, and calls update if it did.
+         */
+        public String save(String remoteCommandSuccess) {
+
+            boolean changedInventory
+                    = ((selectionModelInventory == null) && (getItemInventory() != null))
+                    || ((selectionModelInventory != null) && (getItemInventory() == null))
+                    || ((selectionModelInventory != null) && (!selectionModelInventory.equals(getItemInventory())));
+
+            boolean changedInstalledStatus
+                    = ((selectionModelIsInstalled == null) && (getInventoryIsInstalled() != null))
+                    || ((selectionModelIsInstalled != null) && (getInventoryIsInstalled() == null))
+                    || ((selectionModelIsInstalled != null) && (!selectionModelIsInstalled.equals(getInventoryIsInstalled())));
+
+            if (changedInventory || changedInstalledStatus) {
+                                
+                Boolean installationStatus = selectionModelIsInstalled;
+                ItemDomainCableInventory origInventoryItem = getItemInventory();
+                Item assignedItem = selectionModelInventory;
+                
+                if (selectionModelInventory == null) {
+                    
+                    // use null installationStatus if no inventory item is selected
+                    if (installationStatus != null) {
+                        installationStatus = null;
+                    }
+                    
+                    // if changing from assigned inventory to null inventory, use catalog item for assigned item
+                    // so we don't lose cable type
+                    if (origInventoryItem != null) {
+                        assignedItem = origInventoryItem.getCatalogItem();
+                    }
+                }
+                
+                UserInfo user = SessionUtility.getUser();
+                ItemDomainCableDesignControllerUtility utility = getControllerUtility();
+
+                try {
+                    utility.updateAssignedItem(getCurrent(), assignedItem, user, installationStatus);
+                } catch (CdbException ex) {
+                    SessionUtility.addErrorMessage("Error", ex.getMessage());
+                    return null;
+                }
+                
+                String updateResult = update();
+
+                // An error occured, reload the page with correct information. 
+                if (updateResult == null) {                    
+                    return null;
+                }
+
+                SessionUtility.executeRemoteCommand(remoteCommandSuccess);
+            }
+            return null;
+        }
+
+        public void cancel() {
+        }
+
+        public void actionListenerSaveSuccess() {
         }
 
     }
@@ -862,8 +870,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     @EJB
     ItemDomainCableDesignFacade itemDomainCableDesignFacade;
 
-    private EndpointDialog dialogEndpoint = null;
     private CatalogDialog dialogCatalog = null;
+    private InventoryDialog dialogInventory = null;
     private ConnectionEditDialog dialogConnection = null;
     
     private List<CableDesignConnectionListObject> connectionListForCurrent;       
@@ -872,17 +880,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     
     private transient CableDesignConnectionListObject connectionToDelete = null;
     
-    public EndpointDialog getDialogEndpoint() {
-        if (dialogEndpoint == null) {
-            dialogEndpoint = new EndpointDialog();
-        }
-        return dialogEndpoint;
-    }
-
-    public void setDialogEndpoint(EndpointDialog dialogEndpoint) {
-        this.dialogEndpoint = dialogEndpoint;
-    }
-
     public CatalogDialog getDialogCatalog() {
         if (dialogCatalog == null) {
             dialogCatalog = new CatalogDialog();
@@ -892,6 +889,17 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
     public void setDialogCatalog(CatalogDialog dialogCatalog) {
         this.dialogCatalog = dialogCatalog;
+    }
+
+    public InventoryDialog getDialogInventory() {
+        if (dialogInventory == null) {
+            dialogInventory = new InventoryDialog();
+        }
+        return dialogInventory;
+    }
+
+    public void setDialogInventory(InventoryDialog dialogInventory) {
+        this.dialogInventory = dialogInventory;
     }
 
     public ConnectionEditDialog getDialogConnection() {
@@ -926,25 +934,29 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return newCable;
     }
 
-    public void prepareEditEndpoint(ItemElementRelationship cableRelationship) {
-        dialogEndpoint.reset();
-        dialogEndpoint.setCableRelationship(cableRelationship);
-    }
-    
-    /**
-     * Prepares endpoint dialog for editing endpoint1.
-     */
-    public void prepareDialogEndpoint1() {
-        prepareEditEndpoint(getCurrent().getPrimaryRelationshipForCableEnd(CdbEntity.VALUE_CABLE_END_1));
-    }
-
-    public void prepareDialogEndpoint2() {
-        prepareEditEndpoint(getCurrent().getPrimaryRelationshipForCableEnd(CdbEntity.VALUE_CABLE_END_2));
-    }
-    
     public void prepareDialogCatalog() {
         dialogCatalog.reset();
         dialogCatalog.setItemCatalog(getCurrent().getCatalogItem());
+    }
+
+    public boolean isRenderInventoryEdit() {
+        return getCurrent().getCatalogItem() != null;
+    }
+
+    public void prepareDialogInventory() {
+        dialogInventory.reset();
+        dialogInventory.setItemInventory(getCurrent().getInventoryItem());
+        dialogInventory.setInventoryIsInstalled(getCurrent().isIsHoused());
+    }
+
+    public DataModel getInventoryForCableType() {
+        ItemDomainCableCatalog catalogItem = getCurrent().getCatalogItem();
+        if (catalogItem != null) {
+            List<Item> inventoryList = catalogItem.getDerivedFromItemList();
+            return new ListDataModel(inventoryList);
+        } else {
+            return null;
+        }
     }
 
     public void prepareEditConnection(CableDesignConnectionListObject connection) {

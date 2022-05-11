@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog header="Click row to select inventory item, ctrl-click to unselect. (Current: #{entityController.dialogInventory.itemInventoryString})" 
+              id="dialogInventory"
+              widgetVar="inventoryDialog" 
+              modal="true"
+              closable="false">
+
+        <ui:decorate template="inventorySelectDataTable.xhtml">
+            <ui:param name="cableInventoryDataTableSelectionModel" 
+                      value="#{entityController.dialogInventory.selectionModelInventory}" /> 
+            <ui:param name="viewId" 
+                      value="cableDesignInventoryDialog" />
+            <ui:define name="cableInventoryDataTableEvents">
+                <p:ajax event="rowSelect"
+                        listener="#{entityController.dialogInventory.selectListenerInventory}"
+                        oncomplete="updateButtonsDialogInventory();"/>
+                <p:ajax event="rowUnselect"
+                        listener="#{entityController.dialogInventory.unselectListenerInventory}"
+                        oncomplete="updateButtonsDialogInventory();"/>
+            </ui:define>
+        </ui:decorate>
+
+        <p:selectBooleanButton id="cableDesignInventoryIsInstalledFlagButton" 
+                               value="#{entityController.dialogInventory.selectionModelIsInstalled}" 
+                               offLabel="Planned"
+                               onLabel="Installed">
+            <p:ajax listener="#{entityController.dialogInventory.selectListenerIsInstalled}"
+                    oncomplete="updateButtonsDialogInventory();"/>
+            <p:tooltip for="cableDesignInventoryIsInstalledFlagButton" >
+                Indicates if the assigned inventory is "installed" or "planned" for this cable design.
+
+                <br/>
+                <br/><b>Installed (Default)</b>
+                <br/>Item is installed and its location is determined based on machine node. 
+                <br/><b>Planned</b>
+                <br/>Item stays in its location but is marked to be installed on machine node in the future.
+            </p:tooltip>
+        </p:selectBooleanButton>
+
+        <f:facet name="footer" class="dialog">
+
+            <p:outputPanel id="dialogInventoryButtonPanel">
+
+                <p:commandButton  action="#{entityController.dialogInventory.save('saveInventorySuccess()')}"
+                                  id="inventoryDialogSaveButton"
+                                  value="Save" 
+                                  alt="Save" 
+                                  update="dialogInventory"
+                                  disabled="#{entityController.dialogInventory.disableButtonSave}"
+                                  icon="fa fa-save"/>
+
+                <p:commandButton action="#{entityController.dialogInventory.cancel()}" 
+                                 immediate="true" 
+                                 value="Cancel" alt="Cancel" 
+                                 update="dialogInventory"
+                                 icon="fa fa-close" />
+
+                <p:remoteCommand name="saveInventorySuccess"                             
+                                 actionListener="#{entityController.dialogInventory.actionListenerSaveSuccess}"
+                                 update="@form"
+                                 onstart="PF('inventoryDialog').hide()" />
+
+            </p:outputPanel>
+        </f:facet>
+
+        <p:remoteCommand name="updateButtonsDialogInventory" 
+                         update="dialogInventoryButtonPanel"/>
+
+        <p:remoteCommand name="scrollToSelectedInventoryCommand"
+                         update="cableInventoryDataTable-cableDesignInventoryDialog"
+                         oncomplete="scrollToSelectedNode();" />
+
+        <script type="text/javascript">
+            function scrollToSelectedNode() {
+                selectedRows = document.getElementsByClassName('ui-widget-content ui-datatable-selectable ui-state-highlight');
+                if (selectedRows.length > 0) {
+                    row = selectedRows[0];
+                    row.scrollIntoView({'behavior': 'smooth', 'block': 'center'});
+                }
+            }
+        </script>
+
+    </p:dialog>
+
+
+</ui:composition>

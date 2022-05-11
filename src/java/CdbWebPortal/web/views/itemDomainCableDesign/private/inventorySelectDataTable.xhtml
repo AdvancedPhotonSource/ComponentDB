@@ -8,28 +8,29 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
     
-    <!-- Must provide params: viewId, cableCatalogDataTableSelectionModel -->
+    <!-- Must provide params: viewId, cableInventoryDataTableSelectionModel -->
     
-    <p:dataTable id="cableCatalogDataTable-#{viewId}"
-                 value="#{itemDomainCableCatalogController.selectDataModel}"
+    <p:dataTable id="cableInventoryDataTable-#{viewId}"
+                 value="#{entityController.inventoryForCableType}"
                  var="itemListObject"
                  rowKey="#{itemListObject.id}"
-                 selection="#{cableCatalogDataTableSelectionModel}"
                  selectionMode="single"
+                 selection="#{cableInventoryDataTableSelectionModel}"
                  sortMode="single"
                  scrollable="true"
                  scrollHeight="500">         
 
-        <ui:include src="../../../item/private/itemListObject.xhtml" >
+        <ui:include src="../../item/private/itemListObject.xhtml" >
             <ui:param name="entityController"
-                      value="#{itemDomainCableCatalogController}" /> 
+                      value="#{itemDomainCableInventoryController}" /> 
             <ui:param name="filterable"
                       value="#{true}"/>
             <ui:param name="sortable"
                       value="#{false}"/>
+            <ui:param name="itemListDisplayDerivedFromItem" value="#{false}" />
         </ui:include>
-        
-        <ui:insert name="cableCatalogDataTableEvents" />
+
+        <ui:insert name="cableInventoryDataTableEvents" />
 
     </p:dataTable>
 

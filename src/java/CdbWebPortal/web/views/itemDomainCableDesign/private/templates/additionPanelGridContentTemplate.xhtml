@@ -34,18 +34,18 @@ See LICENSE file.
             </ui:include>
         </p:outputPanel>
 
-        <p:outputLabel value="Assigned Catalog Item" 
+        <p:outputLabel value="Cable Type" 
                        styleClass="entityDataEmphasizedLabel"/>
         <p:outputPanel styleClass="inlineFlexOutputPanel">
             <p:commandLink id="catalogEditShowButton"
                            styleClass="fa-link-icon fa-icon fa fa-pencil"
                            onstart="PF('loadingDialog').show()"
-                           oncomplete="PF('loadingDialog').hide();PF('catalogDialog').show();"
+                           oncomplete="PF('loadingDialog').hide();PF('catalogDialog').show();scrollToSelectedCableTypeCommand();"
                            action='#{entityController.prepareDialogCatalog()}'
                            rendered="#{isEntityWriteable}"
-                           update="dialogCatalog">
+                           update="dialogCatalog cableCatalogDataTable-cableDesignCatalogDialog">
                 <p:tooltip for="catalogEditShowButton"
-                           value="Edit Assigned Catalog Item" />
+                           value="Edit Cable Type" />
             </p:commandLink>
             
             <ui:include src="../../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
@@ -56,11 +56,48 @@ See LICENSE file.
             </ui:include>            
         </p:outputPanel>
 
+        <p:outputLabel value="Assigned Inventory" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:outputPanel styleClass="inlineFlexOutputPanel">
+            <p:commandLink id="inventoryEditShowButton"
+                           styleClass="fa-link-icon fa-icon fa fa-pencil"
+                           oncomplete="PF('inventoryDialog').show();scrollToSelectedInventoryCommand();"
+                           action='#{entityController.prepareDialogInventory()}'
+                           rendered="#{isEntityWriteable and entityController.renderInventoryEdit}"
+                           update="dialogInventory cableInventoryDataTable-cableDesignInventoryDialog">
+                <p:tooltip for="inventoryEditShowButton"
+                           value="Assign Inventory Item" />
+            </p:commandLink>
+            
+            <ui:include src="../../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="viewName"
+                          value="inventoryItem"/>
+                <ui:param name="itemObject"
+                          value="#{itemObject.inventoryItem}"/>
+            </ui:include>            
+        </p:outputPanel>
 
-        <ui:include src="../endpointDialog.xhtml" >
+        <p:outputLabel value="Installed Status" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:outputPanel styleClass="inlineFlexOutputPanel">
+            <p:commandLink id="installedStatusEditShowButton"
+                           styleClass="fa-link-icon fa-icon fa fa-pencil"
+                           oncomplete="PF('inventoryDialog').show();"
+                           action='#{entityController.prepareDialogInventory()}'
+                           rendered="#{isEntityWriteable and entityController.renderInventoryEdit}"
+                           update="dialogInventory">
+                <p:tooltip for="installedStatusEditShowButton"
+                           value="Modify Installed Status" />
+            </p:commandLink>
+            <h:outputText value="#{itemObject.installedStatusString}" 
+                          title="Installed Status" 
+                          styleClass="entityDataEmphasizedText" />
+        </p:outputPanel>
+        
+        <ui:include src="../catalogDialog.xhtml" >
         </ui:include>
 
-        <ui:include src="../catalogDialog.xhtml" >
+        <ui:include src="../inventoryDialog.xhtml" >
         </ui:include>
 
     </p:panelGrid>

@@ -5,18 +5,17 @@
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.constants.ItemMetadataFieldType;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign.CABLE_DESIGN_INTERNAL_PROPERTY_TYPE;
-import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
-import java.util.ArrayList;
-import java.util.List;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -283,4 +282,62 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
         return new ItemDomainCableDesign();
     }     
 
+    public void updateAssignedItem(
+            ItemDomainCableDesign cdItem, 
+            Item newAssignment, 
+            UserInfo userInfo, 
+            Boolean isInstalled) throws CdbException {
+        
+        if (newAssignment != null) {
+            if (isInstalled != null && (newAssignment instanceof ItemDomainCableInventory) == false) {
+                throw new CdbException("Is installed can only be set for inventory assignments.");
+            }
+
+            if (newAssignment instanceof ItemDomainCableInventory == false) {
+                isInstalled = null;
+            }
+        } else {
+            isInstalled = null;
+        }
+        if (isInstalled == null) {
+            // Reset to default
+            isInstalled = true;
+        }
+        
+        ItemDomainCableCatalog newCatalogItem = null; // determine new catalog item from newAssignment
+        if (newAssignment instanceof ItemDomainCableInventory) {
+            
+            ItemDomainCableInventory assignedInventoryItem = (ItemDomainCableInventory) newAssignment;            
+            newCatalogItem = assignedInventoryItem.getCatalogItem();
+
+            // Check if inventory already assigned to another cable design
+            for (ItemElement itemElement : newAssignment.getItemElementMemberList2()) {
+                Item item = itemElement.getParentItem();
+                if (item instanceof ItemDomainCableDesign) {
+                    // Allow updates for the same cable design item. 
+                    if (!cdItem.equals(item)) {
+                        String exMessage = "Inventory item already assigned to cable design: " + item.toString();
+                        if (item.getIsItemDeleted()) {
+                            exMessage = exMessage + " (located in trash)";
+                        }
+                        throw new CdbException(exMessage);
+                    }
+                }
+            }
+        } else {
+            newCatalogItem = (ItemDomainCableCatalog) newAssignment;
+        }
+
+        // if changing catalog item, we need to remove cable connectors 
+        // since they are inherited from old catalog item
+        Item currCatalogItem = cdItem.getCatalogItem();        
+        if (((newCatalogItem == null) && (currCatalogItem != null))
+                || ((newCatalogItem != null) && (!newCatalogItem.equals(currCatalogItem)))) {
+            cdItem.clearCableConnectors();
+        }
+        
+        cdItem.setAssignedItem(newAssignment);
+        cdItem.setIsHoused(isInstalled);        
+    }
+    
 }
