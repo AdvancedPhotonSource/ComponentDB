@@ -29,6 +29,8 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "ItemDomainCableDesign.List.Display.LastModifiedOnDateTime";
     private static final String DisplayEndpointsSettingTypeKey = "ItemDomainCableDesign.List.Display.Endpoints";
     private static final String DisplayCatalogItemSettingTypeKey = "ItemDomainCableDesign.List.Display.CatalogItem";
+    private static final String DisplayAssignedInventorySettingTypeKey = "ItemDomainCableDesign.List.Display.AssignedInventory";
+    private static final String DisplayInstallationStatusSettingTypeKey = "ItemDomainCableDesign.List.Display.InstallationStatus";
     private static final String DisplayExternalCableNameSettingTypeKey = "ItemDomainCableDesign.List.Display.ExternalCableName";
     private static final String DisplayImportCableIdSettingTypeKey = "ItemDomainCableDesign.List.Display.ImportCableId";
     private static final String DisplayAlternateCableIdSettingTypeKey = "ItemDomainCableDesign.List.Display.AlternateCableId";
@@ -39,6 +41,8 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
 
     private static final String FilterEndpointsSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Endpoints";
     private static final String FilterCatalogItemSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.CatalogItem";
+    private static final String FilterAssignedInventorySettingTypeKey = "ItemDomainCableDesign.List.FilterBy.AssignedInventory";
+    private static final String FilterInstallationStatusSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.InstallationStatus";
     private static final String FilterExternalCableNameSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.ExternalCableName";
     private static final String FilterImportCableIdSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.ImportCableId";
     private static final String FilterLegacyQrIdSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.LegacyQrId";
@@ -112,6 +116,8 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
 
     protected Boolean displayEndpoints = null;
     protected Boolean displayCatalogItem = null;
+    protected Boolean displayAssignedInventory = null;
+    protected Boolean displayInstallationStatus = null;
     protected Boolean displayLocation = null;
     protected Boolean displayLocationDetails = null;
     
@@ -126,6 +132,8 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     protected Boolean endpoint2DescriptionDisplay = null;    
     protected String filterEndpoints = null;
     protected String filterCatalogItem = null;
+    protected String filterAssignedInventory = null;
+    protected String filterInstallationStatus = null;
     protected String voltageFilter = null;
     protected String layingFilter = null;
     protected String externalCableNameFilter = null;
@@ -213,6 +221,22 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         this.displayCatalogItem = displayCatalogItem;
     }
 
+    public Boolean getDisplayAssignedInventory() {
+        return displayAssignedInventory;
+    }
+
+    public void setDisplayAssignedInventory(Boolean displayAssignedInventory) {
+        this.displayAssignedInventory = displayAssignedInventory;
+    }
+
+    public Boolean getDisplayInstallationStatus() {
+        return displayInstallationStatus;
+    }
+
+    public void setDisplayInstallationStatus(Boolean displayInstallationStatus) {
+        this.displayInstallationStatus = displayInstallationStatus;
+    }
+
     public Boolean getDisplayLocation() {
         return displayLocation;
     }
@@ -291,6 +315,22 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
 
     public void setFilterCatalogItem(String filterCatalogItem) {
         this.filterCatalogItem = filterCatalogItem;
+    }
+
+    public String getFilterAssignedInventory() {
+        return filterAssignedInventory;
+    }
+
+    public void setFilterAssignedInventory(String filterAssignedInventory) {
+        this.filterAssignedInventory = filterAssignedInventory;
+    }
+
+    public String getFilterInstallationStatus() {
+        return filterInstallationStatus;
+    }
+
+    public void setFilterInstallationStatus(String filterInstallationStatus) {
+        this.filterInstallationStatus = filterInstallationStatus;
     }
 
     public String getVoltageFilter() {
@@ -796,6 +836,8 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         
         displayEndpoints = Boolean.parseBoolean(settingTypeMap.get(DisplayEndpointsSettingTypeKey).getDefaultValue());
         displayCatalogItem = Boolean.parseBoolean(settingTypeMap.get(DisplayCatalogItemSettingTypeKey).getDefaultValue());
+        displayAssignedInventory = Boolean.parseBoolean(settingTypeMap.get(DisplayAssignedInventorySettingTypeKey).getDefaultValue());
+        displayInstallationStatus = Boolean.parseBoolean(settingTypeMap.get(DisplayInstallationStatusSettingTypeKey).getDefaultValue());
         layingDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayLayingSettingTypeKey).getDefaultValue());
         voltageDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayVoltageSettingTypeKey).getDefaultValue());
         externalCableNameDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayExternalCableNameSettingTypeKey).getDefaultValue());
@@ -805,6 +847,8 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
 
         filterEndpoints = settingTypeMap.get(FilterEndpointsSettingTypeKey).getDefaultValue();
         filterCatalogItem = settingTypeMap.get(FilterCatalogItemSettingTypeKey).getDefaultValue();
+        filterAssignedInventory = settingTypeMap.get(FilterAssignedInventorySettingTypeKey).getDefaultValue();
+        filterInstallationStatus = settingTypeMap.get(FilterInstallationStatusSettingTypeKey).getDefaultValue();
         layingFilter = settingTypeMap.get(FilterLayingSettingTypeKey).getDefaultValue();
         voltageFilter = settingTypeMap.get(FilterVoltageSettingTypeKey).getDefaultValue();
         externalCableNameFilter = settingTypeMap.get(FilterExternalCableNameSettingTypeKey).getDefaultValue();
@@ -894,6 +938,8 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
 
         displayEndpoints = settingEntity.getSettingValueAsBoolean(DisplayEndpointsSettingTypeKey, displayEndpoints);
         displayCatalogItem = settingEntity.getSettingValueAsBoolean(DisplayCatalogItemSettingTypeKey, displayCatalogItem);
+        displayAssignedInventory = settingEntity.getSettingValueAsBoolean(DisplayAssignedInventorySettingTypeKey, displayAssignedInventory);
+        displayInstallationStatus = settingEntity.getSettingValueAsBoolean(DisplayInstallationStatusSettingTypeKey, displayInstallationStatus);
         layingDisplay = settingEntity.getSettingValueAsBoolean(DisplayLayingSettingTypeKey, layingDisplay);
         voltageDisplay = settingEntity.getSettingValueAsBoolean(DisplayVoltageSettingTypeKey, voltageDisplay);
         externalCableNameDisplay = settingEntity.getSettingValueAsBoolean(DisplayExternalCableNameSettingTypeKey, externalCableNameDisplay);
@@ -903,6 +949,8 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
 
         filterEndpoints = settingEntity.getSettingValueAsString(FilterEndpointsSettingTypeKey, filterEndpoints);
         filterCatalogItem = settingEntity.getSettingValueAsString(FilterCatalogItemSettingTypeKey, filterCatalogItem);
+        filterAssignedInventory = settingEntity.getSettingValueAsString(FilterAssignedInventorySettingTypeKey, filterAssignedInventory);
+        filterInstallationStatus = settingEntity.getSettingValueAsString(FilterInstallationStatusSettingTypeKey, filterInstallationStatus);
         layingFilter = settingEntity.getSettingValueAsString(FilterLayingSettingTypeKey, layingFilter);
         voltageFilter = settingEntity.getSettingValueAsString(FilterVoltageSettingTypeKey, voltageFilter);
         externalCableNameFilter = settingEntity.getSettingValueAsString(FilterExternalCableNameSettingTypeKey, externalCableNameFilter);
@@ -992,6 +1040,8 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
 
         settingEntity.setSettingValue(DisplayEndpointsSettingTypeKey, displayEndpoints);
         settingEntity.setSettingValue(DisplayCatalogItemSettingTypeKey, displayCatalogItem);
+        settingEntity.setSettingValue(DisplayAssignedInventorySettingTypeKey, displayAssignedInventory);
+        settingEntity.setSettingValue(DisplayInstallationStatusSettingTypeKey, displayInstallationStatus);
         settingEntity.setSettingValue(DisplayLayingSettingTypeKey, layingDisplay);
         settingEntity.setSettingValue(DisplayVoltageSettingTypeKey, voltageDisplay);
         settingEntity.setSettingValue(DisplayExternalCableNameSettingTypeKey, externalCableNameDisplay);
@@ -1001,6 +1051,8 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
 
         settingEntity.setSettingValue(FilterEndpointsSettingTypeKey, filterEndpoints);
         settingEntity.setSettingValue(FilterCatalogItemSettingTypeKey, filterCatalogItem);
+        settingEntity.setSettingValue(FilterAssignedInventorySettingTypeKey, filterAssignedInventory);
+        settingEntity.setSettingValue(FilterInstallationStatusSettingTypeKey, filterInstallationStatus);
         settingEntity.setSettingValue(FilterLayingSettingTypeKey, layingFilter);
         settingEntity.setSettingValue(FilterVoltageSettingTypeKey, voltageFilter);
         settingEntity.setSettingValue(FilterExternalCableNameSettingTypeKey, externalCableNameFilter);

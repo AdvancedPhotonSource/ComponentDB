@@ -10,7 +10,7 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:dialog header="Select New Catalog Item (Current: #{entityController.dialogCatalog.itemCatalogString})" 
+    <p:dialog header="Select New Cable Type (Current: #{entityController.dialogCatalog.itemCatalogString})" 
               id="dialogCatalog"
               widgetVar="catalogDialog" 
               modal="true"
@@ -24,8 +24,11 @@ See LICENSE file.
                       value="cableDesignCatalogDialog" />
 
             <ui:define name="cableCatalogDataTableEvents">
-                <p:ajax event="rowSelectRadio"
+                <p:ajax event="rowSelect"
                         listener="#{entityController.dialogCatalog.selectListenerCatalog}"
+                        oncomplete="updateButtonsDialogCatalog();"/>
+                <p:ajax event="rowUnselect"
+                        listener="#{entityController.dialogCatalog.unselectListenerCatalog}"
                         oncomplete="updateButtonsDialogCatalog();"/>
             </ui:define>
 
@@ -60,10 +63,20 @@ See LICENSE file.
         <p:remoteCommand name="updateButtonsDialogCatalog" 
                          update="dialogCatalogButtonPanel"/>
 
-        <p:remoteCommand name="updateDataTableCatalog" 
-                         update="cableCatalogDataTable-cableDesignCatalogDialog"/>
+        <p:remoteCommand name="scrollToSelectedCableTypeCommand"
+                         update="cableCatalogDataTable-cableDesignCatalogDialog"
+                         oncomplete="scrollToSelectedNode();" />
+        
+        <script type="text/javascript">
+            function scrollToSelectedNode() {
+                selectedRows = document.getElementsByClassName('ui-widget-content ui-datatable-selectable ui-state-highlight');
+                if (selectedRows.length > 0) {
+                    row = selectedRows[0];
+                    row.scrollIntoView({'behavior': 'smooth', 'block': 'center'});
+                }
+            }
+        </script>
 
     </p:dialog>
-
 
 </ui:composition>

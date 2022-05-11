@@ -12,7 +12,8 @@ See LICENSE file.
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="../item/private/templates/itemListTemplate.xhtml">
 
-    <ui:param name="entityController" value="#{itemDomainCableDesignController}" />        
+    <ui:param name="entityController" value="#{itemDomainCableDesignController}" />   
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}"/>
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
@@ -21,58 +22,8 @@ See LICENSE file.
 
     <ui:define name="domainEntityListExtraColumns">
 
-        <p:column headerText="Endpoints"
-                  filterable="#{true}"
-                  filterBy="#{itemListObject.endpointsString}" 
-                  filterMatchMode="contains">
-            <h:outputText value="#{itemListObject.endpointsString}" /> 
-        </p:column>   
-
-        <p:column headerText="Catalog Item"
-                  filterable="#{true}"
-                  filterBy="#{itemListObject.catalogItemString}" 
-                  filterMatchMode="contains">
-            <h:outputText value="#{itemListObject.catalogItemString}" /> 
-        </p:column>
-
-        <ui:decorate template="private/templates/listViewEndpointDeviceColumn.xhtml">
-            <ui:param name="endpointNum" value="1" />                
-        </ui:decorate>
-
-        <ui:decorate template="private/templates/listViewEndpointPortColumn.xhtml">
-            <ui:param name="endpointNum" value="1" />                
-        </ui:decorate>
-
-        <ui:decorate template="private/templates/listViewEndpointConnectorColumn.xhtml">
-            <ui:param name="endpointNum" value="1" />                
-        </ui:decorate>
-
-        <ui:decorate template="private/templates/listViewConnectedDevicesColumn.xhtml">
-            <ui:param name="endpointNum" value="1" />                
-        </ui:decorate>
-
-        <ui:decorate template="private/templates/listViewEndpointLocationColumn.xhtml">
-            <ui:param name="endpointNum" value="1" />                
-        </ui:decorate>
-
-        <ui:decorate template="private/templates/listViewEndpointDeviceColumn.xhtml">
-            <ui:param name="endpointNum" value="2" />                
-        </ui:decorate>
-
-        <ui:decorate template="private/templates/listViewEndpointPortColumn.xhtml">
-            <ui:param name="endpointNum" value="2" />                
-        </ui:decorate>
-
-        <ui:decorate template="private/templates/listViewEndpointConnectorColumn.xhtml">
-            <ui:param name="endpointNum" value="2" />                
-        </ui:decorate>
-
-        <ui:decorate template="private/templates/listViewConnectedDevicesColumn.xhtml">
-            <ui:param name="endpointNum" value="2" />                
-        </ui:decorate>
-
-        <ui:decorate template="private/templates/listViewEndpointLocationColumn.xhtml">
-            <ui:param name="endpointNum" value="2" />                
+        <ui:decorate template="private/templates/domainEntityListExtraColumns.xhtml">
+            <ui:param name="entitySettingObject" value="#{entityController.settingObject}"/>
         </ui:decorate>
 
     </ui:define>
@@ -84,6 +35,34 @@ See LICENSE file.
 
         <ui:param name="itemListDataTablePaginatorAlwaysVisible"
                   value="#{true}"/>                
+    </ui:define>
+
+    <ui:define name="additionalItemSpecificColumns">
+        
+        <p:selectBooleanCheckbox id="listCustomizeCheckboxDisplayEndpoints" 
+                                 value="#{entitySettingObject.displayEndpoints}"/>  
+        <h:outputLabel for="listCustomizeCheckboxDisplayEndpoints" 
+                       value="Display endpoint device list" 
+                       styleClass="dialogDataLabel"/>        
+
+        <p:selectBooleanCheckbox id="listCustomizeCheckboxDisplayCableType" 
+                                 value="#{entitySettingObject.displayCatalogItem}"/>  
+        <h:outputLabel for="listCustomizeCheckboxDisplayCableType" 
+                       value="Display cable type" 
+                       styleClass="dialogDataLabel"/>        
+
+        <p:selectBooleanCheckbox id="listCustomizeCheckboxDisplayAssignedInventory" 
+                                 value="#{entitySettingObject.displayAssignedInventory}"/>  
+        <h:outputLabel for="listCustomizeCheckboxDisplayAssignedInventory" 
+                       value="Display assigned inventory item" 
+                       styleClass="dialogDataLabel"/>        
+
+        <p:selectBooleanCheckbox id="listCustomizeCheckboxDisplayInstallationStatus" 
+                                 value="#{entitySettingObject.displayInstallationStatus}"/>  
+        <h:outputLabel for="listCustomizeCheckboxDisplayInstallationStatus" 
+                       value="Display installation status" 
+                       styleClass="dialogDataLabel"/>        
+
     </ui:define>
 
     <ui:define name="domainEntityExtraTabs">
