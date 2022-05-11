@@ -69,6 +69,9 @@ public class ItemDomainCableDesign extends Item {
 
     private transient String externalCableName = null;
     private transient String importCableId = null;
+    private transient String importAssignedInventoryTag = null;
+    private transient Boolean importIsInstalled = null;
+    private transient boolean importIsInstalledLoaded = false;
     private transient String alternateCableId = null;
     private transient String legacyQrId = null;
     private transient String laying = null;
@@ -943,6 +946,28 @@ public class ItemDomainCableDesign extends Item {
         return inventoryItem;
     }
 
+    @JsonIgnore
+    public String getInventoryItemString() {
+        ItemDomainCableInventory assignedInventory = this.getInventoryItem();
+        if (assignedInventory != null) {
+            return assignedInventory.getName();
+        } else {
+            return "";
+        }
+    }
+    
+    public void setImportAssignedInventoryTag(String tag) {
+        importAssignedInventoryTag = tag;
+    }
+    
+    @JsonIgnore
+    public String getImportAssignedInventoryTag() {
+        if (importAssignedInventoryTag == null) {
+            importAssignedInventoryTag = getInventoryItemString();
+        }
+        return importAssignedInventoryTag;
+    }
+
     public boolean isIsHoused() {
         ItemElement selfElement = getSelfElement();
         return selfElement.getIsHoused();
@@ -954,16 +979,6 @@ public class ItemDomainCableDesign extends Item {
     }
     
     @JsonIgnore
-    public String getInventoryItemString() {
-        ItemDomainCableInventory assignedInventory = this.getInventoryItem();
-        if (assignedInventory != null) {
-            return assignedInventory.getName();
-        } else {
-            return "";
-        }
-    }
-
-    @JsonIgnore
     public String getInstalledStatusString() {
         if (getInventoryItem() != null) {
             if (isIsHoused()) {
@@ -974,6 +989,24 @@ public class ItemDomainCableDesign extends Item {
         } else {
             return null;
         }
+    }
+
+    @JsonIgnore
+    public Boolean getImportIsInstalled() {
+        if (!importIsInstalledLoaded) {
+            ItemDomainCableInventory assignedInventory = getInventoryItem();
+            if (assignedInventory != null) {
+                importIsInstalled = isIsHoused();
+            } else {
+                importIsInstalled = null;
+            }
+            importIsInstalledLoaded = true;
+        }
+        return importIsInstalled;
+    }
+
+    public void setImportIsInstalled(Boolean isInstalled) {
+        this.importIsInstalled = isInstalled;
     }
 
     @JsonIgnore

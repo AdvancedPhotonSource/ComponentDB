@@ -23,6 +23,16 @@ public abstract class ItemDomainCatalogBase<InventoryItem extends ItemDomainInve
     public List<InventoryItem> getInventoryItemList() {
         return (List<InventoryItem>) (List<?>) super.getDerivedFromItemList();
     }
+    
+    @JsonIgnore
+    public InventoryItem getInventoryItemNamed(String name) {
+        for (InventoryItem inventoryItem : getInventoryItemList()) {
+            if (inventoryItem.getName().equals(name)) {
+                return inventoryItem;
+            }
+        }
+        return null;
+    }
 
     @JsonIgnore
     public String getSourceString() {
