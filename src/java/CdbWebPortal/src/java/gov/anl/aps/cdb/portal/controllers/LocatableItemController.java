@@ -173,7 +173,7 @@ public class LocatableItemController implements Serializable {
      * @param item
      * @return
      */
-    public String getHousingStringForItem(LocatableItem item) {        
+    public String getHousingStringForItem(LocatableItem item) {
         if (item != null) {
             String housingString = item.getHousingString();
             if (housingString == null) {
@@ -841,53 +841,53 @@ public class LocatableItemController implements Serializable {
             if (item.getHistoryMemberList2() != null) {
                 historyMemberList.addAll(item.getHistoryMemberList2());
             }
-            
-            Item activeLocation = item.getActiveLocation();            
-            
+
+            Item activeLocation = item.getActiveLocation();
 
             for (ItemElementHistory itemElementHistory : historyMemberList) {
                 LocationHistoryObject historyObject = new LocationHistoryObject(itemElementHistory);
                 historyObjectList.add(historyObject);
-                
+
                 Item parentItem = historyObject.getParentItem();
                 if (parentItem == null) {
-                    continue; 
+                    continue;
                 }
-                
+
                 if (activeLocation != null) {
                     if (activeLocation.equals(parentItem)) {
-                        continue; 
+                        continue;
                     }
                 }
-                
+
                 // Find the 'unassign' record
-                ItemElement itemElement = itemElementHistory.getItemElement();                
-                List<ItemElementHistory> itemElementHistoryList = itemElement.getItemElementHistoryList(); 
-                
-                
-                for (int i = itemElementHistoryList.size() -1; i >= 0; i--) {
-                    ItemElementHistory ieh = itemElementHistoryList.get(i); 
-                    if (ieh.equals(itemElementHistory)) {
-                        ItemElementHistory nextIeh = null; 
-                        i = i -1; 
-                        if (i >= 0) {
-                            nextIeh = itemElementHistoryList.get(i);
-                        } 
-                        
-                        if (nextIeh != null) {
-                            historyObject = new LocationHistoryObject(nextIeh);
-                            Item parent = nextIeh.getParentItem();
-                            if (parent != null && parent.getDomain().getId() == ItemDomainName.MACHINE_DESIGN_ID) {
-                                historyObject.setLocationDetails("Unassigned from machine.");
-                            } else {                            
-                                historyObject.setLocationDetails("Unassiged from assembly.");
+                ItemElement itemElement = itemElementHistory.getItemElement();
+                if (itemElement != null) {
+                    List<ItemElementHistory> itemElementHistoryList = itemElement.getItemElementHistoryList();
+
+                    for (int i = itemElementHistoryList.size() - 1; i >= 0; i--) {
+                        ItemElementHistory ieh = itemElementHistoryList.get(i);
+                        if (ieh.equals(itemElementHistory)) {
+                            ItemElementHistory nextIeh = null;
+                            i = i - 1;
+                            if (i >= 0) {
+                                nextIeh = itemElementHistoryList.get(i);
                             }
-                            
-                            historyObjectList.add(historyObject);
+
+                            if (nextIeh != null) {
+                                historyObject = new LocationHistoryObject(nextIeh);
+                                Item parent = nextIeh.getParentItem();
+                                if (parent != null && parent.getDomain().getId() == ItemDomainName.MACHINE_DESIGN_ID) {
+                                    historyObject.setLocationDetails("Unassigned from machine.");
+                                } else {
+                                    historyObject.setLocationDetails("Unassiged from assembly.");
+                                }
+
+                                historyObjectList.add(historyObject);
+                            }
+                            break;
                         }
-                        break; 
-                    }                    
-                }                
+                    }
+                }
             }
 
             Collections.sort(historyObjectList);
@@ -911,7 +911,7 @@ public class LocatableItemController implements Serializable {
         }
 
         return historyObjectList;
-    }  
+    }
 
     public static String generateLocationDetailsFromItem(Item item) {
         String partOf = "assembly";
