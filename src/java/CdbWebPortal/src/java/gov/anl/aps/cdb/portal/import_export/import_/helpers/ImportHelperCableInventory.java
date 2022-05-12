@@ -35,12 +35,16 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
         
         List<ColumnSpec> specs = new ArrayList<>();
         
+        specs.add(existingItemIdColumnSpec());
+        specs.add(deleteExistingItemColumnSpec());
+
         specs.add(new IdOrNameRefColumnSpec(
                 "Cable Catalog Item", 
                 KEY_CATALOG_ITEM, 
                 "setCatalogItem", 
                 "ID or name of cable catalog item for inventory unit. Name must be unique and prefixed with '#'.", 
-                null, null,
+                "getCatalogItem", 
+                null,
                 ColumnModeOptions.rCREATErUPDATE(), 
                 ItemDomainCableCatalogController.getInstance(), 
                 ItemDomainCableCatalog.class, 
@@ -51,7 +55,7 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
                 KEY_NAME, 
                 "", 
                 "Name of inventory unit.", 
-                null,
+                "getName",
                 ColumnModeOptions.rCREATErUPDATE(), 
                 64));
         
@@ -60,7 +64,8 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
                 "qrId", 
                 "setQrId", 
                 "Integer QR id of inventory unit.", 
-                null, null,
+                "getQrId", 
+                null,
                 ColumnModeOptions.oCREATEoUPDATE()));
         
         specs.add(new StringColumnSpec(
@@ -68,7 +73,7 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
                 "description", 
                 "setDescription", 
                 "Description of inventory unit.", 
-                null,
+                "getDescription",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -81,7 +86,7 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
                 "length", 
                 "setLength", 
                 "Installed length of cable inventory unit.", 
-                null,
+                "getLength",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
