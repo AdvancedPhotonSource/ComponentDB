@@ -201,7 +201,24 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     protected DomainImportExportInfo initializeDomainImportInfo() {
 
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportExportFormatInfo("Basic Inventory Format", ImportHelperInventory.class));
+        formatInfo.add(new ImportExportFormatInfo("Basic Inventory Create/Update/Delete Format", ImportHelperInventory.class));
+
+        String completionUrl = "/views/itemDomainInventory/list?faces-redirect=true";
+
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+
+    @Override
+    public boolean getEntityDisplayExportButton() {
+        return true;
+    }
+
+    @Override
+    protected DomainImportExportInfo initializeDomainExportInfo() {
+
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+
+        formatInfo.add(new ImportExportFormatInfo("Basic Inventory Create/Update/Delete Format", ImportHelperInventory.class));
 
         String completionUrl = "/views/itemDomainInventory/list?faces-redirect=true";
 
