@@ -30,6 +30,7 @@ public abstract class LocatableItem extends Item {
     private transient DefaultMenuModel locationMenuModel;
     private transient ItemDomainLocation importLocationItem = null;
     private transient String importLocationItemString = null;
+    private transient String importLocationDetailsString = null;
     private transient List<LocationHistoryObject> locationHistoryListObject = null; 
 
     // Needed to determine whenever location was removed in edit process. 
@@ -119,6 +120,11 @@ public abstract class LocatableItem extends Item {
         }
         this.locationDetails = locationDetails;
     }  
+    
+    public void setImportLocationDetails(String locationDetails) {
+        importLocationDetailsString = locationDetails;
+        setLocationDetails(locationDetails);
+    }
 
     @JsonIgnore
     public ItemDomainLocation getLocationItem() {
@@ -196,35 +202,44 @@ public abstract class LocatableItem extends Item {
     public String getImportLocationItemString() {
         if (importLocationItemString == null) {
             LocatableItemController.getInstance().setItemLocationInfo(this);
-            importLocationItemString = getLocationString();
+            if (getMembershipLocation() != null) {
+                importLocationItemString = "parent";
+            } else {
+                ItemDomainLocation locationItem = getLocationItem();
+                if (locationItem != null) {
+                    importLocationItemString = locationItem.getName();
+                } else {
+                    importLocationItemString = "";
+                }
+            }
         }
         return importLocationItemString;
     }
     
     @JsonIgnore
+    public String getImportLocationDetailsString() {
+        if (importLocationDetailsString == null) {
+            LocatableItemController.getInstance().setItemLocationInfo(this);
+            if (getMembershipLocation() != null) {
+                importLocationDetailsString = "parent";
+            } else {
+                importLocationDetailsString = getLocationDetails();
+            }
+        }
+        return importLocationDetailsString;
+    }
+
+    @JsonIgnore
     public void setImportLocationItem(ItemDomainLocation location) {
-        LocatableItemController.getInstance().setItemLocationInfo(this);
-        LocatableItemController.getInstance().updateLocationForItem(
-                this, location, null);
-        importLocationItemString = getLocationString();
-        importLocationItem = location;
+        importLocationItemString = location.getName();
+        if (membershipLocation == null) {
+            importLocationItem = location;
+        }
     }
     
     @JsonIgnore
     public ItemDomainLocation getImportLocationItem() {
         return importLocationItem;
-    }
-
-    @JsonIgnore
-    public Item getExportLocation() {
-        LocatableItemController.getInstance().setItemLocationInfo(this);
-        return getLocationItem();
-    }
-    
-    @JsonIgnore 
-    public String getExportLocationDetails() {
-        LocatableItemController.getInstance().setItemLocationInfo(this);
-        return locationDetails; // avoid getter method because it adds values not stored in database
     }
 
     @JsonIgnore

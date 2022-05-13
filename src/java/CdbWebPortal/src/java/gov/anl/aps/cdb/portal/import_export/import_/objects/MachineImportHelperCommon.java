@@ -225,7 +225,7 @@ public class MachineImportHelperCommon {
                 HEADER_LOCATION,
                 "importLocationItemString",
                 "CDB ID of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored).",
-                "getExportLocation",
+                "getImportLocationItemString",
                 options,
                 locationHandler);
     }

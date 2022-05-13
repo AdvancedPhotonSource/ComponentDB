@@ -6,12 +6,11 @@ package gov.anl.aps.cdb.portal.import_export.import_.objects.handlers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.RefObjectManager;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import java.util.Map;
 import org.apache.poi.ss.usermodel.Row;
 
@@ -26,8 +25,11 @@ import org.apache.poi.ss.usermodel.Row;
  */
 public class LocationHandler extends RefInputHandler {
 
+    public static final String HEADER_LOCATION = "Location";
+    public static final String KEY_LOCATION = "location";
+
     public LocationHandler() {
-        super(MachineImportHelperCommon.HEADER_LOCATION);
+        super(HEADER_LOCATION);
     }
 
     @Override
@@ -98,7 +100,7 @@ public class LocationHandler extends RefInputHandler {
                 }
                 
                 if (itemLocation != null) {
-                    rowMap.put(MachineImportHelperCommon.KEY_LOCATION, itemLocation);
+                    rowMap.put(KEY_LOCATION, itemLocation);
                 }
             }
         }
@@ -113,28 +115,28 @@ public class LocationHandler extends RefInputHandler {
         boolean isValid = true;
         String validString = "";
         
-        ItemDomainMachineDesign item = null;
-        if (!(entity instanceof ItemDomainMachineDesign)) {
+        LocatableItem item = null;
+        if (!(entity instanceof LocatableItem)) {
             isValid = false;
-            validString = "Item must be ItemDomainMachineDesign to use LocationHandler.";
+            validString = "Item must be LocatableItem to use LocationHandler.";
             return new ValidInfo(isValid, validString);
         } else {
-            item = (ItemDomainMachineDesign) entity;
+            item = (LocatableItem) entity;
         }
                 
         // set location
-        ItemDomainLocation itemLocation = (ItemDomainLocation) rowMap.get(MachineImportHelperCommon.KEY_LOCATION);
+        ItemDomainLocation itemLocation = (ItemDomainLocation) rowMap.get(KEY_LOCATION);
         if (itemLocation != null) {
+            
+            if (item.getMembershipLocation() != null) {
+                // error if there is a membership location because there will be an error saving item with new location
+                isValid = false;
+                validString = "'" + HEADER_LOCATION + "' cannot be specified if location is inherited from parent";
+            }
+            
             item.setImportLocationItem(itemLocation);
         }
 
-        if ((item.getIsItemTemplate()) && (item.getImportLocationItem() != null)) {
-            // template not allowed to have location
-            isValid = false;
-            validString = "Template cannot have location item.";
-            return new ValidInfo(isValid, validString);
-        }
-        
         return new ValidInfo(isValid, validString);
     }
 

@@ -53,7 +53,7 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
         specs.add(new StringColumnSpec(
                 "Tag", 
                 KEY_NAME, 
-                "", 
+                "setName", 
                 "Name of inventory unit.", 
                 "getName",
                 ColumnModeOptions.rCREATErUPDATE(), 
@@ -100,6 +100,11 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
     @Override
     public ItemDomainCableInventoryController getEntityController() {
         return ItemDomainCableInventoryController.getInstance();
+    }
+
+    @Override
+    public boolean supportsModeUpdate() {
+        return true;
     }
 
     @Override

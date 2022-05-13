@@ -33,8 +33,11 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.LocationDetailsHandler;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.LocationHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.DomainItemTypeListColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefListColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IntegerColumnSpec;
@@ -1885,28 +1888,26 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 domainName);
     }
     
-    public IdOrNameRefColumnSpec locationColumnSpec() {
-        return new IdOrNameRefColumnSpec(
-                "Location", 
-                "importLocationItemString", 
-                "setImportLocationItem", 
-                "Item location.", 
-                "getExportLocation", null,
-                ColumnModeOptions.oCREATEoUPDATE(), 
-                ItemDomainLocationController.getInstance(), 
-                ItemDomainLocation.class, 
-                "");
+    public CustomColumnSpec locationColumnSpec() {
+        LocationHandler locationHandler = new LocationHandler();
+        return new CustomColumnSpec(
+                LocationHandler.HEADER_LOCATION,
+                "importLocationItemString",
+                "Name or CDB id of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored).",
+                "getImportLocationItemString",
+                ColumnModeOptions.oCREATEoUPDATE(),
+                locationHandler);
     }
     
-    public StringColumnSpec locationDetailsColumnSpec() {
-        return new StringColumnSpec(
-                "Location Details", 
-                "locationDetails", 
-                "setLocationDetails", 
-                "Location details for item.", 
-                "getExportLocationDetails",
-                ColumnModeOptions.oCREATEoUPDATE(), 
-                64);
+    public CustomColumnSpec locationDetailsColumnSpec() {
+        LocationDetailsHandler locationDetailsHandler = new LocationDetailsHandler();
+        return new CustomColumnSpec(
+                LocationDetailsHandler.HEADER_LOCATION_DETAILS,
+                "importLocationDetailsString",
+                "Item's location details (use of word 'parent' allowed for documentation purposes, it is ignored).",
+                "getImportLocationDetailsString",
+                ColumnModeOptions.oCREATEoUPDATE(),
+                locationDetailsHandler);
     }
     
     public IntegerColumnSpec existingItemIdColumnSpec() {

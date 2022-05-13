@@ -52,7 +52,7 @@ public class ImportHelperInventory
         specs.add(new StringColumnSpec(
                 "Tag", 
                 KEY_NAME, 
-                "", 
+                "setName", 
                 "Name of inventory unit.", 
                 "getName",
                 ColumnModeOptions.rCREATErUPDATE(), 
@@ -98,6 +98,11 @@ public class ImportHelperInventory
     @Override
     public ItemDomainInventoryController getEntityController() {
         return ItemDomainInventoryController.getInstance();
+    }
+
+    @Override
+    public boolean supportsModeUpdate() {
+        return true;
     }
 
     @Override
