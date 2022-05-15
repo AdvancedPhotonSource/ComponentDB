@@ -7,11 +7,15 @@
 
 
 
-INSERT INTO `setting_type` VALUES
+INSERT IGNORE INTO `setting_type` VALUES
 (23080,'ItemDomainCableDesign.List.Display.LocationEndpoint1','Display LocationEndpoint1.','false'),
 (23081,'ItemDomainCableDesign.List.FilterBy.LocationEndpoint1','FilterBy LocationEndpoint1.',''),
 (23082,'ItemDomainCableDesign.List.Display.LocationEndpoint2','Display LocationEndpoint2.','false'),
-(23083,'ItemDomainCableDesign.List.FilterBy.LocationEndpoint2','FilterBy LocationEndpoint2.','');
+(23083,'ItemDomainCableDesign.List.FilterBy.LocationEndpoint2','FilterBy LocationEndpoint2.',''),
+(23084,'ItemDomainCableDesign.List.Display.AssignedInventory','Display column for assigned inventory in cable design list.','true'),
+(23085,'ItemDomainCableDesign.List.Display.InstallationStatus','Display column for installation status in cable  design list.','true'),
+(23086,'ItemDomainCableDesign.List.FilterBy.AssignedInventory','Filter for components by assigned inventory.',NULL),
+(23087,'ItemDomainCableDesign.List.FilterBy.InstallationStatus','Filter for components by installation status.',NULL);
 
 DROP VIEW IF EXISTS v_inventory_located_by_relationship;
 CREATE VIEW v_inventory_located_by_relationship
