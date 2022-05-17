@@ -52,7 +52,7 @@ public class ImportHelperInventory
         specs.add(new StringColumnSpec(
                 "Tag", 
                 KEY_NAME, 
-                "setName", 
+                null, // name is set by createEntityInstance() so we can do auto-naming 
                 "Name of inventory unit.", 
                 "getName",
                 ColumnModeOptions.rCREATErUPDATE(), 

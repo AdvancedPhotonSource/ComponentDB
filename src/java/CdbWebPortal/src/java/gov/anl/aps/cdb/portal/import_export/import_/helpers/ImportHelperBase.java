@@ -7,7 +7,6 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.controllers.ItemTypeController;
 import gov.anl.aps.cdb.portal.controllers.UserGroupController;
@@ -41,9 +40,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSp
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefListColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IntegerColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.io.ByteArrayInputStream;
@@ -1053,6 +1050,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         boolean isValid = true;
         String validString = "";
         
+        // skip blank and comment rows
+        if (isBlankRow(row) || isCommentRow(row)) {
+            return new ValidInfo(true, "");
+        }
+
         // parse each column value into a map (cellIndex -> cellValue)        
         int colIndex;
         Map<Integer, String> cellValueMap = new HashMap<>();
@@ -1088,11 +1090,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                             + columnNameForIndex(col.getColumnIndex()));
                 }
             }
-        }
-        
-        // skip blank and comment rows
-        if (isBlankRow(cellValueMap) || isCommentRow(cellValueMap)) {
-            return new ValidInfo(true, "");
         }
         
         // invoke each input handler to populate row dictionary (String key -> object)
@@ -1132,8 +1129,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return new ValidInfo(isValid, validString);
     }
     
-    protected boolean isBlankRow(Map<Integer, String> cellValues) {
-        for (String value : cellValues.values()) {
+    protected boolean isBlankRow(Row row) {
+        short lastCell = row.getLastCellNum();
+        for (short i=0 ; i<=lastCell ; i++) {
+            Cell cell = row.getCell(i);
+            String value = parseStringCell(cell);
             if ((value != null) && (!value.isEmpty())) {
                 return false;
             }
@@ -1141,8 +1141,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return true;
     }
     
-    protected boolean isCommentRow(Map<Integer, String> cellValues) {
-        String value = cellValues.get(0);
+    protected boolean isCommentRow(Row row) {
+        Cell cell = row.getCell(0);
+        String value = parseStringCell(cell);
         if ((value != null) && (!value.isEmpty())) {
             if (value.trim().startsWith(INDICATOR_COMMENT)) {
                 return true;
@@ -1903,9 +1904,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         LocationDetailsHandler locationDetailsHandler = new LocationDetailsHandler();
         return new CustomColumnSpec(
                 LocationDetailsHandler.HEADER_LOCATION_DETAILS,
-                "importLocationDetailsString",
+                "importLocationDetails",
                 "Item's location details (use of word 'parent' allowed for documentation purposes, it is ignored).",
-                "getImportLocationDetailsString",
+                "getImportLocationDetails",
                 ColumnModeOptions.oCREATEoUPDATE(),
                 locationDetailsHandler);
     }

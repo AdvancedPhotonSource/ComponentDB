@@ -4,8 +4,10 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.handlers;
 
+import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import java.util.Map;
 import org.apache.poi.ss.usermodel.Row;
@@ -59,7 +61,7 @@ public class LocationDetailsHandler extends RefInputHandler {
         }
 
         String locationDetails = (String) rowMap.get(KEY_LOCATION_DETAILS);        
-        String currentLocationDetails = item.getLocationDetails();
+        String currentLocationDetails = item.getImportLocationDetails();
         
         if (locationDetails != null && !locationDetails.isEmpty() && (item.getIsItemTemplate())) {
             // template not allowed to have location details
@@ -73,7 +75,17 @@ public class LocationDetailsHandler extends RefInputHandler {
                 || (locationDetails == null && currentLocationDetails != null) 
                 || (locationDetails != null && currentLocationDetails != null && !locationDetails.equals(currentLocationDetails));
         
-        if (changedLocationDetails) {                        
+        if (changedLocationDetails) {             
+            
+            // check if we are allowed to change location
+            if (!LocatableItemController.getInstance().locationEditable(item)) {
+                isValid = false;
+                Item location = item.getActiveLocation();
+                validString
+                        = "Item location details cannot be modified, it is part of "
+                        + location.getDomain().getName() + " item: " + location.getName();
+            }
+
             // set location details regardless if valid, so that it appears as a diff in validation table
             item.setImportLocationDetails(locationDetails);
         }

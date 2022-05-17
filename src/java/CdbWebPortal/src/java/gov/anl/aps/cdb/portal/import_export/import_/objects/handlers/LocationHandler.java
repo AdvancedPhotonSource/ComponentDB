@@ -6,9 +6,11 @@ package gov.anl.aps.cdb.portal.import_export.import_.objects.handlers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
+import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.RefObjectManager;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import java.util.Map;
@@ -125,7 +127,7 @@ public class LocationHandler extends RefInputHandler {
         }
                 
         ItemDomainLocation itemLocation = (ItemDomainLocation) rowMap.get(KEY_LOCATION);
-        ItemDomainLocation currentItemLocation = item.getLocationItem();
+        ItemDomainLocation currentItemLocation = item.getImportLocationItem();
 
         if (itemLocation != null && (item.getIsItemTemplate())) {
             // template not allowed to have location
@@ -133,13 +135,24 @@ public class LocationHandler extends RefInputHandler {
             validString = "Template item cannot have assigned location.";
             return new ValidInfo(isValid, validString);
         }
-
+        
         boolean changedLocation = 
                 (itemLocation != null && currentItemLocation == null) 
                 || (itemLocation == null && currentItemLocation != null) 
                 || (itemLocation != null && currentItemLocation != null && !itemLocation.getId().equals(currentItemLocation.getId()));
         
         if (changedLocation) {
+            
+            // check if we are allowed to change location
+            if (!LocatableItemController.getInstance().locationEditable(item)) {
+                isValid = false;
+                Item location = item.getActiveLocation();
+                validString
+                        = "Item location cannot be modified, it is part of "
+                        + location.getDomain().getName() + " item: " + location.getName();
+            }
+
+            // update location whether or not it's valid so it appears as a diff in validation table
             item.setImportLocationItem(itemLocation);
         }
 
