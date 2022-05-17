@@ -1216,6 +1216,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         // set existing item id so it doesn't appear as a diff
         entity.setImportExistingItemId((Integer) rowDict.get(KEY_EXISTING_ITEM_ID));
         entity.setImportDeleteExistingItem((Boolean) rowDict.get(KEY_DELETE_EXISTING_ITEM));
+        boolean deleteItem = (entity.getImportDeleteExistingItem() == true);
         
         // capture item field values for display in validation table
         FieldValueMapResult result = getFieldValueMap(entity);
@@ -1228,26 +1229,28 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
         FieldValueMap fieldValueMap = result.getValueMap();
         
-        // allow subclass to determine if deleting entity is valid
-        ValidInfo deleteEntityValidInfo = validateDeleteEntityInstance(entity, rowDict);
-        if (!deleteEntityValidInfo.isValid()) {
-            isValid = false;
-        }
-        validString = appendToString(validString, deleteEntityValidInfo.getValidString());
-        
-        // allow subclass to take appropriate action on deleting the entity, beyond calling destroy
-        ValidInfo deleteEntityInfo = deleteEntityInstance(entity, rowDict);
-        if (!deleteEntityInfo.isValid()) {
-            isValid = false;
-        }
-        validString = appendToString(validString, deleteEntityInfo.getValidString());
+        if (deleteItem) {
+            // allow subclass to determine if deleting entity is valid
+            ValidInfo deleteEntityValidInfo = validateDeleteEntityInstance(entity, rowDict);
+            if (!deleteEntityValidInfo.isValid()) {
+                isValid = false;
+            }
+            validString = appendToString(validString, deleteEntityValidInfo.getValidString());
 
-        // invoke each input handler to update the entity with row dictionary values
-        ValidInfo updateValidInfo = invokeHandlersToUpdateEntity(entity, rowDict);
-        if (!updateValidInfo.isValid()) {
-            isValid = false;
+            // allow subclass to take appropriate action on deleting the entity, beyond calling destroy
+            ValidInfo deleteEntityInfo = deleteEntityInstance(entity, rowDict);
+            if (!deleteEntityInfo.isValid()) {
+                isValid = false;
+            }
+            validString = appendToString(validString, deleteEntityInfo.getValidString());
+
+            // invoke each input handler to update the entity with row dictionary values
+            ValidInfo updateValidInfo = invokeHandlersToUpdateEntity(entity, rowDict);
+            if (!updateValidInfo.isValid()) {
+                isValid = false;
+            }
+            validString = appendToString(validString, updateValidInfo.getValidString());
         }
-        validString = appendToString(validString, updateValidInfo.getValidString());
         
         // display field values as diffs
         String diffString = "";
@@ -1265,7 +1268,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             diffString = diffString + "</span>";
         }
 
-        if (entity.getImportDeleteExistingItem()) {
+        if (deleteItem) {
             entity.setImportDiffs(diffString);
         } else {
             entity.setImportDiffs("Item not specified for deletion.");

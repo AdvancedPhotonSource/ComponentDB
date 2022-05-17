@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
@@ -93,6 +94,23 @@ public abstract class ItemDomainInventoryBase<CatalogItemType extends ItemDomain
             sparePartsBean = SparePartsBean.getInstance();
         }
         return sparePartsBean;
+    }
+
+    @Override
+    public ValidInfo isDeleteAllowed() {
+
+        boolean isValid = true;
+        String validStr = "";
+
+        // don't allow deleting if item is assigned to cable design
+        List<ItemElement> membershipList = getItemElementMemberList2();
+        boolean hasMembership = membershipList != null && !membershipList.isEmpty();
+        if (hasMembership) {
+            isValid = false;
+            validStr = "Item has memberships so it cannot be deleted";
+        }
+
+        return new ValidInfo(isValid, validStr);
     }
 
 }

@@ -106,6 +106,11 @@ public class ImportHelperInventory
     }
 
     @Override
+    public boolean supportsModeDelete() {
+        return true;
+    }
+
+    @Override
     public String getFilenameBase() {
         return "Component Inventory";
     }

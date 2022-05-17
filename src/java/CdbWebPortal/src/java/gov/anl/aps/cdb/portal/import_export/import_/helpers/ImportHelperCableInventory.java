@@ -108,6 +108,11 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
     }
 
     @Override
+    public boolean supportsModeDelete() {
+        return true;
+    }
+
+    @Override
     public String getFilenameBase() {
         return "Cable Inventory";
     }
