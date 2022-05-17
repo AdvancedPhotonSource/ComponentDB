@@ -121,12 +121,6 @@ public abstract class LocatableItem extends Item {
         this.locationDetails = locationDetails;
     }  
     
-    public void setImportLocationDetails(String locationDetails) {
-        importLocationDetailsString = locationDetails;
-        setLocationDetails(locationDetails);
-    }
-
-    @JsonIgnore
     public ItemDomainLocation getLocationItem() {
         return location;
     }
@@ -199,47 +193,36 @@ public abstract class LocatableItem extends Item {
     }
 
     @JsonIgnore
-    public String getImportLocationItemString() {
-        if (importLocationItemString == null) {
+    public void setImportLocationItem(ItemDomainLocation location) {
+        LocatableItemController.getInstance().setItemLocationInfo(this);
+        LocatableItemController.getInstance().updateLocationForItem(
+                this, location, null);
+        importLocationItemString = getLocationString();
+        importLocationItem = location;
+    }
+
+    @JsonIgnore
+    public ItemDomainLocation getImportLocationItem() {
+        if (importLocationItem == null) {
             LocatableItemController.getInstance().setItemLocationInfo(this);
-            if (getMembershipLocation() != null) {
-                importLocationItemString = "parent";
-            } else {
-                ItemDomainLocation locationItem = getLocationItem();
-                if (locationItem != null) {
-                    importLocationItemString = locationItem.getName();
-                } else {
-                    importLocationItemString = "";
-                }
-            }
+            importLocationItem = getLocationItem();
         }
-        return importLocationItemString;
+        return importLocationItem;
     }
     
+    public void setImportLocationDetails(String locationDetails) {
+        LocatableItemController.getInstance().setItemLocationInfo(this);
+        importLocationDetailsString = locationDetails;
+        this.locationDetails = locationDetails;
+    }
+
     @JsonIgnore
     public String getImportLocationDetailsString() {
         if (importLocationDetailsString == null) {
             LocatableItemController.getInstance().setItemLocationInfo(this);
-            if (getMembershipLocation() != null) {
-                importLocationDetailsString = "parent";
-            } else {
-                importLocationDetailsString = getLocationDetails();
-            }
+            importLocationDetailsString = getLocationDetails();
         }
         return importLocationDetailsString;
-    }
-
-    @JsonIgnore
-    public void setImportLocationItem(ItemDomainLocation location) {
-        importLocationItemString = location.getName();
-        if (membershipLocation == null) {
-            importLocationItem = location;
-        }
-    }
-    
-    @JsonIgnore
-    public ItemDomainLocation getImportLocationItem() {
-        return importLocationItem;
     }
 
     @JsonIgnore

@@ -1892,9 +1892,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         LocationHandler locationHandler = new LocationHandler();
         return new CustomColumnSpec(
                 LocationHandler.HEADER_LOCATION,
-                "importLocationItemString",
+                "importLocationItem",
                 "Name or CDB id of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored).",
-                "getImportLocationItemString",
+                "getImportLocationItem",
                 ColumnModeOptions.oCREATEoUPDATE(),
                 locationHandler);
     }

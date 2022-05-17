@@ -124,16 +124,22 @@ public class LocationHandler extends RefInputHandler {
             item = (LocatableItem) entity;
         }
                 
-        // set location
         ItemDomainLocation itemLocation = (ItemDomainLocation) rowMap.get(KEY_LOCATION);
-        if (itemLocation != null) {
-            
-            if (item.getMembershipLocation() != null) {
-                // error if there is a membership location because there will be an error saving item with new location
-                isValid = false;
-                validString = "'" + HEADER_LOCATION + "' cannot be specified if location is inherited from parent";
-            }
-            
+        ItemDomainLocation currentItemLocation = item.getLocationItem();
+
+        if (itemLocation != null && (item.getIsItemTemplate())) {
+            // template not allowed to have location
+            isValid = false;
+            validString = "Template item cannot have assigned location.";
+            return new ValidInfo(isValid, validString);
+        }
+
+        boolean changedLocation = 
+                (itemLocation != null && currentItemLocation == null) 
+                || (itemLocation == null && currentItemLocation != null) 
+                || (itemLocation != null && currentItemLocation != null && !itemLocation.getId().equals(currentItemLocation.getId()));
+        
+        if (changedLocation) {
             item.setImportLocationItem(itemLocation);
         }
 

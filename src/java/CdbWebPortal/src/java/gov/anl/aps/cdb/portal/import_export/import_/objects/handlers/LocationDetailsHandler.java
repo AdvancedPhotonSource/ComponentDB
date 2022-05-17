@@ -58,15 +58,22 @@ public class LocationDetailsHandler extends RefInputHandler {
             item = (LocatableItem) entity;
         }
 
-        // set location details
-        String locationDetails = (String) rowMap.get(KEY_LOCATION_DETAILS);
-        if (locationDetails != null) {
-            if (item.getMembershipLocation() != null) {
-                // error if there is a membership location, because setLocationDetails() ignores change in that case
-                isValid = false;
-                validString = "'" + HEADER_LOCATION_DETAILS + "' cannot be specified if location is inherited from parent";
-            }
-            
+        String locationDetails = (String) rowMap.get(KEY_LOCATION_DETAILS);        
+        String currentLocationDetails = item.getLocationDetails();
+        
+        if (locationDetails != null && !locationDetails.isEmpty() && (item.getIsItemTemplate())) {
+            // template not allowed to have location details
+            isValid = false;
+            validString = "Template item cannot have location details.";
+            return new ValidInfo(isValid, validString);
+        }
+
+        boolean changedLocationDetails =
+                (locationDetails != null && currentLocationDetails == null) 
+                || (locationDetails == null && currentLocationDetails != null) 
+                || (locationDetails != null && currentLocationDetails != null && !locationDetails.equals(currentLocationDetails));
+        
+        if (changedLocationDetails) {                        
             // set location details regardless if valid, so that it appears as a diff in validation table
             item.setImportLocationDetails(locationDetails);
         }
