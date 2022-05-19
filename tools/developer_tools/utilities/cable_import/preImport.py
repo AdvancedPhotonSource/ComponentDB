@@ -1041,6 +1041,12 @@ class PreImportHelper(ABC):
     def num_output_cols(self):
         return len(self.output_column_list())
 
+    def pre_initialize(self, api, input_book):
+        self.pre_initialize_custom(api, input_book)
+
+    def pre_initialize_custom(self, api, input_book):
+        pass
+
     # Initializes the helper.  Subclass overrides initialize_custom() to customize.
     def initialize(self, api, sheet, first_row, last_row):
         self.initialize_columns()
@@ -1136,6 +1142,10 @@ class PreImportHelper(ABC):
 
         item_type = self.item_name().upper()
 
+        # pre-initialize helper (allows it to access arbitraru data from workbook
+        # without sheet and first/last row number
+        self.pre_initialize(self.api, input_book)
+
         # process sheetNumber option
         option_sheet_number = get_config_resource(self.config_preimport, self.tag(), 'sheetNumber', True)
 
@@ -1154,8 +1164,11 @@ class PreImportHelper(ABC):
         last_data_index = last_data_row_num
 
         # validate input spreadsheet dimensions
+        if header_index == 0 or first_data_index == 0 or last_data_index == 0:
+            fatal_error("data row index values cannot be zero header: %d first data: %d last data: %d"
+                        % (header_index, first_data_index, last_data_index))
         if input_sheet.max_row < last_data_row_num:
-            fatal_error("fewer rows in input sheet than last data row: %d, exiting" % (last_data_row_num))
+            fatal_error("fewer rows in input sheet than last data row: %d, exiting" % last_data_row_num)
         if input_sheet.max_column < self.num_input_cols():
             fatal_error("input sheet actual columns: %d less than expected columns: %d, exiting" % (
                 input_sheet.max_column, self.num_input_cols()))
@@ -1934,6 +1947,48 @@ class CableTypeHelper(PreImportHelper):
             handler_list.append(SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, CABLE_TYPE_MANUFACTURER_INDEX+1, self.source_id_manager, self.api, self.source_output_objects, self.existing_sources, self.new_sources))
 
         return handler_list
+
+    def pre_initialize_custom(self, api, input_book):
+
+        # find column for specified technical system in CableTypes tab
+        cable_types_sheet = input_book.worksheets[1]
+        max_row = cable_types_sheet.max_row
+        max_column = cable_types_sheet.max_column
+        row_ind = 1
+        cable_type_column_ind = 0
+        for col_ind in range(1, max_column+1):
+            cell_value = cable_types_sheet.cell(row_ind, col_ind).value
+            if self.named_range == str(cell_value):
+                cable_type_column_ind = col_ind
+                break
+        if cable_type_column_ind == 0:
+            fatal_error("tech system: %s not found in CableTypes sheet row 1" % self.named_range)
+
+        # read cable types from appropriate column
+        cable_types = []
+        for row_ind in range(11, max_row+1):
+            cell_value = cable_types_sheet.cell(row_ind, cable_type_column_ind).value
+            if cell_value is not None:
+                cable_types.append(cell_value)
+        if len(cable_types) == 0:
+            fatal_error("no cable types found in CableTypes sheet column: %s" % self.named_range)
+
+        # find header row for specified tech system in CableSpecs tab, set header, first, last data row numbers
+        cable_specs_sheet = input_book.worksheets[2]
+        max_row = cable_specs_sheet.max_row
+        max_column = cable_specs_sheet.max_column
+        col_ind = 1
+        tech_system_row_ind = 0
+        for row_ind in range(11, max_row+1):
+            cell_value = cable_specs_sheet.cell(row_ind, col_ind).value
+            if self.named_range == str(cell_value):
+                tech_system_row_ind = row_ind
+                break
+        if tech_system_row_ind == 0:
+            fatal_error("header for tech system: %s not found in CableSpecs sheet column 1" % self.named_range)
+        self.header_row = tech_system_row_ind
+        self.first_data_row = self.header_row + 1
+        self.last_data_row = self.header_row + len(cable_types)
 
     def initialize_custom(self, api, sheet, first_row, last_row):
 
