@@ -377,9 +377,30 @@ class ItemInfoManager():
         self.output_connector_types = []
         self.output_cable_type_connectors = []
         self.cable_type_info = {}
+        self.technical_system = None
+        self.cable_types_specified_for_technical_system = None
+        self.cable_types_defined_for_technical_system = []
 
     def initialize(self):
         pass
+
+    def set_technical_system(self, technical_system):
+        self.technical_system = technical_system
+
+    def get_technical_system(self):
+        return self.technical_system
+
+    def set_cable_types_specified_for_technical_system(self, cable_type_list):
+        self.cable_types_specified_for_technical_system = cable_type_list
+
+    def get_cable_types_specified_for_technical_system(self):
+        return self.cable_types_specified_for_technical_system
+
+    def add_cable_type_defined_for_technical_system(self, cable_type):
+        self.cable_types_defined_for_technical_system.append(cable_type)
+
+    def get_cable_types_defined_for_technical_system(self):
+        return self.cable_types_defined_for_technical_system
 
     def get_connector_type_id_list(self, connector_type_name_list):
 
@@ -464,12 +485,13 @@ class ItemInfoManager():
             return cable_type_info.id
 
     def handle_cable_type_connector(self, cable_type_name, connector_name, cable_end, connector_type):
-        cable_type_info = self.cable_type_info[cable_type_name]
-        if cable_type_info.id == 0:
-            # only handle connector for new cable catalog items, ignore for existing ones
-            cable_type_info.connector_names.append(connector_name)
-            output_object = CableTypeConnectorOutputObject(cable_type_name, connector_name, cable_end, connector_type)
-            self.add_output_cable_type_connector(output_object)
+        if cable_type_name in self.cable_type_info.keys():
+            cable_type_info = self.cable_type_info[cable_type_name]
+            if cable_type_info.id == 0:
+                # only handle connector for new cable catalog items, ignore for existing ones
+                cable_type_info.connector_names.append(connector_name)
+                output_object = CableTypeConnectorOutputObject(cable_type_name, connector_name, cable_end, connector_type)
+                self.add_output_cable_type_connector(output_object)
 
 
 class InputHandler(ABC):
@@ -523,6 +545,25 @@ class NamedRangeHandler(InputHandler):
         if not has_child:
             valid_string = "named range %s does not include value %s" % (self.range_name, cell_value)
         return has_child, valid_string
+
+
+class TechnicalSystemCableTypeValidationHandler(InputHandler):
+
+    def __init__(self, column_key, info_manager):
+        super().__init__(column_key)
+        self.info_manager = info_manager
+
+    def handle_input(self, input_dict):
+        is_valid = True
+        valid_string = ""
+        cell_value = input_dict[self.column_key]
+        if cell_value not in self.info_manager.get_cable_types_specified_for_technical_system():
+            technical_system = self.info_manager.get_technical_system()
+            is_valid = False
+            valid_string = "cable type: %s from CableSpecs tab not specified for technical system: %s in CableTypes tab" % (cell_value, technical_system)
+        else:
+            self.info_manager.add_cable_type_defined_for_technical_system(cell_value)
+        return is_valid, valid_string
 
 
 class UniqueNameHandler(InputHandler):
@@ -1341,9 +1382,8 @@ class PreImportHelper(ABC):
             msg = "ERROR validating input spreadsheet: %s" % sheet_valid_string
             logging.error(msg)
             print(msg)
-            print()
 
-        if len(self.validation_map) > 0:
+        elif len(self.validation_map) > 0:
             print("%d validation ERROR(S) found" % len(self.validation_map))
             print("See output workbook for additional details")
 
@@ -1847,6 +1887,7 @@ class CableTypeHelper(PreImportHelper):
         self.existing_cable_types = []
         self.new_cable_types = []
         self.cable_type_names = []
+        self.undefined_cable_types = []
         self.project_id = None
         self.tech_system_id = None
         self.owner_user_id = None
@@ -1932,7 +1973,7 @@ class CableTypeHelper(PreImportHelper):
         global name_manager
 
         handler_list = [
-            NamedRangeHandler(CABLE_TYPE_NAME_KEY, self.named_range),
+            TechnicalSystemCableTypeValidationHandler(CABLE_TYPE_NAME_KEY, self.info_manager),
             UniqueNameHandler(CABLE_TYPE_NAME_KEY, self.cable_type_names),
             CableTypeConnectorHandler(CABLE_TYPE_E1_1_KEY, 1),
             CableTypeConnectorHandler(CABLE_TYPE_E2_1_KEY, 2),
@@ -1949,6 +1990,9 @@ class CableTypeHelper(PreImportHelper):
         return handler_list
 
     def pre_initialize_custom(self, api, input_book):
+        
+        technical_system = self.named_range
+        self.info_manager.set_technical_system(technical_system)
 
         # find column for specified technical system in CableTypes tab
         cable_types_sheet = input_book.worksheets[1]
@@ -1958,20 +2002,22 @@ class CableTypeHelper(PreImportHelper):
         cable_type_column_ind = 0
         for col_ind in range(1, max_column+1):
             cell_value = cable_types_sheet.cell(row_ind, col_ind).value
-            if self.named_range == str(cell_value):
+            if technical_system == str(cell_value):
                 cable_type_column_ind = col_ind
                 break
         if cable_type_column_ind == 0:
-            fatal_error("tech system: %s not found in CableTypes sheet row 1" % self.named_range)
+            fatal_error("tech system: %s not found in CableTypes sheet row 1" % technical_system)
 
-        # read cable types from appropriate column
+        # read cable types from appropriate column (used to know how many cable types to read from CableSpecs,
+        # and also for validation that cable types in CableSpecs tab are valid
         cable_types = []
         for row_ind in range(11, max_row+1):
             cell_value = cable_types_sheet.cell(row_ind, cable_type_column_ind).value
             if cell_value is not None:
                 cable_types.append(cell_value)
         if len(cable_types) == 0:
-            fatal_error("no cable types found in CableTypes sheet column: %s" % self.named_range)
+            fatal_error("no cable types found in CableTypes sheet column: %s" % technical_system)
+        self.info_manager.set_cable_types_specified_for_technical_system(cable_types)
 
         # find header row for specified tech system in CableSpecs tab, set header, first, last data row numbers
         cable_specs_sheet = input_book.worksheets[2]
@@ -1981,11 +2027,11 @@ class CableTypeHelper(PreImportHelper):
         tech_system_row_ind = 0
         for row_ind in range(11, max_row+1):
             cell_value = cable_specs_sheet.cell(row_ind, col_ind).value
-            if self.named_range == str(cell_value):
+            if technical_system == str(cell_value):
                 tech_system_row_ind = row_ind
                 break
         if tech_system_row_ind == 0:
-            fatal_error("header for tech system: %s not found in CableSpecs sheet column 1" % self.named_range)
+            fatal_error("header for tech system: %s not found in CableSpecs sheet column 1" % technical_system)
         self.header_row = tech_system_row_ind
         self.first_data_row = self.header_row + 1
         self.last_data_row = self.header_row + len(cable_types)
@@ -2022,6 +2068,21 @@ class CableTypeHelper(PreImportHelper):
         output_object = CableTypeOutputObject(helper=self, input_dict=input_dict)
         self.output_objects.append(output_object)
 
+    def input_is_valid(self):
+
+        is_valid = True
+        valid_string = ""
+
+        # check that all cable types read from CableTypes tab are defined in the cable_specs tab
+        for cable_type in self.info_manager.get_cable_types_specified_for_technical_system():
+            if cable_type not in self.info_manager.get_cable_types_defined_for_technical_system():
+                self.undefined_cable_types.append(cable_type)
+        if len(self.undefined_cable_types) > 0:
+            technical_system = self.info_manager.get_technical_system()
+            is_valid = False
+            valid_string = "not all cable types for technical system: %s specified in CableTypes tab are defined in CableSpecs tab: %s" % (technical_system, self.undefined_cable_types)
+
+        return is_valid, valid_string
 
     def get_summary_messages_custom(self):
         return ["Connector Types that already exist in CDB: %d" % len(self.info_manager.existing_connector_types),
@@ -2087,6 +2148,26 @@ class CableTypeHelper(PreImportHelper):
             return "DETAILS: number of cable types that already exist in CDB (not written to output file): %d" % len(self.existing_cable_types)
         else:
             return ""
+
+    def get_error_messages_custom(self):
+
+        messages = []
+
+        if len(self.undefined_cable_types) > 0:
+            messages.append("Cable types specified in CableTypes tab for technical system: %s not specified in CableSpecs tab: %d" % (self.info_manager.get_technical_system(), len(self.undefined_cable_types)))
+
+        return messages
+
+    def get_error_sheet_columns(self):
+
+        error_column_names = []
+        error_column_values = []
+
+        if len(self.undefined_cable_types) > 0:
+            error_column_names.append("cable types not defined in CableSpecs tab")
+            error_column_values.append(sorted(self.undefined_cable_types))
+
+        return error_column_names, error_column_values
 
 
 class CableTypeOutputObject(OutputObject):
