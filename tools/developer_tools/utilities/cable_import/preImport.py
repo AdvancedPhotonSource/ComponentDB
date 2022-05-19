@@ -974,6 +974,9 @@ class PreImportHelper(ABC):
         self.api = None
         self.validate_only = False
         self.ignore_existing = False
+        self.max_row = 0
+        self.max_column = 0
+        self.header_row = None
         self.first_data_row = None
         self.last_data_row = None
         self.input_sheet = None
@@ -1103,11 +1106,22 @@ class PreImportHelper(ABC):
         self.config_preimport = config
 
     def set_config_group(self, config, section):
+
         self.config_group = config
         self.validate_only = get_config_resource_boolean(config, section, 'validateOnly', False)
         self.ignore_existing = get_config_resource_boolean(config, section, 'ignoreExisting', False)
-        self.first_data_row = int(get_config_resource(config, section, 'firstDataRow', False))
-        self.last_data_row = int(get_config_resource(config, section, 'lastDataRow', False))
+        self.header_row = get_config_resource_int(config, section, 'headerRow', False)
+        self.first_data_row = get_config_resource_int(config, section, 'firstDataRow', False)
+        self.last_data_row = get_config_resource_int(config, section, 'lastDataRow', False)
+
+    def get_header_row(self):
+        return self.header_row
+
+    def get_first_data_row(self):
+        return self.first_data_row
+
+    def get_last_data_row(self):
+        return self.last_data_row
 
     def set_api(self, api):
         self.api = api
@@ -1125,27 +1139,19 @@ class PreImportHelper(ABC):
         # process sheetNumber option
         option_sheet_number = get_config_resource(self.config_preimport, self.tag(), 'sheetNumber', True)
 
-        # process headerRow option
-        option_header_row = get_config_resource(self.config_group, self.tag(), 'headerRow', True)
-
-        # process firstDataRow option
-        option_first_data_row = get_config_resource(self.config_group, self.tag(), 'firstDataRow', True)
-
-        # process lastDataRow option
-        option_last_data_row = get_config_resource(self.config_group, self.tag(), 'lastDataRow', True)
-
         sheet_num = int(option_sheet_number)
-        header_row_num = int(option_header_row)
-        first_data_row_num = int(option_first_data_row)
-        last_data_row_num = int(option_last_data_row)
-
         sheet_index = sheet_num - 1
+        input_sheet = input_book.worksheets[int(sheet_index)]
+        self.max_row = input_sheet.max_row
+        self.max_column = input_sheet.max_column
+        logging.info("input spreadsheet dimensions: %d x %d" % (input_sheet.max_row, input_sheet.max_column))
+
+        header_row_num = self.get_header_row()
+        first_data_row_num = self.get_first_data_row()
+        last_data_row_num = self.get_last_data_row()
         header_index = header_row_num
         first_data_index = first_data_row_num
         last_data_index = last_data_row_num
-
-        input_sheet = input_book.worksheets[int(sheet_index)]
-        logging.info("input spreadsheet dimensions: %d x %d" % (input_sheet.max_row, input_sheet.max_column))
 
         # validate input spreadsheet dimensions
         if input_sheet.max_row < last_data_row_num:
@@ -1167,6 +1173,7 @@ class PreImportHelper(ABC):
 
         print()
         print("%s: PROCESSING SPREADSHEET ROWS ====================" % item_type)
+        print("first data row: %d, last data row: %d" % (first_data_index, last_data_index))
         print()
 
         input_valid = True
@@ -2374,6 +2381,18 @@ class CableDesignHelper(PreImportHelper):
     def num_input_cols(self):
         return 24
 
+    def get_header_row(self):
+        return 19
+
+    def get_first_data_row(self):
+        return 20
+
+    def get_last_data_row(self):
+        return self.max_row
+
+    def set_api(self, api):
+        self.api = api
+
     def generate_input_column_list(self):
         column_list = [
             InputColumnModel(col_index=0, key=CABLE_DESIGN_NAME_KEY, required=True),
@@ -2783,6 +2802,14 @@ def get_config_resource_boolean(config, section, key, is_required, print_value=T
         boolean_value = True
     print("[%s] %s: %s" % (section, key, boolean_value))
     return boolean_value
+
+
+def get_config_resource_int(config, section, key, is_required, print_value=True, print_mask=None):
+    config_value = get_config_resource(config, section, key, is_required, print_value=False)
+    if config_value is None:
+        return 0
+    else:
+        return int(config_value)
 
 
 def main():
