@@ -371,7 +371,6 @@ class ItemInfoManager():
 
     def __init__(self, api):
         self.api = api
-        self.connector_type_id_mgr = IdManager()
         self.existing_connector_types = set()
         self.new_connector_types = set()
         self.output_connector_types = []
@@ -380,6 +379,8 @@ class ItemInfoManager():
         self.technical_system = None
         self.cable_types_specified_for_technical_system = None
         self.cable_types_defined_for_technical_system = []
+        self.id_manager_cable_design = IdManager()
+        self.output_objects_cable_design_compare = []
 
     def initialize(self):
         pass
@@ -492,6 +493,9 @@ class ItemInfoManager():
                 cable_type_info.connector_names.append(connector_name)
                 output_object = CableTypeConnectorOutputObject(cable_type_name, connector_name, cable_end, connector_type)
                 self.add_output_cable_type_connector(output_object)
+
+    def get_output_objects_cable_design_compare(self):
+        return self.output_objects_cable_design_compare
 
 
 class InputHandler(ABC):
@@ -796,10 +800,11 @@ class CableTypeConnectorHandler(InputHandler):
 
 class CableDesignExistenceHandler(InputHandler):
 
-    def __init__(self, column_key, existing_cable_designs, column_index_cable_id, column_index_import_id):
+    def __init__(self, column_key, info_mgr, existing_cable_designs, column_index_cable_id, column_index_import_id):
         super().__init__(column_key)
+        self.info_manager = info_mgr
         self.existing_cable_designs = existing_cable_designs
-        self.id_mgr = IdManager()
+        self.id_mgr = self.info_manager.id_manager_cable_design
         self.column_index_cable_id = column_index_cable_id
         self.column_index_import_id = column_index_import_id
 
@@ -2574,6 +2579,7 @@ class CableDesignHelper(PreImportHelper):
 
         if not self.validate_only:
             handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY,
+                                                            self.info_manager,
                                                             self.existing_cable_designs,
                                                             CABLE_DESIGN_CABLE_ID_INDEX+1,
                                                             CABLE_DESIGN_IMPORT_ID_INDEX+1))
@@ -2595,8 +2601,23 @@ class CableDesignHelper(PreImportHelper):
 
     def handle_valid_row(self, input_dict):
 
-        logging.debug("adding output object for: %s" % input_dict[CABLE_DESIGN_NAME_KEY])
         cable_catalog_info = self.info_manager.get_cable_type_info(input_dict[CABLE_DESIGN_TYPE_KEY])
+
+        # add output object for cable design comparison tab in output workbook
+        cable_design_name = name = CableDesignOutputObject.get_name_cls(input_dict)
+        if cable_design_name in self.existing_cable_designs:
+            cable_catalog_info = self.info_manager.get_cable_type_info(input_dict[CABLE_DESIGN_TYPE_KEY])
+            cable_design_id = self.info_manager.id_manager_cable_design.get_id_for_name(cable_design_name)
+            self.info_manager.get_output_objects_cable_design_compare().append(
+                CableDesignOutputObject(
+                    helper=self,
+                    input_dict=input_dict,
+                    cable_catalog_info=cable_catalog_info,
+                    ignore_port_columns=self.ignore_port_columns,
+                    existing_item_id=cable_design_id))
+
+        # add output object for cable design import tab in output workbook
+        logging.debug("adding output object for: %s" % input_dict[CABLE_DESIGN_NAME_KEY])
         self.output_objects.append(CableDesignOutputObject(helper=self,
                                                            input_dict=input_dict,
                                                            cable_catalog_info=cable_catalog_info,
@@ -2627,6 +2648,7 @@ class CableDesignHelper(PreImportHelper):
         return summary_column_names, summary_column_values
 
     def write_helper_sheets(self, output_book):
+        self.write_sheet(output_book, "Cable Design Item Compare", self.output_column_list(), self.info_manager.get_output_objects_cable_design_compare())
         self.write_sheet(output_book, "Cable Design Item Import", self.output_column_list(), self.output_objects)
 
     def get_error_messages_custom(self):
@@ -2684,9 +2706,10 @@ class CableDesignOutputObject(OutputObject):
 
     ignore_port_columns = False
 
-    def __init__(self, helper, input_dict, cable_catalog_info, ignore_port_columns):
+    def __init__(self, helper, input_dict, cable_catalog_info, ignore_port_columns, existing_item_id=""):
         super().__init__(helper, input_dict)
         self.cable_catalog_info = cable_catalog_info
+        self.existing_item_id = existing_item_id
 
     @classmethod
     def get_output_columns(cls):
@@ -2699,7 +2722,7 @@ class CableDesignOutputObject(OutputObject):
             endpoint2_port_method = "empty_column"
 
         column_list = [
-            OutputColumnModel(col_index=0, method="empty_column", label="Existing Item ID"),
+            OutputColumnModel(col_index=0, method="get_existing_item_id", label="Existing Item ID"),
             OutputColumnModel(col_index=1, method="empty_column", label="Delete Existing Item"),
             OutputColumnModel(col_index=2, method="get_name", label="Name"),
             OutputColumnModel(col_index=3, method="get_cable_type", label="Type"),
@@ -2741,6 +2764,9 @@ class CableDesignOutputObject(OutputObject):
             OutputColumnModel(col_index=39, method="get_owner_group_id", label="Owner Group"),
         ]
         return column_list
+
+    def get_existing_item_id(self):
+        return self.existing_item_id
 
     @classmethod
     def get_name_cls(cls, row_dict, cable_id=None, import_id=None):
