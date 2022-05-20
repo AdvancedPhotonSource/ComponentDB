@@ -796,13 +796,12 @@ class CableTypeConnectorHandler(InputHandler):
 
 class CableDesignExistenceHandler(InputHandler):
 
-    def __init__(self, column_key, existing_cable_designs, column_index_cable_id, column_index_import_id, ignore_existing):
+    def __init__(self, column_key, existing_cable_designs, column_index_cable_id, column_index_import_id):
         super().__init__(column_key)
         self.existing_cable_designs = existing_cable_designs
         self.id_mgr = IdManager()
         self.column_index_cable_id = column_index_cable_id
         self.column_index_import_id = column_index_import_id
-        self.ignore_existing = ignore_existing
 
     def call_api(self, api, cable_design_names_batch):
 
@@ -877,12 +876,7 @@ class CableDesignExistenceHandler(InputHandler):
         if cable_design_id != 0:
             # cable design already exists
             self.existing_cable_designs.append(cable_design_name)
-            if self.ignore_existing:
-                return True, ""
-            else:
-                return False, "cable design already exists in CDB"
-        else:
-            return True, ""
+        return True, ""
 
 
 class DevicePortHandler(InputHandler):
@@ -1014,7 +1008,6 @@ class PreImportHelper(ABC):
         self.info_manager = None
         self.api = None
         self.validate_only = False
-        self.ignore_existing = False
         self.max_row = 0
         self.max_column = 0
         self.header_row = None
@@ -1156,7 +1149,6 @@ class PreImportHelper(ABC):
 
         self.config_group = config
         self.validate_only = get_config_resource_boolean(config, section, 'validateOnly', False)
-        self.ignore_existing = get_config_resource_boolean(config, section, 'ignoreExisting', False)
         self.header_row = get_config_resource_int(config, section, 'headerRow', False)
         self.first_data_row = get_config_resource_int(config, section, 'firstDataRow', False)
         self.last_data_row = get_config_resource_int(config, section, 'lastDataRow', False)
@@ -2584,8 +2576,7 @@ class CableDesignHelper(PreImportHelper):
             handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY,
                                                             self.existing_cable_designs,
                                                             CABLE_DESIGN_CABLE_ID_INDEX+1,
-                                                            CABLE_DESIGN_IMPORT_ID_INDEX+1,
-                                                            self.ignore_existing))
+                                                            CABLE_DESIGN_IMPORT_ID_INDEX+1))
             handler_list.append(EndpointHandler(CABLE_DESIGN_END1_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_END1_DEVICE_NAME_INDEX + 1, CABLE_DESIGN_SRC_ETPM_INDEX + 1, "source endpoints"))
             handler_list.append(DevicePortHandler(CABLE_DESIGN_END1_PORT_NAME_KEY, self.ignore_port_columns, self.from_port_values))
             handler_list.append(EndpointHandler(CABLE_DESIGN_END2_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_END2_DEVICE_NAME_INDEX + 1, CABLE_DESIGN_DEST_ETPM_INDEX + 1, "destination endpoints"))
@@ -2604,17 +2595,11 @@ class CableDesignHelper(PreImportHelper):
 
     def handle_valid_row(self, input_dict):
 
-        name = CableDesignOutputObject.get_name_cls(input_dict)
-        if name in self.existing_cable_designs:
-            # cable design already exists with this name, skip
-            logging.debug("cable design already exists in CDB for: %s, skipping" % name)
-            return
-
         logging.debug("adding output object for: %s" % input_dict[CABLE_DESIGN_NAME_KEY])
         cable_catalog_info = self.info_manager.get_cable_type_info(input_dict[CABLE_DESIGN_TYPE_KEY])
         self.output_objects.append(CableDesignOutputObject(helper=self,
                                                            input_dict=input_dict,
-                                                           cable_catalog_info = cable_catalog_info,
+                                                           cable_catalog_info=cable_catalog_info,
                                                            ignore_port_columns=self.ignore_port_columns))
 
     def get_summary_messages_custom(self):
@@ -2684,7 +2669,7 @@ class CableDesignHelper(PreImportHelper):
         processing_summary = ""
 
         if len(self.existing_cable_designs) > 0:
-            processing_summary = processing_summary + "DETAILS: number of cable designs that already exist in CDB (not written to output file): %d" % (len(self.existing_cable_designs))
+            processing_summary = processing_summary + "DETAILS: number of cable designs that already exist in CDB (included in output file): %d" % (len(self.existing_cable_designs))
 
         num_port_values = len(self.from_port_values) + len(self.to_port_values)
         if num_port_values > 0:
