@@ -367,6 +367,8 @@ class ItemInfoManager():
         self.cable_types_specified_for_technical_system = None
         self.cable_types_defined_for_technical_system = []
         self.id_manager_cable_design = IdManager()
+        self.machine_info = {}
+        self.catalog_ports = {}
         self.output_objects_cable_design_compare = []
         self.output_objects_cable_inventory = []
 
@@ -482,6 +484,29 @@ class ItemInfoManager():
                 output_object = CableTypeConnectorOutputObject(cable_type_name, connector_name, cable_end, connector_type)
                 self.add_output_cable_type_connector(output_object)
 
+    def add_machine_info(self, machine_item_name, machine_info):
+        if machine_item_name not in self.machine_info.keys():
+            self.machine_info[machine_item_name] = machine_info
+
+    def get_machine_info(self, machine_item_name):
+        if machine_item_name in self.machine_info.keys():
+            return self.machine_info[machine_item_name]
+        else:
+            return None
+
+    def add_catalog_port(self, catalog_name, port_name):
+        if catalog_name not in self.catalog_ports.keys():
+            self.catalog_ports[catalog_name] = []
+        port_names = self.catalog_ports[catalog_name]
+        if port_name not in port_names:
+            port_names.append(port_name)
+
+    def get_catalog_ports(self, catalog_name):
+        if catalog_name in self.catalog_ports.keys():
+            return self.catalog_ports[catalog_name]
+        else:
+            return []
+
     def get_output_objects_cable_design_compare(self):
         return self.output_objects_cable_design_compare
 
@@ -491,9 +516,9 @@ class ItemInfoManager():
 
 class InputHandler(ABC):
 
-    def __init__(self, column_key):
+    def __init__(self, column_key, info_mgr=None):
         self.column_key = column_key
-        self.info_manager = None
+        self.info_manager = info_mgr
 
     # initializes handler, subclasses override to customize
     def initialize(self, api, sheet, first_row, last_row):
@@ -617,8 +642,8 @@ class DeviceAddressHandler(InputHandler):
 
 class EndpointHandler(InputHandler):
 
-    def __init__(self, column_key, rack_key, hierarchy_name, api, rack_manager, missing_endpoints, nonunique_endpoints, column_index_item_name, column_index_rack_name, description):
-        super().__init__(column_key)
+    def __init__(self, column_key, rack_key, hierarchy_name, info_mgr, api, rack_manager, missing_endpoints, nonunique_endpoints, column_index_item_name, column_index_rack_name, description):
+        super().__init__(column_key, info_mgr)
         self.rack_key = rack_key
         self.hierarchy_name = hierarchy_name
         self.api = api
@@ -631,11 +656,11 @@ class EndpointHandler(InputHandler):
 
     def call_api(self, api, item_names_batch, rack_names_batch):
         request_obj = ItemDomainMachineDesignIdListRequest(item_names=item_names_batch,
-                                                          rack_names=rack_names_batch,
-                                                          root_name=self.hierarchy_name)
-        id_list = api.getMachineDesignItemApi().get_hierarchy_id_list(
+                                                           rack_names=rack_names_batch,
+                                                           root_name=self.hierarchy_name)
+        info_list = self.api.getCableImportApi().get_machine_info_list(
             item_domain_machine_design_id_list_request=request_obj)
-        return id_list
+        return info_list
 
     def initialize(self, api, sheet, first_row, last_row):
 
@@ -698,7 +723,7 @@ class EndpointHandler(InputHandler):
 
             for future in concurrent.futures.as_completed(futures):
                 try:
-                    id_list = future.result()
+                    info_list = future.result()
 
                 except ApiException as ex:
                     fatal_error("unknown api exception getting list of machine item ids")
@@ -709,12 +734,14 @@ class EndpointHandler(InputHandler):
                 else:
                     (iteration_num, item_names_batch, rack_names_batch, start_index, end_index) = futures[future]
                     # list sizes should match
-                    if len(id_list) != len(item_names_batch):
-                        fatal_error("api result list size mismatch getting list of machine item ids")
+                    if len(info_list) != len(item_names_batch):
+                        fatal_error("api result list size mismatch getting list of machine item info")
                     # iterate 3 lists to process api result
-                    for (item_name, rack_name, id) in zip(item_names_batch, rack_names_batch, id_list):
+                    for (item_name, rack_name, machine_info) in zip(item_names_batch, rack_names_batch, info_list):
+                        id = machine_info.id
                         self.rack_manager.add_endpoint_id_for_rack(rack_name, item_name, id)
-                    result_id_count = result_id_count + len(id_list)
+                        self.info_manager.add_machine_info(item_name, machine_info)
+                    result_id_count = result_id_count + len(info_list)
                     print("fetched %d machine item id's for %s" % (result_id_count, self.description))
 
         end_time = datetime.now()
@@ -878,8 +905,9 @@ class CableDesignExistenceHandler(InputHandler):
 
 class DevicePortHandler(InputHandler):
 
-    def __init__(self, column_key, ignore_port_values, values):
-        super().__init__(column_key)
+    def __init__(self, column_key, endpoint_key, info_mgr, ignore_port_values, values):
+        super().__init__(column_key, info_mgr)
+        self.endpoint_key = endpoint_key
         self.ignore_port_values = ignore_port_values
         self.values = values
 
@@ -887,10 +915,21 @@ class DevicePortHandler(InputHandler):
         pass
 
     def handle_input(self, input_dict):
+
         cell_value = input_dict[self.column_key]
+        endpoint_name = input_dict[self.endpoint_key]
+
         if self.ignore_port_values:
             if cell_value is not None and cell_value != "":
                 self.values.append(cell_value)
+
+        # save port information to info manager data structure for use in generating CDB catalog ports tab in output workbook
+        machine_info = self.info_manager.get_machine_info(endpoint_name)
+        if machine_info is not None:
+            catalog_name = machine_info.catalog_name
+            if catalog_name is not None and catalog_name != "":
+                self.info_manager.add_catalog_port(catalog_name, cell_value)
+
         return True, ""
 
 
@@ -1835,6 +1874,31 @@ class CableTypeConnectorOutputObject(OutputObject):
         return "#" + self.connector_type
 
 
+class CatalogPortOutputObject(OutputObject):
+
+    def __init__(self, catalog_item_name, port_name):
+        self.catalog_item_name = catalog_item_name
+        self.port_name = port_name
+
+    @classmethod
+    def get_output_columns(cls):
+        column_list = [
+            OutputColumnModel(method="empty_column", label="Existing Item ID"),
+            OutputColumnModel(method="empty_column", label="Delete Existing Item"),
+            OutputColumnModel(method="get_catalog_item_name", label="Catalog Item"),
+            OutputColumnModel(method="get_port_name", label="Port Name"),
+            OutputColumnModel(method="empty_column", label="Description"),
+            OutputColumnModel(method="empty_column", label="Connector Type"),
+        ]
+        return column_list
+
+    def get_catalog_item_name(self):
+        return "#" + self.catalog_item_name
+
+    def get_port_name(self):
+        return self.port_name
+
+
 class SourceOutputObject(OutputObject):
 
     def __init__(self, helper, input_dict):
@@ -2497,6 +2561,7 @@ class CableDesignHelper(PreImportHelper):
             handler_list.append(EndpointHandler(CABLE_DESIGN_END1_DEVICE_NAME_KEY,
                                                 CABLE_DESIGN_SRC_ETPM_KEY,
                                                 self.get_md_root(),
+                                                self.info_manager,
                                                 self.api,
                                                 self.rack_manager,
                                                 self.missing_endpoints,
@@ -2505,13 +2570,18 @@ class CableDesignHelper(PreImportHelper):
                                                 src_etpm_index,
                                                 "source endpoints"))
 
-            handler_list.append(DevicePortHandler(CABLE_DESIGN_END1_PORT_NAME_KEY, self.ignore_port_columns, self.from_port_values))
+            handler_list.append(DevicePortHandler(CABLE_DESIGN_END1_PORT_NAME_KEY,
+                                                  CABLE_DESIGN_END1_DEVICE_NAME_KEY,
+                                                  self.info_manager,
+                                                  self.ignore_port_columns,
+                                                  self.from_port_values))
 
             end2_device_name_index = self.get_input_column_index_for_key(CABLE_DESIGN_END2_DEVICE_NAME_KEY)
             dest_etpm_index = self.get_input_column_index_for_key(CABLE_DESIGN_DEST_ETPM_KEY)
             handler_list.append(EndpointHandler(CABLE_DESIGN_END2_DEVICE_NAME_KEY,
                                                 CABLE_DESIGN_DEST_ETPM_KEY,
                                                 self.get_md_root(),
+                                                self.info_manager,
                                                 self.api,
                                                 self.rack_manager,
                                                 self.missing_endpoints,
@@ -2520,7 +2590,11 @@ class CableDesignHelper(PreImportHelper):
                                                 dest_etpm_index,
                                                 "destination endpoints"))
 
-            handler_list.append(DevicePortHandler(CABLE_DESIGN_END2_PORT_NAME_KEY, self.ignore_port_columns, self.to_port_values))
+            handler_list.append(DevicePortHandler(CABLE_DESIGN_END2_PORT_NAME_KEY,
+                                                  CABLE_DESIGN_END2_DEVICE_NAME_KEY,
+                                                  self.info_manager,
+                                                  self.ignore_port_columns,
+                                                  self.to_port_values))
 
         return handler_list
 
@@ -2591,6 +2665,16 @@ class CableDesignHelper(PreImportHelper):
         return summary_column_names, summary_column_values
 
     def write_helper_sheets(self, output_book):
+
+        # create list of catalog port output objects and use to generate tab for catalog ports in output workbook
+        catalog_port_output_objects = []
+        for catalog_name, catalog_ports in self.info_manager.catalog_ports.items():
+            for port_name in catalog_ports:
+                if port_name is not None and port_name != "":
+                    output_object = CatalogPortOutputObject(catalog_name, port_name)
+                    catalog_port_output_objects.append(output_object)
+        self.write_sheet(output_book, "Catalog Port Import", CatalogPortOutputObject.get_output_columns(), catalog_port_output_objects)
+
         self.write_sheet(output_book, "Cable Inventory Item Import", CableInventoryOutputObject.get_output_columns(), self.info_manager.get_output_objects_cable_inventory())
         self.write_sheet(output_book, "Cable Design Item Compare", self.output_column_list(), self.info_manager.get_output_objects_cable_design_compare())
         self.write_sheet(output_book, "Cable Design Item Import", self.output_column_list(), self.output_objects)
