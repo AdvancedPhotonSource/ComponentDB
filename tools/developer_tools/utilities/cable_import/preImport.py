@@ -1082,11 +1082,11 @@ class PreImportHelper(ABC):
 
     # creates instance of class with specified tag
     @classmethod
-    def create_helper(cls, tag, config_preimport, config_group, info_manager, api):
+    def create_helper(cls, tag, config_preimport, config_workbook, info_manager, api):
         helper_class = cls.helperDict[tag]
         helper_instance = helper_class()
         helper_instance.set_config_preimport(config_preimport, tag)
-        helper_instance.set_config_group(config_group, tag)
+        helper_instance.set_config_workbook(config_workbook, tag)
         helper_instance.info_manager = info_manager
         helper_instance.api = api
         return helper_instance
@@ -1189,7 +1189,7 @@ class PreImportHelper(ABC):
     def set_config_preimport(self, config, section):
         self.config_preimport = config
 
-    def set_config_group(self, config, section):
+    def set_config_workbook(self, config, section):
 
         self.config_group = config
         self.validate_only = get_config_resource_boolean(config, section, 'validateOnly', False)
@@ -1955,7 +1955,7 @@ class CableTypeHelper(PreImportHelper):
         self.tech_system_id = None
         self.owner_user_id = None
         self.owner_group_id = None
-        self.named_range = None
+        self.workbook_tech_group = None
 
     def get_project_id(self):
         return self.project_id
@@ -1971,14 +1971,14 @@ class CableTypeHelper(PreImportHelper):
 
     def set_config_preimport(self, config, section):
         super().set_config_preimport(config, section)
-        self.project_id = get_config_resource(config, section, 'projectId', True)
-        self.owner_user_id = get_config_resource(config, section, 'ownerUserId', True)
-        self.owner_group_id = get_config_resource(config, section, 'ownerGroupId', True)
+        self.project_id = get_config_resource(config, section, 'cdbProjectId', True)
+        self.owner_user_id = get_config_resource(config, section, 'cdbOwnerUserId', True)
+        self.owner_group_id = get_config_resource(config, section, 'cdbOwnerGroupId', True)
 
-    def set_config_group(self, config, section):
-        super().set_config_group(config, section)
-        self.tech_system_id = get_config_resource(config, section, 'techSystemId', True)
-        self.named_range = get_config_resource(config, section, 'excelCableTypeRangeName', True)
+    def set_config_workbook(self, config, section):
+        super().set_config_workbook(config, section)
+        self.tech_system_id = get_config_resource(config, section, 'cdbTechSystemId', True)
+        self.workbook_tech_group = get_config_resource(config, section, 'kabelWorkbookTechGroup', True)
 
     @staticmethod
     def tag():
@@ -2055,7 +2055,7 @@ class CableTypeHelper(PreImportHelper):
 
     def pre_initialize_custom(self, api, input_book):
         
-        technical_system = self.named_range
+        technical_system = self.workbook_tech_group
         self.info_manager.set_technical_system(technical_system)
 
         # find column for specified technical system in CableTypes tab
@@ -2462,14 +2462,14 @@ class CableDesignHelper(PreImportHelper):
 
     def set_config_preimport(self, config, section):
         super().set_config_preimport(config, section)
-        self.project_id = get_config_resource(config, section, 'projectId', True)
-        self.owner_user_id = get_config_resource(config, section, 'ownerUserId', True)
-        self.owner_group_id = get_config_resource(config, section, 'ownerGroupId', True)
-        self.md_root = get_config_resource(config, section, 'mdRoot', True)
+        self.project_id = get_config_resource(config, section, 'cdbProjectId', True)
+        self.owner_user_id = get_config_resource(config, section, 'cdbOwnerUserId', True)
+        self.owner_group_id = get_config_resource(config, section, 'cdbOwnerGroupId', True)
+        self.md_root = get_config_resource(config, section, 'cdbMachineDesignRoot', True)
 
-    def set_config_group(self, config, section):
-        super().set_config_group(config, section)
-        self.tech_system_id = get_config_resource(config, section, 'techSystemId', True)
+    def set_config_workbook(self, config, section):
+        super().set_config_workbook(config, section)
+        self.tech_system_id = get_config_resource(config, section, 'cdbTechSystemId', True)
         self.ignore_port_columns = get_config_resource_boolean(config, section, 'ignorePortColumns', False)
 
     @staticmethod
@@ -2994,7 +2994,7 @@ def main():
     # parse command line args
     parser = argparse.ArgumentParser()
     parser.add_argument("--configDir", help="Directory containing script config files.", required=True)
-    parser.add_argument("--groupId", help="Identifier for cable owner group, must have corresponding '.conf' file in configDir", required=True)
+    parser.add_argument("--kabelWorkbookId", help="Symbolic identifier for kabel workbook, must have corresponding '.conf' file in configDir", required=True)
     parser.add_argument("--deploymentName", help="Name to use for looking up URL/user/password in deploymentInfoFile")
     parser.add_argument("--cdbUrl", help="CDB system URL")
     parser.add_argument("--cdbUser", help="CDB User ID for API login")
@@ -3005,7 +3005,7 @@ def main():
     print("COMMAND LINE ARGS ====================")
     print()
     print("configDir: %s" % args.configDir)
-    print("groupId: %s" % args.groupId)
+    print("kabelWorkbookId: %s" % args.kabelWorkbookId)
     print("deploymentName: %s" % args.deploymentName)
     print("cdbUrl: %s" % args.cdbUrl)
     print("cdbUser: %s" % args.cdbUser)
@@ -3029,10 +3029,10 @@ def main():
 
     file_config_deployment_info = option_config_dir + "/cdb-deployment-info.conf"
 
-    option_group_id = args.groupId
-    file_config_group = option_config_dir + "/" + option_group_id + ".conf"
-    if not os.path.isfile(file_config_group):
-        fatal_error("'%s.conf' file not found in configDir: %s', exiting" % (option_group_id, option_config_dir))
+    option_workbook_id = args.kabelWorkbookId
+    file_config_workbook = option_config_dir + "/" + option_workbook_id + ".conf"
+    if not os.path.isfile(file_config_workbook):
+        fatal_error("'%s.conf' file not found in configDir: %s', exiting" % (option_workbook_id, option_config_dir))
 
     #
     # process options
@@ -3041,8 +3041,8 @@ def main():
     # read config files
     config_preimport = configparser.ConfigParser()
     config_preimport.read(file_config_preimport)
-    config_group = configparser.ConfigParser()
-    config_group.read(file_config_group)
+    config_workbook = configparser.ConfigParser()
+    config_workbook.read(file_config_workbook)
 
     print()
     print("preimport.conf OPTIONS ====================")
@@ -3059,27 +3059,27 @@ def main():
         fatal_error("'[%s] outputDir' directory: %s does not exist, exiting" % ('DEFAULT', option_output_dir))
 
     print()
-    print("%s.conf OPTIONS ====================" % option_group_id)
+    print("%s.conf OPTIONS ====================" % option_workbook_id)
     print()
 
     # process inputExcelFile option
-    option_input_file = get_config_resource(config_group, 'DEFAULT', 'inputExcelFile', True)
+    option_input_file = get_config_resource(config_workbook, 'DEFAULT', 'inputExcelFile', True)
     file_input = option_input_dir + "/" + option_input_file
     if not os.path.isfile(file_input):
         fatal_error("'[%s] inputExcelFile' file: %s does not exist in directory: %s, exiting" % ('DEFAULT', option_input_file, option_input_dir))
 
     # process validateOnly option
-    validate_only = get_config_resource_boolean(config_group, 'DEFAULT', 'validateOnly', False)
+    validate_only = get_config_resource_boolean(config_workbook, 'DEFAULT', 'validateOnly', False)
 
     #
     # Generate output file paths.
     #
 
     # output excel file
-    file_output = "%s/%s.xlsx" % (option_output_dir, option_group_id)
+    file_output = "%s/%s.xlsx" % (option_output_dir, option_workbook_id)
 
     # log file
-    file_log = "%s/%s.log" % (option_output_dir, option_group_id)
+    file_log = "%s/%s.log" % (option_output_dir, option_workbook_id)
 
     #
     # determine whether to use args or config for url/user/password
@@ -3182,7 +3182,7 @@ def main():
         print()
         print("%s OPTIONS ====================" % item_type.upper())
         print()
-        helper = PreImportHelper.create_helper(item_type, config_preimport, config_group, info_manager, api)
+        helper = PreImportHelper.create_helper(item_type, config_preimport, config_workbook, info_manager, api)
         helpers.append(helper)
         input_valid = helper.process_input_book(input_book)
         if not input_valid:
