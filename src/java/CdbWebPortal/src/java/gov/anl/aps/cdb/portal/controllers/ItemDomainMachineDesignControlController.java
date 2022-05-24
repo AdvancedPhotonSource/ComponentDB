@@ -145,35 +145,8 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
     }
     
     public PropertyValue getControlInterfaceToParentForItem(ItemDomainMachineDesign mdItem) {
-        if (mdItem == null) {
-            return null; 
-        }
-        PropertyValue controlInterfaceToParent = mdItem.getControlInterfaceToParent();
-        if (controlInterfaceToParent == null) {
-            ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();
-            int relationshipId = relationshipTypeName.getDbId();
-            
-            List<ItemDomainMachineDesign> parentItems = itemDomainMachineDesignFacade.fetchRelationshipParentItems(mdItem.getId(), relationshipId);
-            if (parentItems.size() == 1) {
-                Integer parentId = parentItems.get(0).getId();
-                List<PropertyValue> pvs = propertyValueFacade.fetchRelationshipParentPropertyValues(mdItem.getId(), parentId, relationshipId); 
-                
-                String controlInterfacePvName = SystemPropertyTypeNames.cotrolInterface.getValue();
-                for (PropertyValue pv : pvs) {
-                    PropertyType propertyType = pv.getPropertyType();
-                    if (propertyType.getName().equals(controlInterfacePvName)) {
-                        mdItem.setControlInterfaceToParent(pv);
-                        return pv; 
-                    }
-                    
-                }
-            }            
-            
-            // Prevent reloading non existent property. 
-            mdItem.setControlInterfaceToParent(new PropertyValue());            
-        }
-        
-        return controlInterfaceToParent;                 
+        PropertyValue interfaceToParentPV = getControllerUtility().getControlInterfaceToParentForItem(mdItem); 
+        return interfaceToParentPV; 
     }
 
     @Override
