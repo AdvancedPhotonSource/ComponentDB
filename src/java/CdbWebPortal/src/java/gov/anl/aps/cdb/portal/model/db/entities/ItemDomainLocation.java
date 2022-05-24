@@ -30,7 +30,7 @@ public class ItemDomainLocation extends Item {
 
     private transient ItemElement parentItemElement = null;
     private transient List<Item> locationsLocatedHere = null;
-    private transient List<ItemDomainInventory> inventoryLocatedHere = null;
+    private transient List<ItemDomainInventoryBase> inventoryLocatedHere = null;
     private transient List<Item> machinesLocatedHere = null;
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
@@ -106,11 +106,11 @@ public class ItemDomainLocation extends Item {
     }
 
     @JsonIgnore
-    public List<ItemDomainInventory> getInventoryLocatedHere() {        
+    public List<ItemDomainInventoryBase> getInventoryLocatedHere() {        
         return inventoryLocatedHere;
     }
 
-    public void setInventoryLocatedHere(List<ItemDomainInventory> inventoryLocatedHere) {
+    public void setInventoryLocatedHere(List<ItemDomainInventoryBase> inventoryLocatedHere) {
         this.inventoryLocatedHere = inventoryLocatedHere;
     }
 
