@@ -69,6 +69,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient boolean filterMachineNode = true;
     private transient boolean skipSetfilterMachineNode = false;
 
+    private transient ItemDomainMachineDesign controlParentItem = null; 
     private transient PropertyValue controlInterfaceToParent = null;
     private transient ItemElementRelationship controlRelationshipToParent = null;
     
@@ -569,6 +570,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         }
         return controlRelationshipToParent;
     }
+
+    @JsonIgnore
+    public ItemDomainMachineDesign getControlParentItem() {
+        return controlParentItem;
+    }
+
+    public void setControlParentItem(ItemDomainMachineDesign controlParentItem) {
+        this.controlParentItem = controlParentItem;
+    }    
 
     @JsonIgnore
     public PropertyValue getControlInterfaceToParent() {
