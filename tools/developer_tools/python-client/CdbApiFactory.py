@@ -10,6 +10,7 @@ from cdbApi import ApiException, DomainApi, FileUploadObject, LocationItemsApi, 
 from cdbApi.api.item_api import ItemApi
 from cdbApi.api.downloads_api import DownloadsApi
 from cdbApi.api.property_type_api import PropertyTypeApi
+from cdbApi.api.search_api import SearchApi
 from cdbApi.api.users_api import UsersApi
 from cdbApi.api.sources_api import SourcesApi
 from cdbApi.api.cable_catalog_items_api import CableCatalogItemsApi
@@ -24,9 +25,20 @@ from cdbApi.configuration import Configuration
 class CdbApiFactory:
 
 	HEADER_TOKEN_KEY = "token"
+	URL_FORMAT = "%s/views/item/view?id=%s"
+
+	LOCATION_DOMAIN_ID = 1
+	CATALOG_DOMAIN_ID = 2
+	INVENTORY_DOMAIN_ID = 3
+	MAARC_DOMAIN_ID= 5
+	MACHINE_DESIGN_DOMAIN_ID = 6
+	CABLE_CATALOG_DOMAIN_ID = 7
+	CABLE_INVENTORY_DOMAIN_ID = 8
+	CABLE_DESIGN_DOMAIN_ID = 9
 
 	def __init__(self, cdbUrl):
-		self.config = Configuration(host=cdbUrl)
+		self.cdbUrl = cdbUrl
+		self.config = Configuration(host=self.cdbUrl)
 		self.apiClient = ApiClient(configuration=self.config)
 		self.itemApi = ItemApi(api_client=self.apiClient)
 		self.downloadsApi = DownloadsApi(api_client=self.apiClient)
@@ -44,6 +56,7 @@ class CdbApiFactory:
 		self.componentInventoryItemApi = ComponentInventoryItemsApi(api_client=self.apiClient)
 		self.connectorTypesApi = ConnectorTypesApi(api_client=self.apiClient)
 		self.cableImportApi = CableImportApi(api_client=self.apiClient)
+		self.searchApi = SearchApi(api_client=self.apiClient)
 
 		self.authApi = AuthenticationApi(api_client=self.apiClient)
 
@@ -91,6 +104,12 @@ class CdbApiFactory:
 
 	def getCableImportApi(self):
 		return self.cableImportApi
+
+	def getSearchApi(self):
+		return self.searchApi
+
+	def generateCDBUrlForItemId(self, itemId):
+		return self.URL_FORMAT % (self.cdbUrl, str(itemId))
 
 	def authenticateUser(self, username, password):
 		response = self.authApi.authenticate_user_with_http_info(username=username, password=password)
