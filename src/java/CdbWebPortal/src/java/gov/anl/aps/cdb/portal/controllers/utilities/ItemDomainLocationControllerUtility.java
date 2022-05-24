@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -114,11 +115,11 @@ public class ItemDomainLocationControllerUtility extends ItemControllerUtility<I
         return findByPath_(path, ItemDomainLocation::getParentItem);
     }
 
-    public List<ItemDomainInventory> getInventoryLocatedInLocationHierarchically(ItemDomainLocation location, boolean addAssemblyChildren) {
-        List<ItemDomainInventory> itemsHere = new ArrayList<>();
+    public List<ItemDomainInventoryBase> getInventoryLocatedInLocationHierarchically(ItemDomainLocation location, boolean addAssemblyChildren) {
+        List<ItemDomainInventoryBase> itemsHere = new ArrayList<>();
 
-        List<ItemDomainInventory> results = itemFacade.fetchInventoryStoredInLocationHierarchy(location.getId());
-        for (ItemDomainInventory item : results) {
+        List<ItemDomainInventoryBase> results = itemFacade.fetchInventoryStoredInLocationHierarchy(location.getId());
+        for (ItemDomainInventoryBase item : results) {
             itemsHere.add(item);
 
             if (addAssemblyChildren && item.getFullItemElementList().size() > 1) {

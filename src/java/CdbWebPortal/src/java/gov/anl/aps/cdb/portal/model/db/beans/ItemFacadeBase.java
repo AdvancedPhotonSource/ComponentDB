@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
@@ -472,7 +473,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return null;
     }
 
-    public List<ItemDomainInventory> fetchInventoryStoredInLocationHierarchy(int locationItemId) {
+    public List<ItemDomainInventoryBase> fetchInventoryStoredInLocationHierarchy(int locationItemId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchInventoryStoredInLocationHierarchy");
             query.setParameter("location_item_id_input", locationItemId);
