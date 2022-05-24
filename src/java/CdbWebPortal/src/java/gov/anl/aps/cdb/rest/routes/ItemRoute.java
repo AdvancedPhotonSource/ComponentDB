@@ -59,11 +59,11 @@ import gov.anl.aps.cdb.rest.entities.ItemHierarchy;
 import gov.anl.aps.cdb.rest.entities.ItemLocationInformation;
 import gov.anl.aps.cdb.rest.entities.ItemMembership;
 import gov.anl.aps.cdb.rest.entities.ItemPermissions;
-import gov.anl.aps.cdb.rest.entities.ItemSearchResults;
 import gov.anl.aps.cdb.rest.entities.ItemStatusBasicObject;
 import gov.anl.aps.cdb.rest.entities.SimpleLocationInformation;
 import gov.anl.aps.cdb.rest.entities.LogEntryEditInformation;
 import gov.anl.aps.cdb.rest.entities.NewLocationInformation;
+import gov.anl.aps.cdb.rest.entities.SearchEntitiesResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -1202,7 +1202,9 @@ public class ItemRoute extends ItemBaseRoute {
     @GET
     @Path("/Search/{searchText}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ItemSearchResults getSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
+    @Operation(summary = "Deprecated... for more complete search use search route.")
+    @Deprecated
+    public SearchEntitiesResults getSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
         LOGGER.debug("Performing an item search for search query: " + searchText);
 
         ItemDomainCatalogControllerUtility catalogControllerUtility = new ItemDomainCatalogControllerUtility();
@@ -1212,13 +1214,18 @@ public class ItemRoute extends ItemBaseRoute {
         LinkedList<SearchResult> catalogResults = catalogControllerUtility.performEntitySearch(searchText, true);
         LinkedList<SearchResult> inventoryResults = inventoryInstance.performEntitySearch(searchText, true);
         LinkedList<SearchResult> mdResults = mdInstance.performEntitySearch(searchText, true);
-
-        return new ItemSearchResults(catalogResults, inventoryResults, mdResults);
+        
+        SearchEntitiesResults results = new SearchEntitiesResults(); 
+        results.setItemDomainCatalogResults(catalogResults);
+        results.setItemDomainInventoryResults(inventoryResults);
+        results.setItemDomainMachineDesignResults(mdResults);
+        
+        return results; 
     }
 
     @GET
     @Path("/DetailedCatalogSearch/{searchText}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)    
     public List<ItemDomainCatalogSearchResult> getDetailedCatalogSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
         LOGGER.debug("Performing a detailed catalog item search for search query: " + searchText);
 
