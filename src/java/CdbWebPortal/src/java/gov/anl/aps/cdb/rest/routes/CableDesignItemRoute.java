@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.rest.routes;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
+import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.rest.entities.ItemDomainCableDesignIdListRequest;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -101,5 +102,15 @@ public class CableDesignItemRoute extends BaseRoute {
             }
         }
         return idList;
+    }
+    
+    @GET
+    @Path("/ConnectionList/{cableDesignId}")
+    @Produces(MediaType.APPLICATION_JSON)    
+    public List<CableDesignConnectionListObject> getCableDesignConnectionList(@PathParam("cableDesignId") int cableDesignId) throws ObjectNotFound {
+        ItemDomainCableDesign cableDesign = getCableDesignItemById(cableDesignId);
+        List<CableDesignConnectionListObject> connectionList = CableDesignConnectionListObject.getConnectionList(cableDesign);
+        
+        return connectionList; 
     }
 }
