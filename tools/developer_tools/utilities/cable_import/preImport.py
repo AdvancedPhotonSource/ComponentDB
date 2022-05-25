@@ -819,10 +819,11 @@ class CableTypeConnectorHandler(InputHandler):
 
 class CableDesignExistenceHandler(InputHandler):
 
-    def __init__(self, column_key, info_mgr, existing_cable_designs, column_index_cable_id, column_index_import_id):
+    def __init__(self, column_key, info_mgr, existing_cable_designs, new_cable_designs, column_index_cable_id, column_index_import_id):
         super().__init__(column_key)
         self.info_manager = info_mgr
         self.existing_cable_designs = existing_cable_designs
+        self.new_cable_designs = new_cable_designs
         self.id_mgr = self.info_manager.id_manager_cable_design
         self.column_index_cable_id = column_index_cable_id
         self.column_index_import_id = column_index_import_id
@@ -900,6 +901,8 @@ class CableDesignExistenceHandler(InputHandler):
         if cable_design_id != 0:
             # cable design already exists
             self.existing_cable_designs.append(cable_design_name)
+        else:
+            self.new_cable_designs.append(cable_design_name)
         return True, ""
 
 
@@ -2396,7 +2399,7 @@ class CableInventoryOutputObject(OutputObject):
             OutputColumnModel(method="empty_column", label="Description"),
             OutputColumnModel(method="get_status", label="Status"),
             OutputColumnModel(method="empty_column", label="Location"),
-            OutputColumnModel(method="empty_column", label="Location_Details"),
+            OutputColumnModel(method="empty_column", label="Location Details"),
             OutputColumnModel(method="empty_column", label="Length"),
             OutputColumnModel(method="get_project_id", label="Project"),
             OutputColumnModel(method="get_owner_user_id", label="Owner User"),
@@ -2434,6 +2437,7 @@ class CableDesignHelper(PreImportHelper):
         self.missing_endpoints = set()
         self.nonunique_endpoints = set()
         self.existing_cable_designs = []
+        self.new_cable_designs = []
         self.cable_design_names = []
         self.from_port_values = []
         self.to_port_values = []
@@ -2553,6 +2557,7 @@ class CableDesignHelper(PreImportHelper):
             handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY,
                                                             self.info_manager,
                                                             self.existing_cable_designs,
+                                                            self.new_cable_designs,
                                                             cable_id_index,
                                                             import_id_index))
 
@@ -2644,7 +2649,8 @@ class CableDesignHelper(PreImportHelper):
 
         messages = []
 
-        messages.append("New cable design items for import to CDB: %d" % len(self.output_objects))
+        messages.append("Cable designs that already exist in CDB: %d" % len(self.existing_cable_designs))
+        messages.append("Cable designs that need to be added to CDB: %d" % len(self.new_cable_designs))
 
         num_port_values = len(self.from_port_values) + len(self.to_port_values)
         if num_port_values > 0:
@@ -2656,6 +2662,14 @@ class CableDesignHelper(PreImportHelper):
 
         summary_column_names = []
         summary_column_values = []
+
+        if len(self.existing_cable_designs) > 0:
+            summary_column_names.append("existing cable designs")
+            summary_column_values.append(self.existing_cable_designs)
+
+        if len(self.new_cable_designs) > 0:
+            summary_column_names.append("new cable designs")
+            summary_column_values.append(self.new_cable_designs)
 
         ignored_ports = self.from_port_values + self.to_port_values
         if len(ignored_ports) > 0:
@@ -3205,6 +3219,12 @@ def main():
         api.logOutUser()
     except ApiException:
         logging.error("CDB logout failed")
+
+    print()
+    print("OUTPUT FILES ====================")
+    print()
+    print("output workbook: %s" % file_output)
+    print("log file: %s" % file_log)
 
 
 if __name__ == '__main__':
