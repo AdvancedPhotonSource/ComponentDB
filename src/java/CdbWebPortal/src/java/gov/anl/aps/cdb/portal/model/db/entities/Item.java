@@ -198,26 +198,26 @@ import org.primefaces.model.TreeNode;
 })
 @NamedStoredProcedureQueries({
     @NamedStoredProcedureQuery(
-        name = "item.searchItems",
-        procedureName = "search_items",
-        resultClasses = Item.class,
-        parameters = {
-            @StoredProcedureParameter(
-                    name = "limit_row",
-                    mode = ParameterMode.IN,
-                    type = Integer.class
-            ),
-            @StoredProcedureParameter(
-                    name = "domain_id",
-                    mode = ParameterMode.IN,
-                    type = Integer.class
-            ),
-            @StoredProcedureParameter(
-                    name = "search_string",
-                    mode = ParameterMode.IN,
-                    type = String.class
-            )
-        }
+            name = "item.searchItems",
+            procedureName = "search_items",
+            resultClasses = Item.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "limit_row",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "domain_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "search_string",
+                        mode = ParameterMode.IN,
+                        type = String.class
+                )
+            }
     ),
     @NamedStoredProcedureQuery(
             name = "item.itemWithWritePermissionsForUser",
@@ -542,7 +542,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     protected transient PropertyValue coreMetadataPropertyValue = null;
 
     private transient List<ItemConnector> syncedConnectorList = null;
-    
+
     private transient List<ItemConnector> itemConnectorListSorted = null;
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
@@ -1321,9 +1321,9 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @JsonIgnore
     public List<ItemConnector> getItemConnectorListSorted() {
-        
+
         if (itemConnectorListSorted == null) {
-            
+
             if (itemConnectorList == null) {
                 itemConnectorListSorted = new ArrayList<>();
 
@@ -1339,7 +1339,7 @@ public class Item extends CdbDomainEntity implements Serializable {
                         .collect(Collectors.toList());
             }
         }
-        
+
         return itemConnectorListSorted;
     }
 
@@ -1431,7 +1431,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public ItemElement getSelfElement() {
-        if (selfItemElement == null) {            
+        if (selfItemElement == null) {
             if (this.fullItemElementList == null) {
                 return null;
             }
@@ -1649,6 +1649,16 @@ public class Item extends CdbDomainEntity implements Serializable {
         return "derived from";
     }
 
+    protected String toStringWithQrId() {
+        String toString = toString();
+
+        if (qrId != null) {
+            toString += " (QRID: " + getQrIdDisplay() + ")";
+        }
+        
+        return toString; 
+    }
+
     @Override
     public SearchResult createSearchResultInfo(Pattern searchPattern) {
         SearchResult searchResult;
@@ -1657,11 +1667,12 @@ public class Item extends CdbDomainEntity implements Serializable {
             String itemIdentifier1Label = domain.getItemIdentifier1Label();
             String itemIdentifier2Label = domain.getItemIdentifier2Label();
 
-            searchResult = new SearchResult(this, id, name);
+            searchResult = new SearchResult(this, id, toStringWithQrId());
             searchResult.doesValueContainPattern("name", name, searchPattern);
             searchResult.doesValueContainPattern(itemIdentifier1Label, itemIdentifier1, searchPattern);
             searchResult.doesValueContainPattern(itemIdentifier2Label, itemIdentifier2, searchPattern);
         } else if (derivedFromItem != null && derivedFromItem.getName() != null) {
+            // Likely not possible to hit this point.
             String title = "Derived from: " + derivedFromItem.getName();
             if (qrId != null) {
                 title += " (QRID: " + getQrIdDisplay() + ")";

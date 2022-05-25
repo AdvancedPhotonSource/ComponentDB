@@ -11,6 +11,8 @@ from cdbCli.service.cli.cdbCliCmnds.createLocation import create_location
 from cdbCli.service.cli.cdbCliCmnds.getCatalogItemsByName import get_catalog_items_by_name
 from cdbCli.service.cli.cdbCliCmnds.getLocationIdByName import get_location_id_by_name
 from cdbCli.service.cli.cdbCliCmnds.getProperties import get_properties
+from cdbCli.service.cli.cdbCliCmnds.info import cdb_info
+from cdbCli.service.cli.cdbCliCmnds.search import cdb_search
 from cdbCli.service.cli.cdbCliCmnds.setItemDetails import set_item_details
 from cdbCli.service.cli.cdbCliCmnds.setItemLocation import set_item_location
 from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id
@@ -43,6 +45,8 @@ def entry_point(ctx, dist=None):
     ctx.obj = CliBase(dist)
 
 def main():
+    entry_point.add_command(cdb_search)
+    entry_point.add_command(cdb_info)
     entry_point.add_command(add_document_file)
     entry_point.add_command(add_document_property)
     entry_point.add_command(cdb_log_to_mqtt)

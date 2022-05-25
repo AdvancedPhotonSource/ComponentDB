@@ -22,8 +22,11 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import gov.anl.aps.cdb.rest.authentication.Secured;
+import gov.anl.aps.cdb.rest.entities.ControlRelationshipHierarchy;
 import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
 import gov.anl.aps.cdb.rest.entities.ItemDomainMachineDesignIdListRequest;
 import gov.anl.aps.cdb.rest.entities.NewControlRelationshipInformation;
@@ -476,7 +479,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @Secured
     public ItemElementRelationship createControlRelationship(
             @RequestBody(required = true) NewControlRelationshipInformation controlRelationshipInformation) throws InvalidArgument, CdbException {        
-        ItemDomainMachineDesignControlControllerUtility utility = new ItemDomainMachineDesignControlControllerUtility();                 
+        ItemDomainMachineDesignControlControllerUtility utility = new ItemDomainMachineDesignControlControllerUtility();
         
         int controllingMachineId = controlRelationshipInformation.getControllingMachineId();
         int controlledMachineId = controlRelationshipInformation.getControlledMachineId();
@@ -499,5 +502,36 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         utility.update(controllingMachineElement, currentRequestUserInfo);
         
         return relationship;        
-    }        
+    }
+    
+    @GET
+    @Path("/controlRelationshipHierarchyForMachine/{machineId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ControlRelationshipHierarchy getControlHierarchyForMachineElement(@PathParam("machineId") int machineId) throws ObjectNotFound {        
+        ItemDomainMachineDesign machine = getMachineDesignItemById(machineId);                 
+        ItemDomainMachineDesignControlControllerUtility utility = new ItemDomainMachineDesignControlControllerUtility(); 
+        PropertyValue interfaceToParent = utility.getControlInterfaceToParentForItem(machine);
+               
+        ControlRelationshipHierarchy controlRelationshipHierarchy = new ControlRelationshipHierarchy(machine, interfaceToParent); 
+                
+        ItemDomainMachineDesign controlParentItem = utility.getControlParentItem(machine); 
+        
+        while (controlParentItem != null) {
+            interfaceToParent = utility.getControlInterfaceToParentForItem(controlParentItem);
+            controlRelationshipHierarchy = new ControlRelationshipHierarchy(controlRelationshipHierarchy, controlParentItem, interfaceToParent);
+            controlParentItem = utility.getControlParentItem(controlParentItem);
+        }       
+        
+        return controlRelationshipHierarchy;         
+    }
+    
+    @GET
+    @Path("/ConnectorListForMachine/{machineId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<MachineDesignConnectorListObject> getMachineDesignConnectorList(@PathParam("machineId") int machineId) throws ObjectNotFound {
+        ItemDomainMachineDesign machine = getMachineDesignItemById(machineId);        
+        List<MachineDesignConnectorListObject> connList = MachineDesignConnectorListObject.createMachineDesignConnectorList(machine);
+        
+        return connList; 
+    }
 }
