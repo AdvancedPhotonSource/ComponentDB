@@ -413,9 +413,9 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
     }
 
     public PropertyValue preparePropertyTypeValueAdd(EntityType cdbDomainEntity,
-            PropertyType propertyType, String propertyValueString, String tag) {
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
-        return preparePropertyTypeValueAdd(cdbDomainEntity, propertyType, propertyValueString, tag, lastModifiedByUser);
+            PropertyType propertyType, String propertyValueString, String tag) {        
+        // Implement in controller with entity info. 
+        return null; 
     }
 
     public PropertyValue preparePropertyTypeValueAdd(EntityType cdbEntity,
