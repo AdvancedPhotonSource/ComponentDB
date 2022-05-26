@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -112,6 +113,18 @@ public class LocationItemRoute extends ItemBaseRoute {
     @Produces(MediaType.APPLICATION_JSON)
     public ItemType getItemTypeByName(@PathParam("name") String name) {
         return itemTypeFacade.findByNameAndDomainName(name, ItemDomainName.location.getValue());
+    }
+    
+    @GET
+    @Path("/InventoryHere/{locationId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemDomainInventoryBase> getInventoryLocatedHere(@PathParam("locationId") Integer locationId) throws ObjectNotFound {        
+        ItemDomainLocation location = getLocationItemById(locationId);
+        
+        ItemDomainLocationControllerUtility util = new ItemDomainLocationControllerUtility();
+        List<ItemDomainInventoryBase> itemsHere = util.getInventoryLocatedInLocationHierarchically(location, true); 
+        
+        return itemsHere;
     }
      
 }

@@ -7,13 +7,11 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
-import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.view.objects.FilterViewResultItem;
 import java.io.Serializable;
@@ -94,7 +92,7 @@ public class ItemFilterViewDomainInventoryController extends ItemFilterViewContr
         ItemDomainLocation selection = locationController.getFilterViewLocationLastSelection();
         if (isFilterViewLocationDataModelNeedReloading(selection)) {
             updateFilterViewLocationDataModelLoadedStatus(selection);
-            List<ItemDomainInventory> itemList = new ArrayList<>();
+            List<ItemDomainInventoryBase> itemList = new ArrayList<>();
             
             if (selection != null) {
                 ItemDomainLocationControllerUtility util = new ItemDomainLocationControllerUtility(); 

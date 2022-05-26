@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.rest.authentication.Secured;
+import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.rest.entities.ItemDomainCableDesignIdListRequest;
 import gov.anl.aps.cdb.rest.entities.UpdateCableDesignAssignedItemInformation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -400,5 +401,15 @@ public class CableDesignItemRoute extends ItemBaseRoute {
         itemControllerUtility.update(cableDesignItem, currentUser);
 
         return getCableDesignItemById(cableDesignId);
+    }
+    
+    @GET
+    @Path("/ConnectionList/{cableDesignId}")
+    @Produces(MediaType.APPLICATION_JSON)    
+    public List<CableDesignConnectionListObject> getCableDesignConnectionList(@PathParam("cableDesignId") int cableDesignId) throws ObjectNotFound {
+        ItemDomainCableDesign cableDesign = getCableDesignItemById(cableDesignId);
+        List<CableDesignConnectionListObject> connectionList = CableDesignConnectionListObject.getConnectionList(cableDesign);
+        
+        return connectionList; 
     }
 }

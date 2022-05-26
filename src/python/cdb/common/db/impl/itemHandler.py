@@ -384,7 +384,12 @@ class ItemHandler(CdbDbEntityHandler):
 
     def addItemElement(self, session, name, parentItemId, containedItemId, isRequired, description,
                 createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable , createdOnDataTime=None, lastModifiedOnDateTime=None, selfElementCreation=False):
-        dbItemElements = session.query(ItemElement).filter(ItemElement.name==name).all()
+        
+        dbItemElements = session.query(ItemElement)\
+            .filter(ItemElement.parent_item_id==parentItemId)\
+            .filter(ItemElement.name==name)\
+            .all()
+
         for element in dbItemElements:
             if element.parent_item_id == parentItemId and element.name == name:
                 raise ObjectAlreadyExists('Item Element with name %s already exists.' % name)

@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
@@ -73,12 +74,12 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
         return (ItemDomainLocationController) findDomainController(DOMAIN_NAME);
     }
 
-    public List<ItemDomainInventory> getInventoryLocatatedHere() {
+    public List<ItemDomainInventoryBase> getInventoryLocatatedHere() {
         ItemDomainLocation current = getCurrent();
 
         if (current.getInventoryLocatedHere() == null) {
             ItemDomainLocationControllerUtility util = getControllerUtility();
-            List<ItemDomainInventory> itemsHere = util.getInventoryLocatedInLocationHierarchically(current, true); 
+            List<ItemDomainInventoryBase> itemsHere = util.getInventoryLocatedInLocationHierarchically(current, true); 
             current.setInventoryLocatedHere(itemsHere);
         }
 

@@ -17,6 +17,8 @@ See LICENSE file.
 
     <ui:param name="rendredHousing"
               value="#{rendredHousing != null ? rendredHousing : true}" /> 
+    <ui:param name="renderedDomain"
+              value="#{renderedDomain != null ? renderedDomain : false}" /> 
     <!-- specify ui:param alternateLocationString to add string when no location string exists. --> 
 
     <p:column styleClass="locationColumnStyleClassWatermark"
@@ -62,6 +64,11 @@ See LICENSE file.
                        rendered="#{housingItem != null}" >
             <p:tooltip for="housingOutputText" value="#{locatableItemController.getHousingStringForItem(itemListObject)}"/>
         </h:outputLabel>
+    </p:column>
+    
+    <p:column headerText="Domain"
+              rendered="#{renderedDomain}">
+        #{itemListObject.domain.name}
     </p:column>
 
 </ui:composition>

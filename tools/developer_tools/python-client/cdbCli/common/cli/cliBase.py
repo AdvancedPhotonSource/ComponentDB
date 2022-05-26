@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import csv
+from email.policy import default
 import os
 import sys
 
@@ -12,15 +13,20 @@ import click
 from CdbApiFactory import CdbApiFactory
 from cdbApi import ApiException
 from cdbCli.common.utility.configurationManager import ConfigurationManager
-try:
-    from rich import print
-except:
-    pass
 
+from rich import print
+from rich.panel import Panel
+from rich.table import Table
+
+FORMAT_RICH_OPT = 'Rich'
+FORMAT_JSON_OPT = "JSON"
+FORMAT_OPTS = [FORMAT_RICH_OPT, FORMAT_JSON_OPT]
 
 class CliBase:
 
     api_factory = None
+
+    PANEL_LINE_FORMAT = "%-25s %s\n"    
 
     def __init__(self,portal_key=None):
         self.config = ConfigurationManager.get_instance()
@@ -114,6 +120,85 @@ class CliBase:
             next(reader)
 
         return reader, stdin_tty_mode
+    
+def simple_obj_list_to_str(list):
+    result = ""
+    for obj in list:
+        result += obj.name + ", "
+
+    return result[:-2]
+    
+def print_results(console, result_obj, format=FORMAT_RICH_OPT, pager=False, table_style = []):
+    if format == FORMAT_RICH_OPT:
+        printables = create_rich_result_obj(result_obj, table_style)
+    else:
+        printables = [result_obj]
+
+    if pager:
+        with console.pager():
+            print_printables(console, printables)
+    else:
+        print_printables(console, printables)
+
+def create_rich_result_obj(result_obj, table_style=[]):
+    printables = []
+
+    for section in result_obj.keys():
+        section_contents = result_obj[section]
+
+        if section_contents.__len__() > 0:
+            key_length = section_contents[0].keys().__len__()
+            if key_length == 1:
+                value = ""
+                for content in section_contents: 
+                    data_keys = content.keys()
+
+                    for data_key in data_keys:
+                        data_val = content[data_key]
+                        if not data_val and data_val != 0:
+                            data_val = ''
+                        value += CliBase.PANEL_LINE_FORMAT % (data_key, data_val)
+
+                panel = Panel(value[:-1], title=section)
+
+                printables.append(panel)
+            elif key_length > 1:
+                # Table
+                headers = section_contents[0].keys()
+                table = Table(title=section, expand=True, show_lines=True)
+
+                for i, header in enumerate(headers): 
+                    if i < len(table_style):
+                        style = table_style[i]
+                        table.add_column(header, style=style)
+                    else:
+                        table.add_column(header)
+
+                for content in section_contents: 
+                    row_list = []
+                    for value in content.values():
+                        row_list.append(str(value))
+                    row_contents = tuple(row_list)
+
+                    table.add_row(*row_contents)
+
+                printables.append(table)
+
+    return printables        
+
+def print_printables(console, printables):
+    for printable in printables:
+        console.print(printable)
+
+def wrap_print_format_cli_click_options(function):
+    function = click.option(
+        "--format",
+
+        default=FORMAT_RICH_OPT,
+        type=click.Choice(FORMAT_OPTS, case_sensitive=False),        
+        help="How the results will be displayed."
+    )(function)
+    return function
 
 def wrap_common_cli_click_options(function):    
     function = click.option(
