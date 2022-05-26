@@ -1,4 +1,5 @@
 LOCK TABLES `item_item_project` WRITE;
+SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `item_item_project` DISABLE KEYS */;
 INSERT INTO `item_item_project` VALUES
 (1,3),
@@ -102,6 +103,7 @@ INSERT INTO `item_item_project` VALUES
 (103,3),
 (104,3),
 (105,3),
-(106,3);
+(106,3),
+(109,1);
 /*!40000 ALTER TABLE `item_item_project` ENABLE KEYS */;
 UNLOCK TABLES;

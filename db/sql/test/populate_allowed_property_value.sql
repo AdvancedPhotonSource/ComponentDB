@@ -1,4 +1,5 @@
 LOCK TABLES `allowed_property_value` WRITE;
+SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `allowed_property_value` DISABLE KEYS */;
 INSERT INTO `allowed_property_value` VALUES
 (1,8,'Ordered','','',2.00),
