@@ -97,7 +97,6 @@ INSERT INTO `item` VALUES
 (93,6,'Test Machine',NULL,NULL,NULL,NULL),
 (94,6,'Component 1',NULL,NULL,NULL,NULL),
 (95,6,'Another Needed Component',NULL,'','',NULL),
-(96,9,'My Connection Between test machines',NULL,'','',NULL),
 (97,3,'Unit: 0001',6,'','',NULL),
 (98,3,'Unit: 0002',6,'','',NULL),
 (99,3,'Unit: 0003',6,'','',NULL),

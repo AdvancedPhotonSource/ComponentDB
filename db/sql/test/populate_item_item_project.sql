@@ -93,7 +93,6 @@ INSERT INTO `item_item_project` VALUES
 (93,3),
 (94,3),
 (95,3),
-(96,3),
 (97,3),
 (98,3),
 (99,3),

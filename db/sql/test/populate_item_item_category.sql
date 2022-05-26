@@ -4,7 +4,6 @@ SET SESSION FOREIGN_KEY_CHECKS=0;
 INSERT INTO `item_item_category` VALUES
 (1,19),
 (2,40),
-(3,3),
-(96,43);
+(3,3);
 /*!40000 ALTER TABLE `item_item_category` ENABLE KEYS */;
 UNLOCK TABLES;
