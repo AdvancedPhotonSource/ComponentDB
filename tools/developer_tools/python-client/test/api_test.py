@@ -1,3 +1,4 @@
+from tkinter.messagebox import NO
 import unittest
 from datetime import datetime
 
@@ -7,6 +8,12 @@ from cdbApi import OpenApiException, ItemStatusBasicObject, NewLocationInformati
     NewCatalogInformation, NewInventoryInformation, NewCatalogElementInformation, NewControlRelationshipInformation, \
     UpdateMachineAssignedItemInformation, PromoteMachineElementInformation
 from cdbApi.models.allowed_property_value import AllowedPropertyValue
+from cdbApi.models.cable_design_connection_list_object import CableDesignConnectionListObject
+from cdbApi.models.control_relationship_hierarchy import ControlRelationshipHierarchy
+from cdbApi.models.item_domain_inventory_base import ItemDomainInventoryBase
+from cdbApi.models.machine_design_connector_list_object import MachineDesignConnectorListObject
+from cdbApi.models.search_entities_options import SearchEntitiesOptions
+from cdbApi.models.search_entities_results import SearchEntitiesResults
 
 
 class MyTestCase(unittest.TestCase):
@@ -17,6 +24,7 @@ class MyTestCase(unittest.TestCase):
     PROJECT_ID = 1
     CATALOG_ITEM_ID = 2
     CATALOG_ITEM_ID_2 = 18
+    CABLE_DESIGN_ITEM_ID = 110
     INVENTORY_ITEM_ID = 56
     INVENTORY_ITEM_ELEMENT_NAME = "E1"
     INVENTORY_ITEM_QRID = 1010001
@@ -24,6 +32,7 @@ class MyTestCase(unittest.TestCase):
     INVENTORY_FIRST_CONTAINED_ITEM_ID = 45
     INVENTORY_FIRST_CONTAINED_NEW_ITEM_ID = 41
     INVENTORY_FIRST_CONTAINED_INVALID_ITEM_ID = 97
+    LOCATION_WITH_INVENTORY_ID = "89"
     MACHINE_DESIGN_ID = 93
     MACHINE_DESIGN_PARENT_ID = 94
     MACHINE_DESIGN_CHILD_ID = 95
@@ -31,6 +40,8 @@ class MyTestCase(unittest.TestCase):
     MD_CONTROL_NAME_TOP_LEVEL = "Top Control Node"
     MD_CONTROL_NAME_TOP_LEVEL_2 = "Another Control Node"
     MD_CONTROL_NAME = "ioctest"
+    MD_CONTROL_INTERFACE_TO_PARENT = "Direct Connection"
+    MD_CONTROL_EXPECTED_PARENT_ID = 109
     TEST_PROPERTY_TYPE_NAME = "Test Property"
     CONTROL_INTERFACE_PROPERTY_TYPE_ID = "14"
     LOCATION_QRID_TESTUSER_PERMISSIONS = 101111101
@@ -46,6 +57,7 @@ class MyTestCase(unittest.TestCase):
         self.locationApi = self.factory.locationItemApi
         self.userApi = self.factory.usersApi
         self.cableCatalogApi = self.factory.cableCatalogItemApi
+        self.cableDesignApi = self.factory.cableDesignItemApi
         self.machineDesignApi = self.factory.machineDesignItemApi
         self.componentCatalogApi = self.factory.componentCatalogItemApi
         self.componentInventoryApi = self.factory.componentInventoryItemApi
@@ -53,6 +65,7 @@ class MyTestCase(unittest.TestCase):
         self.propertyValueApi = self.factory.propertyValueApi
         self.domainApi = self.factory.domainApi
         self.logApi = self.factory.logApi
+        self.searchApi = self.factory.searchApi
         self.loggedIn = False
 
     def tearDown(self):
@@ -741,6 +754,62 @@ class MyTestCase(unittest.TestCase):
                 break
         
         self.assertEquals(found, True, msg="The allowed value was not found under the updated property type. ")
+
+    def test_search(self):
+        search_opts = SearchEntitiesOptions(
+            search_text='cdb',
+            include_catalog=True,
+            include_inventory=True,
+            include_machine_design=True,
+            include_cable_catalog=True,
+            include_cable_inventory=True,
+            include_cable_design=True
+        )
+
+        result: SearchEntitiesResults = self.searchApi.search_entities(search_opts)
+
+        self.assertNotEqual(None, result.item_domain_catalog_results)
+        self.assertNotEqual(None, result.item_domain_inventory_results)
+        self.assertNotEqual(None, result.item_domain_machine_design_results)
+        self.assertNotEqual(None, result.item_domain_cable_catalog_results)
+        self.assertNotEqual(None, result.item_domain_cable_inventory_results)
+        self.assertNotEqual(None, result.item_domain_cable_design_results)
+        self.assertEqual(None, result.item_type_results)
+
+    def test_get_control_herarchy_for_machine(self):
+        result : ControlRelationshipHierarchy = self.machineDesignApi.get_control_hierarchy_for_machine_element(machine_id=self.MACHINE_DESIGN_ID)
+        
+        self.assertEqual(result.machine_item.id, self.MD_CONTROL_EXPECTED_PARENT_ID, msg='Not expected control parent found.')
+        self.assertEqual(result.child_item.interface_to_parent, self.MD_CONTROL_INTERFACE_TO_PARENT, msg='Inteface to parent found is not correct.')
+        self.assertEqual(result.child_item.machine_item.id, self.MACHINE_DESIGN_ID, msg="Not expected controlled machine found.")
+
+    def test_get_machine_connection_list(self):
+        result : list[MachineDesignConnectorListObject] = self.machineDesignApi.get_machine_design_connector_list(self.MACHINE_DESIGN_PARENT_ID)
+
+        self.assertEqual(len(result), 1)
+
+        connection = result[0]
+        self.assertEqual(connection.connected_to_items_list[0].id, self.MACHINE_DESIGN_CHILD_ID) 
+        self.assertEqual(connection.cable_item.id, self.CABLE_DESIGN_ITEM_ID)  
+
+    def test_get_inventory_located_here(self):
+        results: list[ItemDomainInventoryBase] = self.locationApi.get_inventory_located_here(self.LOCATION_WITH_INVENTORY_ID)
+
+        inventory_here = [self.INVENTORY_ITEM_ID, self.INVENTORY_FIRST_CONTAINED_ITEM_ID, self.INVENTORY_FIRST_CONTAINED_NEW_ITEM_ID]
+        for item in results:
+            self.assertIn(item.id, inventory_here, msg='Unexpected item located in location')
+
+
+    def test_get_cable_design_connections(self):
+        results: list[CableDesignConnectionListObject] = self.cableDesignApi.get_cable_design_connection_list(self.CABLE_DESIGN_ITEM_ID)
+
+        endpoint_ids = [self.MACHINE_DESIGN_PARENT_ID, self.MACHINE_DESIGN_CHILD_ID]
+
+        for connection in results:
+            self.assertIn(connection.md_item.id, endpoint_ids, msg='Unexpected endpoint')
+            self.assertEqual(connection.cable_design.id, self.CABLE_DESIGN_ITEM_ID)
+
+
 
 if __name__ == '__main__':
     unittest.main()
