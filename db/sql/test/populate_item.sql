@@ -109,6 +109,7 @@ INSERT INTO `item` VALUES
 (106,3,'Unit: 0010',6,'','',NULL),
 (107,1,'Yet another building',NULL,NULL,NULL,NULL),
 (108,1,'Pallet',NULL,NULL,NULL,101111101),
-(109,6,'TestControl',NULL,NULL,NULL,NULL);
+(109,6,'TestControl',NULL,NULL,NULL,NULL),
+(110,9,'Test Cable Design',NULL,'','',NULL);
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;

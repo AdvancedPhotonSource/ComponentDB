@@ -23,6 +23,7 @@ INSERT INTO `item_element_property` VALUES
 (135,18),
 (135,19),
 (136,20),
-(136,21);
+(136,21),
+(162,33);
 /*!40000 ALTER TABLE `item_element_property` ENABLE KEYS */;
 UNLOCK TABLES;
