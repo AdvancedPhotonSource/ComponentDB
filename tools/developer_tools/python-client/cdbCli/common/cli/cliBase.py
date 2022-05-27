@@ -7,6 +7,7 @@ import sys
 from click import prompt,echo
 
 from getpass import getpass
+from urllib3.exceptions import MaxRetryError
 
 import click
 
@@ -128,9 +129,9 @@ def simple_obj_list_to_str(list):
 
     return result[:-2]
     
-def print_results(console, result_obj, format=FORMAT_RICH_OPT, pager=False, table_style = []):
+def print_results(console, result_obj, format=FORMAT_RICH_OPT, pager=False, table_style = [], header_style={}, **kwargs):
     if format == FORMAT_RICH_OPT:
-        printables = create_rich_result_obj(result_obj, table_style)
+        printables = create_rich_result_obj(result_obj, table_style, header_style)
     else:
         printables = [result_obj]
 
@@ -140,10 +141,15 @@ def print_results(console, result_obj, format=FORMAT_RICH_OPT, pager=False, tabl
     else:
         print_printables(console, printables)
 
-def create_rich_result_obj(result_obj, table_style=[]):
+def create_rich_result_obj(result_obj, table_style=[], header_style={}):
     printables = []
 
     for section in result_obj.keys():
+        if section in header_style.keys():
+            title = "[%s]%s" % (header_style[section], section)
+        else:
+            title = section 
+
         section_contents = result_obj[section]
 
         if section_contents.__len__() > 0:
@@ -158,14 +164,14 @@ def create_rich_result_obj(result_obj, table_style=[]):
                         if not data_val and data_val != 0:
                             data_val = ''
                         value += CliBase.PANEL_LINE_FORMAT % (data_key, data_val)
-
-                panel = Panel(value[:-1], title=section)
+                                
+                panel = Panel(value[:-1], title=title)
 
                 printables.append(panel)
             elif key_length > 1:
                 # Table
                 headers = section_contents[0].keys()
-                table = Table(title=section, expand=True, show_lines=True)
+                table = Table(title=title, expand=True, show_lines=True)
 
                 for i, header in enumerate(headers): 
                     if i < len(table_style):
@@ -207,6 +213,41 @@ def wrap_common_cli_click_options(function):
         help="Add a log entry to the machine item after the change is made."
     )(function)
     return function
+
+def cli_command_api_exception_handler(func):
+    '''
+    Exception decorator prints the exception in the expected format for the user. 
+    
+    Decorator to be applied on the the cli_helper function and not on the 'click' function. 
+    '''
+    def Inner_Function(*args, **kwargs):
+        if 'cli' not in kwargs and 'factory' not in kwargs:
+            raise Exception("'cli' or 'factory' must be a kwargs parameter to use decorator. Other recommended params are 'console' and 'format'")
+        try:
+            return func(*args, **kwargs)
+        except ApiException as ex:
+            cli : CliBase = kwargs['cli']
+            exObj = cli.api_factory.parseApiException(ex)
+            if 'console' in kwargs:         
+                exceptionDictList = [] 
+                printDict = {'Exception': exceptionDictList}
+                header_style = {'Exception': 'red'}
+                
+                exceptionDictList.append({"HTTP Status": exObj.status})
+                exceptionDictList.append({"Name": exObj.simple_name})
+                exceptionDictList.append({"Message": exObj.message})
+
+                print_results(result_obj=printDict, header_style=header_style, **kwargs)
+            else:
+                msg = "%s(%s) - %s" % (exObj.simple_name, exObj.status, exObj.message)
+                print(msg)
+            return ex
+        except MaxRetryError as ex:
+            # Connection issue
+            print(ex)
+            return ex
+        
+    return Inner_Function
 
 if __name__ == "__main__":
     cli = CliBase()
