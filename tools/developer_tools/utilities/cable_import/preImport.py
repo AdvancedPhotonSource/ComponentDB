@@ -1540,21 +1540,15 @@ class InputSheetHelper(ABC):
         return 5
 
     def post_create(self, config_preimport, config_workbook, info_manager, api):
-        self.set_config_preimport(config_preimport, self.tag())
-        self.set_config_workbook(config_workbook, self.tag())
+        self.set_config_preimport(config_preimport, self.sheet_name())
+        self.set_config_workbook(config_workbook, self.sheet_name())
         self.info_manager = info_manager
         self.api = api
 
     # Returns registered tag for subclass.
     @staticmethod
     @abstractmethod  # must be innermost decorator
-    def tag():
-        pass
-
-    # Returns name of CDB item for helper.
-    @staticmethod
-    @abstractmethod
-    def item_name():
+    def sheet_name():
         pass
 
     # Returns expected number of columns in input spreadsheet.
@@ -1671,14 +1665,14 @@ class InputSheetHelper(ABC):
 
     def process_input_book(self, input_book):
 
-        item_type = self.item_name().upper()
+        item_type = self.sheet_name().upper()
 
         # pre-initialize helper (allows it to access arbitraru data from workbook
         # without sheet and first/last row number
         self.pre_initialize(self.api, input_book)
 
         # process sheetNumber option
-        option_sheet_number = get_config_resource(self.config_preimport, self.tag(), 'sheetNumber', True)
+        option_sheet_number = get_config_resource(self.config_preimport, self.sheet_name(), 'sheetNumber', True)
 
         sheet_num = int(option_sheet_number)
         sheet_index = sheet_num - 1
@@ -1881,8 +1875,9 @@ class InputSheetHelper(ABC):
             print("no validation errors found")
 
         if input_valid and not self.validate_only:
-            summary_msg = "PROCESSING SUCCESSFUL: processed %d input rows including %d empty rows and wrote %d output rows, see output workbook for CDB import sheets" % (
+            summary_msg = "PROCESSING SUCCESSFUL: processed %d input rows including %d empty rows and wrote %d output rows, see output workbook for CDB import sheets\n" % (
                 num_input_rows, self.num_empty_rows, len(self.output_objects))
+            summary_msg = summary_msg + self.get_processing_summary()
 
         elif not input_valid:
             summary_msg = "PROCESSING ERROR: processed %d input rows including %d empty rows but no CDB import sheets generated, see output workbook and log for details" % (
@@ -1902,7 +1897,6 @@ class InputSheetHelper(ABC):
 
         print(summary_msg)
         logging.info(summary_msg)
-        print(self.get_processing_summary())
 
         return input_valid
 
@@ -2061,7 +2055,7 @@ class InputSheetHelper(ABC):
         if len(summary_messages) == 0 and len(summary_column_names) == 0:
             return
 
-        output_sheet = output_book.add_worksheet(self.item_name() + " Summary")
+        output_sheet = output_book.add_worksheet(self.sheet_name() + " Sheet Summary")
         text_wrap_format = output_book.add_format({'text_wrap': True})
 
         column_index = 0
@@ -2100,8 +2094,9 @@ class InputSheetHelper(ABC):
                 column_index = column_index + 1
 
     # Writes content to output workbook.  Subclasses override to customize with multiple tabs
+    @abstractmethod
     def write_helper_sheets(self, output_book):
-        self.write_sheet(output_book, self.item_name() + " Item Import", self.output_column_list(), self.output_objects)
+        pass
 
     def write_workbook_sheets(self, output_book):
         self.write_summary_sheet(output_book)
@@ -2124,7 +2119,7 @@ class InputSheetHelper(ABC):
         if len(validate_only_messages) == 0 and len(validate_only_column_names) == 0:
             return
 
-        output_sheet = output_book.add_worksheet(self.item_name() + " Validate Only")
+        output_sheet = output_book.add_worksheet(self.sheet_name() + " Sheet Validation")
         text_wrap_format = output_book.add_format({'text_wrap': True})
 
         column_index = 0
@@ -2192,7 +2187,7 @@ class InputSheetHelper(ABC):
         if self.input_valid_message is None and len(error_messages) == 0 and len(error_column_names) == 0:
             return
 
-        output_sheet = output_book.add_worksheet(self.item_name() + " " + "Sheet Errors")
+        output_sheet = output_book.add_worksheet(self.sheet_name() + " " + "Sheet Errors")
         text_wrap_format = output_book.add_format({'text_wrap': True})
 
         column_index = 0
@@ -2246,7 +2241,7 @@ class InputSheetHelper(ABC):
             return
 
         # create output sheet
-        output_sheet = output_book.add_worksheet(self.item_name() + " " + "Row Errors")
+        output_sheet = output_book.add_worksheet(self.sheet_name() + " " + "Sheet Row Errors")
 
         # write header row
         output_sheet.write(0, 0, "input row number")
@@ -2317,8 +2312,8 @@ class CableSpecsSheetHelper(InputSheetHelper):
         self.workbook_tech_group = get_config_resource(config, section, 'kabelWorkbookTechGroup', True)
 
     @staticmethod
-    def tag():
-        return "CableType"
+    def sheet_name():
+        return "CableSpecs"
 
     @staticmethod
     def item_name():
@@ -2624,8 +2619,8 @@ class CablesSheetHelper(InputSheetHelper):
         self.ignore_port_columns = get_config_resource_boolean(config, section, 'ignorePortColumns', False)
 
     @staticmethod
-    def tag():
-        return "CableDesign"
+    def sheet_name():
+        return "Cables"
 
     @staticmethod
     def item_name():
@@ -2850,9 +2845,6 @@ class CablesSheetHelper(InputSheetHelper):
         if len(self.nonunique_endpoints) > 0:
             messages.append("Multiple CDB devices with matching name: %d" % len(self.nonunique_endpoints))
 
-        if len(self.existing_cable_designs) > 0:
-            messages.append("Duplicate cable design name exists in CDB: %d" % len(self.existing_cable_designs))
-
         return messages
 
     def get_error_sheet_columns(self):
@@ -2867,10 +2859,6 @@ class CablesSheetHelper(InputSheetHelper):
         if len(self.nonunique_endpoints) > 0:
             error_column_names.append("non-unique endpoints")
             error_column_values.append(sorted(self.nonunique_endpoints))
-
-        if len(self.existing_cable_designs) > 0:
-            error_column_names.append("existing cable designs")
-            error_column_values.append(sorted(self.existing_cable_designs))
 
         return error_column_names, error_column_values
 
@@ -3175,7 +3163,7 @@ def main():
 
     for helper in helpers:
         print()
-        print("%s OPTIONS ====================" % helper.tag().upper())
+        print("%s OPTIONS ====================" % helper.sheet_name().upper())
         print()
         input_valid = helper.process_input_book(input_book)
         if not input_valid:
