@@ -1029,7 +1029,484 @@ class OutputObject(ABC):
         return ""
 
 
-class PreImportHelper(ABC):
+class ConnectorTypeOutputObject(OutputObject):
+
+    def __init__(self, name):
+        self.name = name
+
+    @classmethod
+    def get_output_columns(cls):
+        column_list = [
+            OutputColumnModel(method="empty_column", label="Existing Item ID"),
+            OutputColumnModel(method="empty_column", label="Delete Existing Item"),
+            OutputColumnModel(method="get_name", label="Name"),
+            OutputColumnModel(method="empty_column", label="Description"),
+        ]
+        return column_list
+
+    def get_name(self):
+        return self.name
+
+
+class CableTypeConnectorOutputObject(OutputObject):
+
+    def __init__(self, catalog_item, connector_name, cable_end, connector_type):
+        self.catalog_item = catalog_item
+        self.connector_name = connector_name
+        self.cable_end = cable_end
+        self.connector_type = connector_type
+
+    @classmethod
+    def get_output_columns(cls):
+        column_list = [
+            OutputColumnModel(method="empty_column", label="Existing Item ID"),
+            OutputColumnModel(method="empty_column", label="Delete Existing Item"),
+            OutputColumnModel(method="get_catalog_item", label="Cable Catalog Item"),
+            OutputColumnModel(method="get_connector_name", label="Connector Name"),
+            OutputColumnModel(method="get_cable_end", label="Cable End"),
+            OutputColumnModel(method="empty_column", label="Description"),
+            OutputColumnModel(method="get_connector_type", label="Connector Type"),
+        ]
+        return column_list
+
+    def get_catalog_item(self):
+        return "#" + self.catalog_item
+
+    def get_connector_name(self):
+        return self.connector_name
+
+    def get_cable_end(self):
+        return self.cable_end
+
+    def get_connector_type(self):
+        return "#" + self.connector_type
+
+
+class CatalogPortOutputObject(OutputObject):
+
+    def __init__(self, catalog_item_name, port_name):
+        self.catalog_item_name = catalog_item_name
+        self.port_name = port_name
+
+    @classmethod
+    def get_output_columns(cls):
+        column_list = [
+            OutputColumnModel(method="empty_column", label="Existing Item ID"),
+            OutputColumnModel(method="empty_column", label="Delete Existing Item"),
+            OutputColumnModel(method="get_catalog_item_name", label="Catalog Item"),
+            OutputColumnModel(method="get_port_name", label="Port Name"),
+            OutputColumnModel(method="empty_column", label="Description"),
+            OutputColumnModel(method="empty_column", label="Connector Type"),
+        ]
+        return column_list
+
+    def get_catalog_item_name(self):
+        return "#" + self.catalog_item_name
+
+    def get_port_name(self):
+        return self.port_name
+
+
+class SourceOutputObject(OutputObject):
+
+    def __init__(self, helper, input_dict):
+        super().__init__(helper, input_dict)
+        self.description = ""
+        self.contact_info = ""
+        self.url = ""
+
+    @classmethod
+    def get_output_columns(cls):
+        column_list = [
+            OutputColumnModel(method="get_existing_item_id", label="Existing Item ID"),
+            OutputColumnModel(method="get_delete_existing_item", label="Delete Existing Item"),
+            OutputColumnModel(method="get_name", label="Name"),
+            OutputColumnModel(method="get_description", label="Description"),
+            OutputColumnModel(method="get_contact_info", label="Contact Info"),
+            OutputColumnModel(method="get_url", label="URL"),
+        ]
+        return column_list
+
+    def get_existing_item_id(self):
+        return ""
+
+    def get_delete_existing_item(self):
+        return ""
+
+    def get_name(self):
+        return self.input_dict[CABLE_TYPE_MANUFACTURER_KEY]
+
+    def get_description(self):
+        return self.description
+
+    def get_contact_info(self):
+        return self.contact_info
+
+    def get_url(self):
+        return self.url
+
+
+class CableTypeOutputObject(OutputObject):
+
+    def __init__(self, helper, input_dict):
+        super().__init__(helper, input_dict)
+
+    @classmethod
+    def get_output_columns(cls):
+        column_list = [
+            OutputColumnModel(method="empty_column", label="Existing Item ID"),
+            OutputColumnModel(method="empty_column", label="Delete Existing Item"),
+            OutputColumnModel(method="get_name", label=CABLE_TYPE_NAME_KEY),
+            OutputColumnModel(method="get_alt_name", label=CABLE_TYPE_ALT_NAME_KEY),
+            OutputColumnModel(method="get_description", label=CABLE_TYPE_DESCRIPTION_KEY),
+            OutputColumnModel(method="get_link_url", label=CABLE_TYPE_LINK_URL_KEY),
+            OutputColumnModel(method="get_image_url", label=CABLE_TYPE_IMAGE_URL_KEY),
+            OutputColumnModel(method="get_manufacturer_id", label=CABLE_TYPE_MANUFACTURER_KEY),
+            OutputColumnModel(method="get_part_number", label=CABLE_TYPE_PART_NUMBER_KEY),
+            OutputColumnModel(method="get_alt_part_number", label=CABLE_TYPE_ALT_PART_NUMBER_KEY),
+            OutputColumnModel(method="get_diameter", label=CABLE_TYPE_DIAMETER_KEY),
+            OutputColumnModel(method="get_weight", label=CABLE_TYPE_WEIGHT_KEY),
+            OutputColumnModel(method="get_conductors", label=CABLE_TYPE_CONDUCTORS_KEY),
+            OutputColumnModel(method="get_insulation", label=CABLE_TYPE_INSULATION_KEY),
+            OutputColumnModel(method="get_jacket_color", label=CABLE_TYPE_JACKET_COLOR_KEY),
+            OutputColumnModel(method="get_voltage_rating", label=CABLE_TYPE_VOLTAGE_RATING_KEY),
+            OutputColumnModel(method="get_fire_load", label=CABLE_TYPE_FIRE_LOAD_KEY),
+            OutputColumnModel(method="get_heat_limit", label=CABLE_TYPE_HEAT_LIMIT_KEY),
+            OutputColumnModel(method="get_bend_radius", label=CABLE_TYPE_BEND_RADIUS_KEY),
+            OutputColumnModel(method="get_rad_tolerance", label=CABLE_TYPE_RAD_TOLERANCE_KEY),
+            OutputColumnModel(method="get_total_length", label=CABLE_TYPE_TOTAL_LENGTH_KEY),
+            OutputColumnModel(method="get_reel_length", label=CABLE_TYPE_REEL_LENGTH_KEY),
+            OutputColumnModel(method="get_reel_qty", label=CABLE_TYPE_REEL_QTY_KEY),
+            OutputColumnModel(method="get_lead_time", label=CABLE_TYPE_LEAD_TIME_KEY),
+            OutputColumnModel(method="get_procurement_status", label="Procurement Status"),
+            OutputColumnModel(method="get_project_id", label="Project"),
+            OutputColumnModel(method="get_tech_system_id", label="Technical System"),
+            OutputColumnModel(method="get_owner_user_id", label="Owner User"),
+            OutputColumnModel(method="get_owner_group_id", label="Owner Group"),
+        ]
+        return column_list
+
+    def get_name(self):
+        return self.input_dict[CABLE_TYPE_NAME_KEY]
+
+    def get_alt_name(self):
+        return None
+
+    def get_description(self):
+        return self.input_dict[CABLE_TYPE_DESCRIPTION_KEY]
+
+    def get_link_url(self):
+        return self.input_dict[CABLE_TYPE_LINK_URL_KEY]
+
+    def get_image_url(self):
+        return self.input_dict[CABLE_TYPE_IMAGE_URL_KEY]
+
+    def get_manufacturer_id(self):
+        source_name = self.input_dict[CABLE_TYPE_MANUFACTURER_KEY]
+        if source_name is not None and len(source_name) > 0:
+            return "#" + source_name
+        else:
+            return None
+
+    def get_part_number(self):
+        return self.input_dict[CABLE_TYPE_PART_NUMBER_KEY]
+
+    def get_alt_part_number(self):
+        return self.input_dict[CABLE_TYPE_ALT_PART_NUMBER_KEY]
+
+    def get_diameter(self):
+        return self.input_dict[CABLE_TYPE_DIAMETER_KEY]
+
+    def get_weight(self):
+        return self.input_dict[CABLE_TYPE_WEIGHT_KEY]
+
+    def get_conductors(self):
+        return self.input_dict[CABLE_TYPE_CONDUCTORS_KEY]
+
+    def get_insulation(self):
+        return self.input_dict[CABLE_TYPE_INSULATION_KEY]
+
+    def get_jacket_color(self):
+        return self.input_dict[CABLE_TYPE_JACKET_COLOR_KEY]
+
+    def get_voltage_rating(self):
+        return self.input_dict[CABLE_TYPE_VOLTAGE_RATING_KEY]
+
+    def get_fire_load(self):
+        return self.input_dict[CABLE_TYPE_FIRE_LOAD_KEY]
+
+    def get_heat_limit(self):
+        return self.input_dict[CABLE_TYPE_HEAT_LIMIT_KEY]
+
+    def get_bend_radius(self):
+        return self.input_dict[CABLE_TYPE_BEND_RADIUS_KEY]
+
+    def get_rad_tolerance(self):
+        return self.input_dict[CABLE_TYPE_RAD_TOLERANCE_KEY]
+
+    def get_total_length(self):
+        return self.input_dict[CABLE_TYPE_TOTAL_LENGTH_KEY]
+
+    def get_reel_length(self):
+        return self.input_dict[CABLE_TYPE_REEL_LENGTH_KEY]
+
+    def get_reel_qty(self):
+        return self.input_dict[CABLE_TYPE_REEL_QTY_KEY]
+
+    def get_lead_time(self):
+        return self.input_dict[CABLE_TYPE_LEAD_TIME_KEY]
+
+    def get_procurement_status(self):
+        if len(self.input_dict[CABLE_TYPE_RECEIVED_KEY]) > 0:
+            return "Received"
+        elif len(self.input_dict[CABLE_TYPE_ORDERED_KEY]) > 0:
+            return "Ordered"
+        else:
+            return "Unspecified"
+
+    def get_procurement_info(self):
+        proc_info = ""
+        if len(str(self.input_dict[CABLE_TYPE_ORDERED_KEY])) > 0:
+            proc_info = proc_info + "Ordered: " + str(self.input_dict[CABLE_TYPE_ORDERED_KEY]) + ". "
+        if len(str(self.input_dict[CABLE_TYPE_RECEIVED_KEY])) > 0:
+            proc_info = proc_info + "Received: " + str(self.input_dict[CABLE_TYPE_RECEIVED_KEY]) + "."
+
+        return proc_info
+
+    def get_project_id(self):
+        return self.helper.get_project_id()
+
+    def get_tech_system_id(self):
+        return self.helper.get_tech_system_id()
+
+    def get_owner_user_id(self):
+        return self.helper.get_owner_user_id()
+
+    def get_owner_group_id(self):
+        return self.helper.get_owner_group_id()
+
+
+class CableInventoryOutputObject(OutputObject):
+
+    def __init__(self, helper, input_dict, tag_name, cable_type_name):
+        super().__init__(helper, input_dict)
+        self.tag_name = tag_name
+        self.cable_type_name = cable_type_name
+
+    @classmethod
+    def get_output_columns(cls):
+        column_list = [
+            OutputColumnModel(method="empty_column", label="Existing Item ID"),
+            OutputColumnModel(method="empty_column", label="Delete Existing Item"),
+            OutputColumnModel(method="get_cable_type_name", label="Cable Catalog Item"),
+            OutputColumnModel(method="get_tag", label="Tag"),
+            OutputColumnModel(method="empty_column", label="QR ID"),
+            OutputColumnModel(method="empty_column", label="Description"),
+            OutputColumnModel(method="get_status", label="Status"),
+            OutputColumnModel(method="empty_column", label="Location"),
+            OutputColumnModel(method="empty_column", label="Location Details"),
+            OutputColumnModel(method="empty_column", label="Length"),
+            OutputColumnModel(method="get_project_id", label="Project"),
+            OutputColumnModel(method="get_owner_user_id", label="Owner User"),
+            OutputColumnModel(method="get_owner_group_id", label="Owner Group"),
+        ]
+        return column_list
+
+    def get_cable_type_name(self):
+        return "#" + self.cable_type_name
+
+    def get_tag(self):
+        return self.tag_name
+
+    def get_status(self):
+        return "Planned"
+
+    def get_project_id(self):
+        return self.helper.get_project_id()
+
+    def get_owner_user_id(self):
+        return self.helper.get_owner_user_id()
+
+    def get_owner_group_id(self):
+        return self.helper.get_owner_group_id()
+
+
+class CableDesignOutputObject(OutputObject):
+
+    ignore_port_columns = False
+
+    def __init__(self, helper, input_dict, cable_catalog_info, ignore_port_columns, existing_item_id=""):
+        super().__init__(helper, input_dict)
+        self.cable_catalog_info = cable_catalog_info
+        self.existing_item_id = existing_item_id
+
+    @classmethod
+    def get_output_columns(cls):
+
+        if not cls.ignore_port_columns:
+            endpoint1_port_method = "get_endpoint1_port"
+            endpoint2_port_method = "get_endpoint2_port"
+        else:
+            endpoint1_port_method = "empty_column"
+            endpoint2_port_method = "empty_column"
+
+        column_list = [
+            OutputColumnModel(method="get_existing_item_id", label="Existing Item ID"),
+            OutputColumnModel(method="empty_column", label="Delete Existing Item"),
+            OutputColumnModel(method="get_name", label="Name"),
+            OutputColumnModel(method="get_cable_type", label="Type"),
+            OutputColumnModel(method="empty_column", label="Assigned Inventory Tag"),
+            OutputColumnModel(method="empty_column", label="Is Installed"),
+            OutputColumnModel(method="get_alt_name", label="Alt Name"),
+            OutputColumnModel(method="get_ext_name", label="Ext Cable Name"),
+            OutputColumnModel(method="get_import_id", label="Import Cable ID"),
+            OutputColumnModel(method="empty_column", label="Alternate Cable ID"),
+            OutputColumnModel(method="empty_column", label="Description"),
+            OutputColumnModel(method="get_laying", label="Laying"),
+            OutputColumnModel(method="get_voltage", label="Voltage"),
+            OutputColumnModel(method="empty_column", label="Routed Length"),
+            OutputColumnModel(method="empty_column", label="Route"),
+            OutputColumnModel(method="empty_column", label="Notes"),
+            OutputColumnModel(method="get_endpoint1_id", label="Endpoint1"),
+            OutputColumnModel(method=endpoint1_port_method, label="Endpoint1 Port"),
+            OutputColumnModel(method="get_endpoint1_connector", label="Endpoint1 Connector"),
+            OutputColumnModel(method="get_endpoint1_description", label="Endpoint1 Desc"),
+            OutputColumnModel(method="get_endpoint1_route", label="Endpoint1 Route"),
+            OutputColumnModel(method="empty_column", label="Endpoint1 End Length"),
+            OutputColumnModel(method="empty_column", label="Endpoint1 Termination"),
+            OutputColumnModel(method="empty_column", label="Endpoint1 Pinlist"),
+            OutputColumnModel(method="empty_column", label="Endpoint1 Notes"),
+            OutputColumnModel(method="empty_column", label="Endpoint1 Drawing"),
+            OutputColumnModel(method="get_endpoint2_id", label="Endpoint2"),
+            OutputColumnModel(method=endpoint2_port_method, label="Endpoint2 Port"),
+            OutputColumnModel(method="get_endpoint2_connector", label="Endpoint2 Connector"),
+            OutputColumnModel(method="get_endpoint2_description", label="Endpoint2 Desc"),
+            OutputColumnModel(method="get_endpoint2_route", label="Endpoint2 Route"),
+            OutputColumnModel(method="empty_column", label="Endpoint2 End Length"),
+            OutputColumnModel(method="empty_column", label="Endpoint2 Termination"),
+            OutputColumnModel(method="empty_column", label="Endpoint2 Pinlist"),
+            OutputColumnModel(method="empty_column", label="Endpoint2 Notes"),
+            OutputColumnModel(method="empty_column", label="Endpoint2 Drawing"),
+            OutputColumnModel(method="get_project_id", label="Project"),
+            OutputColumnModel(method="get_tech_system_id", label="Technical System"),
+            OutputColumnModel(method="get_owner_user_id", label="Owner User"),
+            OutputColumnModel(method="get_owner_group_id", label="Owner Group"),
+        ]
+        return column_list
+
+    def get_existing_item_id(self):
+        return self.existing_item_id
+
+    @classmethod
+    def get_name_cls(cls, row_dict, cable_id=None, import_id=None):
+
+        if import_id is not None:
+            import_id = str(import_id)
+
+        if cable_id is None and import_id is None:
+            if row_dict is not None:
+                cable_id = row_dict[CABLE_DESIGN_CABLE_ID_KEY]
+                import_id = str(row_dict[CABLE_DESIGN_IMPORT_ID_KEY])
+            else:
+                return ""
+
+        if cable_id is not None and cable_id != "":
+            return cable_id
+        else:
+            if import_id is None:
+                import_id = ""
+            return "CA " + import_id
+
+    def get_name(self):
+        return self.get_name_cls(self.input_dict)
+
+    def get_alt_name(self):
+        return "<" + self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY] + "><" + \
+               self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY] + ">:" + \
+               self.get_name()
+
+    def get_ext_name(self):
+        return self.input_dict[CABLE_DESIGN_NAME_KEY]
+
+    def get_import_id(self):
+        return str(self.input_dict[CABLE_DESIGN_IMPORT_ID_KEY])
+
+    def get_laying(self):
+        return self.input_dict[CABLE_DESIGN_LAYING_KEY]
+
+    def get_voltage(self):
+        return self.input_dict[CABLE_DESIGN_VOLTAGE_KEY]
+
+    def get_cable_type(self):
+        cable_type_name = self.input_dict[CABLE_DESIGN_TYPE_KEY]
+        if cable_type_name is not None and len(cable_type_name) > 0:
+            return "#" + cable_type_name
+        else:
+            return None
+
+    def get_endpoint_id(self, input_column_key, container_key):
+        endpoint_name = self.input_dict[input_column_key]
+        container_name = self.input_dict[container_key]
+        return self.helper.rack_manager.get_endpoint_id_for_rack(container_name, endpoint_name)
+
+    def get_endpoint1_id(self):
+        return self.get_endpoint_id(CABLE_DESIGN_END1_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY)
+
+    def get_endpoint1_port(self):
+        return self.input_dict[CABLE_DESIGN_END1_PORT_NAME_KEY]
+
+    def get_endpoint1_connector(self):
+        if CABLE_TYPE_E1_1_KEY in self.cable_catalog_info.connector_names:
+            return CABLE_TYPE_E1_1_KEY
+        else:
+            return None
+
+    def get_endpoint1_description(self):
+        return str(self.input_dict[CABLE_DESIGN_SRC_LOCATION_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_SRC_ANS_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_SRC_ADDRESS_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_SRC_DESCRIPTION_KEY])
+
+    def get_endpoint1_route(self):
+        return str(self.input_dict[CABLE_DESIGN_VIA_ROUTE_KEY])
+
+    def get_endpoint2_id(self):
+        return self.get_endpoint_id(CABLE_DESIGN_END2_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY)
+
+    def get_endpoint2_port(self):
+        return self.input_dict[CABLE_DESIGN_END2_PORT_NAME_KEY]
+
+    def get_endpoint2_connector(self):
+        if CABLE_TYPE_E2_1_KEY in self.cable_catalog_info.connector_names:
+            return CABLE_TYPE_E2_1_KEY
+        else:
+            return None
+
+    def get_endpoint2_description(self):
+        return str(self.input_dict[CABLE_DESIGN_DEST_LOCATION_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_DEST_ANS_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_DEST_ADDRESS_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_DEST_DESCRIPTION_KEY])
+
+    def get_endpoint2_route(self):
+        return str(self.input_dict[CABLE_DESIGN_WAYPOINT_ROUTE_KEY])
+
+    def get_project_id(self):
+        return self.helper.get_project_id()
+
+    def get_tech_system_id(self):
+        return self.helper.get_tech_system_id()
+
+    def get_owner_user_id(self):
+        return self.helper.get_owner_user_id()
+
+    def get_owner_group_id(self):
+        return self.helper.get_owner_group_id()
+
+
+class InputSheetHelper(ABC):
 
     def __init__(self):
         self.input_columns = {}
@@ -1798,124 +2275,7 @@ class PreImportHelper(ABC):
         return ""
 
 
-class ConnectorTypeOutputObject(OutputObject):
-
-    def __init__(self, name):
-        self.name = name
-
-    @classmethod
-    def get_output_columns(cls):
-        column_list = [
-            OutputColumnModel(method="empty_column", label="Existing Item ID"),
-            OutputColumnModel(method="empty_column", label="Delete Existing Item"),
-            OutputColumnModel(method="get_name", label="Name"),
-            OutputColumnModel(method="empty_column", label="Description"),
-        ]
-        return column_list
-
-    def get_name(self):
-        return self.name
-
-
-class CableTypeConnectorOutputObject(OutputObject):
-
-    def __init__(self, catalog_item, connector_name, cable_end, connector_type):
-        self.catalog_item = catalog_item
-        self.connector_name = connector_name
-        self.cable_end = cable_end
-        self.connector_type = connector_type
-
-    @classmethod
-    def get_output_columns(cls):
-        column_list = [
-            OutputColumnModel(method="empty_column", label="Existing Item ID"),
-            OutputColumnModel(method="empty_column", label="Delete Existing Item"),
-            OutputColumnModel(method="get_catalog_item", label="Cable Catalog Item"),
-            OutputColumnModel(method="get_connector_name", label="Connector Name"),
-            OutputColumnModel(method="get_cable_end", label="Cable End"),
-            OutputColumnModel(method="empty_column", label="Description"),
-            OutputColumnModel(method="get_connector_type", label="Connector Type"),
-        ]
-        return column_list
-
-    def get_catalog_item(self):
-        return "#" + self.catalog_item
-
-    def get_connector_name(self):
-        return self.connector_name
-
-    def get_cable_end(self):
-        return self.cable_end
-
-    def get_connector_type(self):
-        return "#" + self.connector_type
-
-
-class CatalogPortOutputObject(OutputObject):
-
-    def __init__(self, catalog_item_name, port_name):
-        self.catalog_item_name = catalog_item_name
-        self.port_name = port_name
-
-    @classmethod
-    def get_output_columns(cls):
-        column_list = [
-            OutputColumnModel(method="empty_column", label="Existing Item ID"),
-            OutputColumnModel(method="empty_column", label="Delete Existing Item"),
-            OutputColumnModel(method="get_catalog_item_name", label="Catalog Item"),
-            OutputColumnModel(method="get_port_name", label="Port Name"),
-            OutputColumnModel(method="empty_column", label="Description"),
-            OutputColumnModel(method="empty_column", label="Connector Type"),
-        ]
-        return column_list
-
-    def get_catalog_item_name(self):
-        return "#" + self.catalog_item_name
-
-    def get_port_name(self):
-        return self.port_name
-
-
-class SourceOutputObject(OutputObject):
-
-    def __init__(self, helper, input_dict):
-        super().__init__(helper, input_dict)
-        self.description = ""
-        self.contact_info = ""
-        self.url = ""
-
-    @classmethod
-    def get_output_columns(cls):
-        column_list = [
-            OutputColumnModel(method="get_existing_item_id", label="Existing Item ID"),
-            OutputColumnModel(method="get_delete_existing_item", label="Delete Existing Item"),
-            OutputColumnModel(method="get_name", label="Name"),
-            OutputColumnModel(method="get_description", label="Description"),
-            OutputColumnModel(method="get_contact_info", label="Contact Info"),
-            OutputColumnModel(method="get_url", label="URL"),
-        ]
-        return column_list
-
-    def get_existing_item_id(self):
-        return ""
-
-    def get_delete_existing_item(self):
-        return ""
-
-    def get_name(self):
-        return self.input_dict[CABLE_TYPE_MANUFACTURER_KEY]
-
-    def get_description(self):
-        return self.description
-
-    def get_contact_info(self):
-        return self.contact_info
-
-    def get_url(self):
-        return self.url
-
-
-class CableTypeHelper(PreImportHelper):
+class CableSpecsSheetHelper(InputSheetHelper):
 
     def __init__(self):
         super().__init__()
@@ -2214,192 +2574,7 @@ class CableTypeHelper(PreImportHelper):
         return error_column_names, error_column_values
 
 
-class CableTypeOutputObject(OutputObject):
-
-    def __init__(self, helper, input_dict):
-        super().__init__(helper, input_dict)
-
-    @classmethod
-    def get_output_columns(cls):
-        column_list = [
-            OutputColumnModel(method="empty_column", label="Existing Item ID"),
-            OutputColumnModel(method="empty_column", label="Delete Existing Item"),
-            OutputColumnModel(method="get_name", label=CABLE_TYPE_NAME_KEY),
-            OutputColumnModel(method="get_alt_name", label=CABLE_TYPE_ALT_NAME_KEY),
-            OutputColumnModel(method="get_description", label=CABLE_TYPE_DESCRIPTION_KEY),
-            OutputColumnModel(method="get_link_url", label=CABLE_TYPE_LINK_URL_KEY),
-            OutputColumnModel(method="get_image_url", label=CABLE_TYPE_IMAGE_URL_KEY),
-            OutputColumnModel(method="get_manufacturer_id", label=CABLE_TYPE_MANUFACTURER_KEY),
-            OutputColumnModel(method="get_part_number", label=CABLE_TYPE_PART_NUMBER_KEY),
-            OutputColumnModel(method="get_alt_part_number", label=CABLE_TYPE_ALT_PART_NUMBER_KEY),
-            OutputColumnModel(method="get_diameter", label=CABLE_TYPE_DIAMETER_KEY),
-            OutputColumnModel(method="get_weight", label=CABLE_TYPE_WEIGHT_KEY),
-            OutputColumnModel(method="get_conductors", label=CABLE_TYPE_CONDUCTORS_KEY),
-            OutputColumnModel(method="get_insulation", label=CABLE_TYPE_INSULATION_KEY),
-            OutputColumnModel(method="get_jacket_color", label=CABLE_TYPE_JACKET_COLOR_KEY),
-            OutputColumnModel(method="get_voltage_rating", label=CABLE_TYPE_VOLTAGE_RATING_KEY),
-            OutputColumnModel(method="get_fire_load", label=CABLE_TYPE_FIRE_LOAD_KEY),
-            OutputColumnModel(method="get_heat_limit", label=CABLE_TYPE_HEAT_LIMIT_KEY),
-            OutputColumnModel(method="get_bend_radius", label=CABLE_TYPE_BEND_RADIUS_KEY),
-            OutputColumnModel(method="get_rad_tolerance", label=CABLE_TYPE_RAD_TOLERANCE_KEY),
-            OutputColumnModel(method="get_total_length", label=CABLE_TYPE_TOTAL_LENGTH_KEY),
-            OutputColumnModel(method="get_reel_length", label=CABLE_TYPE_REEL_LENGTH_KEY),
-            OutputColumnModel(method="get_reel_qty", label=CABLE_TYPE_REEL_QTY_KEY),
-            OutputColumnModel(method="get_lead_time", label=CABLE_TYPE_LEAD_TIME_KEY),
-            OutputColumnModel(method="get_procurement_status", label="Procurement Status"),
-            OutputColumnModel(method="get_project_id", label="Project"),
-            OutputColumnModel(method="get_tech_system_id", label="Technical System"),
-            OutputColumnModel(method="get_owner_user_id", label="Owner User"),
-            OutputColumnModel(method="get_owner_group_id", label="Owner Group"),
-        ]
-        return column_list
-
-    def get_name(self):
-        return self.input_dict[CABLE_TYPE_NAME_KEY]
-
-    def get_alt_name(self):
-        return None
-
-    def get_description(self):
-        return self.input_dict[CABLE_TYPE_DESCRIPTION_KEY]
-
-    def get_link_url(self):
-        return self.input_dict[CABLE_TYPE_LINK_URL_KEY]
-
-    def get_image_url(self):
-        return self.input_dict[CABLE_TYPE_IMAGE_URL_KEY]
-
-    def get_manufacturer_id(self):
-        source_name = self.input_dict[CABLE_TYPE_MANUFACTURER_KEY]
-        if source_name is not None and len(source_name) > 0:
-            return "#" + source_name
-        else:
-            return None
-
-    def get_part_number(self):
-        return self.input_dict[CABLE_TYPE_PART_NUMBER_KEY]
-
-    def get_alt_part_number(self):
-        return self.input_dict[CABLE_TYPE_ALT_PART_NUMBER_KEY]
-
-    def get_diameter(self):
-        return self.input_dict[CABLE_TYPE_DIAMETER_KEY]
-
-    def get_weight(self):
-        return self.input_dict[CABLE_TYPE_WEIGHT_KEY]
-
-    def get_conductors(self):
-        return self.input_dict[CABLE_TYPE_CONDUCTORS_KEY]
-
-    def get_insulation(self):
-        return self.input_dict[CABLE_TYPE_INSULATION_KEY]
-
-    def get_jacket_color(self):
-        return self.input_dict[CABLE_TYPE_JACKET_COLOR_KEY]
-
-    def get_voltage_rating(self):
-        return self.input_dict[CABLE_TYPE_VOLTAGE_RATING_KEY]
-
-    def get_fire_load(self):
-        return self.input_dict[CABLE_TYPE_FIRE_LOAD_KEY]
-
-    def get_heat_limit(self):
-        return self.input_dict[CABLE_TYPE_HEAT_LIMIT_KEY]
-
-    def get_bend_radius(self):
-        return self.input_dict[CABLE_TYPE_BEND_RADIUS_KEY]
-
-    def get_rad_tolerance(self):
-        return self.input_dict[CABLE_TYPE_RAD_TOLERANCE_KEY]
-
-    def get_total_length(self):
-        return self.input_dict[CABLE_TYPE_TOTAL_LENGTH_KEY]
-
-    def get_reel_length(self):
-        return self.input_dict[CABLE_TYPE_REEL_LENGTH_KEY]
-
-    def get_reel_qty(self):
-        return self.input_dict[CABLE_TYPE_REEL_QTY_KEY]
-
-    def get_lead_time(self):
-        return self.input_dict[CABLE_TYPE_LEAD_TIME_KEY]
-
-    def get_procurement_status(self):
-        if len(self.input_dict[CABLE_TYPE_RECEIVED_KEY]) > 0:
-            return "Received"
-        elif len(self.input_dict[CABLE_TYPE_ORDERED_KEY]) > 0:
-            return "Ordered"
-        else:
-            return "Unspecified"
-
-    def get_procurement_info(self):
-        proc_info = ""
-        if len(str(self.input_dict[CABLE_TYPE_ORDERED_KEY])) > 0:
-            proc_info = proc_info + "Ordered: " + str(self.input_dict[CABLE_TYPE_ORDERED_KEY]) + ". "
-        if len(str(self.input_dict[CABLE_TYPE_RECEIVED_KEY])) > 0:
-            proc_info = proc_info + "Received: " + str(self.input_dict[CABLE_TYPE_RECEIVED_KEY]) + "."
-
-        return proc_info
-
-    def get_project_id(self):
-        return self.helper.get_project_id()
-
-    def get_tech_system_id(self):
-        return self.helper.get_tech_system_id()
-
-    def get_owner_user_id(self):
-        return self.helper.get_owner_user_id()
-
-    def get_owner_group_id(self):
-        return self.helper.get_owner_group_id()
-
-
-class CableInventoryOutputObject(OutputObject):
-
-    def __init__(self, helper, input_dict, tag_name, cable_type_name):
-        super().__init__(helper, input_dict)
-        self.tag_name = tag_name
-        self.cable_type_name = cable_type_name
-
-    @classmethod
-    def get_output_columns(cls):
-        column_list = [
-            OutputColumnModel(method="empty_column", label="Existing Item ID"),
-            OutputColumnModel(method="empty_column", label="Delete Existing Item"),
-            OutputColumnModel(method="get_cable_type_name", label="Cable Catalog Item"),
-            OutputColumnModel(method="get_tag", label="Tag"),
-            OutputColumnModel(method="empty_column", label="QR ID"),
-            OutputColumnModel(method="empty_column", label="Description"),
-            OutputColumnModel(method="get_status", label="Status"),
-            OutputColumnModel(method="empty_column", label="Location"),
-            OutputColumnModel(method="empty_column", label="Location Details"),
-            OutputColumnModel(method="empty_column", label="Length"),
-            OutputColumnModel(method="get_project_id", label="Project"),
-            OutputColumnModel(method="get_owner_user_id", label="Owner User"),
-            OutputColumnModel(method="get_owner_group_id", label="Owner Group"),
-        ]
-        return column_list
-
-    def get_cable_type_name(self):
-        return "#" + self.cable_type_name
-
-    def get_tag(self):
-        return self.tag_name
-
-    def get_status(self):
-        return "Planned"
-
-    def get_project_id(self):
-        return self.helper.get_project_id()
-
-    def get_owner_user_id(self):
-        return self.helper.get_owner_user_id()
-
-    def get_owner_group_id(self):
-        return self.helper.get_owner_group_id()
-
-
-class CableDesignHelper(PreImportHelper):
+class CablesSheetHelper(InputSheetHelper):
 
     def __init__(self):
         super().__init__()
@@ -2716,181 +2891,6 @@ class CableDesignHelper(PreImportHelper):
         return processing_summary
 
 
-class CableDesignOutputObject(OutputObject):
-
-    ignore_port_columns = False
-
-    def __init__(self, helper, input_dict, cable_catalog_info, ignore_port_columns, existing_item_id=""):
-        super().__init__(helper, input_dict)
-        self.cable_catalog_info = cable_catalog_info
-        self.existing_item_id = existing_item_id
-
-    @classmethod
-    def get_output_columns(cls):
-
-        if not cls.ignore_port_columns:
-            endpoint1_port_method = "get_endpoint1_port"
-            endpoint2_port_method = "get_endpoint2_port"
-        else:
-            endpoint1_port_method = "empty_column"
-            endpoint2_port_method = "empty_column"
-
-        column_list = [
-            OutputColumnModel(method="get_existing_item_id", label="Existing Item ID"),
-            OutputColumnModel(method="empty_column", label="Delete Existing Item"),
-            OutputColumnModel(method="get_name", label="Name"),
-            OutputColumnModel(method="get_cable_type", label="Type"),
-            OutputColumnModel(method="empty_column", label="Assigned Inventory Tag"),
-            OutputColumnModel(method="empty_column", label="Is Installed"),
-            OutputColumnModel(method="get_alt_name", label="Alt Name"),
-            OutputColumnModel(method="get_ext_name", label="Ext Cable Name"),
-            OutputColumnModel(method="get_import_id", label="Import Cable ID"),
-            OutputColumnModel(method="empty_column", label="Alternate Cable ID"),
-            OutputColumnModel(method="empty_column", label="Description"),
-            OutputColumnModel(method="get_laying", label="Laying"),
-            OutputColumnModel(method="get_voltage", label="Voltage"),
-            OutputColumnModel(method="empty_column", label="Routed Length"),
-            OutputColumnModel(method="empty_column", label="Route"),
-            OutputColumnModel(method="empty_column", label="Notes"),
-            OutputColumnModel(method="get_endpoint1_id", label="Endpoint1"),
-            OutputColumnModel(method=endpoint1_port_method, label="Endpoint1 Port"),
-            OutputColumnModel(method="get_endpoint1_connector", label="Endpoint1 Connector"),
-            OutputColumnModel(method="get_endpoint1_description", label="Endpoint1 Desc"),
-            OutputColumnModel(method="get_endpoint1_route", label="Endpoint1 Route"),
-            OutputColumnModel(method="empty_column", label="Endpoint1 End Length"),
-            OutputColumnModel(method="empty_column", label="Endpoint1 Termination"),
-            OutputColumnModel(method="empty_column", label="Endpoint1 Pinlist"),
-            OutputColumnModel(method="empty_column", label="Endpoint1 Notes"),
-            OutputColumnModel(method="empty_column", label="Endpoint1 Drawing"),
-            OutputColumnModel(method="get_endpoint2_id", label="Endpoint2"),
-            OutputColumnModel(method=endpoint2_port_method, label="Endpoint2 Port"),
-            OutputColumnModel(method="get_endpoint2_connector", label="Endpoint2 Connector"),
-            OutputColumnModel(method="get_endpoint2_description", label="Endpoint2 Desc"),
-            OutputColumnModel(method="get_endpoint2_route", label="Endpoint2 Route"),
-            OutputColumnModel(method="empty_column", label="Endpoint2 End Length"),
-            OutputColumnModel(method="empty_column", label="Endpoint2 Termination"),
-            OutputColumnModel(method="empty_column", label="Endpoint2 Pinlist"),
-            OutputColumnModel(method="empty_column", label="Endpoint2 Notes"),
-            OutputColumnModel(method="empty_column", label="Endpoint2 Drawing"),
-            OutputColumnModel(method="get_project_id", label="Project"),
-            OutputColumnModel(method="get_tech_system_id", label="Technical System"),
-            OutputColumnModel(method="get_owner_user_id", label="Owner User"),
-            OutputColumnModel(method="get_owner_group_id", label="Owner Group"),
-        ]
-        return column_list
-
-    def get_existing_item_id(self):
-        return self.existing_item_id
-
-    @classmethod
-    def get_name_cls(cls, row_dict, cable_id=None, import_id=None):
-
-        if import_id is not None:
-            import_id = str(import_id)
-
-        if cable_id is None and import_id is None:
-            if row_dict is not None:
-                cable_id = row_dict[CABLE_DESIGN_CABLE_ID_KEY]
-                import_id = str(row_dict[CABLE_DESIGN_IMPORT_ID_KEY])
-            else:
-                return ""
-
-        if cable_id is not None and cable_id != "":
-            return cable_id
-        else:
-            if import_id is None:
-                import_id = ""
-            return "CA " + import_id
-
-    def get_name(self):
-        return self.get_name_cls(self.input_dict)
-
-    def get_alt_name(self):
-        return "<" + self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY] + "><" + \
-               self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY] + ">:" + \
-               self.get_name()
-
-    def get_ext_name(self):
-        return self.input_dict[CABLE_DESIGN_NAME_KEY]
-
-    def get_import_id(self):
-        return str(self.input_dict[CABLE_DESIGN_IMPORT_ID_KEY])
-
-    def get_laying(self):
-        return self.input_dict[CABLE_DESIGN_LAYING_KEY]
-
-    def get_voltage(self):
-        return self.input_dict[CABLE_DESIGN_VOLTAGE_KEY]
-
-    def get_cable_type(self):
-        cable_type_name = self.input_dict[CABLE_DESIGN_TYPE_KEY]
-        if cable_type_name is not None and len(cable_type_name) > 0:
-            return "#" + cable_type_name
-        else:
-            return None
-
-    def get_endpoint_id(self, input_column_key, container_key):
-        endpoint_name = self.input_dict[input_column_key]
-        container_name = self.input_dict[container_key]
-        return self.helper.rack_manager.get_endpoint_id_for_rack(container_name, endpoint_name)
-
-    def get_endpoint1_id(self):
-        return self.get_endpoint_id(CABLE_DESIGN_END1_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY)
-
-    def get_endpoint1_port(self):
-        return self.input_dict[CABLE_DESIGN_END1_PORT_NAME_KEY]
-
-    def get_endpoint1_connector(self):
-        if CABLE_TYPE_E1_1_KEY in self.cable_catalog_info.connector_names:
-            return CABLE_TYPE_E1_1_KEY
-        else:
-            return None
-
-    def get_endpoint1_description(self):
-        return str(self.input_dict[CABLE_DESIGN_SRC_LOCATION_KEY]) + ":" + \
-               str(self.input_dict[CABLE_DESIGN_SRC_ANS_KEY]) + ":" + \
-               str(self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY]) + ":" + \
-               str(self.input_dict[CABLE_DESIGN_SRC_ADDRESS_KEY]) + ":" + \
-               str(self.input_dict[CABLE_DESIGN_SRC_DESCRIPTION_KEY])
-
-    def get_endpoint1_route(self):
-        return str(self.input_dict[CABLE_DESIGN_VIA_ROUTE_KEY])
-
-    def get_endpoint2_id(self):
-        return self.get_endpoint_id(CABLE_DESIGN_END2_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY)
-
-    def get_endpoint2_port(self):
-        return self.input_dict[CABLE_DESIGN_END2_PORT_NAME_KEY]
-
-    def get_endpoint2_connector(self):
-        if CABLE_TYPE_E2_1_KEY in self.cable_catalog_info.connector_names:
-            return CABLE_TYPE_E2_1_KEY
-        else:
-            return None
-
-    def get_endpoint2_description(self):
-        return str(self.input_dict[CABLE_DESIGN_DEST_LOCATION_KEY]) + ":" + \
-               str(self.input_dict[CABLE_DESIGN_DEST_ANS_KEY]) + ":" + \
-               str(self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY]) + ":" + \
-               str(self.input_dict[CABLE_DESIGN_DEST_ADDRESS_KEY]) + ":" + \
-               str(self.input_dict[CABLE_DESIGN_DEST_DESCRIPTION_KEY])
-
-    def get_endpoint2_route(self):
-        return str(self.input_dict[CABLE_DESIGN_WAYPOINT_ROUTE_KEY])
-
-    def get_project_id(self):
-        return self.helper.get_project_id()
-
-    def get_tech_system_id(self):
-        return self.helper.get_tech_system_id()
-
-    def get_owner_user_id(self):
-        return self.helper.get_owner_user_id()
-
-    def get_owner_group_id(self):
-        return self.helper.get_owner_group_id()
-
-
 range_parts = re.compile(r'(\$?)([A-Z]{1,3})(\$?)(\d+)')
 def xl_cell_to_rowcol(cell_str):
     """
@@ -3165,11 +3165,11 @@ def main():
     # create sheet helpers
     helpers = []
 
-    cable_specs_helper = CableTypeHelper()
+    cable_specs_helper = CableSpecsSheetHelper()
     cable_specs_helper.post_create(config_preimport, config_workbook, info_manager, api)
     helpers.append(cable_specs_helper)
 
-    cables_helper = CableDesignHelper()
+    cables_helper = CablesSheetHelper()
     cables_helper.post_create(config_preimport, config_workbook, info_manager, api)
     helpers.append(cables_helper)
 
