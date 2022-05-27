@@ -140,7 +140,9 @@ class CdbApiFactory:
 	def parseApiException(self, openApiException):
 		responseType = ApiExceptionMessage.__name__
 		openApiException.data = openApiException.body
-		return self.apiClient.deserialize(openApiException, responseType)
+		exObj = self.apiClient.deserialize(openApiException, responseType)
+		exObj.status = openApiException.status
+		return exObj
 
 def run_command():
 	# Example
