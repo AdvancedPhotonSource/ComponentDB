@@ -187,8 +187,6 @@ CABLE_DESIGN_VIA_ROUTE_KEY = "via"
 CABLE_DESIGN_WAYPOINT_ROUTE_KEY = "waypoint"
 CABLE_DESIGN_NOTES_KEY = "notes"
 
-name_manager = None
-
 
 class ConnectedMenuManager:
 
@@ -353,22 +351,39 @@ class ItemInfoManager():
 
     def __init__(self, api):
         self.api = api
+        self.source_id_manager = IdManager()
+        self.output_objects_source = []
+        self.existing_sources = set()
+        self.new_sources = set()
         self.existing_connector_types = set()
         self.new_connector_types = set()
         self.output_connector_types = []
         self.output_cable_type_connectors = []
+        self.cable_type_names = []
+        self.existing_cable_types = []
+        self.new_cable_types = []
+        self.undefined_cable_types = []
         self.cable_type_info = {}
         self.technical_system = None
         self.cable_types_specified_for_technical_system = None
         self.cable_types_defined_for_technical_system = []
+        self.cable_design_names = []
+        self.existing_cable_designs = []
+        self.new_cable_designs = []
         self.id_manager_cable_design = IdManager()
         self.machine_info = {}
+        self.rack_manager = RackManager()
+        self.missing_endpoints = set()
+        self.nonunique_endpoints = set()
+        self.from_port_values = []
+        self.to_port_values = []
         self.catalog_ports = {}
         self.output_objects_cable_design_compare = []
         self.output_objects_cable_inventory = []
+        self.name_manager = None
 
-    def initialize(self):
-        pass
+    def initialize(self, input_book):
+        self.name_manager = ConnectedMenuManager(input_book)
 
     def set_technical_system(self, technical_system):
         self.technical_system = technical_system
@@ -527,17 +542,16 @@ class InputHandler(ABC):
 
 class ConnectedMenuHandler(InputHandler):
 
-    def __init__(self, column_key, parent_key):
-        super().__init__(column_key)
+    def __init__(self, info_manager, column_key, parent_key):
+        super().__init__(column_key, info_manager)
         self.parent_key = parent_key
 
     def handle_input(self, input_dict):
-        global name_manager
         parent_value = input_dict[self.parent_key]
         cell_value = input_dict[self.column_key]
-        if not name_manager.has_name(parent_value):
+        if not self.info_manager.name_manager.has_name(parent_value):
             return False, "name manager has no menu range for: %s column: %s parent column: %s" % (parent_value, self.column_key, self.parent_key)
-        has_child = name_manager.value_is_valid_for_name(parent_value, cell_value)
+        has_child = self.info_manager.name_manager.value_is_valid_for_name(parent_value, cell_value)
         valid_string = ""
         if not has_child:
             valid_string = "range for parent name %s does not include child name %s" % (parent_value, cell_value)
@@ -546,16 +560,15 @@ class ConnectedMenuHandler(InputHandler):
 
 class NamedRangeHandler(InputHandler):
 
-    def __init__(self, column_key, range_name):
-        super().__init__(column_key)
+    def __init__(self, info_manager, column_key, range_name):
+        super().__init__(column_key, info_manager)
         self.range_name = range_name
 
     def handle_input(self, input_dict):
-        global name_manager
-        if not name_manager.has_name(self.range_name):
+        if not self.info_manager.name_manager.has_name(self.range_name):
             return False, "name manager has no named range for: %s" % self.range_name
         cell_value = input_dict[self.column_key]
-        has_child = name_manager.value_is_valid_for_name(self.range_name, cell_value)
+        has_child = self.info_manager.name_manager.value_is_valid_for_name(self.range_name, cell_value)
         valid_string = ""
         if not has_child:
             valid_string = "named range %s does not include value %s" % (self.range_name, cell_value)
@@ -565,8 +578,7 @@ class NamedRangeHandler(InputHandler):
 class TechnicalSystemCableTypeValidationHandler(InputHandler):
 
     def __init__(self, column_key, info_manager):
-        super().__init__(column_key)
-        self.info_manager = info_manager
+        super().__init__(column_key, info_manager)
 
     def handle_input(self, input_dict):
         is_valid = True
@@ -604,14 +616,12 @@ class UniqueNameHandler(InputHandler):
 
 class DeviceAddressHandler(InputHandler):
 
-    def __init__(self, column_key, location_key, etpm_key):
-        super().__init__(column_key)
+    def __init__(self, info_manager, column_key, location_key, etpm_key):
+        super().__init__(column_key, info_manager)
         self.location_key = location_key
         self.etpm_key = etpm_key
 
     def handle_input(self, input_dict):
-
-        global name_manager
 
         location_value = input_dict[self.location_key]
         etpm_value = input_dict[self.etpm_key]
@@ -625,10 +635,10 @@ class DeviceAddressHandler(InputHandler):
         else:
             range_name = "_RACK_AREA_"
 
-        if not name_manager.has_name(range_name):
+        if not self.info_manager.name_manager.has_name(range_name):
             return False, "name manager has no named address range for: %s" % range_name
 
-        has_child = name_manager.value_is_valid_for_name(range_name, cell_value)
+        has_child = self.info_manager.name_manager.value_is_valid_for_name(range_name, cell_value)
         valid_string = ""
         if not has_child:
             valid_string = "named address range %s does not include value %s" % (range_name, cell_value)
@@ -637,14 +647,11 @@ class DeviceAddressHandler(InputHandler):
 
 class EndpointHandler(InputHandler):
 
-    def __init__(self, column_key, rack_key, hierarchy_name, info_mgr, api, rack_manager, missing_endpoints, nonunique_endpoints, column_index_item_name, column_index_rack_name, description):
+    def __init__(self, column_key, rack_key, hierarchy_name, info_mgr, api, column_index_item_name, column_index_rack_name, description):
         super().__init__(column_key, info_mgr)
         self.rack_key = rack_key
         self.hierarchy_name = hierarchy_name
         self.api = api
-        self.rack_manager = rack_manager
-        self.missing_endpoints = missing_endpoints
-        self.nonunique_endpoints = nonunique_endpoints
         self.column_index_item_name = column_index_item_name
         self.column_index_rack_name = column_index_rack_name
         self.description = description
@@ -734,7 +741,7 @@ class EndpointHandler(InputHandler):
                     # iterate 3 lists to process api result
                     for (item_name, rack_name, machine_info) in zip(item_names_batch, rack_names_batch, info_list):
                         id = machine_info.id
-                        self.rack_manager.add_endpoint_id_for_rack(rack_name, item_name, id)
+                        self.info_manager.rack_manager.add_endpoint_id_for_rack(rack_name, item_name, id)
                         self.info_manager.add_machine_info(item_name, machine_info)
                     result_id_count = result_id_count + len(info_list)
                     print("fetched %d machine item id's for %s" % (result_id_count, self.description))
@@ -750,17 +757,17 @@ class EndpointHandler(InputHandler):
         is_valid = True
         valid_string = ""
 
-        id = self.rack_manager.get_endpoint_id_for_rack(rack_name, endpoint_name)
+        id = self.info_manager.rack_manager.get_endpoint_id_for_rack(rack_name, endpoint_name)
         if id == 0:
             is_valid = False
             valid_string = "no endpoint item found in CDB with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
             logging.error(valid_string)
-            self.missing_endpoints.add("rack: %s device: %s" % (rack_name, endpoint_name))
+            self.info_manager.missing_endpoints.add("rack: %s device: %s" % (rack_name, endpoint_name))
         elif id == -1:
             is_valid = False
             valid_string = "duplicate endpoint items found in CDB with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
             logging.error(valid_string)
-            self.nonunique_endpoints.add(rack_name + " + " + endpoint_name)
+            self.info_manager.nonunique_endpoints.add(rack_name + " + " + endpoint_name)
         else:
             logging.debug("found machine design item in CDB with name: %s, id: %s" % (endpoint_name, id))
 
@@ -769,10 +776,8 @@ class EndpointHandler(InputHandler):
 
 class CableTypeExistenceHandler(InputHandler):
 
-    def __init__(self, column_key, existing_cable_types, new_cable_types):
-        super().__init__(column_key)
-        self.existing_cable_types = existing_cable_types
-        self.new_cable_types = new_cable_types
+    def __init__(self, info_manager, column_key):
+        super().__init__(column_key, info_manager)
 
     def initialize(self, api, sheet, first_row, last_row):
         pass
@@ -784,10 +789,28 @@ class CableTypeExistenceHandler(InputHandler):
             return False, "unexpected error in id map for cable type existence check"
         if cable_type_id != 0:
             # cable type already exists
-            self.existing_cable_types.append(cable_type_name)
+            self.info_manager.existing_cable_types.append(cable_type_name)
             return True, ""
         else:
-            self.new_cable_types.append(cable_type_name)
+            self.info_manager.new_cable_types.append(cable_type_name)
+            return True, ""
+
+
+class CableTypeValidForTechnicalSystemHandler(InputHandler):
+
+    def __init__(self, info_manager, column_key):
+        super().__init__(column_key, info_manager)
+
+    def initialize(self, api, sheet, first_row, last_row):
+        pass
+
+    def handle_input(self, input_dict):
+
+        cable_type_name = input_dict[self.column_key]
+
+        if cable_type_name not in self.info_manager.get_cable_types_specified_for_technical_system():
+            return False, "cable type: %s not specified in CableTypes column for technical system: %s" % (cable_type_name, self.info_manager.get_technical_system())
+        else:
             return True, ""
 
 
@@ -814,11 +837,8 @@ class CableTypeConnectorHandler(InputHandler):
 
 class CableDesignExistenceHandler(InputHandler):
 
-    def __init__(self, column_key, info_mgr, existing_cable_designs, new_cable_designs, column_index_cable_id, column_index_import_id):
-        super().__init__(column_key)
-        self.info_manager = info_mgr
-        self.existing_cable_designs = existing_cable_designs
-        self.new_cable_designs = new_cable_designs
+    def __init__(self, column_key, info_mgr, column_index_cable_id, column_index_import_id):
+        super().__init__(column_key, info_mgr)
         self.id_mgr = self.info_manager.id_manager_cable_design
         self.column_index_cable_id = column_index_cable_id
         self.column_index_import_id = column_index_import_id
@@ -895,9 +915,9 @@ class CableDesignExistenceHandler(InputHandler):
             return False, "unexpected error with missing entry in cable design id map"
         if cable_design_id != 0:
             # cable design already exists
-            self.existing_cable_designs.append(cable_design_name)
+            self.info_manager.existing_cable_designs.append(cable_design_name)
         else:
-            self.new_cable_designs.append(cable_design_name)
+            self.info_manager.new_cable_designs.append(cable_design_name)
         return True, ""
 
 
@@ -933,14 +953,10 @@ class DevicePortHandler(InputHandler):
 
 class SourceHandler(InputHandler):
 
-    def __init__(self, column_key, column_index, id_manager, api, output_sources, existing_sources, new_sources):
-        super().__init__(column_key)
+    def __init__(self, info_mgr, column_key, column_index, api):
+        super().__init__(column_key, info_mgr)
         self.column_index = column_index
-        self.id_manager = id_manager
         self.api = api
-        self.output_objects = output_sources
-        self.existing_sources = existing_sources
-        self.new_sources = new_sources
 
     @staticmethod
     def get_source_id_list(api, source_name_list, description):
@@ -975,7 +991,7 @@ class SourceHandler(InputHandler):
 
         id_list = SourceHandler.get_source_id_list(api, source_names, "manufacturer lookup")
 
-        self.id_manager.set_dict(dict(zip(source_names, id_list)))
+        self.info_manager.source_id_manager.set_dict(dict(zip(source_names, id_list)))
 
     def handle_input(self, input_dict):
 
@@ -985,19 +1001,20 @@ class SourceHandler(InputHandler):
             # no manufacturer specified
             return True, ""
 
-        cached_id = self.id_manager.get_id_for_name(source_name)
+        cached_id = self.info_manager.source_id_manager.get_id_for_name(source_name)
         if cached_id != 0:
-            self.existing_sources.add(source_name)
+            self.info_manager.existing_sources.add(source_name)
             logging.debug("found source with name: %s, id: %s" % (source_name, cached_id))
         else:
-            if source_name not in self.new_sources:
-                self.new_sources.add(source_name)
-                self.output_objects.append(SourceOutputObject(None, input_dict))
+            if source_name not in self.info_manager.new_sources:
+                self.info_manager.new_sources.add(source_name)
+                self.info_manager.output_objects_source.append(SourceOutputObject(None, input_dict))
                 logging.debug("adding new source: %s" % source_name)
             else:
                 logging.debug("already added new source: %s" % source_name)
 
         return True, ""
+
 
 class InputColumnModel:
 
@@ -1447,7 +1464,7 @@ class CableDesignOutputObject(OutputObject):
     def get_endpoint_id(self, input_column_key, container_key):
         endpoint_name = self.input_dict[input_column_key]
         container_name = self.input_dict[container_key]
-        return self.helper.rack_manager.get_endpoint_id_for_rack(container_name, endpoint_name)
+        return self.helper.info_manager.rack_manager.get_endpoint_id_for_rack(container_name, endpoint_name)
 
     def get_endpoint1_id(self):
         return self.get_endpoint_id(CABLE_DESIGN_END1_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY)
@@ -2274,14 +2291,6 @@ class CableSpecsSheetHelper(InputSheetHelper):
 
     def __init__(self):
         super().__init__()
-        self.source_id_manager = IdManager()
-        self.source_output_objects = []
-        self.existing_sources = set()
-        self.new_sources = set()
-        self.existing_cable_types = []
-        self.new_cable_types = []
-        self.cable_type_names = []
-        self.undefined_cable_types = []
         self.project_id = None
         self.tech_system_id = None
         self.owner_user_id = None
@@ -2364,11 +2373,9 @@ class CableSpecsSheetHelper(InputSheetHelper):
 
     def generate_handler_list(self):
 
-        global name_manager
-
         handler_list = [
             TechnicalSystemCableTypeValidationHandler(CABLE_TYPE_NAME_KEY, self.info_manager),
-            UniqueNameHandler(CABLE_TYPE_NAME_KEY, self.cable_type_names),
+            UniqueNameHandler(CABLE_TYPE_NAME_KEY, self.info_manager.cable_type_names),
             CableTypeConnectorHandler(CABLE_TYPE_E1_1_KEY, 1),
             CableTypeConnectorHandler(CABLE_TYPE_E2_1_KEY, 2),
             CableTypeConnectorHandler(CABLE_TYPE_E1_2_KEY, 1),
@@ -2378,9 +2385,9 @@ class CableSpecsSheetHelper(InputSheetHelper):
         ]
 
         if not self.validate_only:
-            handler_list.append(CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, self.existing_cable_types, self.new_cable_types))
+            handler_list.append(CableTypeExistenceHandler(self.info_manager, CABLE_TYPE_NAME_KEY))
             mfr_index = self.get_input_column_index_for_key(CABLE_TYPE_MANUFACTURER_KEY)
-            handler_list.append(SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, mfr_index, self.source_id_manager, self.api, self.source_output_objects, self.existing_sources, self.new_sources))
+            handler_list.append(SourceHandler(self.info_manager, CABLE_TYPE_MANUFACTURER_KEY, mfr_index, self.api))
 
         return handler_list
 
@@ -2458,7 +2465,7 @@ class CableSpecsSheetHelper(InputSheetHelper):
     def handle_valid_row(self, input_dict):
 
         name = input_dict[CABLE_TYPE_NAME_KEY]
-        if name in self.existing_cable_types:
+        if name in self.info_manager.existing_cable_types:
             # cable type already exists with this name, skip
             logging.debug(": %s, skipping" % input_dict[CABLE_TYPE_NAME_KEY])
             return
@@ -2475,21 +2482,21 @@ class CableSpecsSheetHelper(InputSheetHelper):
         # check that all cable types read from CableTypes tab are defined in the cable_specs tab
         for cable_type in self.info_manager.get_cable_types_specified_for_technical_system():
             if cable_type not in self.info_manager.get_cable_types_defined_for_technical_system():
-                self.undefined_cable_types.append(cable_type)
-        if len(self.undefined_cable_types) > 0:
+                self.info_manager.undefined_cable_types.append(cable_type)
+        if len(self.info_manager.undefined_cable_types) > 0:
             technical_system = self.info_manager.get_technical_system()
             is_valid = False
-            valid_string = "not all cable types for technical system: %s specified in CableTypes tab are defined in CableSpecs tab: %s" % (technical_system, self.undefined_cable_types)
+            valid_string = "not all cable types for technical system: %s specified in CableTypes tab are defined in CableSpecs tab: %s" % (technical_system, self.info_manager.undefined_cable_types)
 
         return is_valid, valid_string
 
     def get_summary_messages_custom(self):
         return ["Connector Types that already exist in CDB: %d" % len(self.info_manager.existing_connector_types),
                 "Connector Types that need to be added to CDB: %d" % len(self.info_manager.new_connector_types),
-                "Sources that already exist in CDB: %d" % len(self.existing_sources),
-                "Sources that need to be added to CDB: %d" % len(self.new_sources),
-                "Cable types that already exist in CDB: %d" % len(self.existing_cable_types),
-                "Cable types that need to be added to CDB: %d" % len(self.new_cable_types)]
+                "Sources that already exist in CDB: %d" % len(self.info_manager.existing_sources),
+                "Sources that need to be added to CDB: %d" % len(self.info_manager.new_sources),
+                "Cable types that already exist in CDB: %d" % len(self.info_manager.existing_cable_types),
+                "Cable types that need to be added to CDB: %d" % len(self.info_manager.new_cable_types)]
 
     def get_summary_sheet_columns(self):
         
@@ -2504,21 +2511,21 @@ class CableSpecsSheetHelper(InputSheetHelper):
             summary_column_names.append("new connector types")
             summary_column_values.append(sorted(self.info_manager.new_connector_types))
 
-        if len(self.existing_sources) > 0:
+        if len(self.info_manager.existing_sources) > 0:
             summary_column_names.append("existing sources")
-            summary_column_values.append(sorted(self.existing_sources))
+            summary_column_values.append(sorted(self.info_manager.existing_sources))
 
-        if len(self.new_sources) > 0:
+        if len(self.info_manager.new_sources) > 0:
             summary_column_names.append("new sources")
-            summary_column_values.append(sorted(self.new_sources))
+            summary_column_values.append(sorted(self.info_manager.new_sources))
 
-        if len(self.existing_cable_types) > 0:
+        if len(self.info_manager.existing_cable_types) > 0:
             summary_column_names.append("existing cable types")
-            summary_column_values.append(sorted(self.existing_cable_types))
+            summary_column_values.append(sorted(self.info_manager.existing_cable_types))
 
-        if len(self.new_cable_types) > 0:
+        if len(self.info_manager.new_cable_types) > 0:
             summary_column_names.append("new cable types")
-            summary_column_values.append(sorted(self.new_cable_types))
+            summary_column_values.append(sorted(self.info_manager.new_cable_types))
 
         return summary_column_names, summary_column_values
 
@@ -2532,7 +2539,7 @@ class CableSpecsSheetHelper(InputSheetHelper):
         self.write_sheet(output_book,
                          "Source Item Import",
                          SourceOutputObject.get_output_columns(),
-                         self.source_output_objects)
+                         self.info_manager.output_objects_source)
 
         self.write_sheet(output_book, "Cable Catalog Item Import", self.output_column_list(), self.output_objects)
 
@@ -2543,8 +2550,8 @@ class CableSpecsSheetHelper(InputSheetHelper):
 
     # Returns processing summary message.
     def get_processing_summary(self):
-        if len(self.existing_cable_types) > 0:
-            return "DETAILS: number of cable types that already exist in CDB (not written to output file): %d" % len(self.existing_cable_types)
+        if len(self.info_manager.existing_cable_types) > 0:
+            return "DETAILS: number of cable types that already exist in CDB (not written to output file): %d" % len(self.info_manager.existing_cable_types)
         else:
             return ""
 
@@ -2552,8 +2559,8 @@ class CableSpecsSheetHelper(InputSheetHelper):
 
         messages = []
 
-        if len(self.undefined_cable_types) > 0:
-            messages.append("Cable types specified in CableTypes tab for technical system: %s not specified in CableSpecs tab: %d" % (self.info_manager.get_technical_system(), len(self.undefined_cable_types)))
+        if len(self.info_manager.undefined_cable_types) > 0:
+            messages.append("Cable types specified in CableTypes tab for technical system: %s not specified in CableSpecs tab: %d" % (self.info_manager.get_technical_system(), len(self.info_manager.undefined_cable_types)))
 
         return messages
 
@@ -2562,9 +2569,9 @@ class CableSpecsSheetHelper(InputSheetHelper):
         error_column_names = []
         error_column_values = []
 
-        if len(self.undefined_cable_types) > 0:
+        if len(self.info_manager.undefined_cable_types) > 0:
             error_column_names.append("cable types not defined in CableSpecs tab")
-            error_column_values.append(sorted(self.undefined_cable_types))
+            error_column_values.append(sorted(self.info_manager.undefined_cable_types))
 
         return error_column_names, error_column_values
 
@@ -2573,16 +2580,7 @@ class CablesSheetHelper(InputSheetHelper):
 
     def __init__(self):
         super().__init__()
-        self.rack_manager = RackManager()
         self.md_root = None
-        self.cable_type_id_manager = IdManager()
-        self.missing_endpoints = set()
-        self.nonunique_endpoints = set()
-        self.existing_cable_designs = []
-        self.new_cable_designs = []
-        self.cable_design_names = []
-        self.from_port_values = []
-        self.to_port_values = []
         self.project_id = None
         self.tech_system_id = None
         self.owner_user_id = None
@@ -2675,21 +2673,20 @@ class CablesSheetHelper(InputSheetHelper):
         return CableDesignOutputObject.get_output_columns()
 
     def generate_handler_list(self):
-        global name_manager
         handler_list = [
-            UniqueNameHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.cable_design_names),
-            NamedRangeHandler(CABLE_DESIGN_LAYING_KEY, "_Laying"),
-            NamedRangeHandler(CABLE_DESIGN_VOLTAGE_KEY, "_Voltage"),
-            NamedRangeHandler(CABLE_DESIGN_OWNER_KEY, "_Owner"),
-            ConnectedMenuHandler(CABLE_DESIGN_TYPE_KEY, CABLE_DESIGN_OWNER_KEY),
-            NamedRangeHandler(CABLE_DESIGN_SRC_LOCATION_KEY, "_Location"),
-            ConnectedMenuHandler(CABLE_DESIGN_SRC_ANS_KEY, CABLE_DESIGN_SRC_LOCATION_KEY),
-            ConnectedMenuHandler(CABLE_DESIGN_SRC_ETPM_KEY, CABLE_DESIGN_SRC_ANS_KEY),
-            DeviceAddressHandler(CABLE_DESIGN_SRC_ADDRESS_KEY, CABLE_DESIGN_SRC_LOCATION_KEY, CABLE_DESIGN_SRC_ETPM_KEY),
-            NamedRangeHandler(CABLE_DESIGN_DEST_LOCATION_KEY, "_Location"),
-            ConnectedMenuHandler(CABLE_DESIGN_DEST_ANS_KEY, CABLE_DESIGN_DEST_LOCATION_KEY),
-            ConnectedMenuHandler(CABLE_DESIGN_DEST_ETPM_KEY, CABLE_DESIGN_DEST_ANS_KEY),
-            DeviceAddressHandler(CABLE_DESIGN_DEST_ADDRESS_KEY, CABLE_DESIGN_DEST_LOCATION_KEY, CABLE_DESIGN_DEST_ETPM_KEY),
+            UniqueNameHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.info_manager.cable_design_names),
+            NamedRangeHandler(self.info_manager, CABLE_DESIGN_LAYING_KEY, "_Laying"),
+            NamedRangeHandler(self.info_manager, CABLE_DESIGN_VOLTAGE_KEY, "_Voltage"),
+            NamedRangeHandler(self.info_manager, CABLE_DESIGN_OWNER_KEY, "_Owner"),
+            CableTypeValidForTechnicalSystemHandler(self.info_manager, CABLE_DESIGN_TYPE_KEY),
+            NamedRangeHandler(self.info_manager, CABLE_DESIGN_SRC_LOCATION_KEY, "_Location"),
+            ConnectedMenuHandler(self.info_manager, CABLE_DESIGN_SRC_ANS_KEY, CABLE_DESIGN_SRC_LOCATION_KEY),
+            ConnectedMenuHandler(self.info_manager, CABLE_DESIGN_SRC_ETPM_KEY, CABLE_DESIGN_SRC_ANS_KEY),
+            DeviceAddressHandler(self.info_manager, CABLE_DESIGN_SRC_ADDRESS_KEY, CABLE_DESIGN_SRC_LOCATION_KEY, CABLE_DESIGN_SRC_ETPM_KEY),
+            NamedRangeHandler(self.info_manager, CABLE_DESIGN_DEST_LOCATION_KEY, "_Location"),
+            ConnectedMenuHandler(self.info_manager, CABLE_DESIGN_DEST_ANS_KEY, CABLE_DESIGN_DEST_LOCATION_KEY),
+            ConnectedMenuHandler(self.info_manager, CABLE_DESIGN_DEST_ETPM_KEY, CABLE_DESIGN_DEST_ANS_KEY),
+            DeviceAddressHandler(self.info_manager, CABLE_DESIGN_DEST_ADDRESS_KEY, CABLE_DESIGN_DEST_LOCATION_KEY, CABLE_DESIGN_DEST_ETPM_KEY),
         ]
 
         if not self.validate_only:
@@ -2698,8 +2695,6 @@ class CablesSheetHelper(InputSheetHelper):
             import_id_index = self.get_input_column_index_for_key(CABLE_DESIGN_IMPORT_ID_KEY)
             handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY,
                                                             self.info_manager,
-                                                            self.existing_cable_designs,
-                                                            self.new_cable_designs,
                                                             cable_id_index,
                                                             import_id_index))
 
@@ -2710,9 +2705,6 @@ class CablesSheetHelper(InputSheetHelper):
                                                 self.get_md_root(),
                                                 self.info_manager,
                                                 self.api,
-                                                self.rack_manager,
-                                                self.missing_endpoints,
-                                                self.nonunique_endpoints,
                                                 end1_device_name_index,
                                                 src_etpm_index,
                                                 "source endpoints"))
@@ -2721,7 +2713,7 @@ class CablesSheetHelper(InputSheetHelper):
                                                   CABLE_DESIGN_END1_DEVICE_NAME_KEY,
                                                   self.info_manager,
                                                   self.ignore_port_columns,
-                                                  self.from_port_values))
+                                                  self.info_manager.from_port_values))
 
             end2_device_name_index = self.get_input_column_index_for_key(CABLE_DESIGN_END2_DEVICE_NAME_KEY)
             dest_etpm_index = self.get_input_column_index_for_key(CABLE_DESIGN_DEST_ETPM_KEY)
@@ -2730,9 +2722,6 @@ class CablesSheetHelper(InputSheetHelper):
                                                 self.get_md_root(),
                                                 self.info_manager,
                                                 self.api,
-                                                self.rack_manager,
-                                                self.missing_endpoints,
-                                                self.nonunique_endpoints,
                                                 end2_device_name_index,
                                                 dest_etpm_index,
                                                 "destination endpoints"))
@@ -2741,7 +2730,7 @@ class CablesSheetHelper(InputSheetHelper):
                                                   CABLE_DESIGN_END2_DEVICE_NAME_KEY,
                                                   self.info_manager,
                                                   self.ignore_port_columns,
-                                                  self.to_port_values))
+                                                  self.info_manager.to_port_values))
 
         return handler_list
 
@@ -2760,7 +2749,7 @@ class CablesSheetHelper(InputSheetHelper):
 
         # add output object for cable design comparison tab in output workbook
         cable_design_name = name = CableDesignOutputObject.get_name_cls(input_dict)
-        if cable_design_name in self.existing_cable_designs:
+        if cable_design_name in self.info_manager.existing_cable_designs:
             cable_catalog_info = self.info_manager.get_cable_type_info(input_dict[CABLE_DESIGN_TYPE_KEY])
             cable_design_id = self.info_manager.id_manager_cable_design.get_id_for_name(cable_design_name)
             self.info_manager.get_output_objects_cable_design_compare().append(
@@ -2791,10 +2780,10 @@ class CablesSheetHelper(InputSheetHelper):
 
         messages = []
 
-        messages.append("Cable designs that already exist in CDB: %d" % len(self.existing_cable_designs))
-        messages.append("Cable designs that need to be added to CDB: %d" % len(self.new_cable_designs))
+        messages.append("Cable designs that already exist in CDB: %d" % len(self.info_manager.existing_cable_designs))
+        messages.append("Cable designs that need to be added to CDB: %d" % len(self.info_manager.new_cable_designs))
 
-        num_port_values = len(self.from_port_values) + len(self.to_port_values)
+        num_port_values = len(self.info_manager.from_port_values) + len(self.info_manager.to_port_values)
         if num_port_values > 0:
             messages.append("WARNING: ignored %d non-empty values in from/to device port columns (ignorePortColumns config resource set to true)" % num_port_values)
 
@@ -2805,15 +2794,15 @@ class CablesSheetHelper(InputSheetHelper):
         summary_column_names = []
         summary_column_values = []
 
-        if len(self.existing_cable_designs) > 0:
+        if len(self.info_manager.existing_cable_designs) > 0:
             summary_column_names.append("existing cable designs")
-            summary_column_values.append(self.existing_cable_designs)
+            summary_column_values.append(self.info_manager.existing_cable_designs)
 
-        if len(self.new_cable_designs) > 0:
+        if len(self.info_manager.new_cable_designs) > 0:
             summary_column_names.append("new cable designs")
-            summary_column_values.append(self.new_cable_designs)
+            summary_column_values.append(self.info_manager.new_cable_designs)
 
-        ignored_ports = self.from_port_values + self.to_port_values
+        ignored_ports = self.info_manager.from_port_values + self.info_manager.to_port_values
         if len(ignored_ports) > 0:
             summary_column_names.append("ignored from/to ports")
             summary_column_values.append(ignored_ports)
@@ -2839,11 +2828,11 @@ class CablesSheetHelper(InputSheetHelper):
 
         messages = []
 
-        if len(self.missing_endpoints) > 0:
-            messages.append("Endpoint device names not defined in CDB: %d" % len(self.missing_endpoints))
+        if len(self.info_manager.missing_endpoints) > 0:
+            messages.append("Endpoint device names not defined in CDB: %d" % len(self.info_manager.missing_endpoints))
 
-        if len(self.nonunique_endpoints) > 0:
-            messages.append("Multiple CDB devices with matching name: %d" % len(self.nonunique_endpoints))
+        if len(self.info_manager.nonunique_endpoints) > 0:
+            messages.append("Multiple CDB devices with matching name: %d" % len(self.info_manager.nonunique_endpoints))
 
         return messages
 
@@ -2852,13 +2841,13 @@ class CablesSheetHelper(InputSheetHelper):
         error_column_names = []
         error_column_values = []
 
-        if len(self.missing_endpoints) > 0:
+        if len(self.info_manager.missing_endpoints) > 0:
             error_column_names.append("missing endpoints")
-            error_column_values.append(sorted(self.missing_endpoints))
+            error_column_values.append(sorted(self.info_manager.missing_endpoints))
 
-        if len(self.nonunique_endpoints) > 0:
+        if len(self.info_manager.nonunique_endpoints) > 0:
             error_column_names.append("non-unique endpoints")
-            error_column_values.append(sorted(self.nonunique_endpoints))
+            error_column_values.append(sorted(self.info_manager.nonunique_endpoints))
 
         return error_column_names, error_column_values
 
@@ -2867,10 +2856,10 @@ class CablesSheetHelper(InputSheetHelper):
 
         processing_summary = ""
 
-        if len(self.existing_cable_designs) > 0:
-            processing_summary = processing_summary + "DETAILS: number of cable designs that already exist in CDB (included in output file): %d" % (len(self.existing_cable_designs))
+        if len(self.info_manager.existing_cable_designs) > 0:
+            processing_summary = processing_summary + "DETAILS: number of cable designs that already exist in CDB (included in output file): %d" % (len(self.info_manager.existing_cable_designs))
 
-        num_port_values = len(self.from_port_values) + len(self.to_port_values)
+        num_port_values = len(self.info_manager.from_port_values) + len(self.info_manager.to_port_values)
         if num_port_values > 0:
             if processing_summary != "":
                 processing_summary = processing_summary + "\n"
@@ -2962,8 +2951,6 @@ def get_config_resource_int(config, section, key, is_required, print_value=True,
 
 
 def main():
-
-    global name_manager
 
     # parse command line args
     parser = argparse.ArgumentParser()
@@ -3139,32 +3126,24 @@ def main():
     except (ApiException, urllib3.exceptions.MaxRetryError) as exc:
         fatal_error("CDB login failed user: %s message: %s, exiting" % (cdb_user, exc))
 
-    # create information manager for retrieving item data via cdb api and managing cdb and parsed item data
-    info_manager = ItemInfoManager(api)
-    info_manager.initialize()
-
     # open input spreadsheet
     input_book = openpyxl.load_workbook(filename=file_input, data_only=True)
-    name_manager = ConnectedMenuManager(input_book)
 
     # create output spreadsheet
     output_book = xlsxwriter.Workbook(file_output)
 
+    # create information manager for retrieving item data via cdb api and managing cdb and parsed item data
+    info_manager = ItemInfoManager(api)
+    info_manager.initialize(input_book)
+
     # create sheet helpers
-    helpers = []
-
-    cable_specs_helper = CableSpecsSheetHelper()
-    cable_specs_helper.post_create(config_preimport, config_workbook, info_manager, api)
-    helpers.append(cable_specs_helper)
-
-    cables_helper = CablesSheetHelper()
-    cables_helper.post_create(config_preimport, config_workbook, info_manager, api)
-    helpers.append(cables_helper)
+    helpers = [CableSpecsSheetHelper(), CablesSheetHelper()]
 
     for helper in helpers:
         print()
         print("%s OPTIONS ====================" % helper.sheet_name().upper())
         print()
+        helper.post_create(config_preimport, config_workbook, info_manager, api)
         input_valid = helper.process_input_book(input_book)
         if not input_valid:
             helper.write_error_sheets(output_book)
