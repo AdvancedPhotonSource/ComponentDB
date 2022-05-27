@@ -1,4 +1,5 @@
 LOCK TABLES `item_item_type` WRITE;
+SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `item_item_type` DISABLE KEYS */;
 INSERT INTO `item_item_type` VALUES
 (89,1),

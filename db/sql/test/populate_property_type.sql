@@ -1,4 +1,5 @@
 LOCK TABLES `property_type` WRITE;
+SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `property_type` DISABLE KEYS */;
 INSERT INTO `property_type` VALUES
 (1,'Image',NULL,NULL,1,2,NULL,NULL,0,0,0,1,1),
@@ -13,6 +14,7 @@ INSERT INTO `property_type` VALUES
 (11,'Cable Instance Status',NULL,NULL,NULL,NULL,'Planned',NULL,0,0,1,1,NULL),
 (12,'cable_design_internal_property_type','Cable Design Metadata',NULL,NULL,NULL,NULL,NULL,0,0,1,1,NULL),
 (13,'Test Property','','',1,NULL,'','',0,0,0,1,NULL),
-(14,'Control Interface','Describes the interface to parent in the control hierarchy.',NULL,NULL,NULL,NULL,NULL,0,0,1,1,1);
+(14,'Control Interface','Describes the interface to parent in the control hierarchy.',NULL,NULL,NULL,NULL,NULL,0,0,1,1,1),
+(15,'cable_end_designation_property_type','cable end designation',NULL,NULL,NULL,NULL,NULL,0,0,1,1,NULL);
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;

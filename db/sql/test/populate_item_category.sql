@@ -1,4 +1,5 @@
 LOCK TABLES `item_category` WRITE;
+SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `item_category` DISABLE KEYS */;
 INSERT INTO `item_category` VALUES
 (1,'Vacuum','',2),

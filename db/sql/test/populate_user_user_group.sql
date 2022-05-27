@@ -1,4 +1,5 @@
 LOCK TABLES `user_user_group` WRITE;
+SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `user_user_group` DISABLE KEYS */;
 INSERT INTO `user_user_group` VALUES
 (1,1),

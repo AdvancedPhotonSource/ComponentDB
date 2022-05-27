@@ -1,4 +1,5 @@
 LOCK TABLES `log` WRITE;
+SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `log` DISABLE KEYS */;
 INSERT INTO `log` VALUES
 (1,'Authentication Succeeded: cdb','2021-01-29 12:41:57',1,NULL,NULL,NULL),
@@ -199,6 +200,10 @@ INSERT INTO `log` VALUES
 (198,'User: testUser | Updated: Yet another building [Item Id: 107]','2021-02-04 14:40:43',1,NULL,NULL,NULL),
 (199,'Authentication Succeeded: cdb','2021-02-04 14:43:23',1,NULL,NULL,NULL),
 (200,'User: cdb | Created: Pallet [Item Id: 108]','2021-02-04 14:43:56',1,NULL,NULL,NULL),
-(201,'User: cdb | Updated: Pallet [Item Id: 108]','2021-02-04 14:44:10',1,NULL,NULL,NULL);
+(201,'User: cdb | Updated: Pallet [Item Id: 108]','2021-02-04 14:44:10',1,NULL,NULL,NULL),
+(202,'User: cdb | Created: TestControl [Item Id: 109]','2022-05-25 16:33:59',1,NULL,NULL,NULL),
+(203,'User: cdb | Updated: TestControl [Item Id: 109]','2022-05-25 16:34:05',1,NULL,NULL,NULL),
+(204,'Created: gov.anl.aps.cdb.portal.model.db.entities.PropertyType[ id=15 ]','2022-05-26 14:59:21',1,NULL,NULL,NULL),
+(205,'User: cdb | Created: Test Cable Design [Item Id: 110]','2022-05-26 14:59:21',1,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;

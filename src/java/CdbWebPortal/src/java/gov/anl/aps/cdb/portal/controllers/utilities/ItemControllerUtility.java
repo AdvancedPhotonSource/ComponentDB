@@ -168,6 +168,16 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
             }
         }
     }
+    
+    
+    @Override
+    public PropertyValue preparePropertyTypeValueAdd(ItemDomainEntity cdbDomainEntity,
+            PropertyType propertyType, String propertyValueString, String tag) {
+        EntityInfo entityInfo = cdbDomainEntity.getEntityInfo();
+        UserInfo ownerUser = entityInfo.getOwnerUser();
+        
+        return preparePropertyTypeValueAdd(cdbDomainEntity, propertyType, propertyValueString, tag, ownerUser);
+    }
 
     public void checkItemElement(ItemElement itemElement) throws CdbException {
         ItemDomainEntity parentItem = (ItemDomainEntity) itemElement.getParentItem();
