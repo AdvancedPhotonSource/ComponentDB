@@ -190,11 +190,6 @@ CABLE_DESIGN_NOTES_KEY = "notes"
 name_manager = None
 
 
-def register(helper_class):
-    PreImportHelper.register(helper_class.tag(), helper_class)
-
-
-
 class ConnectedMenuManager:
 
     def __init__(self, workbook):
@@ -1035,7 +1030,6 @@ class OutputObject(ABC):
 
 
 class PreImportHelper(ABC):
-    helperDict = {}
 
     def __init__(self):
         self.input_columns = {}
@@ -1068,31 +1062,11 @@ class PreImportHelper(ABC):
     def progress_increment(cls):
         return 5
 
-    # registers helper concrete classes for lookup by tag
-    @classmethod
-    def register(cls, tag, the_class):
-        cls.helperDict[tag] = the_class
-
-    # returns helper class for specified tag
-    @classmethod
-    def get_helper_class(cls, tag):
-        return cls.helperDict[tag]
-
-    # checks if specified tag is valid
-    @classmethod
-    def is_valid_type(cls, tag):
-        return tag in cls.helperDict
-
-    # creates instance of class with specified tag
-    @classmethod
-    def create_helper(cls, tag, config_preimport, config_workbook, info_manager, api):
-        helper_class = cls.helperDict[tag]
-        helper_instance = helper_class()
-        helper_instance.set_config_preimport(config_preimport, tag)
-        helper_instance.set_config_workbook(config_workbook, tag)
-        helper_instance.info_manager = info_manager
-        helper_instance.api = api
-        return helper_instance
+    def post_create(self, config_preimport, config_workbook, info_manager, api):
+        self.set_config_preimport(config_preimport, self.tag())
+        self.set_config_workbook(config_workbook, self.tag())
+        self.info_manager = info_manager
+        self.api = api
 
     # Returns registered tag for subclass.
     @staticmethod
@@ -1941,7 +1915,6 @@ class SourceOutputObject(OutputObject):
         return self.url
 
 
-@register
 class CableTypeHelper(PreImportHelper):
 
     def __init__(self):
@@ -2426,7 +2399,6 @@ class CableInventoryOutputObject(OutputObject):
         return self.helper.get_owner_group_id()
 
 
-@register
 class CableDesignHelper(PreImportHelper):
 
     def __init__(self):
@@ -3190,14 +3162,21 @@ def main():
     # create output spreadsheet
     output_book = xlsxwriter.Workbook(file_output)
 
+    # create sheet helpers
     helpers = []
-    for item_type in ["CableType", "CableDesign"]:
-        # create instance of appropriate helper subclass
+
+    cable_specs_helper = CableTypeHelper()
+    cable_specs_helper.post_create(config_preimport, config_workbook, info_manager, api)
+    helpers.append(cable_specs_helper)
+
+    cables_helper = CableDesignHelper()
+    cables_helper.post_create(config_preimport, config_workbook, info_manager, api)
+    helpers.append(cables_helper)
+
+    for helper in helpers:
         print()
-        print("%s OPTIONS ====================" % item_type.upper())
+        print("%s OPTIONS ====================" % helper.tag().upper())
         print()
-        helper = PreImportHelper.create_helper(item_type, config_preimport, config_workbook, info_manager, api)
-        helpers.append(helper)
         input_valid = helper.process_input_book(input_book)
         if not input_valid:
             helper.write_error_sheets(output_book)
