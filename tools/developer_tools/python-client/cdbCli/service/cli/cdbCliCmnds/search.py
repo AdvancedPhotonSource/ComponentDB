@@ -51,6 +51,7 @@ RESULT_OPTS = [RESULT_BACK_OPT, RESULT_SELECT_OPT, RESULT_SELECT_W_ALL_OPT, RESU
 
 TABLE_STYLE = [None, 'green', 'magenta', 'cyan']
 
+@cliBase.cli_command_api_exception_handler
 def search_helper(factory: CdbApiFactory, console: Console, search_string, search_domain, format, pager=False):    
     with console.status("Waiting for search results...", spinner="aesthetic"):        
         search_api: SearchApi = factory.getSearchApi()
@@ -180,7 +181,11 @@ def cdb_search(cli: CliBase, search_string, search_domain, pager, interactive, f
                 exit()        
 
         if search_res is None:
-            search_res : SearchEntitiesResults = search_helper(factory, console, search_string, search_domain, format, pager=pager)
+            search_res : SearchEntitiesResults = search_helper(factory=factory, console=console, search_string=search_string, search_domain=search_domain, format=format, pager=pager)
+
+        if isinstance(search_res, Exception):
+            # Standard CLI exception handled and displayed to user. 
+            exit(1)
 
         if proceed is None:
             proceed = inquirer.select(
@@ -254,11 +259,14 @@ def cdb_search(cli: CliBase, search_string, search_domain, pager, interactive, f
             ).execute()
 
             if item_selection is not None:                
-                cdbInfo_helper(cli, console, item_id=item_selection.object_id, all=all_opt, pager=pager, format=format)
+                cdbInfo_result = cdbInfo_helper(cli=cli, console=console, item_id=item_selection.object_id, all=all_opt, pager=pager, format=format)
+                if isinstance(cdbInfo_result, Exception):
+                    # Standard CLI exception handled and displayed to user. 
+                    exit(1)
     else:
         if search_domain == None:
             search_domain = DOMAIN_ALL_OPT
-        search_helper(factory, console, search_string, search_domain, format, pager=pager)    
+        search_helper(factory=factory, console=console, search_string=search_string, search_domain=search_domain, format=format, pager=pager)    
 
 def create_search_results_printout(result_list, factory):   
     result_obj = []
