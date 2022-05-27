@@ -22,6 +22,7 @@ tools/developer_tools/portal_testing/CdbFunctionalTester/nbproject/private/
 !/tools/developer_tools/python-client/setup-api.py
 !/tools/developer_tools/python-client/test
 !/tools/developer_tools/python-client/conda-recipe
+!/tools/developer_tools/python-client/data
 
 # Generated deployment specific config files 
 src/java/CdbWebPortal/nbproject/private/private.xml

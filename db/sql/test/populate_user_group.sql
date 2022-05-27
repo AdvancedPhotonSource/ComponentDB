@@ -1,4 +1,5 @@
 LOCK TABLES `user_group` WRITE;
+SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `user_group` DISABLE KEYS */;
 INSERT INTO `user_group` VALUES
 (1,'CDB_ADMIN','System Admin Group'),

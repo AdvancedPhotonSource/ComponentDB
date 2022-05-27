@@ -1,4 +1,5 @@
 LOCK TABLES `item_type` WRITE;
+SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `item_type` DISABLE KEYS */;
 INSERT INTO `item_type` VALUES
 (1,'Building',NULL,1),

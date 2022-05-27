@@ -1,4 +1,5 @@
 LOCK TABLES `item` WRITE;
+SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `item` DISABLE KEYS */;
 INSERT INTO `item` VALUES
 (1,2,'Test Item',NULL,'Num: 0','',NULL),
@@ -96,7 +97,6 @@ INSERT INTO `item` VALUES
 (93,6,'Test Machine',NULL,NULL,NULL,NULL),
 (94,6,'Component 1',NULL,NULL,NULL,NULL),
 (95,6,'Another Needed Component',NULL,'','',NULL),
-(96,9,'My Connection Between test machines',NULL,'','',NULL),
 (97,3,'Unit: 0001',6,'','',NULL),
 (98,3,'Unit: 0002',6,'','',NULL),
 (99,3,'Unit: 0003',6,'','',NULL),
@@ -108,6 +108,8 @@ INSERT INTO `item` VALUES
 (105,3,'Unit: 0009',6,'','',NULL),
 (106,3,'Unit: 0010',6,'','',NULL),
 (107,1,'Yet another building',NULL,NULL,NULL,NULL),
-(108,1,'Pallet',NULL,NULL,NULL,101111101);
+(108,1,'Pallet',NULL,NULL,NULL,101111101),
+(109,6,'TestControl',NULL,NULL,NULL,NULL),
+(110,9,'Test Cable Design',NULL,'','',NULL);
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;

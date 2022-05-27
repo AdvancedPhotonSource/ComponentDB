@@ -17,6 +17,7 @@ INVENTORY_FULL_OPT = "Full"
 INVENTORY_SPARES_OPT = "Spare"
 INVENTORY_LIST_OPTS = [INVENTORY_SPARES_OPT, INVENTORY_FULL_OPT]
 
+@cliBase.cli_command_api_exception_handler
 def cdbInfo_helper(cli: CliBase, console, pager=False, 
                 all=False, inventory_mode=INVENTORY_SPARES_OPT, 
                 log_limit=-1, format=cliBase.FORMAT_RICH_OPT, 
@@ -39,10 +40,12 @@ def cdbInfo_helper(cli: CliBase, console, pager=False,
         domain = domain_api.get_domain_by_id(item.domain_id)
 
         result_obj = {} 
+        header_style = {}
         
         # Load Details
         item_details = []
         result_obj["Item Details"] = item_details
+        header_style["Item Details"] = "green"
 
         item_details.append({"Id": item.id})
         item_details.append({"Name": item.name})
@@ -103,6 +106,7 @@ def cdbInfo_helper(cli: CliBase, console, pager=False,
             machine_conn_list = machine_api.get_machine_design_connector_list(item_id)
             conn_list = []
             result_obj['Cable Connections'] = conn_list
+            header_style['Cable Connections'] = 'magenta'
             
             for machine_conn in machine_conn_list:
                 if machine_conn.cable_item:
@@ -130,6 +134,7 @@ def cdbInfo_helper(cli: CliBase, console, pager=False,
             cable_conn_list = cable_design_api.get_cable_design_connection_list(item_id)
             conn_list = []
             result_obj['Cable Endpoints'] = conn_list
+            header_style['Cable Endpoints'] = 'magenta'
 
             for cable_conn in cable_conn_list:
                 conn = {} 
@@ -160,6 +165,7 @@ def cdbInfo_helper(cli: CliBase, console, pager=False,
                 logs.append(log)
 
             result_obj["Logs"] = logs
+            header_style["Logs"] = 'yellow'
 
         # Load Properties 
         if all:
@@ -179,6 +185,7 @@ def cdbInfo_helper(cli: CliBase, console, pager=False,
                 properties.append(property)
 
             result_obj["Properties"] = properties
+            header_style["Properties"] = "blue"
 
             if item.domain_id == factory.CABLE_DESIGN_DOMAIN_ID:
                 for item_property in item_properties:
@@ -233,6 +240,7 @@ def cdbInfo_helper(cli: CliBase, console, pager=False,
                 item_details.append({"# MD Occurrences": len(mds)})
                 if all:
                     result_obj["Machine Occurrences"] = mds
+                    header_style["Machine Occurrences"] = "magenta"
 
             if all:
                 result_obj["%s Inventory" % inventory_mode] = inventories
@@ -243,6 +251,7 @@ def cdbInfo_helper(cli: CliBase, console, pager=False,
 
             items_here = []
             result_obj['Inventory Here'] = items_here
+            header_style['Inventory Here'] = "magenta"
 
             for inventory_item in inventory_items:
                 item_here = {}
@@ -257,7 +266,7 @@ def cdbInfo_helper(cli: CliBase, console, pager=False,
                 items_here.append(item_here)            
 
             
-    cliBase.print_results(console, result_obj, format, pager)
+    cliBase.print_results(console, result_obj, format, pager, header_style=header_style)
 
 @click.command()
 @click.option(
