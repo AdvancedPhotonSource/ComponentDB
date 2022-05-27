@@ -4,21 +4,27 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
+import static gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase.KEY_USER;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +36,13 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
    
     private static final String LABEL_NAME = "Name";
     
+    private static final String HEADER_CATALOG_ITEM = "Type";
+    private static final String HEADER_ASSIGNED_INVENTORY_TAG = "Assigned Inventory Tag";
+    private static final String HEADER_INSTALLED = "Is Installed";
+
     private static final String KEY_CATALOG_ITEM = "catalogItemString";
+    private static final String KEY_ASSIGNED_INVENTORY_TAG = "importAssignedInventoryTag";
+    private static final String KEY_INSTALLED = "importIsInstalled";
 
     private static final String KEY_ENDPOINT1_ITEM = "endpoint1ItemStringImport";
     private static final String KEY_ENDPOINT1_PORT = "endpoint1PortImport";
@@ -39,6 +51,8 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     private static final String KEY_ENDPOINT2_ITEM = "endpoint2ItemImport";
     private static final String KEY_ENDPOINT2_PORT = "endpoint2PortImport";
     private static final String KEY_ENDPOINT2_CONNECTOR = "endpoint2ConnectorImport";
+    
+    private Map<ItemDomainCableCatalog, List<String>> cableTypeInventoryTagMap = new HashMap<>();
 
     @Override
     protected List<ColumnSpec> initColumnSpecs() {
@@ -57,6 +71,35 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 ColumnModeOptions.rdCREATErUPDATE(), 
                 128));
         
+        specs.add(new IdOrNameRefColumnSpec(
+                HEADER_CATALOG_ITEM, 
+                KEY_CATALOG_ITEM, 
+                "", 
+                "Numeric ID or name of CDB cable type catalog item. Name must be unique and prefixed with '#'.", 
+                "getCatalogItem", 
+                "getCatalogItemAttributeMap",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                ItemDomainCableCatalogController.getInstance(), 
+                Item.class, 
+                ""));
+        
+        specs.add(new StringColumnSpec(
+                HEADER_ASSIGNED_INVENTORY_TAG,
+                KEY_ASSIGNED_INVENTORY_TAG,
+                "setImportAssignedInventoryTag",
+                "Name/tag of assigned inventory item.",
+                "getImportAssignedInventoryTag",
+                ColumnModeOptions.oCREATEoUPDATE(),
+                256));
+        
+        specs.add(new BooleanColumnSpec(
+                HEADER_INSTALLED,
+                KEY_INSTALLED,
+                "setImportIsInstalled",
+                "Specify true/false for item with assigned inventory. Leave blank otherwise.",
+                "getImportIsInstalled",
+                ColumnModeOptions.oCREATEoUPDATE()));
+
         specs.add(new StringColumnSpec(
                 "Alt Name", 
                 "alternateName", 
@@ -146,18 +189,6 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 "getNotes",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
-        
-        specs.add(new IdOrNameRefColumnSpec(
-                "Type", 
-                KEY_CATALOG_ITEM, 
-                "", 
-                "Numeric ID or name of CDB cable type catalog item. Name must be unique and prefixed with '#'.", 
-                "getCatalogItem", 
-                "getCatalogItemAttributeMap",
-                ColumnModeOptions.oCREATEoUPDATE(), 
-                ItemDomainCableCatalogController.getInstance(), 
-                Item.class, 
-                ""));
         
         specs.add(new IdOrNameRefColumnSpec(
                 "Endpoint1", 
@@ -396,9 +427,63 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         boolean isValid = true;
         String validString = "";
         
+        UserInfo user = (UserInfo) rowMap.get(KEY_USER);
+        
         // set cable type so connectors inherited from cable type are synced in setEndpointImport()
         ItemDomainCableCatalog catalogItem = (ItemDomainCableCatalog) rowMap.get(KEY_CATALOG_ITEM);
         entity.setCatalogItem(catalogItem);
+        
+        // handle assigned inventory and installed status
+        String assignedInventoryTag = (String) rowMap.get(KEY_ASSIGNED_INVENTORY_TAG);
+        Boolean isInstalled = (Boolean) rowMap.get(KEY_INSTALLED);
+        if (assignedInventoryTag != null && catalogItem == null) {
+            // must specify catalog item to assign inventory
+            isValid = false;
+            validString = "'" + HEADER_ASSIGNED_INVENTORY_TAG + "' cannot be specified unless '"
+                    + HEADER_CATALOG_ITEM + "' is specified";
+            return new ValidInfo(isValid, validString);
+        }
+        if (isInstalled != null) {
+            // must specify assigned inventory to use installation status
+            if (assignedInventoryTag == null) {
+                isValid = false;
+                validString = "'" + HEADER_INSTALLED + "' cannot be specified unless '"
+                        + HEADER_ASSIGNED_INVENTORY_TAG + "' is specified";
+                return new ValidInfo(isValid, validString);
+            }
+        } else {
+            
+            // must specify installation status with assigned inventory
+            if (assignedInventoryTag != null) {
+                isValid = false;
+                validString = "Must specify '" + HEADER_INSTALLED + "' with assigned inventory item.";
+                return new ValidInfo(isValid, validString);
+            }
+        }
+        if (assignedInventoryTag != null) {
+            List<String> cableTypeTags = cableTypeInventoryTagMap.get(catalogItem);
+            if (cableTypeTags != null && cableTypeTags.contains(assignedInventoryTag)) {
+                // tag name already in use for cable type
+                isValid = false;
+                validString = "Duplicate '" + HEADER_ASSIGNED_INVENTORY_TAG + "' value '" + assignedInventoryTag + "' specified in spreadsheet";
+                return new ValidInfo(isValid, validString);
+            }
+            // handle assigned item
+            ItemDomainCableDesignControllerUtility utility = new ItemDomainCableDesignControllerUtility();
+            try {
+                utility.updateAssignedInventory(entity, catalogItem, assignedInventoryTag, isInstalled, user);
+            } catch (CdbException ex) {
+                isValid = false;
+                validString = "Error updating assigned item: " + ex.getMessage();
+                return new ValidInfo(isValid, validString);
+            }
+            // update data structure for checking for duplicate tag name for cable type
+            if (cableTypeTags == null) {
+                cableTypeTags = new ArrayList<>();
+                cableTypeInventoryTagMap.put(catalogItem, cableTypeTags);
+            }
+            cableTypeTags.add(assignedInventoryTag);            
+        }
         
         // get endpoint items
         ItemDomainMachineDesign endpoint1Item = (ItemDomainMachineDesign) rowMap.get(KEY_ENDPOINT1_ITEM);

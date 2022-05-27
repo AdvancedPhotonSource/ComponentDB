@@ -29,7 +29,9 @@ public abstract class LocatableItem extends Item {
     private transient String housingString; 
     private transient DefaultMenuModel locationMenuModel;
     private transient ItemDomainLocation importLocationItem = null;
-    private transient String importLocationItemString = null;
+    private transient String importLocationDetails = null;
+    private transient boolean loadedImportLocationItem = false;
+    private transient boolean loadedImportLocationDetails = false;
     private transient List<LocationHistoryObject> locationHistoryListObject = null; 
 
     // Needed to determine whenever location was removed in edit process. 
@@ -119,8 +121,7 @@ public abstract class LocatableItem extends Item {
         }
         this.locationDetails = locationDetails;
     }  
-
-    @JsonIgnore
+    
     public ItemDomainLocation getLocationItem() {
         return location;
     }
@@ -193,38 +194,37 @@ public abstract class LocatableItem extends Item {
     }
 
     @JsonIgnore
-    public String getImportLocationItemString() {
-        if (importLocationItemString == null) {
-            LocatableItemController.getInstance().setItemLocationInfo(this);
-            importLocationItemString = getLocationString();
-        }
-        return importLocationItemString;
-    }
-    
-    @JsonIgnore
     public void setImportLocationItem(ItemDomainLocation location) {
         LocatableItemController.getInstance().setItemLocationInfo(this);
         LocatableItemController.getInstance().updateLocationForItem(
                 this, location, null);
-        importLocationItemString = getLocationString();
         importLocationItem = location;
-    }
-    
-    @JsonIgnore
-    public ItemDomainLocation getImportLocationItem() {
-        return importLocationItem;
     }
 
     @JsonIgnore
-    public Item getExportLocation() {
-        LocatableItemController.getInstance().setItemLocationInfo(this);
-        return getLocationItem();
+    public ItemDomainLocation getImportLocationItem() {
+        if (!loadedImportLocationItem) {
+            LocatableItemController.getInstance().setItemLocationInfo(this);
+            importLocationItem = getLocationItem();
+            loadedImportLocationItem = true;
+        }
+        return importLocationItem;
     }
     
-    @JsonIgnore 
-    public String getExportLocationDetails() {
+    public void setImportLocationDetails(String locationDetails) {
         LocatableItemController.getInstance().setItemLocationInfo(this);
-        return locationDetails; // avoid getter method because it adds values not stored in database
+        setLocationDetails(locationDetails);
+        importLocationDetails = locationDetails;
+    }
+
+    @JsonIgnore
+    public String getImportLocationDetails() {
+        if (!loadedImportLocationDetails) {
+            LocatableItemController.getInstance().setItemLocationInfo(this);
+            importLocationDetails = getLocationDetails();
+            loadedImportLocationDetails = true;
+        }
+        return importLocationDetails;
     }
 
     @JsonIgnore

@@ -138,10 +138,27 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     protected DomainImportExportInfo initializeDomainImportInfo() {
         
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportExportFormatInfo("Basic Cable Inventory Format", ImportHelperCableInventory.class));
+        formatInfo.add(new ImportExportFormatInfo("Basic Cable Inventory Create/Update/Delete Format", ImportHelperCableInventory.class));
         
         String completionUrl = "/views/itemDomainCableInventory/list?faces-redirect=true";
         
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+
+    @Override
+    public boolean getEntityDisplayExportButton() {
+        return true;
+    }
+
+    @Override
+    protected DomainImportExportInfo initializeDomainExportInfo() {
+
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+
+        formatInfo.add(new ImportExportFormatInfo("Basic Cable Inventory Create/Update/Delete Format", ImportHelperCableInventory.class));
+
+        String completionUrl = "/views/itemDomainCableInventory/list?faces-redirect=true";
+
         return new DomainImportExportInfo(formatInfo, completionUrl);
     }
 

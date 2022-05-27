@@ -7,7 +7,6 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.controllers.ItemTypeController;
 import gov.anl.aps.cdb.portal.controllers.UserGroupController;
@@ -33,14 +32,15 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.LocationDetailsHandler;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.LocationHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.DomainItemTypeListColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefListColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IntegerColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.io.ByteArrayInputStream;
@@ -1050,6 +1050,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         boolean isValid = true;
         String validString = "";
         
+        // skip blank and comment rows
+        if (isBlankRow(row) || isCommentRow(row)) {
+            return new ValidInfo(true, "");
+        }
+
         // parse each column value into a map (cellIndex -> cellValue)        
         int colIndex;
         Map<Integer, String> cellValueMap = new HashMap<>();
@@ -1085,11 +1090,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                             + columnNameForIndex(col.getColumnIndex()));
                 }
             }
-        }
-        
-        // skip blank and comment rows
-        if (isBlankRow(cellValueMap) || isCommentRow(cellValueMap)) {
-            return new ValidInfo(true, "");
         }
         
         // invoke each input handler to populate row dictionary (String key -> object)
@@ -1129,8 +1129,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return new ValidInfo(isValid, validString);
     }
     
-    protected boolean isBlankRow(Map<Integer, String> cellValues) {
-        for (String value : cellValues.values()) {
+    protected boolean isBlankRow(Row row) {
+        short lastCell = row.getLastCellNum();
+        for (short i=0 ; i<=lastCell ; i++) {
+            Cell cell = row.getCell(i);
+            String value = parseStringCell(cell);
             if ((value != null) && (!value.isEmpty())) {
                 return false;
             }
@@ -1138,8 +1141,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return true;
     }
     
-    protected boolean isCommentRow(Map<Integer, String> cellValues) {
-        String value = cellValues.get(0);
+    protected boolean isCommentRow(Row row) {
+        Cell cell = row.getCell(0);
+        String value = parseStringCell(cell);
         if ((value != null) && (!value.isEmpty())) {
             if (value.trim().startsWith(INDICATOR_COMMENT)) {
                 return true;
@@ -1212,6 +1216,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         // set existing item id so it doesn't appear as a diff
         entity.setImportExistingItemId((Integer) rowDict.get(KEY_EXISTING_ITEM_ID));
         entity.setImportDeleteExistingItem((Boolean) rowDict.get(KEY_DELETE_EXISTING_ITEM));
+        boolean deleteItem = (entity.getImportDeleteExistingItem() == true);
         
         // capture item field values for display in validation table
         FieldValueMapResult result = getFieldValueMap(entity);
@@ -1224,26 +1229,28 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
         FieldValueMap fieldValueMap = result.getValueMap();
         
-        // allow subclass to determine if deleting entity is valid
-        ValidInfo deleteEntityValidInfo = validateDeleteEntityInstance(entity, rowDict);
-        if (!deleteEntityValidInfo.isValid()) {
-            isValid = false;
-        }
-        validString = appendToString(validString, deleteEntityValidInfo.getValidString());
-        
-        // allow subclass to take appropriate action on deleting the entity, beyond calling destroy
-        ValidInfo deleteEntityInfo = deleteEntityInstance(entity, rowDict);
-        if (!deleteEntityInfo.isValid()) {
-            isValid = false;
-        }
-        validString = appendToString(validString, deleteEntityInfo.getValidString());
+        if (deleteItem) {
+            // allow subclass to determine if deleting entity is valid
+            ValidInfo deleteEntityValidInfo = validateDeleteEntityInstance(entity, rowDict);
+            if (!deleteEntityValidInfo.isValid()) {
+                isValid = false;
+            }
+            validString = appendToString(validString, deleteEntityValidInfo.getValidString());
 
-        // invoke each input handler to update the entity with row dictionary values
-        ValidInfo updateValidInfo = invokeHandlersToUpdateEntity(entity, rowDict);
-        if (!updateValidInfo.isValid()) {
-            isValid = false;
+            // allow subclass to take appropriate action on deleting the entity, beyond calling destroy
+            ValidInfo deleteEntityInfo = deleteEntityInstance(entity, rowDict);
+            if (!deleteEntityInfo.isValid()) {
+                isValid = false;
+            }
+            validString = appendToString(validString, deleteEntityInfo.getValidString());
+
+            // invoke each input handler to update the entity with row dictionary values
+            ValidInfo updateValidInfo = invokeHandlersToUpdateEntity(entity, rowDict);
+            if (!updateValidInfo.isValid()) {
+                isValid = false;
+            }
+            validString = appendToString(validString, updateValidInfo.getValidString());
         }
-        validString = appendToString(validString, updateValidInfo.getValidString());
         
         // display field values as diffs
         String diffString = "";
@@ -1261,7 +1268,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             diffString = diffString + "</span>";
         }
 
-        if (entity.getImportDeleteExistingItem()) {
+        if (deleteItem) {
             entity.setImportDiffs(diffString);
         } else {
             entity.setImportDiffs("Item not specified for deletion.");
@@ -1885,28 +1892,26 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 domainName);
     }
     
-    public IdOrNameRefColumnSpec locationColumnSpec() {
-        return new IdOrNameRefColumnSpec(
-                "Location", 
-                "importLocationItemString", 
-                "setImportLocationItem", 
-                "Item location.", 
-                "getExportLocation", null,
-                ColumnModeOptions.oCREATEoUPDATE(), 
-                ItemDomainLocationController.getInstance(), 
-                ItemDomainLocation.class, 
-                "");
+    public CustomColumnSpec locationColumnSpec() {
+        LocationHandler locationHandler = new LocationHandler();
+        return new CustomColumnSpec(
+                LocationHandler.HEADER_LOCATION,
+                "importLocationItem",
+                "Name or CDB id of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored).",
+                "getImportLocationItem",
+                ColumnModeOptions.oCREATEoUPDATE(),
+                locationHandler);
     }
     
-    public StringColumnSpec locationDetailsColumnSpec() {
-        return new StringColumnSpec(
-                "Location Details", 
-                "locationDetails", 
-                "setLocationDetails", 
-                "Location details for item.", 
-                "getExportLocationDetails",
-                ColumnModeOptions.oCREATEoUPDATE(), 
-                64);
+    public CustomColumnSpec locationDetailsColumnSpec() {
+        LocationDetailsHandler locationDetailsHandler = new LocationDetailsHandler();
+        return new CustomColumnSpec(
+                LocationDetailsHandler.HEADER_LOCATION_DETAILS,
+                "importLocationDetails",
+                "Item's location details (use of word 'parent' allowed for documentation purposes, it is ignored).",
+                "getImportLocationDetails",
+                ColumnModeOptions.oCREATEoUPDATE(),
+                locationDetailsHandler);
     }
     
     public IntegerColumnSpec existingItemIdColumnSpec() {

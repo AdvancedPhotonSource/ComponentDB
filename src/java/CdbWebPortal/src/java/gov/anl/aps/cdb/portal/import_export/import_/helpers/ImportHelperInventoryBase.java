@@ -40,7 +40,7 @@ public abstract class ImportHelperInventoryBase
                 KEY_STATUS, 
                 "setInventoryStatusValue", 
                 "Status of inventory item.", 
-                null,
+                "getInventoryStatusValue",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256);
     }
