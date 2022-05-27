@@ -1,5 +1,5 @@
 {% set name = "ComponentDB-API" %}
-{% set version = "3.14.0.dev0" %}
+{% set version = "3.14.1.dev0" %}
 
 package:
   name: "{{ name|lower }}"  
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 1760dc88ceca99d9e45c1a7fd77f26203d68d94e2fcdf850245abc7dd6e30b1c
+  sha256: 208e81f5328be09f5006de4afde196315e2a4e7382f8e1387e7fe35e6d1738d6
 
 build:
   number: 0
@@ -23,7 +23,7 @@ requirements:
     - python-dateutil
     - six
     - urllib3
-
+    - certifi
 
 test:
   imports:
