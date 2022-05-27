@@ -2183,7 +2183,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     }
 
     protected boolean resetFiltersOnPreRenderList() {
-        return true;
+        return false;
     }
 
     @Override
