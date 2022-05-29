@@ -1568,6 +1568,12 @@ class InputSheetHelper(ABC):
     def sheet_name():
         pass
 
+    # Returns 1-based sheet index for helper's sheet.
+    @staticmethod
+    @abstractmethod # must be innermost decorator
+    def sheet_number():
+        pass
+
     # Returns expected number of columns in input spreadsheet.
     @abstractmethod
     def num_input_cols(self):
@@ -1689,9 +1695,9 @@ class InputSheetHelper(ABC):
         self.pre_initialize(self.api, input_book)
 
         # process sheetNumber option
-        option_sheet_number = get_config_resource(self.config_preimport, self.sheet_name(), 'sheetNumber', True)
+        # option_sheet_number = get_config_resource(self.config_preimport, self.sheet_name(), 'sheetNumber', True)
 
-        sheet_num = int(option_sheet_number)
+        sheet_num = self.sheet_number()
         sheet_index = sheet_num - 1
         input_sheet = input_book.worksheets[int(sheet_index)]
         self.max_row = input_sheet.max_row
@@ -2325,6 +2331,10 @@ class CableSpecsSheetHelper(InputSheetHelper):
         return "CableSpecs"
 
     @staticmethod
+    def sheet_number():
+        return 3
+
+    @staticmethod
     def item_name():
         return "Cable Catalog"
 
@@ -2619,6 +2629,10 @@ class CablesSheetHelper(InputSheetHelper):
     @staticmethod
     def sheet_name():
         return "Cables"
+
+    @staticmethod
+    def sheet_number():
+        return 1
 
     @staticmethod
     def item_name():
