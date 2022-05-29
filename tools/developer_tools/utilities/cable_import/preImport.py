@@ -367,6 +367,7 @@ class ItemInfoManager():
         self.technical_system = None
         self.cable_types_specified_for_technical_system = None
         self.cable_types_defined_for_technical_system = []
+        self.output_objects_cable_type_compare = []
         self.cable_design_names = []
         self.existing_cable_designs = []
         self.new_cable_designs = []
@@ -1165,13 +1166,14 @@ class SourceOutputObject(OutputObject):
 
 class CableTypeOutputObject(OutputObject):
 
-    def __init__(self, helper, input_dict):
+    def __init__(self, helper, input_dict, existing_item_id=None):
         super().__init__(helper, input_dict)
+        self.existing_item_id = existing_item_id
 
     @classmethod
     def get_output_columns(cls):
         column_list = [
-            OutputColumnModel(method="empty_column", label="Existing Item ID"),
+            OutputColumnModel(method="get_existing_item_id", label="Existing Item ID"),
             OutputColumnModel(method="empty_column", label="Delete Existing Item"),
             OutputColumnModel(method="get_name", label=CABLE_TYPE_NAME_KEY),
             OutputColumnModel(method="get_alt_name", label=CABLE_TYPE_ALT_NAME_KEY),
@@ -1202,6 +1204,9 @@ class CableTypeOutputObject(OutputObject):
             OutputColumnModel(method="get_owner_group_id", label="Owner Group"),
         ]
         return column_list
+
+    def get_existing_item_id(self):
+        return self.existing_item_id
 
     def get_name(self):
         return self.input_dict[CABLE_TYPE_NAME_KEY]
@@ -2476,8 +2481,10 @@ class CableSpecsSheetHelper(InputSheetHelper):
 
         name = input_dict[CABLE_TYPE_NAME_KEY]
         if name in self.info_manager.existing_cable_types:
-            # cable type already exists with this name, skip
-            logging.debug(": %s, skipping" % input_dict[CABLE_TYPE_NAME_KEY])
+            # add to list of output objects to generate tab for comparing existing cable types
+            cable_type_id = self.info_manager.get_cable_type_id(name)
+            compare_object = CableTypeOutputObject(helper=self, input_dict=input_dict, existing_item_id=cable_type_id)
+            self.info_manager.output_objects_cable_type_compare.append(compare_object)
             return
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
@@ -2550,6 +2557,11 @@ class CableSpecsSheetHelper(InputSheetHelper):
                          "Source Item Import",
                          SourceOutputObject.get_output_columns(),
                          self.info_manager.output_objects_source)
+
+        self.write_sheet(output_book,
+                         "Cable Catalog Item Compare",
+                         CableTypeOutputObject.get_output_columns(),
+                         self.info_manager.output_objects_cable_type_compare)
 
         self.write_sheet(output_book, "Cable Catalog Item Import", self.output_column_list(), self.output_objects)
 
