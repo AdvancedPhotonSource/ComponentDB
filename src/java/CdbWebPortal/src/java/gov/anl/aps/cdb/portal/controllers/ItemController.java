@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
+import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
@@ -2314,6 +2315,14 @@ public abstract class ItemController<
             }
         }
 
+    }
+    
+    public String prepareLinkDisplay(String link) {
+        if (link != null && !link.isEmpty()) {
+            return HttpLinkUtility.prepareHttpLinkDisplayValue(link);
+        } else {
+            return null;
+        }
     }
 
     public ItemMetadataPropertyInfo getCoreMetadataPropertyInfo() {

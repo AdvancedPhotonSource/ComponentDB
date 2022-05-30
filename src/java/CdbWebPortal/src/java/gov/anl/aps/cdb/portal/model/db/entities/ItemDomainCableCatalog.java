@@ -112,14 +112,6 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     }
     
     @JsonIgnore
-    public String getUrlDisplay() throws CdbException {
-        if (urlDisplay == null && this.getUrl() != null) {
-            urlDisplay = HttpLinkUtility.prepareHttpLinkDisplayValue(this.getUrl());
-        }
-        return urlDisplay;
-    }
-
-    @JsonIgnore
     public String getImageUrl() throws CdbException {
         if (imageUrl == null) {
             imageUrl = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_IMAGE_URL_KEY);
@@ -132,14 +124,6 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_IMAGE_URL_KEY, w);
     }
     
-    @JsonIgnore
-    public String getImageUrlDisplay() throws CdbException {
-        if (imageUrlDisplay == null && this.getImageUrl() != null) {
-            imageUrlDisplay = HttpLinkUtility.prepareHttpLinkDisplayValue(this.getImageUrl());
-        }
-        return imageUrlDisplay;
-    }
-
     @JsonIgnore
     public String getAltPartNumber() throws CdbException {
         if (altPartNumber == null) {
