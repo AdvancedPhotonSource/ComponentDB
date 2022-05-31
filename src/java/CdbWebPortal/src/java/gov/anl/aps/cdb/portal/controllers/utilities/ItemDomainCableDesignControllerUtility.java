@@ -205,8 +205,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_DRAWING_KEY,
                 "End1 Drawing",
-                "URL for drawing for cable end 1.",
-                ItemMetadataFieldType.URL,
+                "Space-separated list of links for cable end 1.",
+                ItemMetadataFieldType.URLLIST,
                 "",
                 null,
                 GROUP_END1);
@@ -268,8 +268,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_DRAWING_KEY,
                 "End2 Drawing",
-                "URL for drawing for cable end 2.",
-                ItemMetadataFieldType.URL,
+                "Space-separated list of links for cable end 2.",
+                ItemMetadataFieldType.URLLIST,
                 "",
                 null,
                 GROUP_END2);

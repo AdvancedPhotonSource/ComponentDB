@@ -2324,6 +2324,10 @@ public abstract class ItemController<
             return null;
         }
     }
+    
+    public String[] getMetadataUrlList(String urlList) {
+        return urlList.split(" ");
+    }
 
     public ItemMetadataPropertyInfo getCoreMetadataPropertyInfo() {
         if (coreMetadataPropertyInfo == null) {

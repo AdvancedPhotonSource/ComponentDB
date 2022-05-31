@@ -25,7 +25,10 @@ See LICENSE file.
                         <ui:param name="metadataLabel" value="#{metadataField.label}"/>
                         <ui:param name="metadataType" value="#{metadataField.typeString}"/>
                         <ui:param name="metadataDescription" value="#{metadataField.description}"/>
-                        <ui:param name="displayLink" value="#{entityController.prepareLinkDisplay(itemObject[metadataKey])}"/>
+                        <ui:param name="metadataValue" value="#{itemObject[metadataKey]}"/>
+                        <ui:param name="emptyValue" value="#{empty metadataValue}"/>
+                        <ui:param name="urlType" value="#{metadataType == 'url'}"/>
+                        <ui:param name="urlListType" value="#{metadataType == 'urlList'}"/>
 
                         <h:outputLabel for="#{metadataKey}#{viewName}" 
                                        value="#{metadataLabel}" 
@@ -47,17 +50,44 @@ See LICENSE file.
                                         <p:tooltip for="#{metadataKey}EditShowButton"
                                                    value="Edit #{metadataLabel}" />
                                     </p:commandLink>
-                                    <h:outputText value="#{itemObject[metadataKey]}" 
-                                                  title="#{metadataLabel}" 
-                                                  rendered="#{metadataType != 'url' or displayLink == null}"
-                                                  styleClass="entityDataText" />
-                                    <h:outputLink value="#{itemObject[metadataKey]}"
-                                                  target="_blank"
-                                                  rendered="#{metadataType == 'url' and displayLink != null}">"#{displayLink}"</h:outputLink>
+                                    
+                                    <c:if test="#{not urlListType}">
+                                        <h:outputText value="#{metadataValue}" 
+                                                      title="#{metadataLabel}" 
+                                                      rendered="#{emptyValue or not urlType}"
+                                                      styleClass="entityDataText" />
+                                        <h:outputLink value="#{metadataValue}"
+                                                      target="_blank"
+                                                      rendered="#{urlType and not emptyValue}">
+                                            "#{entityController.prepareLinkDisplay(metadataValue)}"
+                                        </h:outputLink>
+                                    </c:if>
+                                    
+                                    <c:if test="#{urlListType}">
+                                        <ui:param name="urlList" 
+                                                  value="#{entityController.getMetadataUrlList(metadataValue)}"/>
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <c:forEach items="#{urlList}"
+                                                               var="url"
+                                                               varStatus="loop">
+                                                        <td>
+                                                            <h:outputLink value="#{url}"
+                                                                          target="_blank">
+                                                                "#{entityController.prepareLinkDisplay(url)}"
+                                                            </h:outputLink>
+                                                        </td>
+                                                    </c:forEach>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </c:if>
+
                                 </p:outputPanel>
                             </f:facet>
                             <f:facet name="input">
-                                <p:inputText value="#{itemObject[metadataKey]}" 
+                                <p:inputText value="#{metadataValue}" 
                                              title="#{metadataLabel}" 
                                              styleClass="entityDataText"/>
                             </f:facet>
