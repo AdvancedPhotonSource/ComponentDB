@@ -149,3 +149,10 @@ h1 {
     width: 650px; 
     height: 700px;
 }
+
+/* Add a sticky header for machine design list pages. Built in primefaces 'sticky-header' feature has issues with header positioning. */
+itemMachineDesignListDataTable_head {
+    z-index: 1;
+    position: sticky;
+    top: 0;
+}
