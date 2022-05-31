@@ -34,12 +34,16 @@ public class ImportHelperInventory
         
         List<ColumnSpec> specs = new ArrayList<>();
         
+        specs.add(existingItemIdColumnSpec());
+        specs.add(deleteExistingItemColumnSpec());
+
         specs.add(new IdOrNameRefColumnSpec(
                 "Catalog Item", 
                 KEY_CATALOG_ITEM, 
                 "setCatalogItem", 
                 "ID or name of catalog item for inventory unit. Name must be unique and prefixed with '#'.", 
-                null, null,
+                "getCatalogItem", 
+                null,
                 ColumnModeOptions.rCREATErUPDATE(), 
                 ItemDomainCatalogController.getInstance(), 
                 ItemDomainCatalog.class, 
@@ -48,9 +52,9 @@ public class ImportHelperInventory
         specs.add(new StringColumnSpec(
                 "Tag", 
                 KEY_NAME, 
-                "", 
+                null, // name is set by createEntityInstance() so we can do auto-naming 
                 "Name of inventory unit.", 
-                null,
+                "getName",
                 ColumnModeOptions.rCREATErUPDATE(), 
                 64));
         
@@ -59,7 +63,8 @@ public class ImportHelperInventory
                 "qrId", 
                 "setQrId", 
                 "Integer QR id of inventory unit.", 
-                null, null,
+                "getQrId", 
+                null,
                 ColumnModeOptions.oCREATEoUPDATE()));
         
         specs.add(new StringColumnSpec(
@@ -67,7 +72,7 @@ public class ImportHelperInventory
                 "serialNumber", 
                 "setSerialNumber", 
                 "Inventory unit serial number.", 
-                null,
+                "getSerialNumber",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 128));
         
@@ -76,7 +81,7 @@ public class ImportHelperInventory
                 "description", 
                 "setDescription", 
                 "Description of inventory unit.", 
-                null,
+                "getDescription",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -93,6 +98,16 @@ public class ImportHelperInventory
     @Override
     public ItemDomainInventoryController getEntityController() {
         return ItemDomainInventoryController.getInstance();
+    }
+
+    @Override
+    public boolean supportsModeUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsModeDelete() {
+        return true;
     }
 
     @Override

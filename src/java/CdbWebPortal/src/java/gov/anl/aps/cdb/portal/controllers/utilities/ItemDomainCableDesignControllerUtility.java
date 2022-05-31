@@ -281,6 +281,24 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
     protected ItemDomainCableDesign instenciateNewItemDomainEntity() {
         return new ItemDomainCableDesign();
     }     
+    
+    public void updateAssignedInventory(
+            ItemDomainCableDesign designItem, 
+            ItemDomainCableCatalog catalogItem, 
+            String inventoryName, 
+            Boolean isInstalled, 
+            UserInfo userInfo) throws CdbException {
+        
+        ItemDomainCableInventory inventoryItem = catalogItem.getInventoryItemNamed(inventoryName);
+        if (inventoryItem == null) {
+            // catalog item doesn't have inventory item with specified name
+            throw new CdbException(
+                    "Cable catalog item '" + catalogItem.getName() 
+                            + "' does not have inventory item named '" + inventoryName + "'");
+        }
+        
+        updateAssignedItem(designItem, inventoryItem, userInfo, isInstalled);
+    }
 
     public void updateAssignedItem(
             ItemDomainCableDesign cdItem, 
@@ -290,7 +308,7 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
         
         if (newAssignment != null) {
             if (isInstalled != null && (newAssignment instanceof ItemDomainCableInventory) == false) {
-                throw new CdbException("Is installed can only be set for inventory assignments.");
+                throw new CdbException("Is installed can only be set for inventory assignments");
             }
 
             if (newAssignment instanceof ItemDomainCableInventory == false) {
@@ -316,7 +334,7 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 if (item instanceof ItemDomainCableDesign) {
                     // Allow updates for the same cable design item. 
                     if (!cdItem.equals(item)) {
-                        String exMessage = "Inventory item already assigned to cable design: " + item.toString();
+                        String exMessage = "Inventory item '" + assignedInventoryItem.getName() + "' already assigned to cable design: '" + item.toString() + "'";
                         if (item.getIsItemDeleted()) {
                             exMessage = exMessage + " (located in trash)";
                         }

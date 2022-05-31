@@ -219,17 +219,6 @@ public class MachineImportHelperCommon {
                 options);
     }
 
-    public static CustomColumnSpec locationColumnSpec(List<ColumnModeOptions> options) {
-        LocationHandler locationHandler = new LocationHandler();        
-        return new CustomColumnSpec(
-                HEADER_LOCATION,
-                "importLocationItemString",
-                "CDB ID of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored).",
-                "getExportLocation",
-                options,
-                locationHandler);
-    }
-    
     public static BooleanColumnSpec isTemplateColumnSpec(List<ColumnModeOptions> options) {
         return new BooleanColumnSpec(
                 HEADER_TEMPLATE,

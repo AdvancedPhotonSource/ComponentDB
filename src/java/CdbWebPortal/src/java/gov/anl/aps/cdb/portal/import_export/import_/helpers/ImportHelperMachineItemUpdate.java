@@ -113,9 +113,9 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
         specs.add(MachineImportHelperCommon.descriptionColumnSpec(ColumnModeOptions.oUPDATE()));
         specs.add(MachineImportHelperCommon.sortOrderColumnSpec(ColumnModeOptions.oUPDATE()));
         specs.add(MachineImportHelperCommon.assignedItemColumnSpec(ColumnModeOptions.oUPDATE()));
-        specs.add(MachineImportHelperCommon.locationColumnSpec(ColumnModeOptions.oUPDATE()));
-        specs.add(MachineImportHelperCommon.isInstalledColumnSpec(ColumnModeOptions.oUPDATE()));
+        specs.add(locationColumnSpec());
         specs.add(locationDetailsColumnSpec());
+        specs.add(MachineImportHelperCommon.isInstalledColumnSpec(ColumnModeOptions.oUPDATE()));
         specs.add(projectListColumnSpec());
         specs.add(ownerUserColumnSpec());
         specs.add(ownerGroupColumnSpec());

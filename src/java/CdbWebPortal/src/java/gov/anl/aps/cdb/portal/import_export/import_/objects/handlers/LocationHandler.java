@@ -6,12 +6,13 @@ package gov.anl.aps.cdb.portal.import_export.import_.objects.handlers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
+import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.RefObjectManager;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import java.util.Map;
 import org.apache.poi.ss.usermodel.Row;
 
@@ -26,8 +27,11 @@ import org.apache.poi.ss.usermodel.Row;
  */
 public class LocationHandler extends RefInputHandler {
 
+    public static final String HEADER_LOCATION = "Location";
+    public static final String KEY_LOCATION = "location";
+
     public LocationHandler() {
-        super(MachineImportHelperCommon.HEADER_LOCATION);
+        super(HEADER_LOCATION);
     }
 
     @Override
@@ -98,7 +102,7 @@ public class LocationHandler extends RefInputHandler {
                 }
                 
                 if (itemLocation != null) {
-                    rowMap.put(MachineImportHelperCommon.KEY_LOCATION, itemLocation);
+                    rowMap.put(KEY_LOCATION, itemLocation);
                 }
             }
         }
@@ -113,28 +117,45 @@ public class LocationHandler extends RefInputHandler {
         boolean isValid = true;
         String validString = "";
         
-        ItemDomainMachineDesign item = null;
-        if (!(entity instanceof ItemDomainMachineDesign)) {
+        LocatableItem item = null;
+        if (!(entity instanceof LocatableItem)) {
             isValid = false;
-            validString = "Item must be ItemDomainMachineDesign to use LocationHandler.";
+            validString = "Item must be LocatableItem to use LocationHandler.";
             return new ValidInfo(isValid, validString);
         } else {
-            item = (ItemDomainMachineDesign) entity;
+            item = (LocatableItem) entity;
         }
                 
-        // set location
-        ItemDomainLocation itemLocation = (ItemDomainLocation) rowMap.get(MachineImportHelperCommon.KEY_LOCATION);
-        if (itemLocation != null) {
-            item.setImportLocationItem(itemLocation);
-        }
+        ItemDomainLocation itemLocation = (ItemDomainLocation) rowMap.get(KEY_LOCATION);
+        ItemDomainLocation currentItemLocation = item.getImportLocationItem();
 
-        if ((item.getIsItemTemplate()) && (item.getImportLocationItem() != null)) {
+        if (itemLocation != null && (item.getIsItemTemplate())) {
             // template not allowed to have location
             isValid = false;
-            validString = "Template cannot have location item.";
+            validString = "Template item cannot have assigned location.";
             return new ValidInfo(isValid, validString);
         }
         
+        boolean changedLocation = 
+                (itemLocation != null && currentItemLocation == null) 
+                || (itemLocation == null && currentItemLocation != null) 
+                || (itemLocation != null && currentItemLocation != null && !itemLocation.getId().equals(currentItemLocation.getId()));
+        
+        if (changedLocation) {
+            
+            // check if we are allowed to change location
+            if (!LocatableItemController.getInstance().locationEditable(item)) {
+                isValid = false;
+                Item location = item.getActiveLocation();
+                validString
+                        = "Item location cannot be modified, it is part of "
+                        + location.getDomain().getName() + " item: " + location.getName();
+            }
+
+            // update location whether or not it's valid so it appears as a diff in validation table
+            item.setImportLocationItem(itemLocation);
+        }
+
         return new ValidInfo(isValid, validString);
     }
 

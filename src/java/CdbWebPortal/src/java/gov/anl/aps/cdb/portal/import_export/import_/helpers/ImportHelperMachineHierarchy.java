@@ -104,7 +104,7 @@ public class ImportHelperMachineHierarchy
         specs.add(MachineImportHelperCommon.assignedItemColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.assemblyPartColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.isInstalledColumnSpec(ColumnModeOptions.oCREATE()));
-        specs.add(MachineImportHelperCommon.locationColumnSpec(ColumnModeOptions.oCREATE()));
+        specs.add(locationColumnSpec());
         specs.add(locationDetailsColumnSpec());
         specs.add(MachineImportHelperCommon.isTemplateColumnSpec(ColumnModeOptions.rCREATE()));        
         specs.add(projectListColumnSpec());

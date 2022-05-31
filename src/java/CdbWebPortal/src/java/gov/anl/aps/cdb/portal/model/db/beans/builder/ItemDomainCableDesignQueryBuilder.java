@@ -17,9 +17,9 @@ import org.primefaces.model.SortOrder;
  */
 public class ItemDomainCableDesignQueryBuilder extends ItemQueryBuilder {
 
-    private static final String CATALOG_ITEM_FIELD_NAME = "catalogItemString";
+    private static final String CATALOG_ITEM_FIELD_NAME = "CableType";
     private static final String CATALOG_ITEM_ATTRIBUTE = "containedItem2.name"; 
-    private static final String CABLE_ENDPOINT_NAME = "endpointsString";
+    private static final String CABLE_ENDPOINT_NAME = "Endpoints";
     private static final String CONNECTION_DEVICE = "ConnectionDevice";
     private static final String CONNECTION_CONNECTED_DEVICES = "ConnectionConnectedDevices";
     private static final String CONNECTION_PORT = "ConnectionPort";
