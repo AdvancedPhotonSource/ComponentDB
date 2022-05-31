@@ -15,7 +15,9 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -38,13 +40,40 @@ public class MachineDesignConnectorListObject {
         // add entries for each cable relationship (connection to MD item)
         List<MachineDesignConnectorListObject> connections = new ArrayList<>();
         List<ItemElementRelationship> cableRelationshipList;
+        Map<String, MachineDesignConnectorListObject> connectorMap = new HashMap<>();
         cableRelationshipList = ItemUtility.getItemRelationshipList(
                 item, ItemElementRelationshipTypeNames.itemCableConnection.getValue(), true);
+        
         for (ItemElementRelationship cableRelationship : cableRelationshipList) {
-            MachineDesignConnectorListObject mdclo = new MachineDesignConnectorListObject();
-            mdclo.setCableRelationship(cableRelationship, item);
-            connections.add(mdclo);
+
+            MachineDesignConnectorListObject mdclo = null;
+            ItemConnector portConnector = cableRelationship.getFirstItemConnector();
+            if (portConnector != null) {
+                String connectorName = portConnector.getConnectorName();
+
+                // add entry for port's ItemConnector if not already in map (from a different cable connection to same port)
+                if (!connectorMap.containsKey(connectorName)) {
+                    mdclo = new MachineDesignConnectorListObject();
+                    mdclo.setItemConnector(portConnector);
+                    connectorMap.put(connectorName, mdclo);
+                    connections.add(mdclo);
+                }
+                
+                mdclo = connectorMap.get(connectorName);
+                
+            } else {
+                mdclo = new MachineDesignConnectorListObject();
+                connections.add(mdclo);
+            }
+            
+            ItemElement cableElement = cableRelationship.getSecondItemElement();
+            if (cableElement != null) {
+                ItemDomainCableDesign cable = (ItemDomainCableDesign) cableElement.getParentItem();
+                mdclo.setCableItem(cable);
+            }
         }
+        
+        // sort list of connections
         Comparator<MachineDesignConnectorListObject> connectionComparator
                 = Comparator
                         .comparing((MachineDesignConnectorListObject o) 
@@ -55,8 +84,30 @@ public class MachineDesignConnectorListObject {
                 .sorted(connectionComparator)
                 .collect(Collectors.toList());
         
-        // add entries for each synced connector, only includes connectors that are not already in use
         List<MachineDesignConnectorListObject> connectors = new ArrayList<>();
+        
+        // add entries for each synced connector that is not currently connected
+        // (this is a new case now that ports may have multiple connections)
+        List<ItemConnector> itemConnectors = item.getItemConnectorList();
+        if (itemConnectors != null) {
+            for (ItemConnector connector : itemConnectors) {
+                boolean nameInUse = false;
+                for (MachineDesignConnectorListObject connection : connections) {
+                    if (connector.getConnectorName().equals(connection.getConnectorName())) {
+                        nameInUse = true;
+                        break;
+                    }
+                }
+                if (!nameInUse) {
+                    // synced connector is not used in connection so add to list
+                    MachineDesignConnectorListObject mdclo = new MachineDesignConnectorListObject();
+                    mdclo.setItemConnector(connector);
+                    connectors.add(mdclo);
+                }
+            }
+        }
+        
+        // add entries for each synced connector, only includes connectors that are not already in use
         List<ItemConnector> syncedConnectors = item.getSyncedConnectorList();
         if (syncedConnectors != null) {
             for (ItemConnector itemConnector : syncedConnectors) {
@@ -65,6 +116,8 @@ public class MachineDesignConnectorListObject {
                 connectors.add(mdclo);
             }
         }
+        
+        // sort list of connectors
         Comparator<MachineDesignConnectorListObject> connectorComparator
                 = Comparator
                         .comparing((MachineDesignConnectorListObject o) 
@@ -130,6 +183,10 @@ public class MachineDesignConnectorListObject {
 
     public ItemDomainCableDesign getCableItem() {
         return cableItem;
+    }
+    
+    public void setCableItem(ItemDomainCableDesign cable) {
+        this.cableItem = cable;
     }
     
     public String getCableName() {

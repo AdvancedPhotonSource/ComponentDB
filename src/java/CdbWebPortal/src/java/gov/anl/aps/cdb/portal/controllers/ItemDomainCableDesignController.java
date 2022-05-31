@@ -418,30 +418,9 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     
                 } else {
                     if ((selectedMdConnector != null) && (!selectedMdConnector.equals(origMdConnector))) {
-                        boolean hasCableRelationships = false;
-                        List<ItemElementRelationship> ierList
-                                = selectedMdConnector.getItemElementRelationshipList();
-                        if (ierList != null) {
-                            // find just the cable relationship items
-                            RelationshipType cableIerType
-                                    = RelationshipTypeFacade.getInstance().findByName(
-                                            ItemElementRelationshipTypeNames.itemCableConnection.getValue());
-                            if (cableIerType != null) {
-                                ierList = ierList.stream().
-                                        filter(ier -> ier.getRelationshipType().getName().equals(cableIerType.getName())).
-                                        collect(Collectors.toList());
-                                if (!ierList.isEmpty()) {
-                                    // cable is in use for other cable relationships
-                                    hasCableRelationships = true;
-                                }
-                            }
-                        }
-                        if (hasCableRelationships) {
-                            disableSaveButton = true;
-                            warnings.add("Selected device port is already in use for cable connection.");
-                        } else {
-                            messages.add("Selected device and device port are valid.");
-                        }
+                        // removed check that the new connector didn't already have cable connections,
+                        // ned wants to allow multiple connections to same port
+                        messages.add("Selected device and device port are valid.");
                     } else if ((selectedMdItem != null) 
                             && ((!selectedMdItem.equals(origMdItem)) 
                                 || ((selectedMdItem.equals(origMdItem)) && (selectedMdConnector == null)))) {

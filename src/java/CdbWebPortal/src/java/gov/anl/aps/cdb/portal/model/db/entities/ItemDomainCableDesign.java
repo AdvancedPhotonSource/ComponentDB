@@ -332,14 +332,6 @@ public class ItemDomainCableDesign extends Item {
         // update endpoint
         cableRelationship.setFirstItemElement(newItemElement);
         
-        // delete original connector if updating to new one
-        ItemConnector origEndpointConnector = cableRelationship.getFirstItemConnector();
-        if ((origEndpointConnector != null) 
-                && ((endpointConnector == null) || (!endpointConnector.getConnector().getName().equals(origEndpointConnector.getConnector().getName())))) {
-            connectorPersistenceOwner.getDeletedConnectorList().add(origEndpointConnector);
-            itemEndpoint.getItemConnectorList().remove(origEndpointConnector);
-        }
-        
         // update endpoint port
         cableRelationship.setFirstItemConnector(endpointConnector);
         
@@ -507,9 +499,6 @@ public class ItemDomainCableDesign extends Item {
                     if (endpointConnector == null) {
                         isValid = false;
                         validString = validString + "Port: " + endpointConnectorName + " does not exist for specified machine item: " + itemEndpoint.getName() + ".";
-                    } else if (endpointConnector.isConnected()) {
-                        isValid = false;
-                        validString = validString + "Port: " + endpointConnectorName + " is already connected for specified machine item: " + itemEndpoint.getName() + ".";
                     }
                 }
             }
@@ -533,9 +522,6 @@ public class ItemDomainCableDesign extends Item {
                     if (cableConnector == null) {
                         isValid = false;
                         validString = validString + "Cable connector: " + cableConnectorName + " does not exist for specified cable/cable type.";
-                    } else if (cableConnector.isConnected()) {
-                        isValid = false;
-                        validString = validString + "Cable connector: " + cableConnectorName + " is already connected.";
                     } 
                 }
                 if ((cableConnector != null) && (!cableConnector.getConnector().getCableEndDesignation().equals(cableEnd))) {
