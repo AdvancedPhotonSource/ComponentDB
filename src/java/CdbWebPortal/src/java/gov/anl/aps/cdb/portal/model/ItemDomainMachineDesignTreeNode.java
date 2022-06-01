@@ -156,12 +156,14 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
                     }
 
                     if (getConfig().isShowCables()) {
-                        ItemDomainCableDesign cableItem = connObj.getCableItem();
-                        if (cableItem != null) {
-                            if (connectorNode != null) {
-                                connectorNode.createChildNode(cableItem);
-                            } else {
-                                createChildNode(cableItem);
+                        List<ItemDomainCableDesign> cableConnections = connObj.getConnectedCables();
+                        for (ItemDomainCableDesign cableItem : cableConnections) {
+                            if (cableItem != null) {
+                                if (connectorNode != null) {
+                                    connectorNode.createChildNode(cableItem);
+                                } else {
+                                    createChildNode(cableItem);
+                                }
                             }
                         }
                     }

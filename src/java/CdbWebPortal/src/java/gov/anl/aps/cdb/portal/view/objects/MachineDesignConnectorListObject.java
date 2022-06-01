@@ -16,8 +16,10 @@ import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -27,8 +29,8 @@ import java.util.stream.Collectors;
 public class MachineDesignConnectorListObject {
 
     private ItemConnector itemConnector;
-    private ItemDomainCableDesign cableItem;
-    private List<ItemDomainMachineDesign> connectedToItemsList = new ArrayList<>();
+    private List<ItemDomainCableDesign> connectedCables = new ArrayList<>();
+    private Set<Item> connectedItems = new HashSet<>();
     private String connectedToItemsString;
     private ItemElementRelationship cableRelationship;
 
@@ -69,7 +71,7 @@ public class MachineDesignConnectorListObject {
             ItemElement cableElement = cableRelationship.getSecondItemElement();
             if (cableElement != null) {
                 ItemDomainCableDesign cable = (ItemDomainCableDesign) cableElement.getParentItem();
-                mdclo.setCableItem(cable);
+                mdclo.addCableConnection(cable);
             }
         }
         
@@ -79,7 +81,7 @@ public class MachineDesignConnectorListObject {
                         .comparing((MachineDesignConnectorListObject o) 
                                 -> o.getConnectorName())
                         .thenComparing(o -> o.getConnectedToItemsString())  
-                        .thenComparing(o -> o.getCableName());    
+                        .thenComparing(o -> o.getConnectedCablesString());    
         connections = connections.stream()
                 .sorted(connectionComparator)
                 .collect(Collectors.toList());
@@ -135,40 +137,90 @@ public class MachineDesignConnectorListObject {
     private void setItemConnector(ItemConnector itemConnector) {
         this.itemConnector = itemConnector;
     }
-
-    private void setCableRelationship(ItemElementRelationship cablRelationship, ItemDomainMachineDesign currentItem) {
-        this.cableRelationship = cablRelationship;
-        ItemConnector firstItemConnector = cablRelationship.getFirstItemConnector();
-        this.itemConnector = firstItemConnector;
-        String itemNames = "";
-
-        ItemElement cableElement = cablRelationship.getSecondItemElement();
-        if (cableElement != null) {
-            ItemDomainCableDesign parentItem = (ItemDomainCableDesign) cableElement.getParentItem();
-            this.cableItem = parentItem;
-
-            // create list of endpoint items and string of item names for use in connections table
-            List<Item> endpointList = this.cableItem.getEndpointList();
-            boolean first = true;
-            for (Item endpoint : endpointList) {
-                if (endpoint != null) {
-                    if (endpoint.equals(currentItem)) {
-                        continue;
-                    } else {
-                        if (first) {
-                            first = false;
-                        } else {
-                            itemNames = itemNames + " | ";
-                        }
-                        this.connectedToItemsList.add((ItemDomainMachineDesign) endpoint);
-                        itemNames = itemNames + endpoint.getName();
-                    }
-                }
+    
+    private void addCableConnection(ItemDomainCableDesign cable) {
+        
+        // add cable to list of connected cables
+        for (ItemDomainCableDesign currentConnection : connectedCables) {
+            // skip this cable if already in list of connected cables
+            if (currentConnection.getId().equals(cable.getId())) {
+                return;
             }
+        }
+        this.connectedCables.add(cable);     
+        
+        // update collection of endpoints
+        List<Item> endpointList = cable.getEndpointList();
+        boolean first = true;
+        this.connectedItems.addAll(endpointList);
+        this.updateConnectedItemsString();
+    }
+    
+    private void updateConnectedItemsString() {
+        boolean first = true;
+        String itemNames = "";
+        for (Item endpoint : this.connectedItems) {
+            if (first) {
+                first = false;
+            } else {
+                itemNames = itemNames + " | ";
+            }
+            itemNames = itemNames + endpoint.getName();
         }
         this.connectedToItemsString = itemNames;
     }
+    
+    public List<ItemDomainCableDesign> getConnectedCables() {
+        return connectedCables;
+    }
+    
+    public String getConnectedCablesString() {
+        String result = "";
+        boolean first = true;
+        for (ItemDomainCableDesign cable : connectedCables) {
+            if (!first) {
+                result = result + " | ";
+            } else {
+                first = false;
+            }
+            result = result + cable.getName();
+        }
+        return result;
+    }
 
+//    private void setCableRelationship(ItemElementRelationship cablRelationship, ItemDomainMachineDesign currentItem) {
+//        this.cableRelationship = cablRelationship;
+//        ItemConnector firstItemConnector = cablRelationship.getFirstItemConnector();
+//        this.itemConnector = firstItemConnector;
+//        String itemNames = "";
+//
+//        ItemElement cableElement = cablRelationship.getSecondItemElement();
+//        if (cableElement != null) {
+//            ItemDomainCableDesign parentItem = (ItemDomainCableDesign) cableElement.getParentItem();
+//            this.cableItem = parentItem;
+//
+//            // create list of endpoint items and string of item names for use in connections table
+//            List<Item> endpointList = this.cableItem.getEndpointList();
+//            boolean first = true;
+//            for (Item endpoint : endpointList) {
+//                if (endpoint != null) {
+//                    if (endpoint.equals(currentItem)) {
+//                        continue;
+//                    } else {
+//                        if (first) {
+//                            first = false;
+//                        } else {
+//                            itemNames = itemNames + " | ";
+//                        }
+//                        this.connectedToItemsList.add((ItemDomainMachineDesign) endpoint);
+//                        itemNames = itemNames + endpoint.getName();
+//                    }
+//                }
+//            }
+//        }
+//        this.connectedToItemsString = itemNames;
+//    }
+//
     public ItemConnector getItemConnector() {
         return itemConnector;
     }
@@ -179,26 +231,6 @@ public class MachineDesignConnectorListObject {
         } else {
             return "";
         }
-    }
-
-    public ItemDomainCableDesign getCableItem() {
-        return cableItem;
-    }
-    
-    public void setCableItem(ItemDomainCableDesign cable) {
-        this.cableItem = cable;
-    }
-    
-    public String getCableName() {
-        if (cableItem != null) {
-            return cableItem.getName();
-        } else {
-            return "";
-        }
-    }
-    
-    public List<ItemDomainMachineDesign> getConnectedToItemsList() {
-        return connectedToItemsList;
     }
 
     public String getConnectedToItemsString() {
