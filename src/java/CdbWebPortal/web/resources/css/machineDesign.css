@@ -151,7 +151,7 @@ h1 {
 }
 
 /* Add a sticky header for machine design list pages. Built in primefaces 'sticky-header' feature has issues with header positioning. */
-itemMachineDesignListDataTable_head {
+#itemMachineDesignListForm\:itemMachineDesignListDataTable_head {
     z-index: 1;
     position: sticky;
     top: 0;
