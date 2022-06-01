@@ -19,6 +19,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -156,7 +157,7 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
                     }
 
                     if (getConfig().isShowCables()) {
-                        List<ItemDomainCableDesign> cableConnections = connObj.getConnectedCables();
+                        Set<ItemDomainCableDesign> cableConnections = connObj.getConnectedCables();
                         for (ItemDomainCableDesign cableItem : cableConnections) {
                             if (cableItem != null) {
                                 if (connectorNode != null) {
