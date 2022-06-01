@@ -4,7 +4,6 @@
  */
 package gov.anl.aps.cdb.portal.view.objects;
 
-import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
@@ -20,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -29,10 +29,24 @@ import java.util.stream.Collectors;
 public class MachineDesignConnectorListObject {
 
     private ItemConnector itemConnector;
-    private List<ItemDomainCableDesign> connectedCables = new ArrayList<>();
-    private Set<Item> connectedItems = new HashSet<>();
+    
+    private Set<ItemDomainCableDesign> connectedCables = new TreeSet<>(new Comparator<ItemDomainCableDesign>() {
+        @Override
+        public int compare(ItemDomainCableDesign o1, ItemDomainCableDesign o2) {
+            // Define comparing logic here
+            return o1.getName().compareTo(o2.getName());
+        }
+    });
+    
+    private Set<Item> connectedItems = new TreeSet<>(new Comparator<Item>() {
+        @Override
+        public int compare(Item o1, Item o2) {
+            // Define comparing logic here
+            return o1.getName().compareTo(o2.getName());
+        }
+    });
+    
     private String connectedToItemsString;
-    private ItemElementRelationship cableRelationship;
 
     public MachineDesignConnectorListObject() {
     }
@@ -138,6 +152,36 @@ public class MachineDesignConnectorListObject {
         this.itemConnector = itemConnector;
     }
     
+    public ItemConnector getItemConnector() {
+        return itemConnector;
+    }
+    
+    public String getConnectorName() {
+        if ((itemConnector != null) && (itemConnector.getConnector() != null)) {
+            return itemConnector.getConnector().getName();
+        } else {
+            return "";
+        }
+    }
+
+    public Set<ItemDomainCableDesign> getConnectedCables() {
+        return connectedCables;
+    }
+    
+    public String getConnectedCablesString() {
+        String result = "";
+        boolean first = true;
+        for (ItemDomainCableDesign cable : connectedCables) {
+            if (!first) {
+                result = result + " | ";
+            } else {
+                first = false;
+            }
+            result = result + cable.getName();
+        }
+        return result;
+    }
+
     private void addCableConnection(ItemDomainCableDesign cable) {
         
         // add cable to list of connected cables
@@ -156,6 +200,10 @@ public class MachineDesignConnectorListObject {
         this.updateConnectedItemsString();
     }
     
+    public Set<Item> getConnectedItems() {
+        return this.connectedItems;
+    }
+    
     private void updateConnectedItemsString() {
         boolean first = true;
         String itemNames = "";
@@ -170,75 +218,8 @@ public class MachineDesignConnectorListObject {
         this.connectedToItemsString = itemNames;
     }
     
-    public List<ItemDomainCableDesign> getConnectedCables() {
-        return connectedCables;
-    }
-    
-    public String getConnectedCablesString() {
-        String result = "";
-        boolean first = true;
-        for (ItemDomainCableDesign cable : connectedCables) {
-            if (!first) {
-                result = result + " | ";
-            } else {
-                first = false;
-            }
-            result = result + cable.getName();
-        }
-        return result;
-    }
-
-//    private void setCableRelationship(ItemElementRelationship cablRelationship, ItemDomainMachineDesign currentItem) {
-//        this.cableRelationship = cablRelationship;
-//        ItemConnector firstItemConnector = cablRelationship.getFirstItemConnector();
-//        this.itemConnector = firstItemConnector;
-//        String itemNames = "";
-//
-//        ItemElement cableElement = cablRelationship.getSecondItemElement();
-//        if (cableElement != null) {
-//            ItemDomainCableDesign parentItem = (ItemDomainCableDesign) cableElement.getParentItem();
-//            this.cableItem = parentItem;
-//
-//            // create list of endpoint items and string of item names for use in connections table
-//            List<Item> endpointList = this.cableItem.getEndpointList();
-//            boolean first = true;
-//            for (Item endpoint : endpointList) {
-//                if (endpoint != null) {
-//                    if (endpoint.equals(currentItem)) {
-//                        continue;
-//                    } else {
-//                        if (first) {
-//                            first = false;
-//                        } else {
-//                            itemNames = itemNames + " | ";
-//                        }
-//                        this.connectedToItemsList.add((ItemDomainMachineDesign) endpoint);
-//                        itemNames = itemNames + endpoint.getName();
-//                    }
-//                }
-//            }
-//        }
-//        this.connectedToItemsString = itemNames;
-//    }
-//
-    public ItemConnector getItemConnector() {
-        return itemConnector;
-    }
-    
-    public String getConnectorName() {
-        if ((itemConnector != null) && (itemConnector.getConnector() != null)) {
-            return itemConnector.getConnector().getName();
-        } else {
-            return "";
-        }
-    }
-
     public String getConnectedToItemsString() {
         return connectedToItemsString;
-    }
-
-    public ItemElementRelationship getCableRelationship() {
-        return cableRelationship;
     }
 
 }

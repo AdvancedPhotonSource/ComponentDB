@@ -40,31 +40,32 @@ See LICENSE file.
 
     <ui:param name="itemConnectorObject"
               value="#{mdConnectorListForCurrent.itemConnector}"/> 
-    <ui:param name="connectedToItems"
-              value="#{mdConnectorListForCurrent.connectedToItemsString}"/>
-    <ui:param name="connectedViaItem"
-              value="#{mdConnectorListForCurrent.connectedCablesString}"/>
-
     <ui:include src="../../itemConnector/private/itemConnectorListObject.xhtml" />
-
+    
     <p:column headerText="Connected to">
-        #{connectedToItems}
-    </p:column>
-
-    <ui:remove>
-        <p:column headerText="Connected via"
-                  exportFunction="#{facesUtility.getToString(connectedViaItem)}"> 
+        <ui:repeat value="#{mdConnectorListForCurrent.connectedItems}"
+                   var="connectedItem">
             <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
                 <ui:param name="itemObject"
-                          value="#{connectedViaItem}"/>
+                          value="#{connectedItem}"/>
                 <ui:param name="viewName"
-                          value="connVia"/>
+                          value="connectedItems"/>
             </ui:include>                    
-        </p:column>
-    </ui:remove>
+            <br />
+        </ui:repeat>
+    </p:column>
 
-    <p:column headerText="Connected via"> 
-        #{connectedViaItem}
+    <p:column headerText="Connected via">
+        <ui:repeat value="#{mdConnectorListForCurrent.connectedCables}"
+                   var="connectedCable">
+            <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="itemObject"
+                          value="#{connectedCable}"/>
+                <ui:param name="viewName"
+                          value="connectedCables"/>
+            </ui:include>                    
+            <br />
+        </ui:repeat>
     </p:column>
 
 </ui:composition>
