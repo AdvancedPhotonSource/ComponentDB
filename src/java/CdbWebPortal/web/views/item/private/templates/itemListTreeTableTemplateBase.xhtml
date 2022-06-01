@@ -35,6 +35,7 @@ See LICENSE file.
                  value="#{itemListActualTreeTableValue}"
                  var="itemElementObject"                 
                  liveResize="true"
+                 styleClass="sticky-header-tree-table"
                  emptyMessage="No #{displayEntityTypeName}s found.">
         
         <p:ajax event="filter" onstart="prepareItemTreeFilter();"/>        

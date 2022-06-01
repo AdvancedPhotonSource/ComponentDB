@@ -35,7 +35,7 @@ See LICENSE file.
                  selection="#{dataTableSelectionList}"                 
                  rowKey="#{itemListObject.viewUUID}"
                  stripedRows="true"
-                 sortMode="single"                 
+                 sortMode="single"             
                  value="#{itemListDataTableValue}"    
                  sortBy="#{entitySettingObject.dataTableSortMeta}"
                  lazy="#{itemListDataTableLazy}"
@@ -46,6 +46,7 @@ See LICENSE file.
                  liveResize="true"
                  paginator="true" 
                  paginatorAlwaysVisible="#{itemListDataTablePaginatorAlwaysVisible}" 
+                 styleClass="sticky-header-data-table"
                  emptyMessage="No #{displayEntityTypeName}s found.">
         
         <ui:insert name="selectionColumn" />                
