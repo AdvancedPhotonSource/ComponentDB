@@ -679,6 +679,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         private Boolean disableButtonSave = true;
         private ItemDomainCableInventory itemInventory = null;
+        private ItemDomainCableCatalog itemCatalog = null;
         private ItemDomainCableInventory selectionModelInventory = null;
         private Boolean inventoryIsInstalled = null;
         private Boolean selectionModelIsInstalled = null;
@@ -698,6 +699,14 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         public void setItemInventory(ItemDomainCableInventory itemInventory) {
             this.itemInventory = itemInventory;
             selectInventoryItem(itemInventory);
+        }
+
+        public void setItemCatalog(ItemDomainCableCatalog itemCatalog) {
+            this.itemCatalog = itemCatalog;
+        }
+        
+        public ItemDomainCableCatalog getItemCatalog() {
+            return this.itemCatalog;
         }
 
         public String getItemInventoryString() {
@@ -795,9 +804,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     || ((selectionModelIsInstalled != null) && (!selectionModelIsInstalled.equals(getInventoryIsInstalled())));
 
             if (changedInventory || changedInstalledStatus) {
-                                
+                
                 Boolean installationStatus = selectionModelIsInstalled;
-                ItemDomainCableInventory origInventoryItem = getItemInventory();
                 Item assignedItem = selectionModelInventory;
                 
                 if (selectionModelInventory == null) {
@@ -807,11 +815,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                         installationStatus = null;
                     }
                     
-                    // if changing from assigned inventory to null inventory, use catalog item for assigned item
-                    // so we don't lose cable type
-                    if (origInventoryItem != null) {
-                        assignedItem = origInventoryItem.getCatalogItem();
-                    }
+                    assignedItem = getItemCatalog();
                 }
                 
                 UserInfo user = SessionUtility.getUser();
@@ -925,6 +929,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public void prepareDialogInventory() {
         dialogInventory.reset();
         dialogInventory.setItemInventory(getCurrent().getInventoryItem());
+        dialogInventory.setItemCatalog(getCurrent().getCatalogItem());
         dialogInventory.setInventoryIsInstalled(getCurrent().isIsHoused());
     }
 
