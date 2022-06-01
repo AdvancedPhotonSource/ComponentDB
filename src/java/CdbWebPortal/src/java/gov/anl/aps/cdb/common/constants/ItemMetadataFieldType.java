@@ -12,7 +12,8 @@ public enum ItemMetadataFieldType {
 
     STRING("string"),
     NUMERIC("numeric"),
-    URL("url");
+    URL("url"),
+    URLLIST("urlList");
 
     private final String type;
 
@@ -36,6 +37,9 @@ public enum ItemMetadataFieldType {
                 break;
             case "url":
                 fieldType = URL;
+                break;
+            case "urlList":
+                fieldType = URLLIST;
                 break;
         }
         return fieldType;

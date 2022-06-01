@@ -2442,7 +2442,7 @@ class CableSpecsSheetHelper(InputSheetHelper):
         max_column = cable_specs_sheet.max_column
         col_ind = 1
         tech_system_row_ind = 0
-        for row_ind in range(11, max_row+1):
+        for row_ind in range(10, max_row+1):
             cell_value = cable_specs_sheet.cell(row_ind, col_ind).value
             if technical_system == str(cell_value):
                 tech_system_row_ind = row_ind
