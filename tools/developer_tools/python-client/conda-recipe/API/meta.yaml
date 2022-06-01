@@ -1,5 +1,5 @@
 {% set name = "ComponentDB-API" %}
-{% set version = "3.14.1.dev2" %}
+{% set version = "3.14.1.dev3" %}
 
 package:
   name: "{{ name|lower }}"  
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 0b2a5679e98fd89fbe587ec0f59f4c7bd25d9ab4221378788db867668fdbb2dc
+  sha256: c0b0f4f7e782ad00a12d7c37accad10f65137d69a32bfcd984ab8103e40368ed
 
 build:
   number: 0

@@ -1541,3 +1541,14 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
 .ui-datatable-resizable thead th, .ui-datatable-resizable tbody td, .ui-datatable-resizable tfoot td {
     white-space: normal;
 }
+
+/* Add a sticky header for list pages. Built in primefaces 'sticky-header' feature has issues with header positioning. */
+.sticky-header-data-table {
+    overflow: visible; 
+}
+
+.sticky-header-data-table thead, .sticky-header-tree-table thead {
+    z-index: 1;
+    position: sticky;
+    top: 0;
+}
