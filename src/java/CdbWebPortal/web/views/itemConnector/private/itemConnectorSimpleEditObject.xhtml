@@ -26,7 +26,7 @@ See LICENSE file.
         </p:outputLabel>
     </p:column>   
     <p:column>
-        <p:selectOneButton value="#{currentItemConnector.connector.cableEndDesignation}"
+        <p:selectOneButton value="#{entityController.cableEndDesignationEditValue}"
                            disabled="#{disabled}"
                            rendered="#{entityController.entityDisplayConnectorCableEndDesignation}">
             <p:ajax oncomplete="#{onChangeConnector}" />
