@@ -83,6 +83,9 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     @JoinColumn(name = "first_item_element_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ItemElement firstItemElement;
+    // craig changed firstItemConnector from CascadeType.ALL to the list of all types except REMOVE,
+    // since we don't want to delete the machine design ItemConnector when deleting a cable relationship
+    // because that same ItemConnector might be in use for another cable connection.
     @JoinColumn(name = "first_item_connector_id", referencedColumnName = "id")
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private ItemConnector firstItemConnector;
