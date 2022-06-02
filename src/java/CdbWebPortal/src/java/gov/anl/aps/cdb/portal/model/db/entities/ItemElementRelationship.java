@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementRelationshipControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import java.io.Serializable;
@@ -87,7 +88,7 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     // since we don't want to delete the machine design ItemConnector when deleting a cable relationship
     // because that same ItemConnector might be in use for another cable connection.
     @JoinColumn(name = "first_item_connector_id", referencedColumnName = "id")
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private ItemConnector firstItemConnector;
     @Column(name = "first_sort_order")
     private Float firstSortOrder;
@@ -118,6 +119,7 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     private transient String importFirstItemConnectorName;
     private transient String importSecondItemConnectorName;
     private transient Boolean importPrimaryCableConnection;
+    private transient String importCableEnd = null;
 
     public ItemElementRelationship() {
     }
@@ -434,5 +436,17 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
         this.importSecondItemConnectorName = importSecondItemConnectorName;
     }
     
+    @JsonIgnore
+    public String getImportCableEnd() {
+        if (importCableEnd == null) {
+            importCableEnd = getCableEndDesignation();
+        }
+        return importCableEnd;
+    }
+
+    public void setImportCableEnd(String cableEnd) {
+        this.importCableEnd = cableEnd;
+    }
+
     // </editor-fold>   
 }

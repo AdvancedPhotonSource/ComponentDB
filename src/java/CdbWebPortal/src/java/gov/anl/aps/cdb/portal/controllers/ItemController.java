@@ -1101,19 +1101,10 @@ public abstract class ItemController<
 
     }
 
-    /**
-     * Initializes new instance of ItemConnector. Subclasses override to
-     * customize.
-     */
-    protected void initializeItemConnector(ItemConnector itemConnector) {
-    }
-
-    public final void prepareAddItemConnector(Item item) {
+    public void prepareAddItemConnector(Item item) {
         if (item != null) {
             UserInfo user = SessionUtility.getUser();
             ItemConnector itemConnector = getControllerUtility().prepareAddItemConnector(item, user);
-            initializeItemConnector(itemConnector);
-
             ItemConnectorController itemConnectorController = ItemConnectorController.getInstance();
             itemConnectorController.setCurrent(itemConnector);
         }
