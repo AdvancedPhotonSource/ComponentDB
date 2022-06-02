@@ -306,8 +306,8 @@ public class ItemConnector extends CdbEntity implements Serializable {
         return getConnector().getCableEndDesignation();
     }
     
-    public void setCableEndDesignation(String cableEnd) {
-        getConnector().setCableEndDesignation(cableEnd);
+    public void setCableEndDesignation(String cableEnd, UserInfo ownerUser) {
+        getConnector().setCableEndDesignation(cableEnd, ownerUser);
     }
     
     @JsonIgnore
@@ -384,7 +384,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
         }
         
         conn.setName(connectorName);
-        conn.setCableEndDesignation(cableEnd);
+        conn.setCableEndDesignation(cableEnd, this.getItem().getOwnerUser());
         conn.setDescription(connectorDesc);
         conn.setConnectorType(connectorType);        
     }

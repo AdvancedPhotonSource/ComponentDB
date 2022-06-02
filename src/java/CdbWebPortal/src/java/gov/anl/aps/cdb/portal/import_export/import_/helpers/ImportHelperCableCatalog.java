@@ -57,7 +57,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
         
         specs.add(new StringColumnSpec(
                 "Documentation URL", 
-                "urlDisplay", 
+                "url", 
                 "setUrl", 
                 "Raw URL for documentation pdf file, e.g., http://www.example.com/documentation.pdf", 
                 "getUrl",
@@ -66,7 +66,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
         
         specs.add(new StringColumnSpec(
                 "Image URL", 
-                "imageUrlDisplay", 
+                "imageUrl", 
                 "setImageUrl", 
                 "Raw URL for image file, e.g., http://www.example.com/image.jpg", 
                 "getImageUrl",

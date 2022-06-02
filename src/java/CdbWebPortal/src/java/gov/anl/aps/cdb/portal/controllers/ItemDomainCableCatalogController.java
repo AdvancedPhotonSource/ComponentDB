@@ -113,10 +113,6 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         return new ItemDomainCableCatalogControllerUtility(); 
     }
     
-    protected void initializeItemConnector(ItemConnector itemConnector) {
-        itemConnector.getConnector().setCableEndDesignation(CdbEntity.DEFAULT_CABLE_END_DESIGNATION);
-    }
-
     @Override
     protected ValidInfo validateItemConnector_(boolean isUpdate, ItemConnector itemConnector) {
         

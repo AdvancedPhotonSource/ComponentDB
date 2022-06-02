@@ -31,7 +31,7 @@ public class ImportHelperCableDesignConnections
         extends ImportHelperBase<ItemElementRelationship, ItemElementRelationshipController> {
     
     private static final String KEY_CABLE_ITEM = "importSecondItem";
-    private static final String KEY_CABLE_END = "cableEndDesignation";
+    private static final String KEY_CABLE_END = "importCableEnd";
     private static final String KEY_IS_PRIMARY = "importPrimaryCableConnection";
     private static final String KEY_MACHINE_ITEM = "importFirstItem";
     private static final String KEY_PORT_NAME = "importFirstItemConnectorName";
@@ -65,9 +65,9 @@ public class ImportHelperCableDesignConnections
         specs.add(new StringColumnSpec(
                 LABEL_CABLE_END,
                 KEY_CABLE_END,
-                "setCableEndDesignation",
+                "setImportCableEnd",
                 "Specifies end of cable for connection, legal values are 1 and 2.",
-                "getCableEndDesignation",
+                "getImportCableEnd",
                 ColumnModeOptions.rCREATErUPDATE(),
                 0));
         
@@ -189,17 +189,6 @@ public class ImportHelperCableDesignConnections
             validStr = appendToString(validStr, "Invalid cable end value: " + cableEnd);
         }
 
-        // check if port name is in use within spreadsheet
-        if ((machineItemPortName != null) && (!machineItemPortName.isEmpty())) {
-            if (nameInUse(machineItem, machineItemPortName)) {
-                isValid = false;
-                validStr = appendToString(
-                        validStr,
-                        "Duplicate use of port name: "
-                        + machineItemPortName + " for same machine item in spreadsheet.");
-            }
-        }
-
         // check if connector name is in use within spreadsheet
         if ((cableConnectorName != null) && (!cableConnectorName.isEmpty())) {
             if (nameInUse(cableDesignItem, cableConnectorName)) {
@@ -302,9 +291,6 @@ public class ImportHelperCableDesignConnections
         if (connectionRelationship != null) {
 
             // update data structures for checking duplicate names            
-            if ((machineItemPortName != null) && (!machineItemPortName.isEmpty())) {
-                addNameInUse(machineItem, machineItemPortName);
-            }
             if ((cableConnectorName != null) && (!cableConnectorName.isEmpty())) {
                 addNameInUse(cableDesignItem, cableConnectorName);
             }
@@ -313,7 +299,7 @@ public class ImportHelperCableDesignConnections
             if (!isValid) {
                 connectionRelationship.setImportSecondItem(cableDesignItem);
                 connectionRelationship.setImportFirstItem(machineItem);
-                connectionRelationship.setCableEndDesignation(cableEnd);
+                connectionRelationship.setCableEndDesignation(cableEnd, cableDesignItem.getOwnerUser());
                 connectionRelationship.setImportFirstItemConnectorName(machineItemPortName);
                 connectionRelationship.setImportSecondItemConnectorName(cableConnectorName);
             }

@@ -17,6 +17,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.ItemLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
@@ -46,7 +47,9 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
     private final String DERIVED_DOMAIN_NAME = "Inventory";
 
     private static final Logger logger = LogManager.getLogger(ItemDomainCatalogBaseController.class.getName());
-
+    
+    private String cableEndDesignationEditValue = null;
+    
     public abstract String getControllerName();
 
     @Override
@@ -366,7 +369,21 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
 
         return new ValidInfo(isValid, validStr);
     }
+    
+    public void setCableEndDesignationEditValue(String value) {
+        cableEndDesignationEditValue = value;
+    }
+    
+    public String getCableEndDesignationEditValue() {
+        return cableEndDesignationEditValue;
+    }
 
+    @Override
+    public void prepareAddItemConnector(Item item) {
+        cableEndDesignationEditValue = CdbEntity.DEFAULT_CABLE_END_DESIGNATION;
+        super.prepareAddItemConnector(item);
+    }
+    
     /**
      * Handles save button for itemConnectorListCreateDialog.
      */
@@ -374,6 +391,11 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
 
         ItemConnectorController controller = ItemConnectorController.getInstance();
         ItemConnector newConnector = controller.getCurrent();
+        
+        String cableEndDesignation = getCableEndDesignationEditValue();
+        if (cableEndDesignation != null) {
+            newConnector.setCableEndDesignation(cableEndDesignation, newConnector.getItem().getOwnerUser());
+        }
 
         // validate new connector
         ValidInfo validateInfo = validateItemConnector(false, newConnector);
