@@ -36,10 +36,15 @@ See LICENSE file.
         <ui:param name="enableDragDropToMoveMD" value="#{entityController.currentViewIsStandard}"/> 
         <ui:param name="scrollable" value="#{dualConfigurationViewEnabled}" />        
 
-        <ui:define name="treeTableEvents">
-            <p:ajax event="select"                    
+        <ui:define name="treeTableEvents">            
+            <p:ajax event="select"
+                    disabled="#{entityController.displayListViewItemDetailsView}"
                     oncomplete="showLastContextMenu()"
                     update="@form:machineDesignDualViewContextMenuPermissions" />
+            
+            <p:ajax event="select"      
+                    disabled="#{!entityController.displayListViewItemDetailsView}"
+                    onstart="PF('loadingDialog').show(); showDetailsForNewSelection();"/>
 
             <!--Saves the collapse status for tree nodes. Seems its a bug in primefaces that this is needed.-->
             <p:ajax event="collapse" /> 
@@ -47,6 +52,10 @@ See LICENSE file.
         </ui:define>
 
     </ui:decorate>
+    
+    <p:remoteCommand name="showDetailsForNewSelection"
+                     action="#{entityController.showDetailsForCurrentSelectedTreeNode()}" /> 
+              
 
     <ui:include src="../itemDomainMachineDesignDualColumnListViewTreeBlockUI.xhtml" />
 
