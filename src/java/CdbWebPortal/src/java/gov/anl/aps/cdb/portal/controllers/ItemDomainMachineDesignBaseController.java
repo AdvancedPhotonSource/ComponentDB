@@ -581,6 +581,16 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         prepareAddNewMachineDesignListConfiguration();
         displayAddMDMoveExistingConfigurationPanel = true;
     }
+    
+    public boolean isDisplayDualViewBlockUI () {
+        if (displayListConfigurationView) {
+            if (!displayListViewItemDetailsView) {
+                return true; 
+            }
+        }
+        
+        return false; 
+    }
 
     public boolean isDisplayFollowInstructionOnRightOnBlockUI() {
         return displayAddMDMoveExistingConfigurationPanel
