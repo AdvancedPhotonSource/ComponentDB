@@ -489,49 +489,10 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         ItemDomainMachineDesign endpoint1Item = (ItemDomainMachineDesign) rowMap.get(KEY_ENDPOINT1_ITEM);
         ItemDomainMachineDesign endpoint2Item = (ItemDomainMachineDesign) rowMap.get(KEY_ENDPOINT2_ITEM);        
         
-        // check that port names are different if for same device
         String endpoint1PortName = (String) rowMap.get(KEY_ENDPOINT1_PORT);
         String endpoint2PortName = (String) rowMap.get(KEY_ENDPOINT2_PORT);
-        if ((endpoint1Item != null)
-                && (endpoint1Item == endpoint2Item)
-                && (endpoint1PortName != null)
-                && (endpoint2PortName != null)
-                && (endpoint1PortName.equals(endpoint2PortName))) {
-            isValid = false;
-            validString = "Port names for same device cannot specify same value: " + endpoint1PortName;
-            return new ValidInfo(isValid, validString);                   
-        }
-        
-        // check that cable connector names are different
         String endpoint1ConnectorName = (String) rowMap.get(KEY_ENDPOINT1_CONNECTOR);
         String endpoint2ConnectorName = (String) rowMap.get(KEY_ENDPOINT2_CONNECTOR);
-        if ((endpoint1ConnectorName != null) 
-                && (endpoint2ConnectorName != null) 
-                && (endpoint1ConnectorName.equals(endpoint2ConnectorName))) {
-            isValid = false;
-            validString = "Cable connector names cannot specify same value: " + endpoint1ConnectorName;
-            return new ValidInfo(isValid, validString);                   
-        }
-        
-        // check if port names in use within spreadsheet
-        if ((endpoint1PortName != null) && (!endpoint1PortName.isEmpty())) {
-            if (nameInUse(endpoint1Item, endpoint1PortName)) {
-                isValid = false;
-                validString = appendToString(
-                        validString,
-                        "Duplicate use of port name: "
-                        + endpoint1PortName + " for same Endpoint1 machine item in spreadsheet.");
-            }
-        }
-        if ((endpoint2PortName != null) && (!endpoint2PortName.isEmpty())) {
-            if (nameInUse(endpoint2Item, endpoint2PortName)) {
-                isValid = false;
-                validString = appendToString(
-                        validString,
-                        "Duplicate use of port name: "
-                        + endpoint2PortName + " for same Endpoint2 machine item in spreadsheet.");
-            }
-        }
         
         // handle endpoint1 ======        
         // endpoint machine item must be specified

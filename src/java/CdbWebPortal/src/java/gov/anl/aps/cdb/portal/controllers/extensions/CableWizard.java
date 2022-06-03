@@ -697,15 +697,7 @@ public class CableWizard implements Serializable {
             } else {
                 portEnd1 = ieEnd1.getMdConnector();
                 if (portEnd1 != null) {
-                    if (portEnd1.isConnected()) {
-                        SessionUtility.addErrorMessage(
-                                "Invalid Connection",
-                                "Selected port is already in use.");
-                        itemEnd1 = null;
-                        portEnd1 = null;
-                    } else {
-                        itemEnd1 = portEnd1.getItem();
-                    }
+                    itemEnd1 = portEnd1.getItem();
                 }
             }
         } else {
@@ -740,15 +732,7 @@ public class CableWizard implements Serializable {
             } else {
                 portEnd2 = ieEnd2.getMdConnector();
                 if (portEnd2 != null) {
-                    if (portEnd2.isConnected()) {
-                        SessionUtility.addErrorMessage(
-                                "Invalid Connection",
-                                "Selected port is already in use.");
-                        itemEnd2 = null;
-                        portEnd2 = null;
-                    } else {
-                        itemEnd2 = portEnd2.getItem();
-                    }
+                    itemEnd2 = portEnd2.getItem();
                 }
             }
         } else {

@@ -256,14 +256,14 @@ public class CdbEntity implements Serializable, Cloneable {
         return cableEndDesignationPropertyType;
     }
     
-    public PropertyValue prepareCableEndDesignationPropertyValue() {
+    public PropertyValue prepareCableEndDesignationPropertyValue(UserInfo user) {
         PropertyType propertyType = getCableEndDesignationPropertyType();
         return getControllerUtility().preparePropertyTypeValueAdd(
-                this, propertyType, propertyType.getDefaultValue(), null);
+                this, propertyType, propertyType.getDefaultValue(), null, user);
     }
     
     @JsonIgnore
-    public PropertyValue getCableEndDesignationPropertyValue() {
+    public PropertyValue getCableEndDesignationPropertyValue(UserInfo user) {
 
         if (cableEndDesignationPropertyValue == null) {
             List<PropertyValue> propertyValueList = getPropertyValueList();
@@ -276,15 +276,15 @@ public class CdbEntity implements Serializable, Cloneable {
             }
         }
         
-        if (cableEndDesignationPropertyValue == null) {
-            cableEndDesignationPropertyValue = prepareCableEndDesignationPropertyValue();
+        if (cableEndDesignationPropertyValue == null && user != null) {
+            cableEndDesignationPropertyValue = prepareCableEndDesignationPropertyValue(user);
         }
 
         return cableEndDesignationPropertyValue;
     }
 
-    public void setCableEndDesignation(String endDesignation) {
-        PropertyValue propertyValue = getCableEndDesignationPropertyValue();
+    public void setCableEndDesignation(String endDesignation, UserInfo user) {
+        PropertyValue propertyValue = getCableEndDesignationPropertyValue(user);
         if (propertyValue != null) {
             cableEndDesignation = endDesignation;
             propertyValue.setValue(endDesignation);
@@ -294,7 +294,10 @@ public class CdbEntity implements Serializable, Cloneable {
     @JsonIgnore
     public String getCableEndDesignation() {        
         if (cableEndDesignation == null) {
-            cableEndDesignation = getCableEndDesignationPropertyValue().getValue();
+            PropertyValue cableEndPropertyValue = getCableEndDesignationPropertyValue(null);
+            if (cableEndPropertyValue != null) {
+                cableEndDesignation = cableEndPropertyValue.getValue();
+            }
         }
         if (cableEndDesignation != null) {
             return cableEndDesignation;

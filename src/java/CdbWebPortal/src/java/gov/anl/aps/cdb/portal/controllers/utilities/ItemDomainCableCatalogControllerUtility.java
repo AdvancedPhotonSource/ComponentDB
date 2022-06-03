@@ -57,16 +57,17 @@ public class ItemDomainCableCatalogControllerUtility extends ItemDomainCatalogBa
         info.addField(
                 ItemDomainCableCatalog.CABLE_PROPERTY_URL_KEY, 
                 "Documentation URL", 
-                "Raw URL for documentation pdf file.", 
-                ItemMetadataFieldType.URL, 
+                "Space-separated list of links to documentation.", 
+                ItemMetadataFieldType.URLLIST, 
                 "", 
                 null,
                 GROUP_DOC);
         
         info.addField(
                 ItemDomainCableCatalog.CABLE_PROPERTY_IMAGE_URL_KEY, 
-                "Image URL", "Raw URL for image file.", 
-                ItemMetadataFieldType.URL, 
+                "Image URL", 
+                "Space-separated list of links to images.", 
+                ItemMetadataFieldType.URLLIST, 
                 "", 
                 null,
                 GROUP_DOC);

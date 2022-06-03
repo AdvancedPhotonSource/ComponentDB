@@ -418,30 +418,9 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     
                 } else {
                     if ((selectedMdConnector != null) && (!selectedMdConnector.equals(origMdConnector))) {
-                        boolean hasCableRelationships = false;
-                        List<ItemElementRelationship> ierList
-                                = selectedMdConnector.getItemElementRelationshipList();
-                        if (ierList != null) {
-                            // find just the cable relationship items
-                            RelationshipType cableIerType
-                                    = RelationshipTypeFacade.getInstance().findByName(
-                                            ItemElementRelationshipTypeNames.itemCableConnection.getValue());
-                            if (cableIerType != null) {
-                                ierList = ierList.stream().
-                                        filter(ier -> ier.getRelationshipType().getName().equals(cableIerType.getName())).
-                                        collect(Collectors.toList());
-                                if (!ierList.isEmpty()) {
-                                    // cable is in use for other cable relationships
-                                    hasCableRelationships = true;
-                                }
-                            }
-                        }
-                        if (hasCableRelationships) {
-                            disableSaveButton = true;
-                            warnings.add("Selected device port is already in use for cable connection.");
-                        } else {
-                            messages.add("Selected device and device port are valid.");
-                        }
+                        // removed check that the new connector didn't already have cable connections,
+                        // ned wants to allow multiple connections to same port
+                        messages.add("Selected device and device port are valid.");
                     } else if ((selectedMdItem != null) 
                             && ((!selectedMdItem.equals(origMdItem)) 
                                 || ((selectedMdItem.equals(origMdItem)) && (selectedMdConnector == null)))) {
@@ -521,30 +500,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             } else {
 
                 if (selectedMdConnector != null) {
-                    boolean hasCableRelationships = false;
-                    List<ItemElementRelationship> ierList
-                            = selectedMdConnector.getItemElementRelationshipList();
-                    if (ierList != null) {
-                        // find just the cable relationship items
-                        RelationshipType cableIerType
-                                = RelationshipTypeFacade.getInstance().findByName(
-                                        ItemElementRelationshipTypeNames.itemCableConnection.getValue());
-                        if (cableIerType != null) {
-                            ierList = ierList.stream().
-                                    filter(ier -> ier.getRelationshipType().getName().equals(cableIerType.getName())).
-                                    collect(Collectors.toList());
-                            if (!ierList.isEmpty()) {
-                                // cable is in use for other cable relationships
-                                hasCableRelationships = true;
-                            }
-                        }
-                    }
-                    if (hasCableRelationships) {
-                        disableSaveButton = true;
-                        warnings.add("Selected device port is already in use for cable connection.");
-                    } else {
-                        messages.add("Selected device and device port are valid.");
-                    }
+                    messages.add("Selected device and device port are valid.");
                 } else if (selectedMdItem != null) {
                     messages.add("Selected device is valid, optional device port not selected.");
                 } else {
@@ -700,6 +656,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         private Boolean disableButtonSave = true;
         private ItemDomainCableInventory itemInventory = null;
+        private ItemDomainCableCatalog itemCatalog = null;
         private ItemDomainCableInventory selectionModelInventory = null;
         private Boolean inventoryIsInstalled = null;
         private Boolean selectionModelIsInstalled = null;
@@ -719,6 +676,14 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         public void setItemInventory(ItemDomainCableInventory itemInventory) {
             this.itemInventory = itemInventory;
             selectInventoryItem(itemInventory);
+        }
+
+        public void setItemCatalog(ItemDomainCableCatalog itemCatalog) {
+            this.itemCatalog = itemCatalog;
+        }
+        
+        public ItemDomainCableCatalog getItemCatalog() {
+            return this.itemCatalog;
         }
 
         public String getItemInventoryString() {
@@ -816,9 +781,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     || ((selectionModelIsInstalled != null) && (!selectionModelIsInstalled.equals(getInventoryIsInstalled())));
 
             if (changedInventory || changedInstalledStatus) {
-                                
+                
                 Boolean installationStatus = selectionModelIsInstalled;
-                ItemDomainCableInventory origInventoryItem = getItemInventory();
                 Item assignedItem = selectionModelInventory;
                 
                 if (selectionModelInventory == null) {
@@ -828,11 +792,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                         installationStatus = null;
                     }
                     
-                    // if changing from assigned inventory to null inventory, use catalog item for assigned item
-                    // so we don't lose cable type
-                    if (origInventoryItem != null) {
-                        assignedItem = origInventoryItem.getCatalogItem();
-                    }
+                    assignedItem = getItemCatalog();
                 }
                 
                 UserInfo user = SessionUtility.getUser();
@@ -946,6 +906,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public void prepareDialogInventory() {
         dialogInventory.reset();
         dialogInventory.setItemInventory(getCurrent().getInventoryItem());
+        dialogInventory.setItemCatalog(getCurrent().getCatalogItem());
         dialogInventory.setInventoryIsInstalled(getCurrent().isIsHoused());
     }
 

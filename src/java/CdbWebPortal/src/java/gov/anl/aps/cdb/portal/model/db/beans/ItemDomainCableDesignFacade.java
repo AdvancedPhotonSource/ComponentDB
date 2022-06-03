@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -118,6 +119,23 @@ public class ItemDomainCableDesignFacade extends ItemFacadeBase<ItemDomainCableD
         } catch (NoResultException ex) {
         }
         return null;
+    }
+
+    /**
+     * Creates new cable design item.  Overridden here so that we can manually create
+     * new ItemConnectors since there is no PERSIST cascade on IER.firstItemConnector
+     */
+    @Override
+    public void create(ItemDomainCableDesign entity) {     
+        
+        for (ItemConnector itemConnector : entity.getNewItemConnectorList()) {
+            if (itemConnector != null) {
+                ItemConnectorFacade.getInstance().create(itemConnector);
+            }
+        }
+        entity.clearNewItemConnectorList();
+
+        super.create(entity);
     }
 
     /**

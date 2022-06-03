@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
+import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
@@ -1100,19 +1101,10 @@ public abstract class ItemController<
 
     }
 
-    /**
-     * Initializes new instance of ItemConnector. Subclasses override to
-     * customize.
-     */
-    protected void initializeItemConnector(ItemConnector itemConnector) {
-    }
-
-    public final void prepareAddItemConnector(Item item) {
+    public void prepareAddItemConnector(Item item) {
         if (item != null) {
             UserInfo user = SessionUtility.getUser();
             ItemConnector itemConnector = getControllerUtility().prepareAddItemConnector(item, user);
-            initializeItemConnector(itemConnector);
-
             ItemConnectorController itemConnectorController = ItemConnectorController.getInstance();
             itemConnectorController.setCurrent(itemConnector);
         }
@@ -2314,6 +2306,18 @@ public abstract class ItemController<
             }
         }
 
+    }
+    
+    public String prepareLinkDisplay(String link) {
+        if (link != null && !link.isEmpty()) {
+            return HttpLinkUtility.prepareHttpLinkDisplayValue(link);
+        } else {
+            return null;
+        }
+    }
+    
+    public String[] getMetadataUrlList(String urlList) {
+        return urlList.split(" ");
     }
 
     public ItemMetadataPropertyInfo getCoreMetadataPropertyInfo() {
