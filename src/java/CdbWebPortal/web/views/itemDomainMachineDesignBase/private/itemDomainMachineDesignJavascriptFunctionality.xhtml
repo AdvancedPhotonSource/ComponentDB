@@ -17,9 +17,9 @@ See LICENSE file.
 
         var scrollCheckTimer = null;
 
-        function handleMousemove(event) {                        
-            var scrollPanel = document.getElementById('itemMachineDesignListForm:itemDomainMachineDesignReorderScrollPanel');             
-            if (scrollPanel !== null) {                
+        function handleMousemove(event) {
+            var scrollPanel = document.getElementById('itemMachineDesignListForm:itemDomainMachineDesignReorderScrollPanel');
+            if (scrollPanel !== null) {
                 var browserHeight = document.documentElement.clientHeight;
                 var panelHeight = scrollPanel.clientHeight;
 
@@ -27,7 +27,7 @@ See LICENSE file.
 
                 var lowerLimit = panelHeight + paddingSize;
                 var upperLimit = paddingSize;
-                                
+
                 (function checkForWindowScroll() {
 
                     clearTimeout(scrollCheckTimer);
@@ -45,14 +45,14 @@ See LICENSE file.
                     var clientY = event.clientY;
                     var curScroll = scrollPanel.scrollTop;
                     if (clientY > lowerLimit) {
-                        newScroll = curScroll + (clientY - lowerLimit) / 4;                        
+                        newScroll = curScroll + (clientY - lowerLimit) / 4;
                     } else if (upperLimit > clientY) {
-                        newScroll = curScroll - (upperLimit - clientY) / 4; 
+                        newScroll = curScroll - (upperLimit - clientY) / 4;
                     }
-                    
+
                     if (newScroll != null) {
                         scrollPanel.scrollTo(0, newScroll);
-                        return true; 
+                        return true;
                     }
                     return false;
                 }
@@ -61,15 +61,54 @@ See LICENSE file.
 
         function scrollReorderConfigureListender(apply) {
             if (apply) {
-                window.addEventListener( "mousemove", handleMousemove);
+                window.addEventListener("mousemove", handleMousemove);
             } else {
-                window.removeEventListener( "mousemove", handleMousemove);
+                window.removeEventListener("mousemove", handleMousemove);
             }
         }
-
-        continueWithScroll = document.getElementById('dualConfigurationViewEnabled').innerHTML == 'false';
-        if (continueWithScroll) {
+        
+        dualConfigurationViewDisabled = document.getElementById('dualConfigurationViewEnabled').innerHTML == 'false';
+        if (dualConfigurationViewDisabled) {
             scrollToSelectedNode();
+        } else {
+            defined_height = document.getElementById("itemMachineDesignListDataTableScrollHeight").innerHTML;
+
+            if (defined_height.includes('vh')) {
+                vh_unit_str = defined_height.split('vh')[0]
+                tree_height_multiplier = parseFloat(vh_unit_str) / 100;
+
+                body_height = document.getElementsByTagName("body")[0].offsetHeight;
+                expected_tree_height = body_height * tree_height_multiplier;              
+
+                tree_table_scroll_body = document.querySelector("#itemMachineDesignListForm\\:itemMachineDesignListDataTable > div.ui-treetable-scrollable-body");
+                initial_tree_height = tree_table_scroll_body.offsetHeight;
+
+                if (initial_tree_height > expected_tree_height) {
+                    // Wait until the height is expected height. 25 tries at 80 ms is 2 seconds. 
+                    height_update_attempts = 25;
+                    function try_again() {
+                        if (height_update_attempts > 0) {
+                            setTimeout(() => {                                
+                                tree_height = tree_table_scroll_body.offsetHeight
+                                
+                                if (expected_tree_height === tree_height) {
+                                    scrollToSelectedNode(); 
+                                } else {
+                                    height_update_attempts--;
+                                    try_again();
+                                } 
+                            }, "80");
+                        }
+                    }
+                    try_again();
+                } else {
+                    // The tree is less height or equal. Attempt to scroll. 
+                    scrollToSelectedNode(); 
+                }
+
+            } else {
+                console.warn("Autoscroll disabled unless tree scroll height is defined in 'vh' units.")
+            }
         }
 
         function scrollToSelectedNode() {

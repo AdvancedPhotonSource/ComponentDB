@@ -12,10 +12,14 @@ See LICENSE file.
     <!-- Must provide params "viewId", "valueModel", "selectionModel", "hideOptionalColumns", "hideSearchColumns", "scrollable".-->
 
     <ui:param name="defaultHeight"
-              value="#{scrollable ? '65vh' : ''}" />
+              value="#{scrollable ? '75vh' : ''}" />
     
     <ui:param name="scrollHeight"
               value="#{scrollHeight != null ? scrollHeight : defaultHeight}" />
+    
+    <!--Reference from javascript-->
+    <div id="itemMachineDesignListDataTableScrollHeight"
+         style="display: none">#{scrollHeight}</div>
     
     <ui:param name="resizableColumns"
               value="#{resizableColumns != null ? resizableColumns : true}" />
