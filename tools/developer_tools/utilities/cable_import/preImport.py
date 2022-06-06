@@ -1,48 +1,7 @@
 #
+# Developer documentation: https://github.com/AdvancedPhotonSource/ComponentDB/wiki/cable-import-script-developer-notes
 # User documentation: https://github.com/AdvancedPhotonSource/ComponentDB/wiki/cable-preimport-script
 #
-#
-# This file contains a pre-import framework for various CDB object types.  It supports reading an input spreadsheet
-# file, and then creating an output spreadsheet file that contains the standard columns for CDB import.  It is intended
-# to support the cable data collection process, which uses an Excel workbook to collect cable type and cable data from
-# users.  The pre-import process takes that data collection workbook, and augments/formats it for import to CDB.
-#
-# The framework initially supports pre-import data transformation for 3 types of objects: sources, cable types, and
-# cable designs.  To add support for a new type of object, you must provide concrete subclass implementations of the
-# framework's PreImportHelper and OutputObject bases classes.  For an example, see the classes "SourceHelper" and
-# SourceOutputObject, which together support the pre-import transformation of CDB "Source" objects.
-#
-# The framework opens the input spreadsheet and processes it row by row.  A python dictionary is created for each
-# input row.  The helper class validates and filters the input rows.  The framework collects a list of "OutputObject"
-# instances, and then iterates through them one by one, writing a row for each to the output spreadsheet.
-#
-# The roles of the framework classes that must be extended to add pre-import support for a new object type are as
-# follows.
-#
-# The PreImportHelper subclass specifies the input spreadsheet columns via the input_column_list() method,
-# including the column index and dictionary key name to use for each.  Not all input columns need be mapped,
-# only those that are used to generate the values in the output objects.  Column labels are not needed in the input
-# column specifications since we don't use them.  It also specifies the columns for the output spreadsheet via the
-# output_column_list() method, including for each a column index, label, and getter method name on the output object
-# to extract the column value.  It specifies the number of columns in the input spreadsheet (num_input_columns()) and
-# the number of columns in the output spreadsheet (num_output_columns()).  It implements get_output_object() which
-# takes the dictionary of values for a row from the input spreadsheet and produces an instance of the OutputObject
-# subclass that will be used to generate a row in the output spreadsheet.  Finally, the tag() function returns the
-# value that identifies the pre-import object type, e.g., "Source".  This value must match the "--type" command line
-# option.
-#
-# The OutputObject subclass's primary responsibility is to transform the data read from an input spreadsheet row into
-# the values needed for the corresponding row in the output spreadsheet.  Sometimes the output value is simply a copy of
-# the input value, but in other cases, we might perform a CDB query API lookup to transform a name from the input file
-# to the corresponding database identifier for that name in the output file.  Each getter method in the OutputObject
-# corresponds to a column in the output spreadsheet.  It is these getter methods that perform the required data
-# transformation, such as API query.  The column specifications in the helper's output_column_list() map the column
-# index in the output spreadsheet to the appropriate getter method on the output object.
-
-# Input spreadsheet format assumptions:
-#   * contains a single worksheet
-#   * contains 2 or more rows, header is on row 1, data starts on row 2
-#   * there are no empty rows within the data
 import concurrent
 from concurrent.futures.thread import ThreadPoolExecutor
 from datetime import datetime
@@ -308,24 +267,6 @@ class IdManager():
             return self.name_id_dict[name]
         else:
             return None
-
-
-class NameVariantManager():
-
-    def __init__(self):
-        self.name_list = []
-
-    def add_name(self, name):
-        is_valid = True
-        valid_string = ""
-        for n in self.name_list:
-            if n == name:
-                return True, ""
-            elif n.upper() == name.upper():
-                is_valid = False
-                valid_string = "%s is variation of existing name %s" % (name, n)
-        self.name_list.append(name)
-        return is_valid, valid_string
 
 
 class RackManager():
@@ -1019,7 +960,7 @@ class SourceHandler(InputHandler):
 
 class InputColumnModel:
 
-    def __init__(self, key=None, label=None, validator=None, required=False):
+    def __init__(self, key=None, label=None, required=False):
         self.key = key
         self.required = required
         self.label = label
@@ -1580,9 +1521,8 @@ class InputSheetHelper(ABC):
         pass
 
     # Returns expected number of columns in input spreadsheet.
-    @abstractmethod
     def num_input_cols(self):
-        pass
+        return len(self.input_columns)
 
     def num_output_cols(self):
         return len(self.output_column_list())
