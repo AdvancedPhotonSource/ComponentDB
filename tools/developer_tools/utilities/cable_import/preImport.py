@@ -2283,9 +2283,6 @@ class CableSpecsSheetHelper(InputSheetHelper):
     def item_name():
         return "Cable Catalog"
 
-    def num_input_cols(self):
-        return 32
-
     def generate_input_column_list(self):
         column_list = [
             InputColumnModel(key=CABLE_TYPE_NAME_KEY, required=True),
@@ -2589,9 +2586,6 @@ class CablesSheetHelper(InputSheetHelper):
     @staticmethod
     def item_name():
         return "Cable Design"
-
-    def num_input_cols(self):
-        return 24
 
     def get_header_row(self):
         return 19
