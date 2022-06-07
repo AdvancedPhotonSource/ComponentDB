@@ -65,6 +65,7 @@ See LICENSE file.
     </p:panel>
 
     <p:panel header="Related MAARC Items"
+             rendered="#{entityController.currentViewIsStandard}"
              toggleable="true"
              collapsed="#{entityController.collapsedRelatedMAARCItemsForCurrent}">
         <ui:include src="../../itemDomainMAARC/private/itemRelatedMAARCItemList.xhtml"/>
