@@ -81,6 +81,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignBaseController.class.getName());
 
+    private final static String URL_PARAM_DETAUL_MODE = "detail"; 
     private final static String cableWizardRedirectSuccess
             = "/views/itemDomainMachineDesign/list?faces-redirect=true";
 
@@ -510,6 +511,16 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     public String prepareView(Item item) {
         return super.prepareView(item) + "&mode=detail";
     }
+    
+    /**
+     * Return entity view page with query parameters of id.
+     *
+     * @return URL to view page in the entity folder with id query paramter.
+     */
+    public String listViewForCurrentEntity() {
+        ItemDomainMachineDesign current = getCurrent();
+        return "listView?id=" + current.getId() + "&mode=detail&faces-redirect=true";
+    }
 
     public String showDetailsForCurrentSelectedTreeNode() {
         updateCurrentUsingSelectedItemInTreeTable();
@@ -517,7 +528,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         ItemDomainMachineDesign item = getCurrent();
 
         if (item != null) {
-            return viewForCurrentEntity() + "&mode=detail";
+            return listViewForCurrentEntity(); 
         }
 
         SessionUtility.addErrorMessage("Error", "Cannot load details for a non machine design.");
@@ -2237,7 +2248,12 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         if (currentLoaded != null && currentLoaded.getId() != null) {
             expandToSpecificMachineDesignItem(currentLoaded);
         }
-
+        
+        String mode = SessionUtility.getRequestParameterValue("mode");
+        if (mode != null && mode.equals(URL_PARAM_DETAUL_MODE)) {
+            displayListConfigurationView = true;
+            displayListViewItemDetailsView = true;   
+        }
     }
 
     @Override
@@ -2246,31 +2262,56 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     }
 
     @Override
-    protected void prepareEntityView(ItemDomainMachineDesign entity) {
-        super.prepareEntityView(entity);
-
-        // Cannot only show favorites when specific node is selected by id.
-        favoritesShown = false;
-
-        processPreRenderList();
-
-        String redirect = "/list";
-
-        if (loadViewModeUrlParameter()) {
-            return;
+    public void processViewRequestParams() {
+        super.processViewRequestParams(); 
+        
+        ItemDomainMachineDesign current = getCurrent();
+        if (current != null) {
+            currentViewIsTemplate = isItemMachineDesignAndTemplate(current);
         }
+    }
 
-        if (currentViewIsTemplate) {
-            redirect = "/templateList";
-        }
+    /**
+     * Process list view request parameters.
+     *
+     * If request is not valid, user will be redirected to appropriate error
+     * page.
+     */
+    public void processListViewRequestParams() {        
+        Integer idParam = null;
+        String idValue = SessionUtility.getRequestParameterValue("id");
+        if (idValue != null) {
+            idParam = Integer.parseInt(idValue); 
+            ItemDomainMachineDesign item = findById(idParam);
+            if (item != null) {
+                setCurrent(item);
+                
+                // Cannot only show favorites when specific node is selected by id.
+                favoritesShown = false;
 
-        SessionUtility.navigateTo("/views/" + getEntityViewsDirectory() + redirect + ".xhtml?id=" + entity.getId() + "&faces-redirect=true");
+                processPreRenderList();
+                prepareEntityView(item); 
+                String redirect = "/list";
+
+                if (loadViewModeUrlParameter()) {
+                    return;
+                }
+
+                if (currentViewIsTemplate) {
+                    redirect = "/templateList";
+                }
+
+                SessionUtility.navigateTo("/views/" + getEntityViewsDirectory() + redirect + ".xhtml?id=" + item.getId() + "&faces-redirect=true");
+            }
+        }            
+        
+        processPreRender();
     }
 
     protected boolean loadViewModeUrlParameter() {
         String viewMode = SessionUtility.getRequestParameterValue("mode");
         if (viewMode != null) {
-            if (viewMode.equals("detail")) {
+            if (viewMode.equals(URL_PARAM_DETAUL_MODE)) {
                 displayListConfigurationView = true;
                 displayListViewItemDetailsView = true;
                 return true;
