@@ -11,7 +11,7 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
-   
+
     <p:panel header="Inventory"
              rendered="#{resources.EnabledMachineInventoryFunctionality and entityController.currentViewIsTemplate}"
              collapsed="#{entityController.collapseContentsOfInventoryItem}"                 
@@ -63,11 +63,11 @@ See LICENSE file.
         <ui:include src="itemDomainMachineDesignConnectionList.xhtml" />
 
     </p:panel>
-    
+
     <p:panel header="Related MAARC Items"
              toggleable="true"
              collapsed="#{entityController.collapsedRelatedMAARCItemsForCurrent}">
-        
+        <ui:include src="../../itemDomainMAARC/private/itemRelatedMAARCItemList.xhtml"/>
     </p:panel>
 
 </ui:composition>
