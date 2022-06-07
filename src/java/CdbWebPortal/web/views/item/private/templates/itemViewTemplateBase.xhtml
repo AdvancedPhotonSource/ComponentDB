@@ -69,14 +69,15 @@ See LICENSE file.
                     <ui:insert name="itemLogs" />
                 </p:panel>
 
-                <p:panel header="#{entityController.displayItemConnectorsLabel}"
-                         id="#{entityTypeName}ViewConnectorsPanel"
-                         toggleable="true"
-                         rendered="#{entityController.entityDisplayItemConnectors}"
-                         collapsed="#{!entityController.displayItemConnectorList}">
-                    <ui:insert name="itemConnectors" />
-                </p:panel>
-
+                <ui:insert name="itemConnectorListPanel">
+                    <p:panel header="#{entityController.displayItemConnectorsLabel}"
+                             id="#{entityTypeName}ViewConnectorsPanel"
+                             toggleable="true"
+                             rendered="#{entityController.entityDisplayItemConnectors}"
+                             collapsed="#{!entityController.displayItemConnectorList}">
+                        <ui:insert name="itemConnectors" />
+                    </p:panel>
+                </ui:insert>
 
                 <ui:insert name="additionalLeftItemPanels"/>
             </div>
