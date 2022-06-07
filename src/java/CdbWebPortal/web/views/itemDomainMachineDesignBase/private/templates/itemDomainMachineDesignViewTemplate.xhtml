@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../../item/private/templates/itemViewTemplate.xhtml">
+    
+    <ui:define name="viewPanelGrid">
+        <ui:include src="../itemDomainMachineDesignPanelGrid.xhtml" /> 
+    </ui:define>
+    
+    <ui:define name="itemElementListPanel"> </ui:define>
+    <ui:define name="itemConnectorListPanel"> </ui:define>
+    
+    <ui:define name="additonalPluginSections">
+        <ui:include src="../../../plugins/private/#{entityController.pluginItemMachineDesignSectionsName}.xhtml"/> 
+    </ui:define>
+    
+    <ui:define name="additionalRightItemPanels">
+        <ui:include src="../itemDomainMachineDesignDetailPanels.xhtml"/>
+    </ui:define>
+    
+    <ui:define name="additionalViewItemContent">
+        <ui:include src="../itemDomainMachineDesignViewMdSpecificSupport.xhtml" />
+    </ui:define>
+    
+    <ui:define name="additionalCommonViewActionButtons">
+        <p:commandButton id="#{entityTypeName}ListViewButton"
+                         value="List View" alt="Tree/View" icon="fa fa-columns"
+                         onclick="PF('loadingDialog').show()"
+                         action="#{entityController.listViewForCurrentEntity()}">
+            <p:tooltip for="#{entityTypeName}ListViewButton" value="Go to the split tree/view display."/>
+        </p:commandButton>
+    </ui:define>
+
+    
+
+</ui:composition>
+
+
