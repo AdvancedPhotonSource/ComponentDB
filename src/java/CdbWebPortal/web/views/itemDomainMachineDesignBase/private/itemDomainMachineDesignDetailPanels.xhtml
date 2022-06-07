@@ -13,7 +13,7 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
    
     <p:panel header="Inventory"
-             rendered="#{entityController.currentViewIsTemplate}"
+             rendered="#{resources.EnabledMachineInventoryFunctionality and entityController.currentViewIsTemplate}"
              collapsed="#{entityController.collapseContentsOfInventoryItem}"                 
              toggleable="true">
 
