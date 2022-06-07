@@ -7,11 +7,9 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="private/templates/listViewTemplate.xhtml">
-
-    <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
-    <ui:param name="itemObject" value="#{entityController.current}" />    
-    <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}" />
+                template="../itemDomainMachineDesignBase/private/templates/itemDomainMachineDesignViewTemplate.xhtml">
+    
+    <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />        
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
@@ -20,20 +18,10 @@ See LICENSE file.
         <f:viewAction action="#{logController.processPreRender()}"/>
         <f:viewAction action="#{itemElementController.processPreRender()}"/>
         <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
-    </f:metadata>
+    </f:metadata>  
     
-    <ui:define name="pageTitle">
-        : View #{entityController.displayEntityTypeName} #{entityController.currentItemDisplayTitle}
-    </ui:define>
     
-    <ui:define name="pageHeaderTitle">
-        #{entityController.detailsPageHeader}
-    </ui:define>
-
-    <ui:define name="additionalSupport" >
-        <ui:include src="../itemDomainMachineDesignBase/private/itemDomainMachineDesignViewSupport.xhtml"/> 
-    </ui:define>
-
+    
 </ui:composition>
 
 

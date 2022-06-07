@@ -8,7 +8,9 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
 
-    <p:outputPanel id="machineDesignDualViewContextMenuPermissions">
+    <!--No need to display in dual list configuration view. -->
+    <p:outputPanel id="machineDesignDualViewContextMenuPermissions"
+                   rendered="#{!entityController.displayListConfigurationView}">
         
         <ui:param name="disabledEditContextMenuItemForSelection"
                   value="#{!entityController.isSelectedItemInListTreeViewWriteable()}" />
