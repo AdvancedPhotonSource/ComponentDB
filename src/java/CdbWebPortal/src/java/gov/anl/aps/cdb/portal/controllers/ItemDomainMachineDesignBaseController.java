@@ -69,6 +69,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.WarningInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import static gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode.CONNECTOR_NODE_TYPE;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
+import java.io.IOException;
 
 /**
  *
@@ -81,7 +82,9 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignBaseController.class.getName());
 
-    private final static String URL_PARAM_DETAUL_MODE = "detail"; 
+    private final static String URL_PARAM_DETAIL_MODE = "detail";
+    private final static String URL_PARAM_DETAIL_MODE_SWITCHVAL = "switch"; 
+    
     private final static String cableWizardRedirectSuccess
             = "/views/itemDomainMachineDesign/list?faces-redirect=true";
 
@@ -506,10 +509,13 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         }
         return false;
     }
-
-    @Override
-    public String prepareView(Item item) {
-        return super.prepareView(item) + "&mode=detail";
+    
+    public String switchToFullViewForCurrent() {
+        ItemDomainMachineDesign current = getCurrent();
+        
+        String mode = URL_PARAM_DETAIL_MODE + "=" + URL_PARAM_DETAIL_MODE_SWITCHVAL;
+        
+        return "view?id=" + current.getId() + "&" + mode + "&faces-redirect=true"; 
     }
     
     /**
@@ -2250,7 +2256,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         }
         
         String mode = SessionUtility.getRequestParameterValue("mode");
-        if (mode != null && mode.equals(URL_PARAM_DETAUL_MODE)) {
+        if (mode != null && mode.equals(URL_PARAM_DETAIL_MODE)) {
             displayListConfigurationView = true;
             displayListViewItemDetailsView = true;   
         }
@@ -2264,6 +2270,26 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     @Override
     public void processViewRequestParams() {
         super.processViewRequestParams(); 
+        
+        String mode = SessionUtility.getRequestParameterValue(URL_PARAM_DETAIL_MODE);        
+        
+        if (mode == null || !mode.equals(URL_PARAM_DETAIL_MODE_SWITCHVAL)) {
+            // Check if last page was machine design listView if yes then redirect to list view. 
+            String referrerViewId = SessionUtility.getReferrerViewId();
+            String entityViewsDirectory = getDomainPath();
+            String listViewPath = entityViewsDirectory + "/listView"; 
+            if (referrerViewId != null && referrerViewId.startsWith(listViewPath)) {
+                // Retain listView. 
+                String listViewForCurrentEntity = listViewForCurrentEntity();
+                try {
+                    String redirect = entityViewsDirectory + "/" + listViewForCurrentEntity; 
+                    SessionUtility.redirectTo(redirect);
+                } catch (IOException ex) {
+                    SessionUtility.addErrorMessage("Error", ex.getMessage());
+                    LOGGER.error(ex);
+                }
+            }
+        }        
         
         ItemDomainMachineDesign current = getCurrent();
         if (current != null) {
@@ -2311,7 +2337,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     protected boolean loadViewModeUrlParameter() {
         String viewMode = SessionUtility.getRequestParameterValue("mode");
         if (viewMode != null) {
-            if (viewMode.equals(URL_PARAM_DETAUL_MODE)) {
+            if (viewMode.equals(URL_PARAM_DETAIL_MODE)) {
                 displayListConfigurationView = true;
                 displayListViewItemDetailsView = true;
                 return true;
