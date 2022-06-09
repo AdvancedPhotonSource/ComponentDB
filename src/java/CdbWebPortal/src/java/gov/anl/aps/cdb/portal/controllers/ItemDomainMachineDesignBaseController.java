@@ -2363,6 +2363,12 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
                 SessionUtility.navigateTo("/views/" + getEntityViewsDirectory() + redirect + ".xhtml?id=" + item.getId() + "&faces-redirect=true");
             }
         }
+        
+        // Current not loaded. Try flash. 
+        if (getCurrent() == null) {
+            ItemDomainMachineDesign currentFlash = getCurrentFlash();
+            setCurrent(currentFlash);
+        }
 
         processPreRender();
     }
