@@ -8,6 +8,8 @@ from rich.tree import Tree
 from CdbApiFactory import CdbApiFactory
 
 from cdbApi.api.item_api import ItemApi
+from cdbApi.models.item import Item
+from cdbApi.models.machine_design_connector_list_object import MachineDesignConnectorListObject
 from cdbCli.common.cli import cliBase
 from cdbCli.common.cli.cliBase import CliBase
 
@@ -103,16 +105,18 @@ def cdbInfo_helper(cli: CliBase, console, pager=False,
 
         if all and item.domain_id == factory.MACHINE_DESIGN_DOMAIN_ID:
             machine_item = machine_api.get_machine_design_item_by_id(item_id)
-            machine_conn_list = machine_api.get_machine_design_connector_list(item_id)
+            machine_conn_list : list[MachineDesignConnectorListObject] = machine_api.get_machine_design_connector_list(item_id)
             conn_list = []
             result_obj['Cable Connections'] = conn_list
             header_style['Cable Connections'] = 'magenta'
             
             for machine_conn in machine_conn_list:
-                if machine_conn.cable_item:
+                if len(machine_conn.connected_cables) > 0:
+                    cable: Item = machine_conn.connected_cables[0]
+
                     conn = {}
-                    conn['Cable'] = machine_conn.cable_name
-                    conn['Cable Id'] = machine_conn.cable_item.id
+                    conn['Cable'] = cable.name
+                    conn['Cable Id'] = cable.id
                     conn['Connected Machine(s)'] = machine_conn.connected_to_items_string                    
                     conn['Port Name'] = machine_conn.connector_name
 

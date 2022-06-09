@@ -789,8 +789,8 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(len(result), 1)
 
         connection = result[0]
-        self.assertEqual(connection.connected_to_items_list[0].id, self.MACHINE_DESIGN_CHILD_ID) 
-        self.assertEqual(connection.cable_item.id, self.CABLE_DESIGN_ITEM_ID)  
+        self.assertEqual(connection.connected_items[0].id, self.MACHINE_DESIGN_CHILD_ID) 
+        self.assertEqual(connection.connected_cables[0].id, self.CABLE_DESIGN_ITEM_ID)  
 
     def test_get_inventory_located_here(self):
         results: list[ItemDomainInventoryBase] = self.locationApi.get_inventory_located_here(self.LOCATION_WITH_INVENTORY_ID)
