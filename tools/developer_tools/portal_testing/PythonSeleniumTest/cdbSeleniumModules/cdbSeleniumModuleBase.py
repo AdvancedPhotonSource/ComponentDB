@@ -242,6 +242,8 @@ class CdbSeleniumModuleBase:
 		self._wait_for_clickable_id_with_stale_protection(next_step_id)
 		self._click_on_id_with_stale_protection(next_step_id)
 
+		time.sleep(1)
+		
 		finish_id = '%s:importWizardFinishButton' % form_name
 		self._wait_for_clickable_id_with_stale_protection(finish_id)
 		self._click_on_id_with_stale_protection(finish_id)

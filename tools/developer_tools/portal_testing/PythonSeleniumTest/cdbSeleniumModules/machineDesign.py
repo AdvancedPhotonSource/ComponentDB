@@ -42,6 +42,8 @@ class MachineDesign(CdbSeleniumModuleBase):
 	LIST_FORM_NAME = "%sListForm" % ENTITY_TYPE_NAME	
 	EXPORT_FORM_NAME = "exportMachineDesignForm"
 	IMPORT_FORM_NAME = "importMachineDesignForm"
+	VIEW_FORM_NAME = "itemMachineDesignViewForm"
+	EDIT_FORM_NAME = "itemMachineDesignEditForm"
 	
 	IMPORT_FILE_NAME = "Machine Design Import.xlsx"
 	EXPORT_FILE_NAME = "Machine Element Update Export.xlsx"
@@ -75,6 +77,11 @@ class MachineDesign(CdbSeleniumModuleBase):
 		self._click_on_id('addComponentForm:itemProjectSelectCB')
 
 		self._click_on_id('addComponentForm:itemMachineDesignCreateSaveButton')
+
+		self._wait_for_url_contains('itemDomainMachineDesign/view')
+
+		# Click 'Return'
+		self._click_on_id('%s:itemMachineDesignViewDoneButton' % self.VIEW_FORM_NAME)
 
 		self._wait_for_url_contains('itemDomainMachineDesign/list')
 
@@ -372,6 +379,24 @@ class MachineDesign(CdbSeleniumModuleBase):
 										self.assign_catalog_to_machine_design(itemXpath, assignedCatalogName)
 							break
 				lineCount += 1
+
+	def test_machine_pages(self):
+		node_xpath = '//*[@id="%s:itemMachineDesignListDataTable_node_0"]/td[1]' % self.LIST_FORM_NAME
+		view_details_xpath = '//*[@id="%s:machineDesignCatalogDualViewMachineDesignContextMenu"]/ul/li[3]/a' % self.LIST_FORM_NAME
+
+		self._context_click_x_path(node_xpath, view_details_xpath)
+
+		self._wait_for_url_contains('%s/listView' % self.VIEW_BASE_NAME)
+		
+		self._click_on_id("%s:itemMachineDesignViewButton" % self.LIST_FORM_NAME)
+		
+		self._wait_for_url_contains('%s/view' % self.VIEW_BASE_NAME)
+		
+		self._click_on_id('%s:%sViewEditButton' % (self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME))
+		self._wait_for_url_contains('%s/edit' % self.VIEW_BASE_NAME)
+		
+		self._click_on_id('%s:%sEditViewButton' % (self.EDIT_FORM_NAME, self.ENTITY_TYPE_NAME))
+		self._wait_for_url_contains('%s/view' % self.VIEW_BASE_NAME)
 
 	def test_detail_page(self, test):
 		#first_item_xpath = '//*[@id="itemMachineDesignListForm:itemMachineDesignListDataTable_node_0"]/td[1]'

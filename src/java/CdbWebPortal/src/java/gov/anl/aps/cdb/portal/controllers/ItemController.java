@@ -550,7 +550,11 @@ public abstract class ItemController<
     public String getDomainPath(Domain domain) {
         return "/views/" + getEntityViewsDirectory(domain.getName());
     }
-
+    
+    public String getDomainPath(){ 
+        return getDomainPath(getDefaultDomain()); 
+    }
+    
     @Override
     protected String getEntityViewsDirectory() {
         return getEntityViewsDirectory(getDefaultDomainName());

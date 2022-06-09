@@ -69,6 +69,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.WarningInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import static gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode.CONNECTOR_NODE_TYPE;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
+import java.io.IOException;
 
 /**
  *
@@ -81,13 +82,15 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignBaseController.class.getName());
 
-    private final static String URL_PARAM_DETAUL_MODE = "detail"; 
+    private final static String URL_PARAM_DETAIL_MODE = "detail";
+    private final static String URL_PARAM_DETAIL_MODE_SWITCHVAL = "switch";
+
     private final static String cableWizardRedirectSuccess
             = "/views/itemDomainMachineDesign/list?faces-redirect=true";
 
     private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignDetailsViewSections";
 
-    private TreeNode searchResultsTreeNode;    
+    private TreeNode searchResultsTreeNode;
 
     // <editor-fold defaultstate="collapsed" desc="Favorites toggle variables">
     private boolean favoritesShown = false;
@@ -268,12 +271,12 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         }
 
         return relatedMAARCRelationshipsForCurrent;
-    } 
+    }
 
     @Override
     public ItemGenericLazyDataModel createItemLazyDataModel() {
-        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain(), settingObject); 
-    }   
+        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain(), settingObject);
+    }
 
     @Override
     public void resetListDataModel() {
@@ -507,11 +510,14 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         return false;
     }
 
-    @Override
-    public String prepareView(Item item) {
-        return super.prepareView(item) + "&mode=detail";
+    public String switchToFullViewForCurrent() {
+        ItemDomainMachineDesign current = getCurrent();
+
+        String mode = URL_PARAM_DETAIL_MODE + "=" + URL_PARAM_DETAIL_MODE_SWITCHVAL;
+
+        return "view?id=" + current.getId() + "&" + mode + "&faces-redirect=true";
     }
-    
+
     /**
      * Return entity view page with query parameters of id.
      *
@@ -522,13 +528,46 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         return "listView?id=" + current.getId() + "&mode=detail&faces-redirect=true";
     }
 
+    public String updateDetailsForCurrentSelectedTreeNode() {
+        if (selectedItemInListTreeTable != null) {
+            Object data = selectedItemInListTreeTable.getData();
+            if (data instanceof ItemElement) {
+                ItemConnector mdConnector = ((ItemElement) data).getMdConnector();
+                if (mdConnector != null) {
+                    return failUpdateDetailsForCurrentSelectedTreeNode("Connector Selected", "Connector is not a machine design item, only machines can be loaded.");
+                } else {
+                    Item containedItem = ((ItemElement) data).getContainedItem();
+                    if (containedItem != null) {
+                        if (!(containedItem instanceof ItemDomainMachineDesign)) {
+                            String type = containedItem.getDomain().getName();
+                            return failUpdateDetailsForCurrentSelectedTreeNode("Error", "Only machines can be loaded. " + type + " was selected.");
+                        }
+                    } else {
+                        // No contained item and no connector 
+                        return failUpdateDetailsForCurrentSelectedTreeNode("Error", "Unknown selection made.");
+                    }
+                }
+            } else {
+                return failUpdateDetailsForCurrentSelectedTreeNode("Error", "Unknown selection made.");
+            }
+        }
+
+        return showDetailsForCurrentSelectedTreeNode();
+    }
+
+    private String failUpdateDetailsForCurrentSelectedTreeNode(String summary, String message) {
+        SessionUtility.addErrorMessage(summary, message);
+        SessionUtility.executeRemoteCommand("PF('loadingDialog').hide()");
+        return null;
+    }
+
     public String showDetailsForCurrentSelectedTreeNode() {
         updateCurrentUsingSelectedItemInTreeTable();
 
         ItemDomainMachineDesign item = getCurrent();
 
         if (item != null) {
-            return listViewForCurrentEntity(); 
+            return listViewForCurrentEntity();
         }
 
         SessionUtility.addErrorMessage("Error", "Cannot load details for a non machine design.");
@@ -592,15 +631,15 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         prepareAddNewMachineDesignListConfiguration();
         displayAddMDMoveExistingConfigurationPanel = true;
     }
-    
-    public boolean isDisplayDualViewBlockUI () {
+
+    public boolean isDisplayDualViewBlockUI() {
         if (displayListConfigurationView) {
             if (!displayListViewItemDetailsView) {
-                return true; 
+                return true;
             }
         }
-        
-        return false; 
+
+        return false;
     }
 
     public boolean isDisplayFollowInstructionOnRightOnBlockUI() {
@@ -680,7 +719,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
                 item = itemElement.getContainedItem();
             }
         }
-        
+
         if (item instanceof ItemDomainMachineDesign) {
             return (ItemDomainMachineDesign) item;
         } else {
@@ -696,8 +735,8 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         Item assignedItem = mdItem.getAssignedItem();
         Item derivedFromItem = assignedItem.getDerivedFromItem();
         controllerUtility utility = getControllerUtility();
-        UserInfo user = SessionUtility.getUser();               
-        
+        UserInfo user = SessionUtility.getUser();
+
         try {
             utility.updateAssignedItem(mdItem, derivedFromItem, user);
         } catch (CdbException ex) {
@@ -719,11 +758,11 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     }
 
     public void unlinkAssignedItemFromMachineElement(ItemElement element) {
-        ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) element.getContainedItem();        
-        
+        ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) element.getContainedItem();
+
         controllerUtility utility = getControllerUtility();
-        UserInfo user = SessionUtility.getUser();               
-        
+        UserInfo user = SessionUtility.getUser();
+
         try {
             utility.updateAssignedItem(mdItem, null, user);
         } catch (CdbException ex) {
@@ -962,7 +1001,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         ItemDomainMachineDesignBaseTreeNode selectedNode = expandToSpecificMachineDesignItem(machineDesignTreeRootTreeNode, item);
         selectedItemInListTreeTable = (MachineTreeNode) selectedNode;
     }
-    
+
     public static TreeNode expandToItemOrPort(
             ItemDomainMachineDesignTreeNode tree, ItemDomainMachineDesign item, ItemConnector port) {
         TreeNode selection = null;
@@ -1490,7 +1529,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         searchResultsTreeNode = rootTreeNode;
         return searchResultsTreeNode;
     }
-    
+
     public String viewCable() {
         ItemElement element = getItemElementFromSelectedItemInTreeTable();
         ItemDomainCableDesign cable = (ItemDomainCableDesign) element.getContainedItem();
@@ -1502,14 +1541,14 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             return "";
         }
     }
-    
-    public boolean disableAddCableForSelection() {        
+
+    public boolean disableAddCableForSelection() {
         ItemDomainMachineDesign selectedItem = getItemFromSelectedItemInTreeTable();
         boolean writeable = LoginController.getInstance().isEntityWriteable(selectedItem.getEntityInfo());
         if (!writeable) {
             return true;
         }
-        
+
         if (selectedItemInListTreeTable.getType() == CONNECTOR_NODE_TYPE) {
             ItemElement element = (ItemElement) selectedItemInListTreeTable.getData();
             ItemConnector connector = element.getMdConnector();
@@ -1520,9 +1559,9 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     }
 
     public String prepareWizardCable() {
-        
+
         updateCurrentUsingSelectedItemInTreeTable();
-        setCurrentEditItemElement((ItemElement) selectedItemInListTreeTable.getData());        
+        setCurrentEditItemElement((ItemElement) selectedItemInListTreeTable.getData());
         ItemDomainMachineDesign endpointItem = getItemFromSelectedItemInTreeTable();
 
         CableWizard cableWizard = CableWizard.getInstance();
@@ -2248,11 +2287,11 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         if (currentLoaded != null && currentLoaded.getId() != null) {
             expandToSpecificMachineDesignItem(currentLoaded);
         }
-        
+
         String mode = SessionUtility.getRequestParameterValue("mode");
-        if (mode != null && mode.equals(URL_PARAM_DETAUL_MODE)) {
+        if (mode != null && mode.equals(URL_PARAM_DETAIL_MODE)) {
             displayListConfigurationView = true;
-            displayListViewItemDetailsView = true;   
+            displayListViewItemDetailsView = true;
         }
     }
 
@@ -2263,8 +2302,28 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     @Override
     public void processViewRequestParams() {
-        super.processViewRequestParams(); 
-        
+        super.processViewRequestParams();
+
+        String mode = SessionUtility.getRequestParameterValue(URL_PARAM_DETAIL_MODE);
+
+        if (mode == null || !mode.equals(URL_PARAM_DETAIL_MODE_SWITCHVAL)) {
+            // Check if last page was machine design listView if yes then redirect to list view. 
+            String referrerViewId = SessionUtility.getReferrerViewId();
+            String entityViewsDirectory = getDomainPath();
+            String listViewPath = entityViewsDirectory + "/listView";
+            if (referrerViewId != null && referrerViewId.startsWith(listViewPath)) {
+                // Retain listView. 
+                String listViewForCurrentEntity = listViewForCurrentEntity();
+                try {
+                    String redirect = entityViewsDirectory + "/" + listViewForCurrentEntity;
+                    SessionUtility.redirectTo(redirect);
+                } catch (IOException ex) {
+                    SessionUtility.addErrorMessage("Error", ex.getMessage());
+                    LOGGER.error(ex);
+                }
+            }
+        }
+
         ItemDomainMachineDesign current = getCurrent();
         if (current != null) {
             currentViewIsTemplate = isItemMachineDesignAndTemplate(current);
@@ -2277,20 +2336,20 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
      * If request is not valid, user will be redirected to appropriate error
      * page.
      */
-    public void processListViewRequestParams() {        
+    public void processListViewRequestParams() {
         Integer idParam = null;
         String idValue = SessionUtility.getRequestParameterValue("id");
         if (idValue != null) {
-            idParam = Integer.parseInt(idValue); 
+            idParam = Integer.parseInt(idValue);
             ItemDomainMachineDesign item = findById(idParam);
             if (item != null) {
                 setCurrent(item);
-                
+
                 // Cannot only show favorites when specific node is selected by id.
                 favoritesShown = false;
 
                 processPreRenderList();
-                prepareEntityView(item); 
+                prepareEntityView(item);
                 String redirect = "/list";
 
                 if (loadViewModeUrlParameter()) {
@@ -2303,15 +2362,21 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
                 SessionUtility.navigateTo("/views/" + getEntityViewsDirectory() + redirect + ".xhtml?id=" + item.getId() + "&faces-redirect=true");
             }
-        }            
+        }
         
+        // Current not loaded. Try flash. 
+        if (getCurrent() == null) {
+            ItemDomainMachineDesign currentFlash = getCurrentFlash();
+            setCurrent(currentFlash);
+        }
+
         processPreRender();
     }
 
     protected boolean loadViewModeUrlParameter() {
         String viewMode = SessionUtility.getRequestParameterValue("mode");
         if (viewMode != null) {
-            if (viewMode.equals(URL_PARAM_DETAUL_MODE)) {
+            if (viewMode.equals(URL_PARAM_DETAIL_MODE)) {
                 displayListConfigurationView = true;
                 displayListViewItemDetailsView = true;
                 return true;
@@ -2712,10 +2777,10 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     public TreeNode getMoveToTrashNode() {
         return moveToTrashNode;
-    }        
-    
+    }
+
     public ValidWarningInfo validateItemsMovingToTrash(List<ItemDomainMachineDesign> itemsMovingToTrash) {
-        
+
         boolean isValid = true;
         boolean isWarning = false;
 
@@ -2827,7 +2892,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
                 itemToCheck.setMoveToTrashWarningMsg(warningStr);
             }
         }
-        
+
         String rootValidStr = "";
         if (!isValid) {
             rootValidStr = "Item children have move to trash validation issues";
@@ -2869,7 +2934,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         ValidWarningInfo info = validateItemsMovingToTrash(moveToTrashItemsToUpdate);
         moveToTrashAllowed = info.isValid();
         moveToTrashHasWarnings = info.isWarning();
-        
+
         // build tree node hierarchy for dialog
         if (moveToTrashItemsToUpdate.size() > 1 || !moveToTrashAllowed || moveToTrashHasWarnings) {
             moveToTrashNode = new DefaultTreeNode();
@@ -2907,14 +2972,14 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             }
         }
     }
-    
+
     public ValidInfo handleMoveToTrash(
-            List<ItemDomainMachineDesign> itemsMovingToTrash, 
+            List<ItemDomainMachineDesign> itemsMovingToTrash,
             List<ItemElement> relationshipElements) {
-        
+
         boolean isValid = true;
         String validStr = "";
-        
+
         // mark all items as deleted entity type (moves them to "trash")
         for (ItemDomainMachineDesign item : itemsMovingToTrash) {
             performMoveToTrashOperationsForItem(item);
@@ -2926,7 +2991,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             // should be 0 for a top-level item or 1 for internal node
             isValid = false;
             validStr = "Item has unexpected relationships to other items";
-            
+
         } else if (relationshipElements.size() == 1) {
             ItemElement ie = relationshipElements.get(0);
             Item childItem = ie.getContainedItem();
@@ -2935,7 +3000,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             childItem.getItemElementMemberList().remove(ie);
             ie.setMarkedForDeletion(true);
         }
-        
+
         return new ValidInfo(isValid, validStr);
     }
 
@@ -2951,14 +3016,14 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
         ItemDomainMachineDesign current = getCurrent();
         ItemDomainMachineDesign parentMachineDesign = current.getParentMachineDesign();
-        
+
         // mark items moving to trash as deleted and remove relationship between root item and its parent
         ValidInfo moveValidInfo = handleMoveToTrash(moveToTrashItemsToUpdate, moveToTrashElementsToDelete);
         if (!moveValidInfo.isValid()) {
             SessionUtility.addErrorMessage("Error", moveValidInfo.getValidString());
             return;
         }
-        
+
         // need to update parentItem if removing relationship
         if (moveToTrashElementsToDelete.size() == 1) {
             ItemElement ie = moveToTrashElementsToDelete.get(0);
@@ -2991,51 +3056,49 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     }
 
     // </editor-fold>
-    
     // <editor-fold defaultstate="collapsed" desc="Update permission for branch">   
-    
     public EntityInfo getEntityInfoBranchUpdate() {
         ItemDomainMachineDesign current = getCurrent();
-        return current.getEntityInfoBranchUpdate(); 
+        return current.getEntityInfoBranchUpdate();
     }
-    
+
     public void prepareUpdatePermissionForBranch() {
         updateCurrentUsingSelectedItemInTreeTable();
-        
+
         ItemDomainMachineDesign current = getCurrent();
-        
+
         EntityInfo entityInfo = current.getEntityInfo();
-        EntityInfo mockEi = new EntityInfo(); 
-        
+        EntityInfo mockEi = new EntityInfo();
+
         mockEi.setOwnerUser(entityInfo.getOwnerUser());
         mockEi.setOwnerUserGroup(entityInfo.getOwnerUserGroup());
         mockEi.setIsGroupWriteable(entityInfo.getIsGroupWriteable());
-                
+
         current.setEntityInfoBranchUpdate(mockEi);
     }
-    
+
     public void updatePermissionForBranch() {
         Boolean isAdmin = LoginController.getInstance().isLoggedInAsAdmin();
-        
+
         if (!isAdmin) {
             SessionUtility.addErrorMessage("Insufficient privileges", "Only admins can update permission for a branch.");
             return;
         }
-        
+
         moveToTrashItemsToUpdate = new ArrayList<>();
         ItemDomainMachineDesign selectedItem = getCurrent();
-        
+
         collectItemsFromHierarchy(selectedItem, moveToTrashItemsToUpdate, new ArrayList<ItemElement>(), true, true);
-        
+
         EntityInfo mockEi = selectedItem.getEntityInfoBranchUpdate();
-        
+
         for (Item item : moveToTrashItemsToUpdate) {
             EntityInfo entityInfo = item.getEntityInfo();
             entityInfo.setOwnerUser(mockEi.getOwnerUser());
             entityInfo.setOwnerUserGroup(mockEi.getOwnerUserGroup());
             entityInfo.setIsGroupWriteable(mockEi.getIsGroupWriteable());
         }
-        
+
         try {
             updateList(moveToTrashItemsToUpdate);
         } catch (CdbException ex) {
@@ -3047,6 +3110,6 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         }
         expandToSelectedTreeNodeAndSelect();
     }
-    
+
     // </editor-fold>
 }

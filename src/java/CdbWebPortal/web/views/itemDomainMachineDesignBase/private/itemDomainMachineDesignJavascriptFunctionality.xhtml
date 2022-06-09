@@ -73,12 +73,13 @@ See LICENSE file.
         } else {
             defined_height = document.getElementById("itemMachineDesignListDataTableScrollHeight").innerHTML;
 
-            if (defined_height.includes('vh')) {
+            if (defined_height.includes('vh')) {                
                 vh_unit_str = defined_height.split('vh')[0]
                 tree_height_multiplier = parseFloat(vh_unit_str) / 100;
 
                 body_height = document.getElementsByTagName("body")[0].offsetHeight;
-                expected_tree_height = body_height * tree_height_multiplier;              
+                expected_tree_height = body_height * tree_height_multiplier;
+                expected_tree_height = Math.round(expected_tree_height); 
 
                 tree_table_scroll_body = document.querySelector("#itemMachineDesignListForm\\:itemMachineDesignListDataTable > div.ui-treetable-scrollable-body");
                 initial_tree_height = tree_table_scroll_body.offsetHeight;

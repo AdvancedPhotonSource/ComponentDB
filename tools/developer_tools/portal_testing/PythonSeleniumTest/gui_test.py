@@ -115,6 +115,10 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
         self.machine_design.navigate_to_machine_design()
         self.machine_design.test_detail_page(self)
 
+    def test_machine_pages(self):
+        self.machine_design.navigate_to_machine_design()
+        self.machine_design.test_machine_pages()
+
     def test_browse_by_function_pages(self):
         self.browse_by.navigate_to_browse_by_function()
         self.browse_by.test_browse_by_function(self)
