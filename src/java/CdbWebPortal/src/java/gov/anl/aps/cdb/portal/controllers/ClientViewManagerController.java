@@ -59,7 +59,10 @@ public class ClientViewManagerController implements Serializable {
         boolean valid = false;
         String redirectUrl = lastUrlList.get(redirectIdx);
         while (!valid) {
-            if (redirectUrl.contains("edit.xhtml") || redirectUrl.contains("view.xhtml") || redirectUrl.contains("listView.xhtml")) {
+            if (redirectUrl.contains("edit.xhtml") 
+                    || redirectUrl.contains("view.xhtml") 
+                    || redirectUrl.contains("listView.xhtml")
+                    || redirectUrl.contains("create.xhtml")) {
                 if (redirectUrl.contains("id=")) {
                     valid = true;
                 } else {
