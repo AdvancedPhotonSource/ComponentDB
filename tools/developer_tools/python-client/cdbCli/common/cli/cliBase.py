@@ -27,7 +27,7 @@ class CliBase:
 
     api_factory = None
 
-    PANEL_LINE_FORMAT = "%-25s %s\n"    
+    PANEL_LINE_FORMAT = "[blue]%-25s[/blue] %s\n"    
 
     def __init__(self,portal_key=None):
         self.config = ConfigurationManager.get_instance()

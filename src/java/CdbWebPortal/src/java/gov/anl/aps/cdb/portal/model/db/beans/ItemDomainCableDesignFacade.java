@@ -160,6 +160,7 @@ public class ItemDomainCableDesignFacade extends ItemFacadeBase<ItemDomainCableD
     @Override
     public List<ItemDomainCableDesign> searchEntities(String searchString) {
         try {            
+            searchString = convertWildcards(searchString); 
             return (List<ItemDomainCableDesign>) em.createNamedStoredProcedureQuery("itemCableDesign.searchItems")                    
                     .setParameter("search_string", searchString)
                     .setParameter("limit_row", SEARCH_RESULT_LIMIT)
