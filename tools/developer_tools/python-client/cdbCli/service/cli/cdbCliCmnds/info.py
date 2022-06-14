@@ -85,22 +85,27 @@ def cdbInfo_helper(cli: CliBase, console, pager=False,
             
         if item.domain_id == factory.INVENTORY_DOMAIN_ID or item.domain_id == factory.MACHINE_DESIGN_DOMAIN_ID:
             if all:
-                machine = __get_machine_inventory_installed_in(item_api, item)
+                if item.domain_id == factory.INVENTORY_DOMAIN_ID:
+                    machine = __get_machine_inventory_installed_in(item_api, item)
+                else:
+                    machine = item
 
                 if machine:
                     hierarchy = machine_api.get_control_hierarchy_for_machine_element(machine.id)
                     control_hierarchy_str = ""
-                    while hierarchy.child_item:
-                        control_hierarchy_str += hierarchy.machine_item.name + "%s ➜ "
-                        if hierarchy.interface_to_parent: 
-                            interface_addon = "(%s)" % hierarchy.interface_to_parent
-                            control_hierarchy_str = control_hierarchy_str % interface_addon
-                        else:
-                            control_hierarchy_str = control_hierarchy_str % ""; 
+                    if hierarchy.child_item:
+                        while hierarchy:
+                            control_hierarchy_str += "%s" + hierarchy.machine_item.name
+                            if hierarchy.child_item:
+                                control_hierarchy_str += " ➜ "
+                            if hierarchy.interface_to_parent: 
+                                interface_addon = "(%s) ➜ " % hierarchy.interface_to_parent
+                                control_hierarchy_str = control_hierarchy_str % interface_addon
+                            else:
+                                control_hierarchy_str = control_hierarchy_str % ""; 
 
-                        hierarchy = hierarchy.child_item
+                            hierarchy = hierarchy.child_item
 
-                        control_hierarchy_str += machine.name
                     item_details.append({"Control Hierarchy": control_hierarchy_str})
 
         if all and item.domain_id == factory.MACHINE_DESIGN_DOMAIN_ID:
