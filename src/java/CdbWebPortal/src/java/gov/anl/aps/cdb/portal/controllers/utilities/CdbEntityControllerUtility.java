@@ -387,10 +387,18 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
         
         // Start new search        
         Pattern searchPattern;
-        if (caseInsensitive) {
-            searchPattern = Pattern.compile(Pattern.quote(searchString), Pattern.CASE_INSENSITIVE);
+        String patternString;
+        if (searchString.contains("?") || searchString.contains("*")) { 
+            patternString = searchString.replace("*", ".+"); 
+            patternString = patternString.replace("?", ".");            
         } else {
-            searchPattern = Pattern.compile(Pattern.quote(searchString));
+            patternString = Pattern.quote(searchString); 
+        }
+        
+        if (caseInsensitive) {
+            searchPattern = Pattern.compile(patternString, Pattern.CASE_INSENSITIVE);
+        } else {
+            searchPattern = Pattern.compile(patternString);
         }
         List<EntityType> allObjectList = searchEntities(searchString);
         for (EntityType entity : allObjectList) {

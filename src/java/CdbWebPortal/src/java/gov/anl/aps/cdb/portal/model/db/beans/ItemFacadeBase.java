@@ -936,6 +936,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     @Override
     public List<ItemDomainEntity> searchEntities(String searchString) {
         try {
+            searchString = convertWildcards(searchString); 
             ItemDomainName domain = getDomain();
             return (List<ItemDomainEntity>) em.createNamedStoredProcedureQuery("item.searchItems")
                     .setParameter("domain_id", domain.getId())

@@ -89,6 +89,13 @@ public abstract class CdbEntityFacade<T> {
     public List<T> searchEntities(String searchString) {
         return findAll(); 
     }
+    
+    protected String convertWildcards(String searchString) {
+        searchString = searchString.replace('*', '%');
+        searchString = searchString.replace('?', '_'); 
+        
+        return searchString; 
+    }
 
     public List<T> findRange(int[] range) {
         javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();

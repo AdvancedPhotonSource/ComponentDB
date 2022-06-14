@@ -60,6 +60,7 @@ public class ItemElementFacade extends CdbEntityFacade<ItemElement> {
     @Override
     public List<ItemElement> searchEntities(String searchString) {
         try {
+            searchString = convertWildcards(searchString); 
             return (List<ItemElement>) em.createNamedStoredProcedureQuery("itemElement.searchItemElements")
                     .setParameter("search_string", searchString)
                     .setParameter("limit_row", SEARCH_RESULT_LIMIT)
