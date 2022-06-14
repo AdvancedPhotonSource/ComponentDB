@@ -134,7 +134,7 @@ def search_helper(factory: CdbApiFactory, console: Console, search_string, searc
 )
 @click.option(
     "--interactive",   
-    help="Allows user to interactively select domain and select item for details. '--pager' is ignored with this option.",
+    help="Allows user to interactively select domain and select item for details. '--search-domain' is ignored with this option.",
     is_flag=True
 )
 @click.option(
