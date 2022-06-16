@@ -122,6 +122,7 @@ public class Source extends CdbEntity implements Serializable {
         this.displayUrl = HttpLinkUtility.prepareHttpLinkDisplayValue(url);
     }
 
+    @JsonIgnore
     @XmlTransient
     public List<ItemSource> getItemSourceList() {
         return itemSourceList;

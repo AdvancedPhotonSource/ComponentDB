@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import java.io.Serializable;
 import javax.persistence.Basic;
@@ -51,30 +52,30 @@ public class ItemSource extends CdbEntity implements Serializable {
     @Column(name = "part_number")
     private String partNumber;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    private Float cost;
+    private Float cost;    
     @Size(max = 256)
-    private String description;
+    private String description;    
     @Basic(optional = false)
     @NotNull
     @Column(name = "is_vendor")
-    private boolean isVendor;
+    private boolean isVendor;    
     @Basic(optional = false)
     @NotNull
-    @Column(name = "is_manufacturer")
+    @Column(name = "is_manufacturer")    
     private boolean isManufacturer;
     @Size(max = 64)
-    @Column(name = "contact_info")
+    @Column(name = "contact_info")    
     private String contactInfo;
-    @Size(max = 256)
+    @Size(max = 256)    
     private String url;
     @JoinColumn(name = "item_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false)        
     private Item item;
     @JoinColumn(name = "source_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false)   
     private Source source;
-    
-    private transient String targetUrl;
+        
+    private transient String targetUrl;    
     private transient String displayUrl;
 
     public ItemSource() {
@@ -175,7 +176,8 @@ public class ItemSource extends CdbEntity implements Serializable {
     public void setUrl(String url) {
         this.url = url;
     }
-
+    
+    @JsonIgnore
     public Item getItem() {
         return item;
     }
@@ -183,7 +185,7 @@ public class ItemSource extends CdbEntity implements Serializable {
     public void setItem(Item item) {
         this.item = item;
     }
-
+    
     public Source getSource() {
         return source;
     }
