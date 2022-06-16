@@ -31,6 +31,7 @@ public class SearchSettings<EntityController extends SearchController> extends S
     private static final String DisplayCableCatalogItemsSettingTypeKey = "Search.Display.ItemDomainCableCatalog";
     private static final String DisplayCableInventoryItemsSettingTypeKey = "Search.Display.ItemDomainCableInventory";
     private static final String DisplayCableDesignItemsSettingTypeKey = "Search.Display.ItemDomainCableDesign"; 
+    private static final String DisplayMAARCItemsSettingTypeKey= "Search.Display.ItemDomainMAARC"; 
     private static final String DisplayPropertyTypesSettingTypeKey = "Search.Display.PropertyTypes";
     private static final String DisplayPropertyTypeCategoriesSettingTypeKey = "Search.Display.PropertyTypeCategories";
     private static final String DisplaySourcesSettingTypeKey = "Search.Display.Sources";
@@ -46,6 +47,7 @@ public class SearchSettings<EntityController extends SearchController> extends S
     protected Boolean displayCableInventoryItems = null;
     protected Boolean displayCableDesignItems = null;
     protected Boolean displayLocationItems = null;
+    protected Boolean displayMAARCItems = null; 
     protected Boolean displayItemTypes = null;
     protected Boolean displayItemCategories = null;
     protected Boolean displayItemElements = null;
@@ -72,6 +74,7 @@ public class SearchSettings<EntityController extends SearchController> extends S
         displayCableCatalogItems = Boolean.parseBoolean(settingTypeMap.get(DisplayCableCatalogItemsSettingTypeKey).getDefaultValue());
         displayCableInventoryItems = Boolean.parseBoolean(settingTypeMap.get(DisplayCableInventoryItemsSettingTypeKey).getDefaultValue()); 
         displayCableDesignItems = Boolean.parseBoolean(settingTypeMap.get(DisplayCableDesignItemsSettingTypeKey).getDefaultValue());
+        displayMAARCItems = Boolean.parseBoolean(settingTypeMap.get(DisplayMAARCItemsSettingTypeKey).getDefaultValue()); 
         displayItemTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayItemTypesSettingTypeKey).getDefaultValue());
         displayItemCategories = Boolean.parseBoolean(settingTypeMap.get(DisplayItemCategoriesSettingTypeKey).getDefaultValue());
         displayItemElements = Boolean.parseBoolean(settingTypeMap.get(DisplayItemElementsSettingTypeKey).getDefaultValue());
@@ -96,6 +99,7 @@ public class SearchSettings<EntityController extends SearchController> extends S
         displayCableCatalogItems = settingEntity.getSettingValueAsBoolean(DisplayCableCatalogItemsSettingTypeKey, displayCableCatalogItems); 
         displayCableInventoryItems = settingEntity.getSettingValueAsBoolean(DisplayCableInventoryItemsSettingTypeKey, displayCableInventoryItems);
         displayCableDesignItems = settingEntity.getSettingValueAsBoolean(DisplayCableDesignItemsSettingTypeKey, displayCableDesignItems);
+        displayMAARCItems = settingEntity.getSettingValueAsBoolean(DisplayMAARCItemsSettingTypeKey, displayMAARCItems); 
         displayItemTypes = settingEntity.getSettingValueAsBoolean(DisplayItemTypesSettingTypeKey, displayItemTypes);
         displayItemCategories = settingEntity.getSettingValueAsBoolean(DisplayItemCategoriesSettingTypeKey, displayItemCategories);
         displayItemElements = settingEntity.getSettingValueAsBoolean(DisplayItemElementsSettingTypeKey, displayItemElements);
@@ -121,6 +125,7 @@ public class SearchSettings<EntityController extends SearchController> extends S
         settingEntity.setSettingValue(DisplayCableCatalogItemsSettingTypeKey, displayCableCatalogItems); 
         settingEntity.setSettingValue(DisplayCableInventoryItemsSettingTypeKey, displayCableInventoryItems);
         settingEntity.setSettingValue(DisplayCableDesignItemsSettingTypeKey, displayCableDesignItems);
+        settingEntity.setSettingValue(DisplayMAARCItemsSettingTypeKey, displayMAARCItems);
         settingEntity.setSettingValue(DisplayItemTypesSettingTypeKey, displayItemTypes);
         settingEntity.setSettingValue(DisplayItemCategoriesSettingTypeKey, displayItemCategories);
         settingEntity.setSettingValue(DisplayItemElementsSettingTypeKey, displayItemElements);
@@ -202,6 +207,14 @@ public class SearchSettings<EntityController extends SearchController> extends S
 
     public void setDisplayCableDesignItems(Boolean displayCableDesignItems) {
         this.displayCableDesignItems = displayCableDesignItems;
+    }
+
+    public Boolean getDisplayMAARCItems() {
+        return displayMAARCItems;
+    }
+
+    public void setDisplayMAARCItems(Boolean displayMAARCItems) {
+        this.displayMAARCItems = displayMAARCItems;
     }
 
     public Boolean getDisplayItemTypes() {

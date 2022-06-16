@@ -102,6 +102,9 @@ public class SearchController implements Serializable {
                 } 
                 else if (controller instanceof ItemDomainCableDesignController) {
                     if(!searchSettings.getDisplayCableDesignItems()) continue;
+                } 
+                else if (controller instanceof ItemDomainMAARCController) {
+                    if(!searchSettings.getDisplayMAARCItems()) continue;
                 }
                 else if (controller instanceof ItemTypeController) {
                     if (!searchSettings.getDisplayItemTypes()) continue;
@@ -126,7 +129,8 @@ public class SearchController implements Serializable {
                 }
                 else if (controller instanceof UserInfoController) {
                     if (!searchSettings.getDisplayUsers()) continue;                    
-                } else if (controller instanceof ItemElementController) {
+                } 
+                else if (controller instanceof ItemElementController) {
                     if (!searchSettings.getDisplayItemElements()) continue;
                 } 
                 
