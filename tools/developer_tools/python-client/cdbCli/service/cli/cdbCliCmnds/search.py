@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from ast import Interactive
-from nis import match
 from tkinter.messagebox import NO
 from unittest import case
 import click
@@ -285,24 +284,6 @@ def create_search_results_printout(result_list, factory):
         result_obj.append(obj)
     
     return  result_obj
-    # table = Table(title=title, expand=True, show_lines=True)
-
-    # table.add_column("Id")
-    # table.add_column("Name", style='green')
-    # table.add_column("Match Description", style='magenta')
-    # table.add_column("URL", style='cyan')
-
-    # for result in result_list:
-    #     url = factory.generateCDBUrlForItemId(result.object_id)
-    #     match: str = result.display
-    #     match = match.replace('; ', '\n')
-        
-    #     params = (str(result.object_id), result.object_name, match, url)
-        
-    #     table.add_row(*params)
-    
-    # return table
-
 
 if __name__ == "__main__":
     cdb_search()
