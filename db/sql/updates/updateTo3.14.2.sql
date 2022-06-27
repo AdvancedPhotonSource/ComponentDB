@@ -8,4 +8,6 @@
 
 
 INSERT IGNORE INTO `setting_type` VALUES
-(15017,'Search.Display.ItemDomainMAARC', 'Display search result for MAARC items', 'false');
+(15017,'Search.Display.ItemDomainMAARC', 'Display search result for MAARC items', 'false'),
+(23088,'ItemDomainCableDesign.List.Display.TotalReqLengthDisplay','Display total required cable length.','false'),
+(23089,'ItemDomainCableDesign.List.FilterBy.TotalReqLengthDisplay','Filter for total required cable length.',NULL);
