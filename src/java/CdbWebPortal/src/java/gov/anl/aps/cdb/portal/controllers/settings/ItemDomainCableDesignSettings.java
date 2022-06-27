@@ -57,6 +57,9 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
 
     private static final String DisplayRouteSettingTypeKey = "ItemDomainCableDesign.List.Display.Route";
     private static final String FilterRouteSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Route";
+        
+    private static final String DisplayTotalReqLengthSettingTypeKey = "ItemDomainCableDesign.List.Display.TotalReqLengthDisplay";
+    private static final String FilterTotalReqLengthSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.TotalReqLengthDisplay";
 
     private static final String DisplayNotesSettingTypeKey = "ItemDomainCableDesign.List.Display.Notes";
     private static final String FilterNotesSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Notes";
@@ -144,6 +147,8 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     protected String routedLengthFilter = null;
     protected Boolean routeDisplay = null;
     protected String routeFilter = null;
+    protected Boolean totalReqLengthDisplay = null; 
+    protected String totalReqLengthFilter = null; 
     protected Boolean notesDisplay = null;
     protected String notesFilter = null;
     
@@ -415,6 +420,22 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
 
     public void setRouteFilter(String routeFilter) {
         this.routeFilter = routeFilter;
+    }
+
+    public Boolean getTotalReqLengthDisplay() {
+        return totalReqLengthDisplay;
+    }
+
+    public void setTotalReqLengthDisplay(Boolean totalReqLengthDisplay) {
+        this.totalReqLengthDisplay = totalReqLengthDisplay;
+    }
+
+    public String getTotalReqLengthFilter() {
+        return totalReqLengthFilter;
+    }
+
+    public void setTotalReqLengthFilter(String totalReqLengthFilter) {
+        this.totalReqLengthFilter = totalReqLengthFilter;
     }
 
     public boolean isNotesDisplay() {
@@ -860,6 +881,8 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         routedLengthFilter = settingTypeMap.get(FilterRoutedLengthSettingTypeKey).getDefaultValue();
         routeDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayRouteSettingTypeKey).getDefaultValue());
         routeFilter = settingTypeMap.get(FilterRouteSettingTypeKey).getDefaultValue();
+        totalReqLengthDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayTotalReqLengthSettingTypeKey).getDefaultValue());
+        totalReqLengthFilter = settingTypeMap.get(FilterTotalReqLengthSettingTypeKey).getDefaultValue(); 
         notesDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayNotesSettingTypeKey).getDefaultValue());
         notesFilter = settingTypeMap.get(FilterNotesSettingTypeKey).getDefaultValue();
 
@@ -962,6 +985,8 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         routedLengthFilter = settingEntity.getSettingValueAsString(FilterRoutedLengthSettingTypeKey, routedLengthFilter);
         routeDisplay = settingEntity.getSettingValueAsBoolean(DisplayRouteSettingTypeKey, routeDisplay);
         routeFilter = settingEntity.getSettingValueAsString(FilterRouteSettingTypeKey, routeFilter);
+        totalReqLengthDisplay = settingEntity.getSettingValueAsBoolean(DisplayTotalReqLengthSettingTypeKey, totalReqLengthDisplay);
+        totalReqLengthFilter = settingEntity.getSettingValueAsString(FilterTotalReqLengthSettingTypeKey, totalReqLengthFilter); 
         notesDisplay = settingEntity.getSettingValueAsBoolean(DisplayNotesSettingTypeKey, notesDisplay);
         notesFilter = settingEntity.getSettingValueAsString(FilterNotesSettingTypeKey, notesFilter);
 
@@ -1064,6 +1089,8 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         settingEntity.setSettingValue(FilterRoutedLengthSettingTypeKey, routedLengthFilter);
         settingEntity.setSettingValue(DisplayRouteSettingTypeKey, routeDisplay);
         settingEntity.setSettingValue(FilterRouteSettingTypeKey, routeFilter);
+        settingEntity.setSettingValue(DisplayTotalReqLengthSettingTypeKey, totalReqLengthDisplay);
+        settingEntity.setSettingValue(FilterTotalReqLengthSettingTypeKey, totalReqLengthFilter);
         settingEntity.setSettingValue(DisplayNotesSettingTypeKey, notesDisplay);
         settingEntity.setSettingValue(FilterNotesSettingTypeKey, notesFilter);
 

@@ -123,7 +123,7 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
         
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ROUTED_LENGTH_KEY, 
-                "Routed Length", 
+                "Routed Length (ft)", 
                 "Calculated length for cable", 
                 ItemMetadataFieldType.STRING, 
                 "", 
@@ -138,6 +138,16 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "", 
                 null,
                 GROUP_CABLE);
+        
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_TOTAL_REQ_LENGTH_KEY,
+                "Total Required Cable Length (ft)",
+                "Total length of the cable required, including routed and end lengths.",
+                ItemMetadataFieldType.STRING,
+                "", 
+                null,
+                GROUP_CABLE
+        ); 
         
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_NOTES_KEY, 
@@ -168,7 +178,7 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
 
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_ENDLENGTH_KEY,
-                "End1 Length",
+                "End1 Length (ft)",
                 "Calculated length for cable end.",
                 ItemMetadataFieldType.STRING,
                 "",
@@ -231,7 +241,7 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
 
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_ENDLENGTH_KEY,
-                "End2 Length",
+                "End2 Length (ft)",
                 "Calculated length for cable end.",
                 ItemMetadataFieldType.STRING,
                 "",
