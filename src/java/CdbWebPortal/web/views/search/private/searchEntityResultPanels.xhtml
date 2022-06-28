@@ -91,6 +91,17 @@ See LICENSE file.
             <ui:param name="itemDomainController" value="#{itemDomainLocationController}" />
         </ui:include>
     </p:panel>
+    
+    <p:panel header="#{itemDomainMAARCController.displayEntityTypeName}s"
+             rendered="#{entitySettingObject.displayMAARCItems}"
+             collapsed="#{!itemDomainMAARCController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../item/private/itemSearchDataTable.xhtml">
+            <ui:param name="itemDomainController" value="#{itemDomainMAARCController}" />
+        </ui:include>
+        
+        <ui:include src="searchResultLimitDisclaimer.xhtml" />
+    </p:panel>
 
     <p:panel header="Item Categories" 
              rendered="#{entitySettingObject.displayItemCategories}"

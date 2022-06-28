@@ -6,7 +6,6 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 template="../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml">
@@ -56,6 +55,9 @@ See LICENSE file.
 
             <p:selectBooleanCheckbox id="displayLocationItems" value="#{entitySettingObject.displayLocationItems}"/>
             <h:outputLabel for="displayLocationItems" value="Search Location Items" styleClass="dialogDataLabel"/>
+            
+            <p:selectBooleanCheckbox id="displayMAARCItems" value="#{entitySettingObject.displayMAARCItems}"/>
+            <h:outputLabel for="displayMAARCItems" value="Search MAARC Items" styleClass="dialogDataLabel"/>
 
             <p:selectBooleanCheckbox id="displayPropertyTypes" value="#{entitySettingObject.displayPropertyTypes}"/>
             <h:outputLabel for="displayPropertyTypes" value="Search Property Types" styleClass="dialogDataLabel"/>

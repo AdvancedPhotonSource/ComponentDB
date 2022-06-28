@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from ast import Interactive
-from nis import match
 from tkinter.messagebox import NO
 from unittest import case
 import click
@@ -32,6 +31,7 @@ DOMAIN_CABLE_INVENTORY_OPT = "Cable Inventory"
 DOMAIN_MACHINE_OPT = "Machine Design"
 DOMAIN_CABLE_DESIGN_OPT = "Cable Design"
 DOMAIN_LOCATION_OPT = "Location"
+DOMAIN_MAARC_OPT = "MAARC"
 
 DOMAIN_OPTS = [
     DOMAIN_ALL_OPT, 
@@ -41,7 +41,8 @@ DOMAIN_OPTS = [
     DOMAIN_CABLE_INVENTORY_OPT,
     DOMAIN_MACHINE_OPT,
     DOMAIN_CABLE_DESIGN_OPT,
-    DOMAIN_LOCATION_OPT]
+    DOMAIN_LOCATION_OPT, 
+    DOMAIN_MAARC_OPT]
 
 RESULT_BACK_OPT = "Back"
 RESULT_SELECT_OPT = "Select for details"
@@ -65,6 +66,7 @@ def search_helper(factory: CdbApiFactory, console: Console, search_string, searc
             opts.include_cable_design = True
             opts.include_cable_inventory = True
             opts.include_item_location = True
+            opts.include_maarc = True
         if search_domain == DOMAIN_CATALOG_OPT:
             opts.include_catalog = True
         if search_domain == DOMAIN_INVENTORY_OPT:
@@ -79,6 +81,8 @@ def search_helper(factory: CdbApiFactory, console: Console, search_string, searc
             opts.include_cable_design = True
         if search_domain == DOMAIN_LOCATION_OPT:
             opts.include_item_location = True
+        if search_domain == DOMAIN_MAARC_OPT:
+            opts.include_maarc = True
         
         results: SearchEntitiesResults = search_api.search_entities(search_entities_options=opts)         
 
@@ -117,6 +121,11 @@ def search_helper(factory: CdbApiFactory, console: Console, search_string, searc
     if search_domain == DOMAIN_ALL_OPT or search_domain == DOMAIN_LOCATION_OPT:
         resulting_print_obj_list["%s Results" % DOMAIN_LOCATION_OPT] = create_search_results_printout(
             result_list=results.item_domain_location_results,
+            factory=factory
+        )
+    if search_domain == DOMAIN_ALL_OPT or search_domain == DOMAIN_MAARC_OPT:
+        resulting_print_obj_list["%s Results" % DOMAIN_MAARC_OPT] = create_search_results_printout(
+            result_list=results.item_domain_maarc_results,
             factory=factory
         )
     
@@ -228,6 +237,9 @@ def cdb_search(cli: CliBase, search_string, search_domain, pager, interactive, f
         if search_domain == DOMAIN_ALL_OPT or search_domain == DOMAIN_LOCATION_OPT:
             items = search_res.item_domain_location_results
             searched_items += items
+        if search_domain == DOMAIN_ALL_OPT or search_domain == DOMAIN_MAARC_OPT:
+            items = search_res.item_domain_maarc_results
+            searched_items += items
 
         all_opt = proceed == RESULT_SELECT_W_ALL_OPT
                     
@@ -285,24 +297,6 @@ def create_search_results_printout(result_list, factory):
         result_obj.append(obj)
     
     return  result_obj
-    # table = Table(title=title, expand=True, show_lines=True)
-
-    # table.add_column("Id")
-    # table.add_column("Name", style='green')
-    # table.add_column("Match Description", style='magenta')
-    # table.add_column("URL", style='cyan')
-
-    # for result in result_list:
-    #     url = factory.generateCDBUrlForItemId(result.object_id)
-    #     match: str = result.display
-    #     match = match.replace('; ', '\n')
-        
-    #     params = (str(result.object_id), result.object_name, match, url)
-        
-    #     table.add_row(*params)
-    
-    # return table
-
 
 if __name__ == "__main__":
     cdb_search()

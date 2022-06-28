@@ -164,7 +164,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 256));
         
         specs.add(new StringColumnSpec(
-                "Routed Length", 
+                "Routed Length (ft)", 
                 "routedLength", 
                 "setRoutedLength", 
                 "Routed cable length.", 
@@ -178,6 +178,15 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 "setRoute", 
                 "Routing information.", 
                 "getRoute",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Total Required Cable Length (ft)", 
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_TOTAL_REQ_LENGTH_KEY, 
+                "setTotalReqLength", 
+                "Total length of the cable required, including routed and end lengths. ", 
+                "getTotalReqLength",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -239,7 +248,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 256));  
         
         specs.add(new StringColumnSpec(
-                "Endpoint1 End Length", 
+                "Endpoint1 End Length (ft)", 
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_ENDLENGTH_KEY, 
                 "setEndpoint1EndLength", 
                 "End length for endpoint1.", 
@@ -332,7 +341,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 256));  
         
         specs.add(new StringColumnSpec(
-                "Endpoint2 End Length", 
+                "Endpoint2 End Length (ft)", 
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_ENDLENGTH_KEY, 
                 "setEndpoint2EndLength", 
                 "End length for endpoint2.", 

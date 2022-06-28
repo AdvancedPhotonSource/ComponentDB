@@ -78,6 +78,7 @@ public class ItemDomainCableDesign extends Item {
     private transient String voltage = null;
     private transient String routedLength = null;
     private transient String route = null;
+    private transient String totalReqLength = null; 
     private transient String notes = null;
     
     private transient Item endpoint1ItemImport = null;
@@ -114,6 +115,7 @@ public class ItemDomainCableDesign extends Item {
     public final static String CABLE_DESIGN_PROPERTY_VOLTAGE_KEY = "voltage";
     public final static String CABLE_DESIGN_PROPERTY_ROUTED_LENGTH_KEY = "routedLength";
     public final static String CABLE_DESIGN_PROPERTY_ROUTE_KEY = "route";
+    public final static String CABLE_DESIGN_PROPERTY_TOTAL_REQ_LENGTH_KEY = "totalReqLength"; 
     public final static String CABLE_DESIGN_PROPERTY_NOTES_KEY = "notes";
     public final static String CABLE_DESIGN_PROPERTY_END1_DESCRIPTION_KEY = "endpoint1Description";
     public final static String CABLE_DESIGN_PROPERTY_END1_ROUTE_KEY = "endpoint1Route";
@@ -871,6 +873,19 @@ public class ItemDomainCableDesign extends Item {
     public void setRoute(String route) throws CdbException {
         this.route = route;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ROUTE_KEY, route);
+    }
+
+    @JsonIgnore
+    public String getTotalReqLength() throws CdbException {
+        if (totalReqLength == null) {
+            totalReqLength = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_TOTAL_REQ_LENGTH_KEY); 
+        }
+        return totalReqLength;
+    }
+
+    public void setTotalReqLength(String totalReqLength) throws CdbException {
+        this.totalReqLength = totalReqLength;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_TOTAL_REQ_LENGTH_KEY, totalReqLength);
     }
 
     @JsonIgnore

@@ -485,6 +485,7 @@ public class Item extends CdbDomainEntity implements Serializable {
 //    @OneToMany(cascade = CascadeType.ALL)
     private List<ItemConnector> itemConnectorList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
+    @JsonProperty("itemSourceList")
     private List<ItemSource> itemSourceList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
     private List<ItemResource> itemResourceList;
