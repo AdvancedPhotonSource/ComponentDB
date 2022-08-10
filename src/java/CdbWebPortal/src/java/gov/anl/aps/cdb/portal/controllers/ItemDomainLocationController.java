@@ -245,7 +245,8 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
 
     public Item getItemFromSelectedLocationTreeNode() {
         if (selectedLocationTreeNode != null) {
-            return (Item) selectedLocationTreeNode.getData();
+            ItemElement element = (ItemElement) selectedLocationTreeNode.getData();
+            return element.getContainedItem(); 
         }
 
         return null;

@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.controllers.LoginController;
 import gov.anl.aps.cdb.portal.controllers.PropertyValueController;
 import gov.anl.aps.cdb.portal.controllers.utilities.LogControllerUtility;
+import gov.anl.aps.cdb.portal.model.ItemDomainLocationTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -1081,10 +1082,11 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
                     break;
                 case location:
                     LocatableItemController locationController = LocatableItemController.getInstance();
-                    DefaultTreeNode node = (DefaultTreeNode) currentObjectValueToColumn;
+                    ItemDomainLocationTreeNode node = (ItemDomainLocationTreeNode) currentObjectValueToColumn;
                     ItemDomainLocation location = null;
                     if (node != null) {
-                        location = (ItemDomainLocation) node.getData();
+                        ItemElement ie = node.getElement();
+                        location = (ItemDomainLocation) ie.getContainedItem();
                     }
 
                     LocatableItem locatableItem = (LocatableItem) item;
