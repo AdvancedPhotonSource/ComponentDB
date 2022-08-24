@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -21,6 +22,7 @@ import gov.anl.aps.cdb.rest.authentication.Secured;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +51,9 @@ public class PropertyValueRoute extends BaseRoute {
     private PropertyValueFacade propertyValueFacade; 
     
     @EJB
+    private PropertyTypeFacade propertyTypeFacade; 
+    
+    @EJB
     private ItemFacade itemFacade; 
     
     @GET
@@ -56,7 +61,34 @@ public class PropertyValueRoute extends BaseRoute {
     @Produces(MediaType.APPLICATION_JSON)    
     public PropertyValue getPropertyValue(@PathParam("id") int id) {        
         LOGGER.debug("Fetching property value with id: " + id);
-        return propertyValueFacade.find(id);
+        PropertyValue propertyValue = propertyValueFacade.find(id);
+        loadPropertyValueItemList(propertyValue);
+        
+        return propertyValue; 
+    }
+    
+    @GET
+    @Path("/ByPropertyTypeId/{propertyTypeId}")
+    @Produces(MediaType.APPLICATION_JSON)  
+    public List<PropertyValue> getPropertyValuesByPropertyTypeId(@PathParam("propertyTypeId") int propertyTypeId) {
+        LOGGER.debug("Fetching property values with type id: " + propertyTypeId);
+        
+        PropertyType propertyType = propertyTypeFacade.findById(propertyTypeId);        
+        List<PropertyValue> propertyValueList = propertyType.getPropertyValueList();
+        loadPropertyValueItemList(propertyValueList);
+        
+        return propertyValueList; 
+    }
+    
+    @GET
+    @Path("/ByPropertyTypeId/{propertyTypeId}/AndValue/{propertyValue}")
+    @Produces(MediaType.APPLICATION_JSON)  
+    public List<PropertyValue> getPropertyValuesByPropertyTypeIdAndValue(@PathParam("propertyTypeId") int propertyTypeId, @PathParam("propertyValue") String propertyValue) {
+        LOGGER.debug("Fetching property values with type id: " + propertyTypeId + " and value: " + propertyValue);
+              
+        List<PropertyValue> propertyValueList = propertyValueFacade.getPropertyValueListByTypeIdAndValue(propertyValue, propertyTypeId);
+        loadPropertyValueItemList(propertyValueList);
+        return propertyValueList; 
     }
     
     @GET
@@ -120,6 +152,31 @@ public class PropertyValueRoute extends BaseRoute {
         
         propertyValue = getPropertyValue(propertyValueId);
         return propertyValue.getPropertyMetadataList(); 
+    }
+    
+    private void loadPropertyValueItemList(List<PropertyValue> propertyValueList) {
+        if (propertyValueList == null) {
+            return;
+        }
+        for (PropertyValue propertyValue : propertyValueList) {
+            loadPropertyValueItemList(propertyValue);
+        }        
+    }
+    
+    private void loadPropertyValueItemList(PropertyValue propertyValue) {
+        if (propertyValue == null) {
+            return;
+        }
+        List<ItemElement> itemElementList = propertyValue.getItemElementList();
+        
+        List<Item> itemList = new ArrayList<>(); 
+        for (ItemElement element : itemElementList) {
+            Item parentItem = element.getParentItem();
+            if (parentItem != null) {
+                itemList.add(parentItem);
+            }
+        }
+        propertyValue.setItemList(itemList);
     }
     
     
