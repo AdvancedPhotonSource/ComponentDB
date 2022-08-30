@@ -226,8 +226,13 @@ def cli_command_api_exception_handler(func):
         try:
             return func(*args, **kwargs)
         except ApiException as ex:
-            cli : CliBase = kwargs['cli']
-            exObj = cli.api_factory.parseApiException(ex)
+            if 'cli' in kwargs.keys():                
+                cli : CliBase = kwargs['cli']
+                factory = cli.api_factory
+            else:
+                factory = kwargs['factory']
+
+            exObj = factory.parseApiException(ex)
             if 'console' in kwargs:         
                 exceptionDictList = [] 
                 printDict = {'Exception': exceptionDictList}
