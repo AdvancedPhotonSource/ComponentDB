@@ -16,7 +16,7 @@ from setuptools import setup
 from setuptools import find_packages
 
 setup(name='ComponentDB-API',
-      version='3.14.2',
+      version='3.14.4.dev0',
       packages=["cdbApi",
                 "cdbApi.api",
                 "cdbApi.models"],
