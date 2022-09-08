@@ -40,7 +40,6 @@ import javax.ejb.EJB;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.ListDataModel;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
 import org.apache.logging.log4j.Logger;
@@ -508,15 +507,56 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         UserInfo userInfo = (UserInfo) SessionUtility.getUser();
         return getItemDbFacade().findItemsWithPermissionsOfDomain(userInfo.getId(), getDomainId());
     }
+    
+    private int fetchItemIndex(Item item) {
+        for (int i = 0; i < selectedItemsToEdit.size(); i++) {
+            Item ittrItem = selectedItemsToEdit.get(i); 
+            if (ittrItem.equals(item)) {
+                return i; 
+            }
+        }
+        
+        return -1; 
+    }
+    
+    private void createUpdateSingleItem(MultiEditMode mode, Item item) {
+        if (mode != MultiEditMode.create && mode != MultiEditMode.update) {
+            // This function only does update and create            
+            return;
+        }
+        
+        int inx = fetchItemIndex(item); 
+        if (inx == -1) {
+            SessionUtility.addErrorMessage("Could not find item reference", "Please try using 'Save All' button instead.");
+            return;
+        }                
+        
+        try{
+            if (mode == MultiEditMode.update) {
+                performUpdateOperations(item);
+            } else if (mode == MultiEditMode.create) {
+                performCreateOperations(item);
+            }
+            
+            // Reload the updated item. 
+            Item updatedItem = getItemDbFacade().findById(item.getId());
+            selectedItemsToEdit.remove(inx);
+            selectedItemsToEdit.add(inx, updatedItem);      
+            
+            SessionUtility.addInfoMessage("Success", "Saved item: " + item.toString());
+        } catch (CdbException ex) {
+            processDatabaseOperationsException(ex, item, mode);
+        } catch (RuntimeException ex) {
+            processDatabaseOperationsException(ex, item, mode);
+        }                             
+    }
 
     public void updateSingleItem(Item item) {
-        setCurrent(item);
-        update();
+        createUpdateSingleItem(MultiEditMode.update, item); 
     }
 
     public void createSingleItem(Item item) {
-        setCurrent(item);
-        create();
+        createUpdateSingleItem(MultiEditMode.create, item); 
     }
 
     @Override

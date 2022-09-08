@@ -55,7 +55,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyValue.findByIsUserWriteable", query = "SELECT p FROM PropertyValue p WHERE p.isUserWriteable = :isUserWriteable"),
     @NamedQuery(name = "PropertyValue.findByIsDynamic", query = "SELECT p FROM PropertyValue p WHERE p.isDynamic = :isDynamic"),
     @NamedQuery(name = "PropertyValue.findByDisplayValue", query = "SELECT p FROM PropertyValue p WHERE p.displayValue = :displayValue"),
-    @NamedQuery(name = "PropertyValue.findByTargetValue", query = "SELECT p FROM PropertyValue p WHERE p.targetValue = :targetValue")})
+    @NamedQuery(name = "PropertyValue.findByTargetValue", query = "SELECT p FROM PropertyValue p WHERE p.targetValue = :targetValue"),
+    @NamedQuery(name = "PropertyValue.findByValueAndTypeId", query = "SELECT p FROM PropertyValue p WHERE p.value = :value and p.propertyType.id = :propertyTypeId")})
 @NamedStoredProcedureQueries({
 @NamedStoredProcedureQuery(
             name = "propertyValue.fetchRelationshipParentPropertyValues",
@@ -153,6 +154,8 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     
     @JsonIgnore
     private transient AllowedPropertyValue selectedAllowedPropertyValue = null; 
+    
+    private transient List<Item> itemList = null; 
 
     public PropertyValue() {
     }
@@ -320,6 +323,15 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
             itemElementList = new ArrayList<>();
         }
         itemElementList.add(itemElement);
+    }
+
+    // Item list returned with the property value route API calls.
+    public List<Item> getItemList() {
+        return itemList;
+    }
+
+    public void setItemList(List<Item> itemList) {
+        this.itemList = itemList;
     }
 
     @XmlTransient

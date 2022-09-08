@@ -36,6 +36,18 @@ public class PropertyValueFacade extends CdbEntityFacade<PropertyValue> {
         return (PropertyValueFacade) SessionUtility.findFacade(PropertyValueFacade.class.getSimpleName()); 
     }
     
+    public List<PropertyValue> getPropertyValueListByTypeIdAndValue(String propertyValue, Integer propertyTypeId) {
+        try {
+            
+            return (List<PropertyValue> ) em.createNamedQuery("PropertyValue.findByValueAndTypeId")
+                    .setParameter("value", propertyValue)
+                    .setParameter("propertyTypeId", propertyTypeId)
+                    .getResultList();                        
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+    
     public List<PropertyValue> fetchRelationshipParentPropertyValues(Integer itemId, Integer parentItemId, Integer relationshipTypeId) {        
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("propertyValue.fetchRelationshipParentPropertyValues");
