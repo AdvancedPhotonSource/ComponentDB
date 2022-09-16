@@ -25,8 +25,7 @@ See LICENSE file.
                  var="itemElementObject"
                  rowKey="#{itemElementObject.viewUUID}"
                  filteredValue="#{itemElementController.filteredObjectList}"
-                 rows="#{itemElementController.displayNumberOfItemsPerPage}"
-                 sortBy="#{itemElementObject.customizableSortOrder}"
+                 rows="#{itemElementController.displayNumberOfItemsPerPage}"                                 
                  resizableColumns="true"
                  draggableRows="#{isEntityWriteable 
                                   and currentItemController.entityHasSortableElements}"
@@ -45,10 +44,10 @@ See LICENSE file.
         <ui:param name="renderRowExpansion" value="#{simpleView 
                                                      ? itemListObject != null and entityController.isDisplayRowExpansionForItem(itemListObject) 
                                                      : itemElementController.isDisplayRowExpansionForItemElement(itemElementObject)}" />
-
+        
         <p:column exportable="false">
             <p:rowToggler rendered="#{renderRowExpansion}"/>
-        </p:column>       
+        </p:column>                
 
         <ui:include src="itemElementListObject.xhtml" >
             <ui:param name="filterable" value="#{itemElementListFilterable}"/>
@@ -108,13 +107,13 @@ See LICENSE file.
                 <p:column headerText="Source" 
                           rendered="#{currentItemSettingObject.displayItemElementListSource}"/>
                 <p:column headerText="Description" 
-                          rendered="#{currentItemSettingObject.displayItemElementListDescription}"/>               
+                          rendered="#{currentItemSettingObject.displayItemElementListDescription}"/>                
             </p:row>
         </p:columnGroup>                
         
         <ui:decorate template="templates/itemElementSimpleViewListObjectTemplate.xhtml">
             <ui:param name="rendered" value="#{simpleView}" />
-        </ui:decorate>
+        </ui:decorate>                
 
         <p:rowExpansion styleClass="domainEntityRowExpansion">
             <p:outputPanel rendered="#{itemElementSettingObject.displayRowExpansion}">

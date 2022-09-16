@@ -19,6 +19,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.comparator.ItemElementRelevantSortOrderComparator;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
@@ -1142,13 +1143,9 @@ public class Item extends CdbDomainEntity implements Serializable {
                 return itemElementDisplayList;
             }
             itemElementDisplayList = new ArrayList<>(fullItemElementList);
-
-            for (ItemElement itemElement : itemElementDisplayList) {
-                if (itemElement.getName() == null) {
-                    itemElementDisplayList.remove(itemElement);
-                    break;
-                }
-            }
+            ItemElement selfElement = getSelfElement();
+            itemElementDisplayList.remove(selfElement);            
+            itemElementDisplayList.sort(new ItemElementRelevantSortOrderComparator());            
         }
         return itemElementDisplayList;
     }
