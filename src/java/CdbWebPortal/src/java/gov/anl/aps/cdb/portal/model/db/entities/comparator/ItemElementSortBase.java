@@ -16,7 +16,17 @@ public abstract class ItemElementSortBase {
         Float so1 = o1.getSortOrder();
         Float so2 = o2.getSortOrder();
 
+        return compareOrders(so1, so2); 
+    }
+    
+    public int compareRelevantSortOrder(ItemElement o1, ItemElement o2) {
+        Float so1 = o1.getRelevantItemElementSortOrder();
+        Float so2 = o2.getRelevantItemElementSortOrder();
         
+        return compareOrders(so1, so2);
+    }
+    
+    private int compareOrders(Float so1, Float so2) {
         if (so1 == null) {
             so1 = Float.MAX_VALUE;
         }
