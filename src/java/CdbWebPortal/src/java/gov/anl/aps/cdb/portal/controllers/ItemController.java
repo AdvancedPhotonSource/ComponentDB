@@ -1956,6 +1956,7 @@ public abstract class ItemController<
                     Integer qrParam = Integer.parseInt(paramValue);
                     ItemDomainEntity item = findByQrId(qrParam);
                     if (item == null) {
+                        SessionUtility.addInfoMessage("Not found","Item with QrId: " + qrParam + " does not exist.");
                         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
 
                         ItemDomainInventoryController inventoryController;
