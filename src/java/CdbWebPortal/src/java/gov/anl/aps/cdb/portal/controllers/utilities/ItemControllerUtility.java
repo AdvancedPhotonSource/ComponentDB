@@ -806,6 +806,8 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
                 PropertyValue newPropertyValue = new PropertyValue();
                 newPropertyValue.setPropertyType(propertyValue.getPropertyType());
                 newPropertyValue.setValue(propertyValue.getValue());
+                newPropertyValue.setDisplayValue(propertyValue.getDisplayValue());
+                newPropertyValue.setTargetValue(propertyValue.getTargetValue());
                 newPropertyValue.setTag(propertyValue.getTag());
                 newPropertyValue.setUnits(propertyValue.getUnits());
                 newPropertyValue.setDescription(propertyValue.getDescription());
