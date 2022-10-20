@@ -11,7 +11,6 @@ import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.SystemPropertyTypeNames;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -162,6 +161,11 @@ public class ItemDomainMachineDesignControlControllerUtility extends ItemDomainM
     @Override
     public ItemElementRelationshipTypeNames getRelationshipTypeName() {
         return ItemElementRelationshipTypeNames.control;
+    }
+
+    @Override
+    protected boolean isAllowMultipleRelationships() {
+        return true; 
     }
 
 }
