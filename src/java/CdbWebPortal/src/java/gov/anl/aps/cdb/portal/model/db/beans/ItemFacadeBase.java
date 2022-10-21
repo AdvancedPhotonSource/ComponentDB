@@ -417,6 +417,19 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return null;
     }
 
+    public List<Item> isItemRelationshipHaveCircularReference(Integer relationshipTypeId, Integer parentItemId, Integer proposedChildItemId) {
+        try {
+            StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.isItemRelationshipHaveCircularReference");
+            query.setParameter("relationship_type_id", relationshipTypeId);
+            query.setParameter("parent_item_id", parentItemId);
+            query.setParameter("proposed_child_item_id", proposedChildItemId);
+
+            return query.getResultList();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+    
     public List<ItemDomainEntity> fetchRelationshipChildrenItems(Integer itemId, Integer relationshipTypeId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchRelationshipChildrenItems");
@@ -430,7 +443,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-
+    
     public List<ItemDomainEntity> fetchRelationshipParentItems(Integer itemId, Integer relationshipTypeId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchRelationshipParentItems");
@@ -461,7 +474,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-
+    
     public List<ItemDomainInventory> fetchInventoryAssignedToMachineItemHiearchy(int machineItemId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchInventoryAssignedToMachineItemHiearchy");

@@ -357,6 +357,28 @@ import org.primefaces.model.TreeNode;
                         type = Integer.class
                 )
             }
+    ),
+    @NamedStoredProcedureQuery(
+            name = "item.isItemRelationshipHaveCircularReference",
+            procedureName = "is_item_relationship_have_circular_reference",
+            resultClasses = Item.class, 
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "relationship_type_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "parent_item_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "proposed_child_item_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                )
+            }
     )
 })
 
