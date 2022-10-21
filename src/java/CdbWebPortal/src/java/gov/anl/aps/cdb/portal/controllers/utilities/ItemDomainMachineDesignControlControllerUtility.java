@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
+import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.SystemPropertyTypeNames;
@@ -70,7 +71,7 @@ public class ItemDomainMachineDesignControlControllerUtility extends ItemDomainM
         throw new InvalidArgument("Missing information. Use applyRelationship with the interface to parent input.");
     }
 
-    public ItemElementRelationship applyRelationship(ItemDomainMachineDesign controlledElement, ItemDomainMachineDesign controllingElement, String interfaceToParent, UserInfo enteredByUser) throws InvalidArgument {
+    public ItemElementRelationship applyRelationship(ItemDomainMachineDesign controlledElement, ItemDomainMachineDesign controllingElement, String interfaceToParent, UserInfo enteredByUser) throws InvalidArgument, InvalidObjectState {
         ItemElementRelationship relationship = super.applyRelationship(controlledElement, controllingElement);
 
         createInterfaceToParentPropertyValue(relationship, interfaceToParent, enteredByUser);
