@@ -28,7 +28,6 @@ import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.entities.ControlRelationshipHierarchy;
 import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
-import gov.anl.aps.cdb.rest.entities.ItemDomainMachineDesignIdListRequest;
 import gov.anl.aps.cdb.rest.entities.NewControlRelationshipInformation;
 import gov.anl.aps.cdb.rest.entities.NewMachinePlaceholderOptions;
 import gov.anl.aps.cdb.rest.entities.PromoteMachineElementInformation;
@@ -37,8 +36,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -373,23 +370,47 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @GET
     @Path("/controlRelationshipHierarchyForMachine/{machineId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ControlRelationshipHierarchy getControlHierarchyForMachineElement(@PathParam("machineId") int machineId) throws ObjectNotFound {        
+    public List<ControlRelationshipHierarchy> getControlHierarchyForMachineElement(@PathParam("machineId") int machineId) throws ObjectNotFound {        
         ItemDomainMachineDesign machine = getMachineDesignItemById(machineId);                 
         ItemDomainMachineDesignControlControllerUtility utility = new ItemDomainMachineDesignControlControllerUtility(); 
-        PropertyValue interfaceToParent = utility.getControlInterfaceToParentForItem(machine);
-               
-        ControlRelationshipHierarchy controlRelationshipHierarchy = new ControlRelationshipHierarchy(machine, interfaceToParent); 
-                
-        ItemDomainMachineDesign controlParentItem = utility.getControlParentItem(machine); 
         
-        while (controlParentItem != null) {
-            interfaceToParent = utility.getControlInterfaceToParentForItem(controlParentItem);
-            controlRelationshipHierarchy = new ControlRelationshipHierarchy(controlRelationshipHierarchy, controlParentItem, interfaceToParent);
-            controlParentItem = utility.getControlParentItem(controlParentItem);
-        }       
+        List<ControlRelationshipHierarchy> controlHierarchyList = new ArrayList<>(); 
+        createControlHierarchyList(controlHierarchyList, utility, machine); 
         
-        return controlRelationshipHierarchy;         
+        return controlHierarchyList; 
     }
+    
+    private void createControlHierarchyList(List<ControlRelationshipHierarchy> controlHierarchyList, ItemDomainMachineDesignControlControllerUtility utility, ItemDomainMachineDesign machine) {
+        createControlHierarchyList(controlHierarchyList, utility, machine, null);
+    }
+    
+    private void createControlHierarchyList(List<ControlRelationshipHierarchy> controlHierarchyList, ItemDomainMachineDesignControlControllerUtility utility, ItemDomainMachineDesign machine, ControlRelationshipHierarchy activeRelationshipHierarchy) {
+        List<ItemDomainMachineDesign> controlParentItems = utility.getControlParentItems(machine);
+        ControlRelationshipHierarchy newRelationshipHierarchy = null; 
+        
+        if (controlParentItems.size() == 0) {
+            if (activeRelationshipHierarchy != null) {
+                controlHierarchyList.add(activeRelationshipHierarchy); 
+            }
+        } else {        
+            for (ItemDomainMachineDesign parentItem : controlParentItems) {
+                PropertyValue interfaceToParent = utility.getControlInterfaceToParentForItem(machine, parentItem);             
+
+                if (activeRelationshipHierarchy == null) {
+                    // Leaf most node
+                    newRelationshipHierarchy = new ControlRelationshipHierarchy(machine, interfaceToParent);                
+                } else {
+                    if (newRelationshipHierarchy != null) {
+                    // Copy over active for a new branch. 
+                        activeRelationshipHierarchy = activeRelationshipHierarchy.thisOnlyClone(); 
+                    }
+                    newRelationshipHierarchy = new ControlRelationshipHierarchy(activeRelationshipHierarchy, machine, interfaceToParent); 
+                }
+
+                createControlHierarchyList(controlHierarchyList, utility, parentItem, newRelationshipHierarchy);
+            }
+        }
+    }        
     
     @GET
     @Path("/ConnectorListForMachine/{machineId}")
