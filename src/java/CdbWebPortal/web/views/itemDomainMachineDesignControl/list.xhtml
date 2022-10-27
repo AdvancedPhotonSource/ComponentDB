@@ -29,7 +29,7 @@ See LICENSE file.
     
     <ui:define name="machineDesignExtraInfoPromotedColumn">
         <ui:param name="controlInterfaceToParentPV"
-                  value="#{itemDomainMachineDesignControlController.getControlInterfaceToParentForItem(mdTreeListObject)}"/> 
+                  value="#{itemDomainMachineDesignControlController.getControlInterfaceToParentForItem(machineTreeNode)}"/> 
         <p:column headerText="Interface to parent">
             #{controlInterfaceToParentPV.value}
         </p:column>

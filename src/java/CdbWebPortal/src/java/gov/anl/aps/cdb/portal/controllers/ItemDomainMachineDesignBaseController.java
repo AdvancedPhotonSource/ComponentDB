@@ -694,6 +694,23 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     public boolean isDisplayMachineDesignReorderOverlayPanel() {
         return displayMachineDesignReorderOverlayPanel;
     }
+    
+    protected ItemDomainMachineDesign getParentOfSelectedItemInHierarchy(MachineTreeNode machineTreeNode) {
+        ItemDomainMachineDesignBaseTreeNode parent = machineTreeNode.getParent();
+        if (parent != null) {
+            ItemElement element = parent.getElement();
+            if (element != null) {
+                return (ItemDomainMachineDesign) element.getContainedItem();                 
+            }
+        }
+        
+        return null;
+    }
+    
+    protected ItemDomainMachineDesign getParentOfSelectedItemInHierarchy() {
+        MachineTreeNode selectedTreeNode = getSelectedItemInListTreeTable();
+        return getParentOfSelectedItemInHierarchy(selectedTreeNode); 
+    }
 
     protected void updateCurrentUsingSelectedItemInTreeTable() {
         setCurrent(getItemFromSelectedItemInTreeTable());
