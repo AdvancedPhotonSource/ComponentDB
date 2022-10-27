@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.EntityTypeController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignControlController;
@@ -25,6 +24,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignPower
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
+import gov.anl.aps.cdb.portal.view.objects.MachineDesignControlRelationshipListObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -69,9 +69,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient boolean filterMachineNode = true;
     private transient boolean skipSetfilterMachineNode = false;
 
-    private transient ItemDomainMachineDesign controlParentItem = null; 
-    private transient PropertyValue controlInterfaceToParent = null;
-    private transient ItemElementRelationship controlRelationshipToParent = null;
+    private transient List<MachineDesignControlRelationshipListObject> controlRelationshipList; 
     
     // collection of ItemElements for facade to create when updating this machine design item
     private transient List<ItemElement> elementsToCreate = null;
@@ -555,38 +553,12 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
 
     @JsonIgnore
-    public ItemElementRelationship getControlRelationshipToParent() {
-        if (controlRelationshipToParent == null) {
-            List<ItemElementRelationship> itemElementRelationshipList = getItemElementRelationshipList();
-            String controlRelationshipName = ItemElementRelationshipTypeNames.control.getValue();
-            for (ItemElementRelationship ier : itemElementRelationshipList) {
-                RelationshipType relationshipType = ier.getRelationshipType();
-                String relationshipName = relationshipType.getName();
-                if (relationshipName.equals(controlRelationshipName)) {
-                    controlRelationshipToParent = ier;
-                    return controlRelationshipToParent;
-                }
-            }
-        }
-        return controlRelationshipToParent;
+    public List<MachineDesignControlRelationshipListObject> getControlRelationshipList() {        
+        return controlRelationshipList;
     }
 
-    @JsonIgnore
-    public ItemDomainMachineDesign getControlParentItem() {
-        return controlParentItem;
-    }
-
-    public void setControlParentItem(ItemDomainMachineDesign controlParentItem) {
-        this.controlParentItem = controlParentItem;
-    }    
-
-    @JsonIgnore
-    public PropertyValue getControlInterfaceToParent() {
-        return controlInterfaceToParent;
-    }
-
-    public void setControlInterfaceToParent(PropertyValue controlInterfaceToParent) {
-        this.controlInterfaceToParent = controlInterfaceToParent;
+    public void setControlRelationshipList(List<MachineDesignControlRelationshipListObject> controlRelationshipList) {
+        this.controlRelationshipList = controlRelationshipList;
     }
 
     @JsonIgnore

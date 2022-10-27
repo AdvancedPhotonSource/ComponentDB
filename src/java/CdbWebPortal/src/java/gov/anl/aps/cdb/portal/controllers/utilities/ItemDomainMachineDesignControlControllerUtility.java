@@ -18,6 +18,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
+import gov.anl.aps.cdb.portal.view.objects.MachineDesignControlRelationshipListObject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -108,31 +109,59 @@ public class ItemDomainMachineDesignControlControllerUtility extends ItemDomainM
         propertyValueList.add(pv);
     }
 
-    public ItemDomainMachineDesign getControlParentItem(ItemDomainMachineDesign mdItem) {
-        ItemDomainMachineDesign controlParentItem = mdItem.getControlParentItem();
+    public List<ItemDomainMachineDesign> getControlParentItems(ItemDomainMachineDesign mdItem) {
+        List<MachineDesignControlRelationshipListObject> controlRelationshipList = mdItem.getControlRelationshipList();                
 
-        if (controlParentItem == null) {
+        if (controlRelationshipList == null) {
+            controlRelationshipList = new ArrayList<>(); 
             ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();
             int relationshipId = relationshipTypeName.getDbId();
             
-            List<ItemDomainMachineDesign> parentItems = itemFacade.fetchRelationshipParentItems(mdItem.getId(), relationshipId);
-            if (parentItems.size() == 1) {
-                controlParentItem = parentItems.get(0);
-                mdItem.setControlParentItem(controlParentItem);                
+            List<ItemDomainMachineDesign> controlParentItems; 
+            controlParentItems = itemFacade.fetchRelationshipParentItems(mdItem.getId(), relationshipId);
+            
+            for (ItemDomainMachineDesign parentItem : controlParentItems) {
+                MachineDesignControlRelationshipListObject controlRelationshipObject = new MachineDesignControlRelationshipListObject();
+                controlRelationshipObject.setControlParentItem(parentItem);
+                controlRelationshipList.add(controlRelationshipObject); 
+            }
+            mdItem.setControlRelationshipList(controlRelationshipList);
+        } 
+        
+        List<ItemDomainMachineDesign> controlParentItems = new ArrayList<>(); 
+        for (MachineDesignControlRelationshipListObject controlRelationshipObject : controlRelationshipList) {
+            controlParentItems.add(controlRelationshipObject.getControlParentItem()); 
+        }
+
+        return controlParentItems;
+    }
+    
+    public PropertyValue getControlInterfaceToParentForItem(ItemDomainMachineDesign mdItem, ItemDomainMachineDesign parentItem) {
+        // Load control parents if needed. 
+        getControlParentItems(mdItem); 
+        
+        List<MachineDesignControlRelationshipListObject> controlRelationshipList;
+        controlRelationshipList = mdItem.getControlRelationshipList();
+        
+        for (MachineDesignControlRelationshipListObject controlRelationship : controlRelationshipList) {
+            ItemDomainMachineDesign controlParentItem = controlRelationship.getControlParentItem();
+            if (controlParentItem.equals(parentItem)) {
+                return getControlInterfaceToParentForItem(mdItem, controlRelationship); 
             }
         }
-
-        return controlParentItem;
+        
+        return null;                 
     }
 
-    public PropertyValue getControlInterfaceToParentForItem(ItemDomainMachineDesign mdItem) {
-        if (mdItem == null) {
+    public PropertyValue getControlInterfaceToParentForItem(ItemDomainMachineDesign mdItem, MachineDesignControlRelationshipListObject controlRelationshipListObject) {
+        if (controlRelationshipListObject == null) {
             return null;
         }
-        PropertyValue controlInterfaceToParent = mdItem.getControlInterfaceToParent();
-        if (controlInterfaceToParent == null) {
+        
+        PropertyValue controlInterfaceToParent = controlRelationshipListObject.getControlInterfaceToParent();        
+        if (controlInterfaceToParent == null) {                                   
             
-            ItemDomainMachineDesign controlParentItem = getControlParentItem(mdItem); 
+            ItemDomainMachineDesign controlParentItem = controlRelationshipListObject.getControlParentItem(); 
             
             if (controlParentItem != null) {                               
                 Integer parentId = controlParentItem.getId();
@@ -145,7 +174,7 @@ public class ItemDomainMachineDesignControlControllerUtility extends ItemDomainM
                 for (PropertyValue pv : pvs) {
                     PropertyType propertyType = pv.getPropertyType();
                     if (propertyType.getName().equals(controlInterfacePvName)) {
-                        mdItem.setControlInterfaceToParent(pv);
+                        controlRelationshipListObject.setControlInterfaceToParent(pv);                        
                         return pv;
                     }
 
@@ -153,7 +182,7 @@ public class ItemDomainMachineDesignControlControllerUtility extends ItemDomainM
             }
 
             // Prevent reloading non existent property. 
-            mdItem.setControlInterfaceToParent(new PropertyValue());
+            controlRelationshipListObject.setControlInterfaceToParent(new PropertyValue());
         }
 
         return controlInterfaceToParent;
