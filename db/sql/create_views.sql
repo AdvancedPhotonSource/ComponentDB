@@ -59,6 +59,19 @@ AND item.id not in (
 	AND item.id is not NULL and (item.domain_id = 3 or item.domain_id = 8)
 );
 
+DROP VIEW IF EXISTS v_relationship_hierarchy;
+CREATE VIEW v_relationship_hierarchy
+AS
+SELECT 
+	parent_item.id as parent_item_id, 
+	parent_item.name as parent_name, 
+	child_item.id as child_item_id, 
+	child_item.name as child_name,
+	ier.id as item_element_relationship_id,
+	ier.relationship_type_id
+FROM v_item_extras AS child_item INNER JOIN item_element_relationship AS ier ON ier.first_item_element_id = child_item.self_element_id
+INNER JOIN v_item_extras AS parent_item ON parent_item.self_element_id = ier.second_item_element_id; 
+
 DROP VIEW IF EXISTS v_item_domain_inventory_connector_status;
 CREATE VIEW v_item_domain_inventory_connector_status 
 AS 

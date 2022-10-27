@@ -4,8 +4,11 @@
  */
 package gov.anl.aps.cdb.rest.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -16,6 +19,7 @@ public class ControlRelationshipHierarchy {
     ControlRelationshipHierarchy childItem; 
     ItemDomainMachineDesign machineItem; 
     String interfaceToParent; 
+    PropertyValue interfaceToParentPv; 
 
     public ControlRelationshipHierarchy(ItemDomainMachineDesign machineDesign, PropertyValue interfaceToParent) {
         initBasic(machineDesign, interfaceToParent);
@@ -29,6 +33,7 @@ public class ControlRelationshipHierarchy {
     private void initBasic(ItemDomainMachineDesign machineDesign, PropertyValue interfaceToParentPv) {
         this.machineItem = machineDesign; 
         if (interfaceToParentPv != null) {
+            this.interfaceToParentPv = interfaceToParentPv; 
             interfaceToParent = interfaceToParentPv.getValue(); 
         } else {
             interfaceToParent = ""; 
@@ -46,6 +51,21 @@ public class ControlRelationshipHierarchy {
 
     public String getInterfaceToParent() {
         return interfaceToParent;
+    }
+
+    @JsonIgnore
+    public PropertyValue getInterfaceToParentPv() {
+        return interfaceToParentPv;
+    }
+    
+    @JsonIgnore
+    public ControlRelationshipHierarchy thisOnlyClone() {
+        ControlRelationshipHierarchy child = this.getChildItem();
+        ItemDomainMachineDesign machine = this.getMachineItem();
+        PropertyValue pv = this.getInterfaceToParentPv();
+        ControlRelationshipHierarchy clone = new ControlRelationshipHierarchy(child, machine, pv); 
+        
+        return clone; 
     }
 
     

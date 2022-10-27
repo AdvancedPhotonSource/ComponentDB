@@ -8,7 +8,6 @@ import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignRelationshipTreeNode.MachineTreeRelationshipConfiguration;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -72,17 +71,13 @@ public class ItemDomainMachineDesignRelationshipTreeNode extends ItemDomainMachi
     }
 
     @Override
-    protected ItemDomainMachineDesign getParentItem(ItemDomainMachineDesign item) {
+    protected List<ItemDomainMachineDesign> getParentItems(ItemDomainMachineDesign item) {
         ItemDomainMachineDesignFacade designFacade = config.getFacade();
         ItemElementRelationshipTypeNames relationshipToLoad = config.getRelationshipToLoad();
         
         List<ItemDomainMachineDesign> relationshiParentItems = designFacade.fetchRelationshipParentItems(item.getId(), relationshipToLoad.getDbId());
         
-        if (relationshiParentItems.size() == 1) {
-            return relationshiParentItems.get(0);
-        }
-        
-        return super.getParentItem(item);
+        return relationshiParentItems; 
     }
 
     @Override

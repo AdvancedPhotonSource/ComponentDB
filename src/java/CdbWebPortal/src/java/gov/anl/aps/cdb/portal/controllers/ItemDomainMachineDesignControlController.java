@@ -5,15 +5,16 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
+import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
-import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
-import gov.anl.aps.cdb.portal.constants.SystemPropertyTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignControlSettings;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
+import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignRelationshipTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -113,44 +114,33 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
     }
 
     public void prepareUpdateInterfaceToParent() {
-        updateCurrentUsingSelectedItemInTreeTable();
-
-        ItemDomainMachineDesign current = getCurrent();
-        PropertyValue controlInterfaceToParent = current.getControlInterfaceToParent();
+        ItemDomainMachineDesignRelationshipTreeNode node = getSelectedItemInListTreeTable(); 
+        PropertyValue controlInterfaceToParent = getControlInterfaceToParentForItem(node);
+        
         if (controlInterfaceToParent.getId() != null) {
             controlInterfaceSelection = controlInterfaceToParent.getValue();
         }
     }
 
     public void updateInterfaceToParent() {
-        ItemDomainMachineDesign current = getCurrent();
-        PropertyValue controlInterfaceToParent = current.getControlInterfaceToParent();
-        ItemElementRelationship controlRelationshipToParent = current.getControlRelationshipToParent();
-        if (controlInterfaceToParent.getId() == null) {
-            ItemDomainMachineDesignControlControllerUtility controllerUtility = getControllerUtility();
-            UserInfo enteredByUser = (UserInfo) SessionUtility.getUser();
-            try {
-                controllerUtility.createInterfaceToParentPropertyValue(controlRelationshipToParent, controlInterfaceSelection, enteredByUser);
-            } catch (InvalidArgument ex) {
-                LOGGER.error(ex);
-                SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
-                return;
-            }
-        } else {
-            controlInterfaceToParent.setValue(controlInterfaceSelection);
-        }
-        
+        ItemDomainMachineDesignRelationshipTreeNode node = getSelectedItemInListTreeTable(); 
+        PropertyValue controlInterfaceToParent = getControlInterfaceToParentForItem(node);       
+        controlInterfaceToParent.setValue(controlInterfaceSelection);
+
         update();
         expandToSelectedTreeNodeAndSelect();
     }
     
-    public PropertyValue getControlInterfaceToParentForItem(ItemDomainMachineDesign mdItem) {
-        PropertyValue interfaceToParentPV = getControllerUtility().getControlInterfaceToParentForItem(mdItem); 
-        return interfaceToParentPV; 
+    public PropertyValue getControlInterfaceToParentForItem(ItemDomainMachineDesignRelationshipTreeNode node) {
+        ItemDomainMachineDesign parentItem = getParentOfSelectedItemInHierarchy(node); 
+        ItemElement element = node.getElement();
+        ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) element.getContainedItem();
+        PropertyValue interfaceToParentPV = getControllerUtility().getControlInterfaceToParentForItem(mdItem, parentItem); 
+        return interfaceToParentPV;         
     }
 
     @Override
-    protected void performApplyRelationship() throws InvalidArgument {
+    protected void performApplyRelationship() throws InvalidArgument, InvalidObjectState {
         ItemDomainMachineDesignControlControllerUtility controllerUtility = getControllerUtility();
         UserInfo enteredByUser = (UserInfo) SessionUtility.getUser();
         controllerUtility.applyRelationship(getMachineRelatedByCurrent(), getCurrent(), controlInterfaceSelection, enteredByUser);

@@ -4,7 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
+import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignRelationshipBaseControllerUtility;
@@ -155,7 +157,7 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
 
         try {
             performApplyRelationship();
-        } catch (InvalidArgument ex) {
+        } catch (CdbException ex) {
             LOGGER.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getMessage());
 
@@ -169,7 +171,7 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
         expandToSelectedTreeNodeAndSelect();
     }
 
-    protected void performApplyRelationship() throws InvalidArgument {
+    protected void performApplyRelationship() throws InvalidArgument, InvalidObjectState {
         ItemDomainMachineDesignRelationshipBaseControllerUtility controllerUtility = getControllerUtility();
         controllerUtility.applyRelationship(machineRelatedByCurrent, getCurrent());
     }

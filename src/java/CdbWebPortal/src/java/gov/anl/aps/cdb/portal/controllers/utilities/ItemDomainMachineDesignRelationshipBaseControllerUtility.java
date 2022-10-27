@@ -5,9 +5,11 @@
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
+import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
@@ -27,7 +29,7 @@ public abstract class ItemDomainMachineDesignRelationshipBaseControllerUtility e
         relationshipTypeFacade = RelationshipTypeFacade.getInstance();
     }
 
-    public ItemElementRelationship applyRelationship(ItemDomainMachineDesign relatedElement, ItemDomainMachineDesign relatingElement) throws InvalidArgument {
+    public ItemElementRelationship applyRelationship(ItemDomainMachineDesign relatedElement, ItemDomainMachineDesign relatingElement) throws InvalidArgument, InvalidObjectState {
         // Verify the controlled node is not assigned to any entity type. Only standard machine design supported. 
         boolean failedControlledNodeTypeCheck = true;
         if (relatedElement instanceof ItemDomainMachineDesign) {
@@ -42,6 +44,8 @@ public abstract class ItemDomainMachineDesignRelationshipBaseControllerUtility e
 
         // Verify the controlling node is associated with the control hierarchy.
         ItemDomainMachineDesign controllingControlTypeItem = relatingElement;
+        Integer parentItemId = relatingElement.getId();
+        Integer proposedChildItemId = relatedElement.getId(); 
         ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();
         String relationshipName = relationshipTypeName.getValue();
         int relationshipId = relationshipTypeName.getDbId();
@@ -80,7 +84,7 @@ public abstract class ItemDomainMachineDesignRelationshipBaseControllerUtility e
         RelationshipType templateRelationship
                 = relationshipTypeFacade.findByName(relationshipName);
 
-        List<ItemDomainMachineDesign> machineItems = itemFacade.fetchRelationshipParentItems(relatedElement.getId(), relationshipId);
+        List<ItemDomainMachineDesign> machineItems = itemFacade.fetchRelationshipParentItems(relatedElement.getId(), relationshipId);               
 
         switch (machineItems.size()) {
             case 0:
@@ -94,11 +98,13 @@ public abstract class ItemDomainMachineDesignRelationshipBaseControllerUtility e
                     throw new InvalidArgument("Relationship with " + name + " already exists");
                 }
                 if (isAllowMultipleRelationships()) {
+                    verifyCircularRelationship(relationshipId, parentItemId, proposedChildItemId);
                     break; 
                 }
                 throw new InvalidArgument("The item is already related by: " + name);
             default:
                 if (isAllowMultipleRelationships()) {
+                    verifyCircularRelationship(relationshipId, parentItemId, proposedChildItemId);
                     break; 
                 }
                 throw new InvalidArgument("The item already has relationship defined");
@@ -115,6 +121,14 @@ public abstract class ItemDomainMachineDesignRelationshipBaseControllerUtility e
         relatingElement.getItemElementRelationshipList1().add(itemElementRelationship);
 
         return itemElementRelationship;
+    }
+    
+    public void verifyCircularRelationship(Integer relationshipTypeId, Integer parentItemId, Integer proposedChildItemId) throws InvalidObjectState {
+        List<Item> problemItems = itemFacade.isItemRelationshipHaveCircularReference(relationshipTypeId, parentItemId, proposedChildItemId); 
+        if (!problemItems.isEmpty()) {
+            Item problemItem = problemItems.get(0); 
+            throw new InvalidObjectState("Entry has a circular reference problem. The item has relationship with " + problemItem + " is on the same relationship branch."); 
+        }
     }
 
     protected boolean isAllowMultipleRelationships() {
