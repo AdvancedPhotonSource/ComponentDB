@@ -108,6 +108,16 @@ public class ItemDomainMachineDesignControlControllerUtility extends ItemDomainM
 
         propertyValueList.add(pv);
     }
+    
+    public List<ItemDomainMachineDesign> getControlChildItems(ItemDomainMachineDesign mdItem) {
+        ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();
+        int relationshipId = relationshipTypeName.getDbId();
+        Integer itemId = mdItem.getId();
+        
+        List<ItemDomainMachineDesign> children = itemFacade.fetchRelationshipChildrenItems(itemId, relationshipId);
+        
+        return children; 
+    }
 
     public List<ItemDomainMachineDesign> getControlParentItems(ItemDomainMachineDesign mdItem) {
         List<MachineDesignControlRelationshipListObject> controlRelationshipList = mdItem.getControlRelationshipList();                
