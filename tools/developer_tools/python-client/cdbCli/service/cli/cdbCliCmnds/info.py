@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from email.policy import default
 import time
 import click
@@ -27,7 +29,8 @@ def cdbInfo_helper(factory: CdbApiFactory,
                 item_id=None, 
                 qr=None,
                 # Optional, but used for printing exception
-                console=None):
+                console=None,
+                format=None):
     
     item_api = factory.getItemApi()
     machine_api = factory.getMachineDesignItemApi() 
@@ -94,22 +97,28 @@ def cdbInfo_helper(factory: CdbApiFactory,
                 machine = item
 
             if machine:
-                hierarchy = machine_api.get_control_hierarchy_for_machine_element(machine.id)
-                control_hierarchy_str = ""
-                if hierarchy.child_item:
-                    while hierarchy:
-                        control_hierarchy_str += "%s" + hierarchy.machine_item.name
-                        if hierarchy.child_item:
-                            control_hierarchy_str += " ➜ "
-                        if hierarchy.interface_to_parent: 
-                            interface_addon = "(%s) ➜ " % hierarchy.interface_to_parent
-                            control_hierarchy_str = control_hierarchy_str % interface_addon
-                        else:
-                            control_hierarchy_str = control_hierarchy_str % ""; 
+                hierarchies = machine_api.get_control_hierarchy_for_machine_element(machine.id)
+                for i, hierarchy in enumerate(hierarchies):
+                    control_hierarchy_str = ""
+                    if hierarchy.child_item:
+                        while hierarchy:
+                            machine_name = hierarchy.machine_item.name
+                            if format and format == cliBase.FORMAT_RICH_OPT:
+                                if machine_name == item.name:
+                                    machine_name = "[green]%s[/green]" % machine_name
+                            
+                            control_hierarchy_str += "%s" + machine_name
+                            if hierarchy.child_item:
+                                control_hierarchy_str += " ➜ "
+                            if hierarchy.interface_to_parent: 
+                                interface_addon = "(%s) ➜ " % hierarchy.interface_to_parent
+                                control_hierarchy_str = control_hierarchy_str % interface_addon
+                            else:
+                                control_hierarchy_str = control_hierarchy_str % ""; 
 
-                        hierarchy = hierarchy.child_item
+                            hierarchy = hierarchy.child_item
 
-                item_details.append({"Control Hierarchy": control_hierarchy_str})
+                    item_details.append({"Control Hierarchy %d" % (i + 1): control_hierarchy_str})
 
     if all and item.domain_id == factory.MACHINE_DESIGN_DOMAIN_ID:
         machine_item = machine_api.get_machine_design_item_by_id(item_id)
@@ -341,7 +350,8 @@ def cdb_info(cli: CliBase, id, qr, pager, all, inventory_mode, log_limit, format
                                             qr=qr, 
                                             inventory_mode=inventory_mode, 
                                             log_limit = log_limit,
-                                            console=console)
+                                            console=console,
+                                            format=format)
 
     cliBase.print_results(console, result_obj, format, pager, header_style=header_style)
 
