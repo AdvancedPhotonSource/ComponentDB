@@ -381,15 +381,27 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     }
     
     private void createControlHierarchyList(List<ControlRelationshipHierarchy> controlHierarchyList, ItemDomainMachineDesignControlControllerUtility utility, ItemDomainMachineDesign machine) {
-        createControlHierarchyList(controlHierarchyList, utility, machine, null);
+        ControlRelationshipHierarchy activeRelationshipHierarchy = null; 
+        
+        List<ItemDomainMachineDesign> controlChildItems = utility.getControlChildItems(machine);
+        
+        if (controlChildItems.size() == 1) {
+            ItemDomainMachineDesign child = controlChildItems.get(0); 
+            PropertyValue interfaceToParent = utility.getControlInterfaceToParentForItem(child, machine); 
+            activeRelationshipHierarchy = new ControlRelationshipHierarchy(child, interfaceToParent);
+        }
+        
+
+        createControlHierarchyList(controlHierarchyList, utility, machine, activeRelationshipHierarchy);
     }
     
     private void createControlHierarchyList(List<ControlRelationshipHierarchy> controlHierarchyList, ItemDomainMachineDesignControlControllerUtility utility, ItemDomainMachineDesign machine, ControlRelationshipHierarchy activeRelationshipHierarchy) {
-        List<ItemDomainMachineDesign> controlParentItems = utility.getControlParentItems(machine);
+        List<ItemDomainMachineDesign> controlParentItems = utility.getControlParentItems(machine);               
         ControlRelationshipHierarchy newRelationshipHierarchy = null; 
         
         if (controlParentItems.size() == 0) {
             if (activeRelationshipHierarchy != null) {
+                activeRelationshipHierarchy = new ControlRelationshipHierarchy(activeRelationshipHierarchy, machine, null);
                 controlHierarchyList.add(activeRelationshipHierarchy); 
             }
         } else {        
@@ -398,7 +410,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
 
                 if (activeRelationshipHierarchy == null) {
                     // Leaf most node
-                    newRelationshipHierarchy = new ControlRelationshipHierarchy(machine, interfaceToParent);                
+                    newRelationshipHierarchy = new ControlRelationshipHierarchy(machine, interfaceToParent);
                 } else {
                     if (newRelationshipHierarchy != null) {
                     // Copy over active for a new branch. 
@@ -410,7 +422,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
                 createControlHierarchyList(controlHierarchyList, utility, parentItem, newRelationshipHierarchy);
             }
         }
-    }        
+    }
     
     @GET
     @Path("/ConnectorListForMachine/{machineId}")
