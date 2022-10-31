@@ -15,6 +15,8 @@ from cdbApi.models.machine_design_connector_list_object import MachineDesignConn
 from cdbCli.common.cli import cliBase
 from cdbCli.common.cli.cliBase import CliBase
 
+CMD_HELP_MESSAGE="Displays Information about a specific CDB component, including basic details, properties, logs, relationships, etc."
+
 CABLE_DESIGN_PROPERTY_TYPE_NAME="cable_design_internal_property_type"
 
 INVENTORY_FULL_OPT = "Full"
@@ -319,7 +321,7 @@ def wrap_cli_specific_click_options(include_id=True, help_addition=''):
         return f
     return wrapper
 
-@click.command()
+@click.command(help=CMD_HELP_MESSAGE)
 @wrap_cli_specific_click_options()
 @click.option(
     "--pager",   

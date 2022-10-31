@@ -19,9 +19,9 @@ from cdbApi.models.search_entities_results import SearchEntitiesResults
 from cdbCli.common.cli import cliBase
 from cdbCli.service.cli.cdbCliCmnds.info import cdbInfo_helper
 
-
-
 from cdbCli.common.cli.cliBase import CliBase
+
+CMD_HELP_MESSAGE="Seraches CDB for a list of matching components with options for domains and interacitve mode that automatically can fetch cdbInfo."
 
 DOMAIN_ALL_OPT = "All"
 DOMAIN_CATALOG_OPT = "Catalog"
@@ -134,7 +134,7 @@ def search_helper(factory: CdbApiFactory, console: Console, search_string, searc
     return results
 
 
-@click.command()
+@click.command(help=CMD_HELP_MESSAGE)
 @click.argument('search_string', required=False)
 @click.option(
     "--pager",   
