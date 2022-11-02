@@ -288,7 +288,7 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
 
     }
 
-    private void includeFiel() {
+    protected final void includeFiel() {
         if (fiel_included_in_where == false) {
             include_fiel = true;
 
@@ -298,9 +298,13 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
             fiel_included_in_where = true;
         }
     }
+    
+    protected String getSelfElementNameField(String attribute) {
+        return ITEM_ELEMENTS_LIST_JOIN_NAME + "." + attribute;
+    }
 
     protected void addSelfElementWhereByAttribute(String attribute, String value) {
-        String nameField = ITEM_ELEMENTS_LIST_JOIN_NAME + "." + attribute;
+        String nameField = getSelfElementNameField(attribute); 
 
         appendWhere(QUERY_LIKE, nameField, value);
 
