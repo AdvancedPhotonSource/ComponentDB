@@ -13,7 +13,7 @@ See LICENSE file.
 
     <p:column id="endpointsColumn"
               rendered="#{entitySettingObject.displayEndpoints}"
-              sortBy="#{itemListObject.endpointsString}"
+              sortable="#{false}"
               field="Endpoints"
               filterable="#{true}"
               filterValue="#{entitySettingObject.filterEndpoints}"
@@ -47,7 +47,7 @@ See LICENSE file.
 
     <p:column id="assignedInventoryColumn"
               rendered="#{entitySettingObject.displayAssignedInventory}"
-              sortBy="#{itemListObject.inventoryItemString}"
+              sortable="#{false}"
               field="AssignedInventory"
               filterable="#{false}"
               exportFunction="#{facesUtility.getFilterString(itemListObject.inventoryItemString)}">
@@ -61,7 +61,7 @@ See LICENSE file.
 
     <p:column id="installationStatusColumn"
               rendered="#{entitySettingObject.displayInstallationStatus}"
-              sortBy="#{itemListObject.installedStatusString}"
+              sortable="#{false}"
               field="InstallationStatus"
               filterable="#{false}"
               exportFunction="#{facesUtility.getFilterString(itemListObject.installedStatusString)}">
