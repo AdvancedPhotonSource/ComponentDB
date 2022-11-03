@@ -6,7 +6,6 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.controllers.ItemElementController;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMAARCFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMAARC;
@@ -41,14 +40,19 @@ public class ItemDomainMAARCControllerUtility extends ItemControllerUtility<Item
                 throw new CdbException("File should be a member of one study. Something went wrong! please notify Admin of this error.");
             }
         } else {
-            // Study
-            List<ItemElement> itemElementDisplayList = item.getItemElementDisplayList();
-            while (itemElementDisplayList.size() > 0) {
-                ItemElement ie = itemElementDisplayList.get(0);
-                itemElementDisplayList.remove(0);
-
-                destroyFile(ie, userInfo);
+            // Study            
+            List<ItemElement> fiel = item.getFullItemElementList(); 
+            ItemElement selfElement = item.getSelfElement();
+            while (fiel.size() > 0) {
+                ItemElement ie = fiel.get(0);
+                fiel.remove(0);
+                if (!ie.equals(selfElement)) {
+                    destroyFile(ie, userInfo);
+                }
             }
+            // Add back self element since its deleted with the item. 
+            fiel.add(selfElement); 
+            item.resetItemElementVars();
 
             // Clear Relationships
             List<ItemElementRelationship> ierList = item.getItemElementRelationshipList1();
@@ -63,7 +67,7 @@ public class ItemDomainMAARCControllerUtility extends ItemControllerUtility<Item
                 }
 
             }
-        }
+        }       
         super.prepareEntityDestroy(item, userInfo);
     }
     
