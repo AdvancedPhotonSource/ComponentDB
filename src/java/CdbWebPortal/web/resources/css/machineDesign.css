@@ -149,3 +149,7 @@ h1 {
     width: 650px; 
     height: 700px;
 }
+
+.maxSearchResultInput > input {
+    width: 50px;
+}
