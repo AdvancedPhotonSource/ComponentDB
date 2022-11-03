@@ -5,6 +5,9 @@
 
 -- Execute by running `mysql CDB_DB_NAME --host=127.0.0.1 --user=cdb -p < updateTo3.14.5.sql`
 
+INSERT INTO setting_type VALUES
+(21021,'ItemDomainMachineDesign.List.Display.MaximumNumberOfSearchResults','Display maximum number of result rows for a machine filter.','600');
+
 DROP VIEW IF EXISTS v_relationship_hierarchy;
 CREATE VIEW v_relationship_hierarchy
 AS
