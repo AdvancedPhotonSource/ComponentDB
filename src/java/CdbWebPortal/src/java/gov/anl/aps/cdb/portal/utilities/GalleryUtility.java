@@ -313,10 +313,26 @@ public class GalleryUtility {
                         blank = false;
                         break;
                     case NUMERIC:
-                    case FORMULA:
-                        table_cell = new PdfPCell(new Phrase(cell.getNumericCellValue() + ""));
+                        table_cell = new PdfPCell(new Phrase(cell.getNumericCellValue()+ ""));
                         my_table.addCell(table_cell);
                         blank = false;
+                        break;
+                    case FORMULA:
+                        table_cell = null; 
+                        try {
+                            table_cell = new PdfPCell(new Phrase(cell.getNumericCellValue()+ ""));
+                        } catch (Exception ex) {}
+                        if (table_cell == null) {
+                            try {
+                                table_cell = new PdfPCell(new Phrase(cell.getStringCellValue()+ ""));
+                            } catch (Exception ex) {}
+                        }
+                        if (table_cell == null) {
+                            my_table.addCell(" ");
+                        } else {
+                            my_table.addCell(table_cell);
+                            blank = false;
+                        }
                         break;
                     default:
                         my_table.addCell(" ");
