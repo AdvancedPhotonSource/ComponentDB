@@ -10,9 +10,7 @@ See LICENSE file.
 
     <p:menuitem value="Permanently remove..."
                 icon="fa fa-trash"
-                action="#{entityController.preparePermanentlyRemove}"
-                oncomplete="PF('permanentlyRemoveDialogWidget').show()"
-                disabled="#{!loginController.loggedInAsAdmin}"
-                update="@form:permanentlyRemoveDialog @form:permanentlyRemoveDialogTree"/>
+                action="#{entityController.preparePermanentlyRemove('permanentlyRemoveOnSucess()')}"                
+                disabled="#{!loginController.loggedInAsAdmin}" />                     
 
 </ui:composition>

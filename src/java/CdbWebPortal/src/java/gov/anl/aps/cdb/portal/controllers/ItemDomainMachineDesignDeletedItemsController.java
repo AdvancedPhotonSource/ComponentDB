@@ -231,18 +231,27 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     /**
      * Prepares dialog for permanently remove operation.
      */
-    public void preparePermanentlyRemove() {
+    public void preparePermanentlyRemove(String onSuccessCommand) throws Exception {
         updateCurrentUsingSelectedItemInTreeTable();
         ItemDomainMachineDesign itemToRemove = findById(getCurrent().getId());
-        permanentlyRemoveNode = null;
-        permanentlyRemoveDisplayName = itemToRemove.getName();
-        permanentlyRemoveMessage = "'" + itemToRemove.getName() + "'";
-        if (!itemToRemove.getItemElementDisplayList().isEmpty()) {
-            permanentlyRemoveMessage = permanentlyRemoveMessage
-                    + " and its children (hierarchy shown at right)";
-            permanentlyRemoveNode = new DefaultTreeNode();
-            prepareItemHierarchyTree(permanentlyRemoveNode, itemToRemove);
+        Boolean isItemDeleted = itemToRemove.getIsItemDeleted();
+        if (isItemDeleted) {          
+            permanentlyRemoveNode = null;
+            permanentlyRemoveDisplayName = itemToRemove.getName();
+            permanentlyRemoveMessage = "'" + itemToRemove.getName() + "'";
+            if (!itemToRemove.getItemElementDisplayList().isEmpty()) {
+                permanentlyRemoveMessage = permanentlyRemoveMessage
+                        + " and its children (hierarchy shown at right)";
+                permanentlyRemoveNode = new DefaultTreeNode();
+                prepareItemHierarchyTree(permanentlyRemoveNode, itemToRemove);
+            }        
+            
+            SessionUtility.executeRemoteCommand(onSuccessCommand);
+            return;             
         }
+        
+        SessionUtility.addErrorMessage("Not Deleted", "Cannot permanently remove item because it is not deleted.");
+        setCurrent(null);
     }
 
     /**
@@ -299,6 +308,12 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     @Override
     protected ItemDomainMachineDesignDeletedControllerUtility createControllerUtilityInstance() {
         return new ItemDomainMachineDesignDeletedControllerUtility();
+    }
+
+    @Override
+    public ItemDomainMachineDesignTreeNode getCurrentMachineDesignListRootTreeNode() {
+        // Ensure that only the main machine design list is loaded. 
+        return getMachineDesignTreeRootTreeNode(); 
     }
 
     @Override
