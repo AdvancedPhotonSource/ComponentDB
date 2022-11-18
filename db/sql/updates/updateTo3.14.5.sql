@@ -5,6 +5,18 @@
 
 -- Execute by running `mysql CDB_DB_NAME --host=127.0.0.1 --user=cdb -p < updateTo3.14.5.sql`
 
+ALTER TABLE item_element_relationship 
+	ADD COLUMN relationship_id_for_parent int(11) unsigned DEFAULT NULL AFTER second_sort_order,
+	ADD KEY `item_element_relationship_k8` (`relationship_id_for_parent`),
+	ADD CONSTRAINT `item_element_relationship_fk8` FOREIGN KEY (`relationship_id_for_parent`) REFERENCES `item_element_relationship` (`id`) ON UPDATE CASCADE;
+
+ALTER TABLE item_element_relationship_history 
+	ADD COLUMN relationship_id_for_parent int(11) unsigned DEFAULT NULL AFTER second_sort_order,
+	ADD KEY `item_element_relationship_history_k9` (`relationship_id_for_parent`),
+	ADD CONSTRAINT `item_element_relationship_history_fk9` FOREIGN KEY (`relationship_id_for_parent`) REFERENCES `item_element_relationship` (`id`) ON UPDATE CASCADE;
+
+SOURCE ../create_stored_procedures.sql
+
 INSERT INTO setting_type VALUES
 (21021,'ItemDomainMachineDesign.List.Display.MaximumNumberOfSearchResults','Display maximum number of result rows for a machine filter.','600');
 

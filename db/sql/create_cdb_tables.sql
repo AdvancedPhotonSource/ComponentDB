@@ -772,6 +772,7 @@ CREATE TABLE `item_element_relationship` (
   `second_item_element_id` int(11) unsigned NULL,
   `second_item_connector_id` int(11) unsigned DEFAULT NULL,
   `second_sort_order` float(10,2) unsigned DEFAULT NULL,
+  `relationship_id_for_parent` int(11) unsigned DEFAULT NULL,
   `relationship_type_id` int(11) unsigned NOT NULL,
   `link_item_element_id` int(11) unsigned DEFAULT NULL,
   `relationship_details` varchar(64) DEFAULT NULL,
@@ -787,6 +788,7 @@ CREATE TABLE `item_element_relationship` (
   KEY `item_element_relationship_k5` (`relationship_type_id`),
   KEY `item_element_relationship_k6` (`link_item_element_id`),
   KEY `item_element_relationship_k7` (`resource_type_id`),
+  KEY `item_element_relationship_k8` (`relationship_id_for_parent`),
   CONSTRAINT `item_element_relationship_fk1` FOREIGN KEY (`first_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_relationship_fk2` FOREIGN KEY (`first_item_connector_id`) REFERENCES `item_connector` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_relationship_fk3` FOREIGN KEY (`second_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
@@ -794,6 +796,7 @@ CREATE TABLE `item_element_relationship` (
   CONSTRAINT `item_element_relationship_fk5` FOREIGN KEY (`relationship_type_id`) REFERENCES `relationship_type` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_relationship_fk6` FOREIGN KEY (`link_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_relationship_fk7` FOREIGN KEY (`resource_type_id`) REFERENCES `resource_type` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `item_element_relationship_fk8` FOREIGN KEY (`relationship_id_for_parent`) REFERENCES `item_element_relationship` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -810,6 +813,7 @@ CREATE TABLE `item_element_relationship_history` (
   `second_item_element_id` int(11) unsigned NULL,
   `second_item_connector_id` int(11) unsigned DEFAULT NULL,
   `second_sort_order` float(10,2) unsigned DEFAULT NULL,
+  `relationship_id_for_parent` int(11) unsigned DEFAULT NULL,
   `link_item_element_id` int(11) unsigned DEFAULT NULL,
   `relationship_details` varchar(64) DEFAULT NULL,
   `resource_type_id` int(11) unsigned DEFAULT NULL,
@@ -826,6 +830,7 @@ CREATE TABLE `item_element_relationship_history` (
   KEY `item_element_relationship_history_k6` (`link_item_element_id`),
   KEY `item_element_relationship_history_k7` (`resource_type_id`),
   KEY `item_element_relationship_history_k8` (`entered_by_user_id`),
+  KEY `item_element_relationship_history_k9` (`item_element_relationship_id`),
   CONSTRAINT `item_element_relationship_history_fk1` FOREIGN KEY (`item_element_relationship_id`) REFERENCES `item_element_relationship` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_relationship_history_fk2` FOREIGN KEY (`first_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_relationship_history_fk3` FOREIGN KEY (`first_item_connector_id`) REFERENCES `item_connector` (`id`) ON UPDATE CASCADE,
@@ -834,6 +839,7 @@ CREATE TABLE `item_element_relationship_history` (
   CONSTRAINT `item_element_relationship_history_fk6` FOREIGN KEY (`link_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_relationship_history_fk7` FOREIGN KEY (`resource_type_id`) REFERENCES `resource_type` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_relationship_history_fk8` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `item_element_relationship_history_fk9` FOREIGN KEY (`relationship_id_for_parent`) REFERENCES `item_element_relationship` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --

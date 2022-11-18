@@ -84,25 +84,63 @@ BEGIN
 END //
 
 DROP PROCEDURE IF EXISTS fetch_relationship_children_items;//
-CREATE PROCEDURE `fetch_relationship_children_items` (IN item_id int, IN relationship_type_id int) 
+CREATE PROCEDURE `fetch_relationship_children_items` (IN item_id INT, IN relationship_type_id INT, IN parent_item_id INT) 
 BEGIN
-	SELECT item.* 
-	FROM item_element_relationship ier
-	INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
-	INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id
-	INNER JOIN item on vitem1.item_id = item.id	
-	WHERE ier.relationship_type_id = relationship_type_id and vitem2.item_id = item_id;
+	IF(parent_item_id IS NULL) THEN
+		SELECT item.*
+		FROM item_element_relationship ier
+		INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
+		INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id
+		INNER JOIN item on vitem1.item_id = item.id	
+		WHERE ier.relationship_type_id = relationship_type_id and vitem2.item_id = item_id;
+	ELSE
+		SET @parent_relationship_id = (SELECT ier.id
+		FROM item_element_relationship ier
+		INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
+		INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id		
+		WHERE ier.relationship_type_id = relationship_type_id 
+		AND vitem1.item_id = item_id
+		AND vitem2.item_id = parent_item_id);
+
+		SELECT item.*
+		FROM item_element_relationship ier
+		INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
+		INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id
+		INNER JOIN item on vitem1.item_id = item.id	
+		WHERE ier.relationship_type_id = relationship_type_id and vitem2.item_id = item_id
+		AND (ier.relationship_id_for_parent = @parent_relationship_id or ier.relationship_id_for_parent is null);
+	END IF;	
 END //
 
 DROP PROCEDURE IF EXISTS fetch_relationship_parent_items;//
-CREATE PROCEDURE `fetch_relationship_parent_items` (IN item_id int, IN relationship_type_id int) 
+CREATE PROCEDURE `fetch_relationship_parent_items` (IN item_id int, IN relationship_type_id int, IN child_item_id int) 
 BEGIN
-	SELECT item.* 
-	FROM item_element_relationship ier
-	INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
-	INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id
-	INNER JOIN item on vitem2.item_id = item.id	
-	WHERE ier.relationship_type_id = relationship_type_id and vitem1.item_id = item_id;
+   	SET @parent_relationship_id = NULL; 
+	IF(child_item_id IS NOT NULL) THEN	
+		SET @parent_relationship_id = (SELECT ier.relationship_id_for_parent
+		FROM item_element_relationship ier
+		INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
+		INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id		
+		WHERE ier.relationship_type_id = relationship_type_id 
+		and vitem1.item_id = child_item_id and vitem2.item_id = item_id);
+	END IF; 
+
+	IF (@parent_relationship_id is NULL) THEN
+		SELECT item.* 
+		FROM item_element_relationship ier
+		INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
+		INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id
+		INNER JOIN item on vitem2.item_id = item.id	
+		WHERE ier.relationship_type_id = relationship_type_id and vitem1.item_id = item_id;
+	ELSE
+		SELECT item.* 
+		FROM item_element_relationship ier
+		INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
+		INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id
+		INNER JOIN item on vitem2.item_id = item.id	
+		WHERE ier.relationship_type_id = relationship_type_id 
+		AND vitem1.item_id = item_id AND ier.id = @parent_relationship_id; 
+	END IF; 
 END //
 
 DROP PROCEDURE IF EXISTS fetch_relationship_parent_property_values;//
