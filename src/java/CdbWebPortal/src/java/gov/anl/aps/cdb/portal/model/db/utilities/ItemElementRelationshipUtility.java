@@ -31,6 +31,8 @@ public class ItemElementRelationshipUtility {
        ierh.setResourceType(itemElementRelationship.getResourceType());
        ierh.setSecondItemConnector(itemElementRelationship.getSecondItemConnector());
        ierh.setSecondItemElement(itemElementRelationship.getSecondItemElement());
+       ierh.setSecondSortOrder(itemElementRelationship.getSecondSortOrder());
+       ierh.setRelationshipForParent(itemElementRelationship.getRelationshipForParent());
        
        return ierh;       
     }    
