@@ -94,12 +94,15 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     private Float firstSortOrder;
     @JoinColumn(name = "second_item_element_id", referencedColumnName = "id")
     @ManyToOne
-    private ItemElement secondItemElement;
+    private ItemElement secondItemElement;    
     @JoinColumn(name = "second_item_connector_id", referencedColumnName = "id")
     @ManyToOne(cascade = CascadeType.ALL)
     private ItemConnector secondItemConnector;
     @Column(name = "second_sort_order")
     private Float secondSortOrder;
+    @JoinColumn(name = "relationship_id_for_parent", referencedColumnName = "id")
+    @ManyToOne
+    private ItemElementRelationship relationshipForParent;
     @JoinColumn(name = "relationship_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private RelationshipType relationshipType;
@@ -264,6 +267,14 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
 
     public void setSecondSortOrder(Float secondSortOrder) {
         this.secondSortOrder = secondSortOrder;
+    }
+
+    public ItemElementRelationship getRelationshipForParent() {
+        return relationshipForParent;
+    }
+
+    public void setRelationshipForParent(ItemElementRelationship relationshipForParent) {
+        this.relationshipForParent = relationshipForParent;
     }
 
     public RelationshipType getRelationshipType() {
