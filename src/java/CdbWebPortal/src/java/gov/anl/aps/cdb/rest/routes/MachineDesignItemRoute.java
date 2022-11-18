@@ -358,9 +358,15 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
             throw new InvalidArgument("Invalid controlled machine id entered."); 
         }
         
+        ItemDomainMachineDesign linkedParentMachine = null;
+        Integer linkedParentMachineId = controlRelationshipInformation.getLinkedParentMachineId();
+        if (linkedParentMachineId != null) {
+            linkedParentMachine = facade.find(linkedParentMachineId); 
+        }
+        
         String controlInterfaceToParent = controlRelationshipInformation.getControlInterfaceToParent();
         
-        ItemElementRelationship relationship = utility.applyRelationship(controlledMachineElement, controllingMachineElement, controlInterfaceToParent, currentRequestUserInfo); 
+        ItemElementRelationship relationship = utility.applyRelationship(controlledMachineElement, controllingMachineElement, linkedParentMachine, controlInterfaceToParent, currentRequestUserInfo); 
         
         utility.update(controllingMachineElement, currentRequestUserInfo);
         
