@@ -256,7 +256,7 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
     public ItemDomainMachineDesignTreeNode getStandardMachineDesignRootTreeNode() {
         if (standardMachineDesignRootTreeNode == null) {
             List<ItemDomainMachineDesign> defaultTopLevelMachineList = super.getDefaultTopLevelMachineList();
-            standardMachineDesignRootTreeNode = new ItemDomainMachineDesignTreeNode(defaultTopLevelMachineList, getDefaultDomain(), getEntityDbFacade());
+            standardMachineDesignRootTreeNode = new ItemDomainMachineDesignTreeNode(defaultTopLevelMachineList, getDefaultDomain(), getEntityDbFacade(), settingObject);
         }
         return standardMachineDesignRootTreeNode;
     }

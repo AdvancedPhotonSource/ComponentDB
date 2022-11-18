@@ -11,7 +11,7 @@ See LICENSE file.
     
     <ui:define name="viewPanelGrid">
         <ui:include src="../itemDomainMachineDesignPanelGrid.xhtml" /> 
-    </ui:define>
+    </ui:define>        
     
     <ui:define name="itemElementListPanel"> </ui:define>
     <ui:define name="itemConnectorListPanel"> </ui:define>
@@ -27,6 +27,8 @@ See LICENSE file.
     <ui:define name="additionalViewItemContent">
         <ui:include src="../itemDomainMachineDesignViewMdSpecificSupport.xhtml" />
     </ui:define>
+    
+    <ui:define name="commonViewActionDeleteButton" /> 
     
     <ui:define name="additionalCommonViewActionButtons">
         <p:commandButton id="#{entityTypeName}ListViewButton"

@@ -12,6 +12,7 @@ public class NewControlRelationshipInformation {
     
     private int controlledMachineId; 
     private int controllingMachineId;     
+    private Integer linkedParentMachineId = null; 
     private String controlInterfaceToParent; 
 
     public NewControlRelationshipInformation() {
@@ -40,5 +41,13 @@ public class NewControlRelationshipInformation {
     public void setControlInterfaceToParent(String controlInterfaceToParent) {
         this.controlInterfaceToParent = controlInterfaceToParent;
     }    
+
+    public Integer getLinkedParentMachineId() {
+        return linkedParentMachineId;
+    }
+
+    public void setLinkedParentMachineId(Integer linkedParentMachineId) {
+        this.linkedParentMachineId = linkedParentMachineId;
+    }
           
 }

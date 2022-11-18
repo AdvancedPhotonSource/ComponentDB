@@ -39,5 +39,19 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="rowExpansionCustomizeOptionsTab" /> 
-    <ui:define name="otherCustomizeOptionsTab" /> 
+    <ui:define name="otherCustomizeOptionsTab">
+        <p:tab title="Other">
+            <p:panelGrid columns="2">
+                <p:inputNumber id="displaySearchResultsLimit" 
+                               styleClass="maxSearchResultInput"
+                               decimalPlaces="0"
+                               maxValue="9999"
+                               minValue="0"
+                               value="#{entitySettingObject.displayMaximumNumberOfSearchResults}" />
+                <h:outputLabel for="displaySearchResultsLimit" 
+                               value="Search Results Row Limit" 
+                               styleClass="dialogDataLabel"/>
+            </p:panelGrid>
+        </p:tab>
+    </ui:define>
 </ui:composition>

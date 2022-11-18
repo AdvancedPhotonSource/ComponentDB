@@ -30,57 +30,58 @@ public class ItemDomainCableDesignQueryBuilder extends ItemQueryBuilder {
     public ItemDomainCableDesignQueryBuilder(Integer domainId, Map filterMap, String sortField, SortOrder sortOrder, ItemSettings scopeSettings) {
         super(domainId, filterMap, sortField, sortOrder, scopeSettings);
     }
-
-    private void addCableRelationshipDeviceWhere(String field, String itemName) {
-        String cableRelationshipTypeName = ItemElementRelationshipTypeNames.itemCableConnection.getValue();
-        addSecondRelationshipWhere(field, cableRelationshipTypeName, "firstItemElement.parentItem.name", itemName);
-    }
-
-    private void addCableRelationshipDevicePortWhere(String field, String connectorName) {
-        String cableRelationshipTypeName = ItemElementRelationshipTypeNames.itemCableConnection.getValue();
-        addSecondRelationshipWhere(field, cableRelationshipTypeName, "firstItemConnector.connector.name", connectorName);
-    }
-
-    private void addCableRelationshipCableConnectorWhere(String field, String connectorName) {
-        String cableRelationshipTypeName = ItemElementRelationshipTypeNames.itemCableConnection.getValue();
-        addSecondRelationshipWhere(field, cableRelationshipTypeName, "secondItemConnector.connector.name", connectorName);
-    }
-
-    @Override
-    protected void handleUnandeledFieldFilter(String key, String value) {
+    
+    private String getCableRelationshipDbFieldNameForFilterKey(String key) {
+        String fieldName = null; 
+        if (key.startsWith(CONNECTION_CONNECTOR)) {
+            fieldName = "secondItemConnector.connector.name";
+        } else if (key.startsWith(CONNECTION_PORT)) {
+            fieldName = "firstItemConnector.connector.name";
+        } else if (key.startsWith(CONNECTION_DEVICE)) {
+            fieldName = "firstItemElement.parentItem.name";
+        } else if (key.startsWith(CONNECTION_CONNECTED_DEVICES)) {
+            fieldName = "firstItemElement.parentItem.name";
+        }
         
-        super.handleUnandeledFieldFilter(key, value);        
-        
-        // handle connection details columns
-        if ((key.startsWith(CONNECTION_CONNECTOR)) 
-                || (key.startsWith(CONNECTION_PORT)) 
-                || (key.startsWith(CONNECTION_DEVICE)) 
-                || (key.startsWith(CONNECTION_CONNECTED_DEVICES))) {
-        
+        return fieldName;         
+    } 
+    
+    private void addCableRelationshipSortFilter(String field, String fieldName, String filter_value) {
+        String cableRelationshipTypeName = ItemElementRelationshipTypeNames.itemCableConnection.getValue();
+        if (filter_value != null) {
+            // Handle as a filter
+            addSecondRelationshipWhere(field, cableRelationshipTypeName, fieldName, filter_value);
+        } else {
+            // Handle as a sort
+            prepareSecondRelationshipQueryByRelationshipName(sortField, cableRelationshipTypeName);
+        }
+    }        
+    
+    private boolean addCableRelationshipPropertyForSortFilter(String key) {
+        if (getCableRelationshipDbFieldNameForFilterKey(key) != null) {
             String cableEnd = CdbEntity.VALUE_CABLE_END_1;
             if (key.endsWith(END2)) {
                 cableEnd = CdbEntity.VALUE_CABLE_END_2;
             }
-            String pvlParentName = key;
+            String pvlParentName = key; 
             addPropertyWhereByTypeName(pvlParentName, CdbEntity.CABLE_END_DESIGNATION_PROPERTY_TYPE, "pvlCableEnd", cableEnd);
+            
+            return true;
+        } 
 
-            if (key.startsWith(CONNECTION_CONNECTOR)) {
-                addCableRelationshipCableConnectorWhere(key, value);
+        return false; 
+    }
 
-            } else if (key.startsWith(CONNECTION_PORT)) {
-                addCableRelationshipDevicePortWhere(key, value);
-
-            } else if (key.startsWith(CONNECTION_DEVICE)) {
-                addCableRelationshipDeviceWhere(key, value);
-
-            } else if (key.startsWith(CONNECTION_CONNECTED_DEVICES)) {
-                addCableRelationshipDeviceWhere(key, value);
-
-            }
+    @Override
+    protected void handleUnandeledFieldFilter(String key, String value) {        
+        super.handleUnandeledFieldFilter(key, value);        
+        
+        // handle connection details columns
+        if (addCableRelationshipPropertyForSortFilter(key)) {
+            String fieldName = getCableRelationshipDbFieldNameForFilterKey(key); 
+            addCableRelationshipSortFilter(key, fieldName, value);
         } else {
-
             switch (key) {
-
                 case CATALOG_ITEM_FIELD_NAME:
                     addSelfElementWhereByAttribute(CATALOG_ITEM_ATTRIBUTE, value);
                     break;
@@ -93,6 +94,24 @@ public class ItemDomainCableDesignQueryBuilder extends ItemQueryBuilder {
             }
         }
     }
+
+    @Override
+    protected String handleUnhandeledSortField() {                
+        if (addCableRelationshipPropertyForSortFilter(sortField)) {            
+            String fieldName = getCableRelationshipDbFieldNameForFilterKey(sortField); 
+            if (fieldName != null) {
+                addCableRelationshipSortFilter(sortField, fieldName, null);                                                 
+
+                return sortField + "." + fieldName;
+            }
+        } else if (sortField.equals(CATALOG_ITEM_FIELD_NAME)) {            
+            String fullSortField = getSelfElementNameField(CATALOG_ITEM_ATTRIBUTE);
+            includeFiel();
+            return fullSortField;
+        }
+        
+        return super.handleUnhandeledSortField();
+    }        
 
     @Override
     protected String getCoreMetadataPropertyName() {

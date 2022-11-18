@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignBaseTreeNode.MachineTreeBaseConfiguration;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
@@ -48,8 +49,9 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
         }
     }
 
-    public ItemDomainMachineDesignBaseTreeNode(List<ItemDomainMachineDesign> items, Domain domain, ItemDomainMachineDesignFacade facade) {
+    public ItemDomainMachineDesignBaseTreeNode(List<ItemDomainMachineDesign> items, Domain domain, ItemDomainMachineDesignFacade facade, ItemDomainMachineDesignSettings settings) {
         initFirstLevel(items, domain, facade);
+        this.config.setSettings(settings);
     }
 
     public ItemDomainMachineDesignBaseTreeNode() {
@@ -122,13 +124,25 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
     protected void loadRelationshipsFromRelationshipList(boolean fetchParents, ItemElementRelationshipTypeNames relationshipTypeName, String customType) {
         ItemElement element = this.getElement();
         Item machineElement = element.getContainedItem();
+        
+        ItemDomainMachineDesignBaseTreeNode parent = this.getParent();
+        Integer parentItemId = null; 
+        if (parent != null) {
+            ItemElement parentElement = parent.getElement();
+            if (parentElement != null) {
+                Item containedItem = parentElement.getContainedItem();
+                if (containedItem != null) {
+                    parentItemId = containedItem.getId(); 
+                }
+            }
+        }
 
         List<ItemDomainMachineDesign> results = null;
         ItemDomainMachineDesignFacade designFacade = config.getFacade();
         if (fetchParents) {
             results = designFacade.fetchRelationshipParentItems(machineElement.getId(), relationshipTypeName.getDbId());
         } else {
-            results = designFacade.fetchRelationshipChildrenItems(machineElement.getId(), relationshipTypeName.getDbId());
+            results = designFacade.fetchRelationshipChildrenItems(machineElement.getId(), relationshipTypeName.getDbId(), parentItemId);
         }
 
         for (ItemDomainMachineDesign item : results) {
@@ -287,40 +301,41 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
             Integer[] displayedNodes = new Integer[1];
             displayedNodes[0] = 0;
             for (ItemDomainMachineDesign item : rawFilterResults) {
-                Set<ItemDomainMachineDesign> additionalParents = new HashSet<>(); 
-                List<ItemDomainMachineDesign> processParents = new ArrayList<>(); 
-                   
+                Set<ItemDomainMachineDesign> additionalParents = new HashSet<>();
+                List<ItemDomainMachineDesign> processParents = new ArrayList<>();
+
                 ItemDomainMachineDesignBaseTreeNode createTreeFromFilter = createTreeFromFilter(item, true, displayedNodes, additionalParents, null);
-                processAdditionalFilterParentResult(item, additionalParents, processParents, relevantResults, displayedNodes); 
-                
+                processAdditionalFilterParentResult(item, additionalParents, processParents, relevantResults, displayedNodes);
+
                 if (createTreeFromFilter != null) {
                     relevantResults.incrementAndGet();
                     filterResults.add(item);
                 }
             }
 
-            if (displayedNodes[0] > 600) {
+            Integer maxSearchNodes = config.getMaxSearchNodes();
+            if (displayedNodes[0] > maxSearchNodes) {
                 clearFilterResults();
-                SessionUtility.addErrorMessage("Too many results", "Too many results to display. Please provide a more specific search criteria.", true);
+                SessionUtility.addErrorMessage("Too many results rows (" + displayedNodes[0] + ")" , "Too many results to display. Please provide a more specific search criteria.", true);
             } else {
                 SessionUtility.addInfoMessage("Done", "Showing " + relevantResults + " relevant results.", true);
             }
         }
     }
-    
-    private void processAdditionalFilterParentResult(ItemDomainMachineDesign item, Set<ItemDomainMachineDesign> additionalParents, List<ItemDomainMachineDesign> processParents, AtomicInteger relevantResults, Integer[] displayedNodes) {        
+
+    private void processAdditionalFilterParentResult(ItemDomainMachineDesign item, Set<ItemDomainMachineDesign> additionalParents, List<ItemDomainMachineDesign> processParents, AtomicInteger relevantResults, Integer[] displayedNodes) {
         for (ItemDomainMachineDesign additionalParent : additionalParents) {
-            relevantResults.incrementAndGet(); 
-            Set<ItemDomainMachineDesign> additionalParentForParent = new HashSet<>(); 
+            relevantResults.incrementAndGet();
+            Set<ItemDomainMachineDesign> additionalParentForParent = new HashSet<>();
             processParents.add(additionalParent);
             createTreeFromFilter(item, true, displayedNodes, additionalParentForParent, processParents);
             if (additionalParentForParent.size() > 0) {
-                List<ItemDomainMachineDesign> additionalParentProcessParents = new ArrayList<>(); 
-                additionalParentProcessParents.addAll(processParents); 
-                processAdditionalFilterParentResult(item, additionalParentForParent, additionalParentProcessParents, relevantResults, displayedNodes); 
+                List<ItemDomainMachineDesign> additionalParentProcessParents = new ArrayList<>();
+                additionalParentProcessParents.addAll(processParents);
+                processAdditionalFilterParentResult(item, additionalParentForParent, additionalParentProcessParents, relevantResults, displayedNodes);
             }
-            processParents.remove(additionalParent);             
-        }                
+            processParents.remove(additionalParent);
+        }
     }
 
     protected List<ItemDomainMachineDesign> getParentItems(ItemDomainMachineDesign item) {
@@ -336,35 +351,35 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
         return (T) parentNode.createChildNode(ie, childrenLoaded, true, true);
     }
 
-    private ItemDomainMachineDesignBaseTreeNode createTreeFromFilter(ItemDomainMachineDesign item, boolean searchResultNode, Integer[] displayedNodes, 
+    private ItemDomainMachineDesignBaseTreeNode createTreeFromFilter(ItemDomainMachineDesign item, boolean searchResultNode, Integer[] displayedNodes,
             Set<ItemDomainMachineDesign> additionalParents, List<ItemDomainMachineDesign> processWithParent) {
         if (item == null) {
             return null;
         }
-        List<ItemDomainMachineDesign> parentMachineDesigns = getParentItems(item); 
-        ItemDomainMachineDesign parentMachineDesign = null; 
-        
+        List<ItemDomainMachineDesign> parentMachineDesigns = getParentItems(item);
+        ItemDomainMachineDesign parentMachineDesign = null;
+
         if (parentMachineDesigns.size() > 0) {
-            parentMachineDesign = parentMachineDesigns.get(0); 
+            parentMachineDesign = parentMachineDesigns.get(0);
             if (parentMachineDesigns.size() > 1) {
-                for (ItemDomainMachineDesign potentialParent: parentMachineDesigns) {
-                    if (potentialParent.equals(parentMachineDesign)){
+                for (ItemDomainMachineDesign potentialParent : parentMachineDesigns) {
+                    if (potentialParent.equals(parentMachineDesign)) {
                         // Skip the first node. Already processed or will be process on this run. 
                         continue;
                     }
-                    
+
                     if (processWithParent != null) {
                         if (processWithParent.contains(potentialParent)) {
-                            parentMachineDesign = potentialParent; 
-                            break; 
+                            parentMachineDesign = potentialParent;
+                            break;
                         }
-                    } 
-                    
-                    additionalParents.add(potentialParent);                     
+                    }
+
+                    additionalParents.add(potentialParent);
                 }
-            }                
+            }
         }
-        
+
         ItemDomainMachineDesignBaseTreeNode parentNode = createTreeFromFilter(parentMachineDesign, false, displayedNodes, additionalParents, processWithParent);
 
         if (parentMachineDesign != null && parentNode == null) {
@@ -461,6 +476,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
         private boolean setMachineTreeNodeType = true;
         private boolean loadAllChildren = false;
         private ItemDomainMachineDesignControllerUtility mdControllerUtility = null;
+        private ItemDomainMachineDesignSettings settings = null;
 
         public MachineTreeBaseConfiguration() {
         }
@@ -491,6 +507,24 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
                 mdControllerUtility = new ItemDomainMachineDesignControllerUtility();
             }
             return mdControllerUtility;
+        }
+
+        public ItemDomainMachineDesignSettings getSettings() {
+            return settings;
+        }
+
+        public void setSettings(ItemDomainMachineDesignSettings settings) {
+            this.settings = settings;
+        }
+
+        public Integer getMaxSearchNodes() {
+            if (settings != null) {
+                Integer displayMaximumNumberOfSearchResults = settings.getDisplayMaximumNumberOfSearchResults();
+                if (displayMaximumNumberOfSearchResults != null) {
+                    return displayMaximumNumberOfSearchResults; 
+                }
+            }
+            return 600;
         }
 
     }

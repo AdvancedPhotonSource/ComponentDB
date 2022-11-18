@@ -17,11 +17,13 @@ See LICENSE file.
                          rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="fa fa-pencil">
             <p:tooltip for="#{entityTypeName}ViewEditButton" value="Edit #{entityController.displayEntityTypeName}."/>
         </p:commandButton>
-        <p:commandButton id="#{entityTypeName}ViewDeleteButton" onclick="PF('#{entityTypeName}DestroyDialogWidget').show();" 
-                         rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="fa fa-trash">
-            <f:setPropertyActionListener value="#{entityObject}" target="#{entityController.current}"/>
-            <p:tooltip for="#{entityTypeName}ViewDeleteButton" value="Delete #{entityController.displayEntityTypeName}."/>
-        </p:commandButton>  
+        <ui:insert name="commonViewActionDeleteButton">
+            <p:commandButton id="#{entityTypeName}ViewDeleteButton" onclick="PF('#{entityTypeName}DestroyDialogWidget').show();" 
+                             rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="fa fa-trash">
+                <f:setPropertyActionListener value="#{entityObject}" target="#{entityController.current}"/>
+                <p:tooltip for="#{entityTypeName}ViewDeleteButton" value="Delete #{entityController.displayEntityTypeName}."/>
+            </p:commandButton>  
+        </ui:insert>
         
         <ui:include src="commonViewInfoActionButton.xhtml"/> 
         

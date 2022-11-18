@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model;
 
+import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode.MachineTreeConfiguration;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
@@ -37,8 +38,8 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
         super(element, config, parent, setTypeForLevel);
     }
 
-    public ItemDomainMachineDesignTreeNode(List<ItemDomainMachineDesign> items, Domain domain, ItemDomainMachineDesignFacade facade) {
-        super(items, domain, facade);
+    public ItemDomainMachineDesignTreeNode(List<ItemDomainMachineDesign> items, Domain domain, ItemDomainMachineDesignFacade facade, ItemDomainMachineDesignSettings settings) {
+        super(items, domain, facade, settings);
     }
 
     public ItemDomainMachineDesignTreeNode() {

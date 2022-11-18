@@ -255,7 +255,7 @@ public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBa
             }
         }
 
-        ItemDomainMachineDesignTreeNode rootTreeNode = new ItemDomainMachineDesignTreeNode(itemsWithoutParents, getDefaultDomain(), getEntityDbFacade());
+        ItemDomainMachineDesignTreeNode rootTreeNode = new ItemDomainMachineDesignTreeNode(itemsWithoutParents, getDefaultDomain(), getEntityDbFacade(), settingObject);
 
         String filterByName = settingObject.getFilterByName();
         if (filterByName != null) {

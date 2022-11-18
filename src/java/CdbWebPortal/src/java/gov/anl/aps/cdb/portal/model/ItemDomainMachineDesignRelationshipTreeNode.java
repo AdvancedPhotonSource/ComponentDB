@@ -75,7 +75,14 @@ public class ItemDomainMachineDesignRelationshipTreeNode extends ItemDomainMachi
         ItemDomainMachineDesignFacade designFacade = config.getFacade();
         ItemElementRelationshipTypeNames relationshipToLoad = config.getRelationshipToLoad();
         
-        List<ItemDomainMachineDesign> relationshiParentItems = designFacade.fetchRelationshipParentItems(item.getId(), relationshipToLoad.getDbId());
+        Integer currentItemId = item.getId();
+        Integer controlChildItemId = item.getControlChildItemId();
+        List<ItemDomainMachineDesign> relationshiParentItems = designFacade.fetchRelationshipParentItems(currentItemId, relationshipToLoad.getDbId(), controlChildItemId);
+        
+        // Set control child for referencing in next itteration. 
+        for (ItemDomainMachineDesign parent : relationshiParentItems) {
+            parent.setControlChildItemId(currentItemId);
+        }
         
         return relationshiParentItems; 
     }
@@ -104,7 +111,7 @@ public class ItemDomainMachineDesignRelationshipTreeNode extends ItemDomainMachi
         String type = MachineTreeRelationshipConfiguration.RELATIONSHIP_CHILD_NODE_TYPE;
         loadRelationshipsFromRelationshipList(false, relationshipToLoad, type);
     }
-
+    
     @Override
     protected boolean isLoadElementChildren() {
         ItemElement element = this.getElement();

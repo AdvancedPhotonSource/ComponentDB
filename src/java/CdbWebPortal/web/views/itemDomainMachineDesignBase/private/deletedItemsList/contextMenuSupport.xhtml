@@ -55,7 +55,12 @@ See LICENSE file.
                 </p:row>
             </p:panelGrid>
         </p:panel>
-    </p:dialog>   
+    </p:dialog>  
+
+    <p:remoteCommand name="permanentlyRemoveOnSucess"
+                     oncomplete="PF('permanentlyRemoveDialogWidget').show()"                
+                     update="@form:permanentlyRemoveDialog @form:permanentlyRemoveDialogTree"
+                     />
 
     <p:dialog header="Restore deleted item"
               modal="true"

@@ -11,8 +11,8 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignContro
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignRelationshipTreeNode;
+import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -40,6 +40,9 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
 
     private String controlInterfaceSelection = null;
     private PropertyType controlInterfacePropertyType = null;        
+    
+    private ItemDomainMachineDesign parentControlledNode; 
+    private boolean linksOnlyToParentControlledNode; 
 
     @Override
     protected ItemDomainMachineDesignControlControllerUtility getControllerUtility() {
@@ -131,6 +134,18 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
         expandToSelectedTreeNodeAndSelect();
     }
     
+    public PropertyValue getControlInterfaceToParentForItem(ItemDomainMachineDesignTreeNode node) {
+        // Ignore fetching for standard tree nodes when in split view. 
+        return null; 
+    }
+
+    @Override
+    public void prepareSelectMachinedRelatedByNode() {
+        super.prepareSelectMachinedRelatedByNode(); 
+        parentControlledNode = getParentOfSelectedItemInHierarchy(); 
+        linksOnlyToParentControlledNode = false; 
+    }    
+    
     public PropertyValue getControlInterfaceToParentForItem(ItemDomainMachineDesignRelationshipTreeNode node) {
         ItemDomainMachineDesign parentItem = getParentOfSelectedItemInHierarchy(node); 
         ItemElement element = node.getElement();
@@ -143,7 +158,13 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
     protected void performApplyRelationship() throws InvalidArgument, InvalidObjectState {
         ItemDomainMachineDesignControlControllerUtility controllerUtility = getControllerUtility();
         UserInfo enteredByUser = (UserInfo) SessionUtility.getUser();
-        controllerUtility.applyRelationship(getMachineRelatedByCurrent(), getCurrent(), controlInterfaceSelection, enteredByUser);
+        
+        ItemDomainMachineDesign linkedParentItem = null;
+        
+        if (linksOnlyToParentControlledNode) {
+            linkedParentItem = getParentOfSelectedItemInHierarchy(); 
+        } 
+        controllerUtility.applyRelationship(getMachineRelatedByCurrent(), getCurrent(), linkedParentItem, controlInterfaceSelection, enteredByUser);
     }
     
     @Override
@@ -159,6 +180,18 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
     @Override
     public boolean getEntityDisplayDeletedItems() {
         return true; 
+    }
+    
+    public boolean isLinksOnlyToParentControlledNode() {
+        return linksOnlyToParentControlledNode;
+    }
+
+    public void setLinksOnlyToParentControlledNode(boolean linksOnlyToParentControlledNode) {
+        this.linksOnlyToParentControlledNode = linksOnlyToParentControlledNode;
+    }
+
+    public ItemDomainMachineDesign getParentControlledNode() {
+        return parentControlledNode;
     }
 
     @Override

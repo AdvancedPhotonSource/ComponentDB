@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.controllers.settings;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignBaseController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
@@ -39,6 +38,8 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     
     private static final String FilterFilteredMachineIdsSettingTypeKey = "ItemDomainMachineDesign.List.Filter.FilteredMachineIds";  
     private static final String FilterByNameSettingTypeKey = "ItemDomainMachineDesign.List.FilterBy.Name";
+    
+    private static final String DisplayMaximumNumberOfSearchResultsSettingTypeKey = "ItemDomainMachineDesign.List.Display.MaximumNumberOfSearchResults"; 
 
     protected Boolean displayAlternateName = null; 
     protected Boolean displayItemElementsSimpleView = false;
@@ -50,6 +51,8 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     protected Boolean displayInstalledQrId = null; 
     
     protected String filterFilteredMachineIds = null; 
+    
+    protected Integer displayMaximumNumberOfSearchResults = null; 
 
     public ItemDomainMachineDesignSettings(ItemDomainMachineDesignBaseController parentController) {
         super(parentController);
@@ -90,6 +93,8 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
         
         filterFilteredMachineIds = settingTypeMap.get(FilterFilteredMachineIdsSettingTypeKey).getDefaultValue(); 
         filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        
+        displayMaximumNumberOfSearchResults = parseSettingValueAsInteger(settingTypeMap.get(DisplayMaximumNumberOfSearchResultsSettingTypeKey).getDefaultValue()); 
 
     }
 
@@ -123,6 +128,8 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
         
         filterFilteredMachineIds = settingEntity.getSettingValueAsString(FilterFilteredMachineIdsSettingTypeKey, filterFilteredMachineIds); 
         filterByName = settingEntity.getSettingValueAsString(FilterByNameSettingTypeKey, filterByName); 
+        
+        displayMaximumNumberOfSearchResults = settingEntity.getSettingValueAsInteger(DisplayMaximumNumberOfSearchResultsSettingTypeKey, displayMaximumNumberOfSearchResults); 
     }
 
     @Override
@@ -155,6 +162,8 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
         
         settingEntity.setSettingValue(FilterFilteredMachineIdsSettingTypeKey, filterFilteredMachineIds);
         settingEntity.setSettingValue(FilterByNameSettingTypeKey, filterByName);
+        
+        settingEntity.setSettingValue(DisplayMaximumNumberOfSearchResultsSettingTypeKey, displayMaximumNumberOfSearchResults);
     }
     
     private boolean isDerivedMachineSettingsWithOwnKeys() {
@@ -216,6 +225,14 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
 
     public void setFilterFilteredMachineIds(String filterFilteredMachineIds) {
         this.filterFilteredMachineIds = filterFilteredMachineIds;
+    }
+
+    public Integer getDisplayMaximumNumberOfSearchResults() {
+        return displayMaximumNumberOfSearchResults;
+    }
+
+    public void setDisplayMaximumNumberOfSearchResults(Integer displayMaximumNumberOfSearchResults) {
+        this.displayMaximumNumberOfSearchResults = displayMaximumNumberOfSearchResults;
     }
 
 }
