@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.SystemPropertyTypeNames;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -70,10 +71,31 @@ public class ItemDomainMachineDesignControlControllerUtility extends ItemDomainM
     @Override
     public ItemElementRelationship applyRelationship(ItemDomainMachineDesign machineElement, ItemDomainMachineDesign relatedElement) throws InvalidArgument {
         throw new InvalidArgument("Missing information. Use applyRelationship with the interface to parent input.");
-    }
+    }        
 
-    public ItemElementRelationship applyRelationship(ItemDomainMachineDesign controlledElement, ItemDomainMachineDesign controllingElement, String interfaceToParent, UserInfo enteredByUser) throws InvalidArgument, InvalidObjectState {
+    public ItemElementRelationship applyRelationship(ItemDomainMachineDesign controlledElement, ItemDomainMachineDesign controllingElement, ItemDomainMachineDesign linkedParentMachine, String interfaceToParent, UserInfo enteredByUser) throws InvalidArgument, InvalidObjectState {
         ItemElementRelationship relationship = super.applyRelationship(controlledElement, controllingElement);
+        
+        if (linkedParentMachine != null) {           
+            List<ItemElementRelationship> parentItemElementRelationships = controllingElement.getItemElementRelationshipList();
+            
+            ItemElementRelationship relationshipForParent = null; 
+            
+            for (ItemElementRelationship parentRelationship : parentItemElementRelationships) {
+                Item parentItem = parentRelationship.getSecondItem();
+                if (parentItem.equals(linkedParentMachine)) {
+                    relationshipForParent = parentRelationship; 
+                    break; 
+                }
+            }
+            
+            if (relationshipForParent == null) {
+                throw new InvalidArgument("Existing linked parent machine relationship cannot be found. ");
+            }
+            
+            relationship.setRelationshipForParent(relationshipForParent);
+            
+        }
 
         createInterfaceToParentPropertyValue(relationship, interfaceToParent, enteredByUser);
 
@@ -118,8 +140,8 @@ public class ItemDomainMachineDesignControlControllerUtility extends ItemDomainM
         
         return children; 
     }
-
-    public List<ItemDomainMachineDesign> getControlParentItems(ItemDomainMachineDesign mdItem) {
+    
+    protected List<MachineDesignControlRelationshipListObject> getParentControlRelationshipList(ItemDomainMachineDesign mdItem) {
         List<MachineDesignControlRelationshipListObject> controlRelationshipList = mdItem.getControlRelationshipList();                
 
         if (controlRelationshipList == null) {
@@ -136,7 +158,14 @@ public class ItemDomainMachineDesignControlControllerUtility extends ItemDomainM
                 controlRelationshipList.add(controlRelationshipObject); 
             }
             mdItem.setControlRelationshipList(controlRelationshipList);
-        } 
+        }
+        
+        return controlRelationshipList; 
+    }
+
+    public List<ItemDomainMachineDesign> getControlParentItems(ItemDomainMachineDesign mdItem) {
+        List<MachineDesignControlRelationshipListObject> controlRelationshipList; 
+        controlRelationshipList = getParentControlRelationshipList(mdItem); 
         
         List<ItemDomainMachineDesign> controlParentItems = new ArrayList<>(); 
         for (MachineDesignControlRelationshipListObject controlRelationshipObject : controlRelationshipList) {
