@@ -275,6 +275,11 @@ import org.primefaces.model.TreeNode;
                         name = "relationship_type_id",
                         mode = ParameterMode.IN,
                         type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "parent_item_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
                 )
             }
     ),
@@ -290,6 +295,11 @@ import org.primefaces.model.TreeNode;
                 ),
                 @StoredProcedureParameter(
                         name = "relationship_type_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "child_item_id",
                         mode = ParameterMode.IN,
                         type = Integer.class
                 )

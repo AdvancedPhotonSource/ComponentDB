@@ -431,10 +431,15 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     }
     
     public List<ItemDomainEntity> fetchRelationshipChildrenItems(Integer itemId, Integer relationshipTypeId) {
+        return fetchRelationshipChildrenItems(itemId, relationshipTypeId, null); 
+    }
+    
+    public List<ItemDomainEntity> fetchRelationshipChildrenItems(Integer itemId, Integer relationshipTypeId, Integer parentItemId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchRelationshipChildrenItems");
             query.setParameter("item_id", itemId);
             query.setParameter("relationship_type_id", relationshipTypeId);
+            query.setParameter("parent_item_id", parentItemId);
 
             List<ItemDomainEntity> resultList = query.getResultList();
 
@@ -445,10 +450,15 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     }
     
     public List<ItemDomainEntity> fetchRelationshipParentItems(Integer itemId, Integer relationshipTypeId) {
+        return fetchRelationshipParentItems(itemId, relationshipTypeId, null);
+    }
+    
+    public List<ItemDomainEntity> fetchRelationshipParentItems(Integer itemId, Integer relationshipTypeId, Integer childItemId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchRelationshipParentItems");
             query.setParameter("item_id", itemId);
             query.setParameter("relationship_type_id", relationshipTypeId);
+            query.setParameter("child_item_id", childItemId);
 
             List<ItemDomainEntity> resultList = query.getResultList();
 
