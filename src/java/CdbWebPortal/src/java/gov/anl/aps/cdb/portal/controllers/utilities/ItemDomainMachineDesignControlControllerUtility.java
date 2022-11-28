@@ -162,22 +162,25 @@ public class ItemDomainMachineDesignControlControllerUtility extends ItemDomainM
         
         return controlRelationshipList; 
     }
-
-    public List<ItemDomainMachineDesign> getControlParentItems(ItemDomainMachineDesign mdItem) {
-        List<MachineDesignControlRelationshipListObject> controlRelationshipList; 
-        controlRelationshipList = getParentControlRelationshipList(mdItem); 
+   
+    public List<ItemDomainMachineDesign> getControlParentItems(ItemDomainMachineDesign mdItem, ItemDomainMachineDesign childItem) {
+        ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();
+            int relationshipId = relationshipTypeName.getDbId();
+        List<ItemDomainMachineDesign> controlParentItems;
         
-        List<ItemDomainMachineDesign> controlParentItems = new ArrayList<>(); 
-        for (MachineDesignControlRelationshipListObject controlRelationshipObject : controlRelationshipList) {
-            controlParentItems.add(controlRelationshipObject.getControlParentItem()); 
+        if (childItem != null) {
+            controlParentItems = itemFacade.fetchRelationshipParentItems(mdItem.getId(), relationshipId, childItem.getId());
+        } else {
+            controlParentItems = itemFacade.fetchRelationshipParentItems(mdItem.getId(), relationshipId);
         }
+        
 
         return controlParentItems;
     }
     
     public PropertyValue getControlInterfaceToParentForItem(ItemDomainMachineDesign mdItem, ItemDomainMachineDesign parentItem) {
         // Load control parents if needed. 
-        getControlParentItems(mdItem); 
+        getParentControlRelationshipList(mdItem); 
         
         List<MachineDesignControlRelationshipListObject> controlRelationshipList;
         controlRelationshipList = mdItem.getControlRelationshipList();
