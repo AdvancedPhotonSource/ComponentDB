@@ -402,7 +402,12 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     }
     
     private void createControlHierarchyList(List<ControlRelationshipHierarchy> controlHierarchyList, ItemDomainMachineDesignControlControllerUtility utility, ItemDomainMachineDesign machine, ControlRelationshipHierarchy activeRelationshipHierarchy) {
-        List<ItemDomainMachineDesign> controlParentItems = utility.getControlParentItems(machine);               
+        ItemDomainMachineDesign childItem = null;
+        if (activeRelationshipHierarchy != null) {
+            childItem = activeRelationshipHierarchy.getMachineItem();            
+        }
+        
+        List<ItemDomainMachineDesign> controlParentItems = utility.getControlParentItems(machine, childItem);               
         ControlRelationshipHierarchy newRelationshipHierarchy = null; 
         
         if (controlParentItems.size() == 0) {
