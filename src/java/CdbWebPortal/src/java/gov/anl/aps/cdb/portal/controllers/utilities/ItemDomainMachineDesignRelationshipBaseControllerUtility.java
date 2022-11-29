@@ -41,6 +41,10 @@ public abstract class ItemDomainMachineDesignRelationshipBaseControllerUtility e
         if (failedControlledNodeTypeCheck) {
             throw new InvalidArgument("Only standard machine designs with no entity type can be controlled.");
         }
+        
+        if (relatedElement.equals(relatingElement)) {
+            throw new InvalidArgument("Machine cannot be related to itself.");
+        }
 
         // Verify the controlling node is associated with the control hierarchy.
         ItemDomainMachineDesign controllingControlTypeItem = relatingElement;
