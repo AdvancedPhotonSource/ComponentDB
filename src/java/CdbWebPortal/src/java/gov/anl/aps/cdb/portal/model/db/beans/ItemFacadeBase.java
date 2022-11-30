@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.model.db.beans.builder.CdbQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
@@ -469,7 +470,8 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     }
 
     public List<ItemDomainEntity> fetchNameFilterForRelationshipHierarchy(Integer domainId, Integer entityTypeId, Integer relationshipTypeId, String namePattern) {
-        namePattern = "%" + namePattern + "%"; 
+        namePattern = CdbQueryBuilder.resolveLikeQueryStringWithWildcards(namePattern);
+                
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchNameFilterForRelationshipHierarchy");
             query.setParameter("domain_id", domainId);
