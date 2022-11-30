@@ -8,11 +8,11 @@ import java.util.Map;
 import org.primefaces.model.SortOrder;
 
 /**
- * 
+ *
  * @author Dariusz
  */
-public abstract class CdbQueryBuilder {       
-    
+public abstract class CdbQueryBuilder {
+
     private static final CharSequence[] ESCAPE_QUERY_CHARACTERS = {"'"};
 
     protected static final String QUERY_LIKE = "LIKE";
@@ -25,18 +25,18 @@ public abstract class CdbQueryBuilder {
     protected String wherePart;
     protected String sortPart;
     protected String joinPart;
-    
+
     protected void appendRawWhere(String rawWhere) {
         if (wherePart.isEmpty()) {
             wherePart += " WHERE ";
         } else {
             wherePart += "AND ";
         }
-        
-        wherePart += rawWhere; 
+
+        wherePart += rawWhere;
     }
 
-    protected void appendWhere(String comparator, String key, Object object) {        
+    protected void appendWhere(String comparator, String key, Object object) {
         String value = "NULL";
         if (object != null) {
             value = object.toString();
@@ -44,21 +44,27 @@ public abstract class CdbQueryBuilder {
 
         if (object != null && object instanceof String) {
             if (comparator.equalsIgnoreCase(QUERY_LIKE)) {
-                if (value.contains("*") || value.contains("?")) {
-                    value = ((String)value).replace('*', '%');                     
-                    value = ((String)value).replace('?', '_');   
-                } else {
-                    value = "%" + value + "%";
-                }
+                resolveLikeQueryStringWithWildcards(value); 
             }
-
+            
             value = "'" + escapeCharacters(value) + "'";
         }
-
+        
         String wherePart = key + " " + comparator + " " + value + " ";
-        appendRawWhere(wherePart); 
+        appendRawWhere(wherePart);
     }
     
+    public static String resolveLikeQueryStringWithWildcards(String queryString) {        
+        if (queryString.contains("*") || queryString.contains("?")) {
+            queryString = ((String) queryString).replace('*', '%');
+            queryString = ((String) queryString).replace('?', '_');
+        } else {
+            queryString = "%" + queryString + "%";
+        }                
+        
+        return queryString; 
+    }
+
     protected static String escapeCharacters(String queryParameter) {
         for (CharSequence cs : ESCAPE_QUERY_CHARACTERS) {
             if (queryParameter.contains(cs)) {
