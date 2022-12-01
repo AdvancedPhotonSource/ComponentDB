@@ -44,7 +44,7 @@ public abstract class CdbQueryBuilder {
 
         if (object != null && object instanceof String) {
             if (comparator.equalsIgnoreCase(QUERY_LIKE)) {
-                resolveLikeQueryStringWithWildcards(value); 
+                value = resolveLikeQueryStringWithWildcards(value); 
             }
             
             value = "'" + escapeCharacters(value) + "'";
