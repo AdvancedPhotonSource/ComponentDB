@@ -28,6 +28,7 @@ import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.entities.ControlRelationshipHierarchy;
 import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
+import gov.anl.aps.cdb.rest.entities.ItemHierarchy;
 import gov.anl.aps.cdb.rest.entities.NewControlRelationshipInformation;
 import gov.anl.aps.cdb.rest.entities.NewMachinePlaceholderOptions;
 import gov.anl.aps.cdb.rest.entities.PromoteMachineElementInformation;
@@ -115,6 +116,33 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         List<ItemDomainMachineDesign> itemList = facade.findByDataTableFilterQueryBuilder(queryBuilder);
         
         return itemList;
+    }
+    
+    @GET
+    @Path("/ById/{itemId}/HousingHierarchy")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Fetch an item by its id.")
+    public ItemHierarchy getHousingHierarchyById(@PathParam("itemId") int id) throws ObjectNotFound {
+        ItemDomainMachineDesign currentItem = getMachineDesignItemById(id); 
+        
+        ItemHierarchy ih = new ItemHierarchy(); 
+        ih.setItem(currentItem);
+                
+        ItemDomainMachineDesign parentMachine = currentItem.getParentMachineDesign();
+        
+        while (parentMachine != null) {            
+            ItemHierarchy parentHierarchy = new ItemHierarchy(); 
+            parentHierarchy.setItem(parentMachine);
+            
+            List<ItemHierarchy> children = new ArrayList<>();
+            children.add(ih);
+            parentHierarchy.setChildItems(children);
+            
+            ih = parentHierarchy; 
+            parentMachine = parentMachine.getParentMachineDesign(); 
+        }             
+                        
+        return ih; 
     }
 
     @GET
