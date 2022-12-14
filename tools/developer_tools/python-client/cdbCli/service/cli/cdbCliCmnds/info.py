@@ -10,7 +10,9 @@ from rich.tree import Tree
 from CdbApiFactory import CdbApiFactory
 
 from cdbApi.api.item_api import ItemApi
+from cdbApi.models.item_hierarchy import ItemHierarchy
 from cdbApi.models.item import Item
+from cdbApi.models.item_location_information import ItemLocationInformation
 from cdbApi.models.machine_design_connector_list_object import MachineDesignConnectorListObject
 from cdbCli.common.cli import cliBase
 from cdbCli.common.cli.cliBase import CliBase
@@ -120,7 +122,31 @@ def cdbInfo_helper(factory: CdbApiFactory,
 
                             hierarchy = hierarchy.child_item
 
-                    item_details.append({"Control Hierarchy %d" % (i + 1): control_hierarchy_str})
+                    item_details.append({"Control %d" % (i + 1): control_hierarchy_str})
+                housing_hierarchy : ItemHierarchy = machine_api.get_housing_hierarchy_by_id(machine.id)
+                if housing_hierarchy:
+                    housing_hierarchy_str = ""                    
+                    hh = housing_hierarchy
+                    while hh is not None: 
+                        machine_name = hh.item.name
+                        if format and format == cliBase.FORMAT_RICH_OPT:
+                            if machine_name == item.name:
+                                housing_hierarchy_str += "[green]%s[/green]" % machine_name
+                            else:
+                                housing_hierarchy_str += machine_name
+                        else:
+                            housing_hierarchy_str += machine_name
+                        
+                        if hh.child_items:
+                            housing_hierarchy_str += " ➜ "
+                            hh = hh.child_items[0]
+                        else:
+                            hh = None
+
+                    item_details.append({"Housing": housing_hierarchy_str})
+                location : ItemLocationInformation = item_api.get_item_location(machine.id)
+                if location:
+                    item_details.append({"Location": location.location_string})                    
 
     if all and item.domain_id == factory.MACHINE_DESIGN_DOMAIN_ID:
         machine_item = machine_api.get_machine_design_item_by_id(item_id)
@@ -143,15 +169,27 @@ def cdbInfo_helper(factory: CdbApiFactory,
 
         if machine_item.assigned_item:
             assigned_item = machine_item.assigned_item
-            if assigned_item.derived_from_item:
-                assigned_item_str = __get_inventory_to_string(assigned_item)
-            else:
-                assigned_item_str = assigned_item.name
-            
-            item_details.append({"Assigned Item": assigned_item_str})
-            item_details.append({"Assigned Item Id": assigned_item.id})
+            catalog_item = None
+            catalog_item_str = ""
+            inventory_item_str = ""
+            if assigned_item:
+                if assigned_item.derived_from_item:
+                    inventory_item_str = "%s/%s" % (assigned_item.name, assigned_item.qr_id)
+                    catalog_item = assigned_item.derived_from_item
+                else:
+                    catalog_item = assigned_item                    
 
+                catalog_item_str =  "%s/%s" % (catalog_item.name, catalog_item.id)
+                
+            item_details.append({"Catalog Item (Name/ID)": catalog_item_str})
+            item_details.append({"Inventory Item (Tag/QRID)": inventory_item_str})
 
+            if inventory_item_str != "":
+                install_state = "Installed"
+                if not machine_item.is_housed:
+                    install_state = "Planned"
+
+                item_details.append({"Install Status": install_state})                    
 
     if all and item.domain_id == factory.CABLE_DESIGN_DOMAIN_ID:
         cable_conn_list = cable_design_api.get_cable_design_connection_list(item_id)

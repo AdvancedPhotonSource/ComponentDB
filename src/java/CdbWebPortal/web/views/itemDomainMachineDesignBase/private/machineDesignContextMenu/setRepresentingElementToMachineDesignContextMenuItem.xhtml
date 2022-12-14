@@ -7,16 +7,12 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
-    
-    <p:submenu icon="fa fa-sitemap" label="Element"
-                   style="width: 250px;">
 
-            <ui:include src="moveToTrashMachineDesignContextMenuItem.xhtml" /> 
-            <ui:include src="updatePermissionForBranchMachineDesignContextMenuItem.xhtml" /> 
-            <ui:include src="setRepresentingElementToMachineDesignContextMenuItem.xhtml" />
+    <p:menuitem value="Represent assembly element"
+                icon="fa fa-link"
+                action="#{entityController.prepareMachineAssignRepresentingAssemblyElement()}"
+                oncomplete="PF('setRepElementDialogWidget').show()"
+                disabled="#{disabledEditContextMenuItemForSelection}"
+                update="@form:setRepElementDialog"/>
 
-    </p:submenu>
-        
 </ui:composition>
-
-

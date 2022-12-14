@@ -24,7 +24,7 @@ public class ItemHierarchy {
     private Float sortOrder; 
     private String derivedElementName;         
 
-    private ItemHierarchy() {
+    public ItemHierarchy() {
         
     }
     

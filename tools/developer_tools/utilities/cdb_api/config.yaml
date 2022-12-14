@@ -1,0 +1,9 @@
+cdb:
+  url: http://localhost:8080/cdb
+  user: cdb
+  password: cdb
+data_source:
+  csv_list:
+  - ./test_input.csv
+  multiple_match_top_level_name: APS-U Facility Design - April 2023
+error_file_path: error.log

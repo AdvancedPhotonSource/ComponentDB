@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">  
+
+    <p:dialog id="setRepElementDialog"
+              header="Set Represeting Catalog Element for Machine #{entityController.current}."
+              widgetVar="setRepElementDialogWidget"
+              onShow="#{entityController.elementsAvaiableForNodeRepresentation == null ? 'PF(\'setRepElementDialogWidget\').hide()' : '' }"
+              styleClass="viewTransparentBackgroundDialog">
+        
+        <p:outputPanel id="setRepElementDialogOutputpanel">
+            <p:selectOneListbox value="#{entityController.selectedElementForNodeRepresentation}"
+                                filter="true" filterMatchMode="contains" 
+                                var="e">
+                <f:selectItems value="#{entityController.elementsAvaiableForNodeRepresentation}" 
+                               var="element"
+                               itemLabel="#{element.name}" />
+                <p:column>
+                    #{e.name}
+                </p:column>
+            </p:selectOneListbox>
+            
+            <p:panelGrid columns="2"
+                         rendered="#{entityController.currentViewIsTemplate}" >            
+                <p:selectBooleanCheckbox value="#{entityController.matchElementNamesForTemplateInstances}"/>
+                <h:outputText value="Match element name for custom assambly instances." />
+            </p:panelGrid>
+        </p:outputPanel>
+        
+        <f:facet name="footer">
+            <p:commandButton value="Save"
+                             icon="fa fa-save"                             
+                             action="#{entityController.assignRepresentingAssemblyElementForCurrentMachine}"
+                             onclick="PF('loadingDialog').show()"
+                             update="@this setRepElementDialogOutputpanel"
+                             oncomplete="PF('loadingDialog').hide()"/> 
+        </f:facet>
+    </p:dialog>
+
+</ui:composition>
+
+

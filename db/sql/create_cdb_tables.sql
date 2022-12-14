@@ -795,7 +795,7 @@ CREATE TABLE `item_element_relationship` (
   CONSTRAINT `item_element_relationship_fk4` FOREIGN KEY (`second_item_connector_id`) REFERENCES `item_connector` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_relationship_fk5` FOREIGN KEY (`relationship_type_id`) REFERENCES `relationship_type` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_relationship_fk6` FOREIGN KEY (`link_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `item_element_relationship_fk7` FOREIGN KEY (`resource_type_id`) REFERENCES `resource_type` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `item_element_relationship_fk7` FOREIGN KEY (`resource_type_id`) REFERENCES `resource_type` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_relationship_fk8` FOREIGN KEY (`relationship_id_for_parent`) REFERENCES `item_element_relationship` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -838,7 +838,7 @@ CREATE TABLE `item_element_relationship_history` (
   CONSTRAINT `item_element_relationship_history_fk5` FOREIGN KEY (`second_item_connector_id`) REFERENCES `item_connector` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_relationship_history_fk6` FOREIGN KEY (`link_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_relationship_history_fk7` FOREIGN KEY (`resource_type_id`) REFERENCES `resource_type` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `item_element_relationship_history_fk8` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `item_element_relationship_history_fk8` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_relationship_history_fk9` FOREIGN KEY (`relationship_id_for_parent`) REFERENCES `item_element_relationship` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 

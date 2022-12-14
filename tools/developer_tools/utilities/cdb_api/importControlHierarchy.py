@@ -1,5 +1,6 @@
 import csv
-import json
+import io
+import yaml
 
 from CdbApiFactory import CdbApiFactory
 from cdbApi import NewMachinePlaceholderOptions, NewControlRelationshipInformation, ApiException
@@ -12,19 +13,29 @@ MACHINE_PARENT_NAME_KEY = "Parent Item"
 ITEM_PROJECT_KEY = "Project"
 ITEM_OWNER_GROUP_KEY = "Owner Group"
 ITEM_OWNER_USER_KEY = "Owner User"
+GLOBAL_RELATIONSHIP_KEY = "Global Relationship"
 
 ITEM_REC_NAME_KEY = "name"
 ITEM_REC_CONTROL_GROUP_NAME_KEY = "control_group"
 ITEM_REC_MACHINE_PARENT_NAME_KEY = "machine_parent_name"
 ITEM_REC_ROW_KEY = "Row"
+ITEM_REC_GLOBAL = "Global"
+
+CONTROL_ENTITY_TYPE_ID = 9
 
 PRINT_INDENT = "------"
 
+# Read YAML file
+with open("config.yaml", 'r') as stream:
+    config_yaml = yaml.safe_load(stream)
+
 # Script configuration
-csv_file_path = './test_input.csv'
-cdb_url = "http://localhost:8080/cdb"
-cdb_user = 'cdb'
-cdb_pass = 'cdb'
+csv_file_paths = config_yaml['data_source']['csv_list']
+multiple_match_top_machine_name = config_yaml['data_source']['multiple_match_top_level_name']
+cdb_url = config_yaml['cdb']['url']
+cdb_user = config_yaml['cdb']['user']
+cdb_pass = config_yaml['cdb']['password']
+error_file_path = config_yaml['error_file_path']
 
 cdb_api = CdbApiFactory(cdb_url)
 cdb_api.authenticateUser(cdb_user, cdb_pass)
@@ -34,6 +45,15 @@ item_api = cdb_api.getItemApi()
 user_api = cdb_api.getUsersApi()
 result_dict = {}
 
+def append_error_log(error_message):
+    with open(error_file_path, 'a') as file:
+        file.write(error_message + "\n")
+
+def convert_to_boolean(value):
+    if value == '1' or value.lower() == 'true':
+        return True
+    else:
+        return False
 
 def get_id_for_item(item_name, create_control_group=False, row=None):
     if item_name.startswith("#"):
@@ -47,8 +67,35 @@ def get_id_for_item(item_name, create_control_group=False, row=None):
     if parent_result_id is None:
         try:
             parent_machine = machine_api.get_machine_design_items_by_name(item_name)
-            parent_result_id = parent_machine[0].id
-        except Exception:
+            
+            if create_control_group:
+                for parent in parent_machine:
+                    if parent.entity_type_list: 
+                        entity_type = parent.entity_type_list[0]
+                        if entity_type.id == CONTROL_ENTITY_TYPE_ID:
+                           parent_result_id = parent.id 
+                           break
+
+                if parent_result_id is None:
+                    raise Exception("No Control machine found.")
+            else:
+                if len(parent_machine) > 1:
+                    result_machine = None
+                    for parent in parent_machine:
+                        hierarchy = machine_api.get_housing_hierarchy_by_id(parent.id)
+                        if hierarchy is not None:
+                            top_level_item = hierarchy.item
+                            if top_level_item.name == multiple_match_top_machine_name:
+                                result_machine = parent
+                                break
+
+                    if result_machine:
+                        parent_result_id = result_machine.id
+                    else: 
+                        raise Exception("None of the results match the top level parent.")
+                else:            
+                    parent_result_id = parent_machine[0].id                            
+        except Exception as ex:
             if create_control_group:
                 project = row[ITEM_PROJECT_KEY]
                 project_id = -1
@@ -105,14 +152,20 @@ def get_id_for_item(item_name, create_control_group=False, row=None):
 
                     item_api.update_item_permission(item_permissions=new_permissions)
             else:
-                raise Exception("Could not find item with name: " + item_name)
+                ex_message=""
+                if type(ex) == ApiException:
+                    ex_obj = cdb_api.parseApiException(ex)
+                    ex_message = ex_obj.message
+                else:
+                    ex_message = ex.__str__()
+                raise Exception("Error fetching name: %s (%s)" % (item_name, ex_message))
 
         result_dict[item_name] = parent_result_id
 
     return parent_result_id
 
 
-def process_item_rec(parent_rec, try_index, interface_name, child_rec=None):
+def process_item_rec(parent_rec, try_index, interface_name, child_rec=None, row_num=None, linked_parent_machine=None):
     parent_machine_parent = parent_rec[ITEM_REC_MACHINE_PARENT_NAME_KEY]
     parent_control_group = parent_rec[ITEM_REC_CONTROL_GROUP_NAME_KEY]
     parent_name = parent_rec[ITEM_REC_NAME_KEY]
@@ -150,61 +203,97 @@ def process_item_rec(parent_rec, try_index, interface_name, child_rec=None):
             opts = NewControlRelationshipInformation(controlled_machine_id=child_id,
                                                      controlling_machine_id=parent_id,
                                                      control_interface_to_parent=interface_name)
+
+            if linked_machine_parent is not None:
+                # Add linked machine parent information. 
+                linked_parent_name = linked_parent_machine[ITEM_REC_NAME_KEY]
+                linked_parent_id = get_id_for_item(linked_parent_name)
+                opts.linked_parent_machine_id = linked_parent_id
             machine_api.create_control_relationship(opts)
-    except Exception as ex:
-        print(ex)
     except ApiException as ex:
-        exception_body = ex.body
-        exception_body = json.loads(exception_body)
-        print(exception_body['message'])
+        exception_body = cdb_api.parseApiException(ex)        
+        message = "Error processing line %d: %s" % (row_num, exception_body.message)
+        append_error_log(message)
+        print(message)
 
+    except Exception as ex:
+        ex_msg = ex
+        if hasattr(ex, 'args') and len(ex.args):
+            ex_msg = ex.args
+        msg = "Error processing line %d: %s" % (row_num, str(ex_msg))
+        append_error_log(msg)
+        print(msg)
 
-with open(csv_file_path) as csv_file:
-    control_hierarchy_data = csv.DictReader(csv_file)
+for csv_file_path in csv_file_paths:
+    with open(csv_file_path) as csv_file:
+        if len(csv_file.read()):
+            print("Success opening: %s" % csv_file_path)
 
-    parents = []
+for csv_file_path in csv_file_paths:    
+    start_message = "Processing: %s" % csv_file_path
+    append_error_log(start_message)
+    print(start_message)
 
-    for row in control_hierarchy_data:
-        if row[MACHINE_PARENT_NAME_KEY].startswith("//"):
-            continue
+    with open(csv_file_path) as csv_file:
+        control_hierarchy_data = csv.DictReader(csv_file)
 
-        empty = True
-        for data_key in row.keys():
-            if row[data_key] != '':
-                empty = False
-                break
-        if empty:
-            continue
+        parents = []
 
-        try_index = len(parents) + 1
-        while try_index > 0:
-            next_node_key = LEVEL_PREFIX_KEY + str(try_index)
-            item_name = None
-            if next_node_key in row.keys():
-                item_name = row[next_node_key]
-            if item_name is not None and item_name != '':
-                control_group_name = row[CONTROL_GROUP_NAME_KEY]
-                machine_parent_name = row[MACHINE_PARENT_NAME_KEY]
-                item_rec = {ITEM_REC_NAME_KEY: item_name, ITEM_REC_CONTROL_GROUP_NAME_KEY: control_group_name,
-                            ITEM_REC_MACHINE_PARENT_NAME_KEY: machine_parent_name, ITEM_REC_ROW_KEY: row}
+        for i, row in enumerate(control_hierarchy_data):
+            # Skip index 0 and header row 
+            row_num = i+2
 
-                parents = parents[:try_index - 1]
-                parents.append(item_rec)
-                break
-            else:
-                try_index -= 1
+            if row[MACHINE_PARENT_NAME_KEY].startswith("//"):
+                continue
 
-        interface_name = row[INTERFACE_KEY]
+            empty = True
+            for data_key in row.keys():
+                if row[data_key] != '':
+                    empty = False
+                    break
+            if empty:
+                continue
 
-        if len(parents) < 2:
-            if len(parents) == 1:
-                parent = parents[0]
-                process_item_rec(parent, try_index, interface_name)
-            continue
+            try_index = len(parents) + 1
+            while try_index > 0:
+                next_node_key = LEVEL_PREFIX_KEY + str(try_index)
+                item_name = None
+                if next_node_key in row.keys():
+                    item_name = row[next_node_key]
+                if item_name is not None and item_name != '':
+                    control_group_name = row[CONTROL_GROUP_NAME_KEY]
+                    machine_parent_name = row[MACHINE_PARENT_NAME_KEY]
+                    global_relationship = row[GLOBAL_RELATIONSHIP_KEY]
+                    global_relationship = convert_to_boolean(global_relationship)
+                    item_rec = {ITEM_REC_NAME_KEY: item_name, ITEM_REC_CONTROL_GROUP_NAME_KEY: control_group_name,
+                                ITEM_REC_MACHINE_PARENT_NAME_KEY: machine_parent_name, ITEM_REC_ROW_KEY: row}
 
-        parent = parents[-2]
-        child = parents[-1]
+                    parents = parents[:try_index - 1]
+                    parents.append(item_rec)
+                    break
+                else:
+                    try_index -= 1
 
-        process_item_rec(parent, try_index, interface_name, child)
+            interface_name = row[INTERFACE_KEY]
 
+            if len(parents) < 2:
+                if len(parents) == 1:
+                    parent = parents[0]
+                    process_item_rec(parent, try_index, interface_name, row_num=row_num)
+                continue
 
+            parent = parents[-2]
+            child = parents[-1]
+            linked_machine_parent = None
+
+            if (len(parents) >= 3) and not global_relationship:
+                linked_machine_parent = parents[-3]
+
+            process_item_rec(parent, try_index, interface_name, child, row_num=row_num, linked_parent_machine=linked_machine_parent)
+
+    end_message = "Finished: %s" % csv_file_path
+    append_error_log(end_message)
+    print(end_message)
+
+# Add new line after complete.
+append_error_log("Done\n")

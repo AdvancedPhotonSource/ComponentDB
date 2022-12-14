@@ -70,6 +70,7 @@ import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import static gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode.CONNECTOR_NODE_TYPE;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import java.io.IOException;
+import java.util.logging.Level;
 
 /**
  *
@@ -120,6 +121,10 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     private List<ItemDomainCatalog> catalogItemsDraggedAsChildren = null;
     private TreeNode newCatalogItemsInMachineDesignModel = null;
+    
+    private List<ItemElement> elementsAvaiableForNodeRepresentation; 
+    private ItemElement selectedElementForNodeRepresentation; 
+    private Boolean matchElementNamesForTemplateInstances; 
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop variables">
@@ -526,6 +531,16 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     public String listViewForCurrentEntity() {
         ItemDomainMachineDesign current = getCurrent();
         return "listView?id=" + current.getId() + "&mode=detail&faces-redirect=true";
+    }
+    
+    /**
+     * Return entity view page with query parameters of id.
+     *
+     * @return URL to view page in the entity folder with id query paramter.
+     */
+    public String listForCurrentEntity() {
+        ItemDomainMachineDesign current = getCurrent();
+        return "list?id=" + current.getId() + "&faces-redirect=true";
     }
 
     public String updateDetailsForCurrentSelectedTreeNode() {
@@ -3126,6 +3141,95 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             SessionUtility.addErrorMessage("Error", ex.getMessage());
         }
         expandToSelectedTreeNodeAndSelect();
+    }
+    
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="Update Node Representation">   
+
+    public List<ItemElement> getElementsAvaiableForNodeRepresentation() {
+        return elementsAvaiableForNodeRepresentation;
+    }
+
+    public ItemElement getSelectedElementForNodeRepresentation() {
+        return selectedElementForNodeRepresentation;
+    }
+
+    public void setSelectedElementForNodeRepresentation(ItemElement selectedElementForNodeRepresentation) {
+        this.selectedElementForNodeRepresentation = selectedElementForNodeRepresentation;
+    }
+
+    public Boolean getMatchElementNamesForTemplateInstances() {
+        return matchElementNamesForTemplateInstances;
+    }
+
+    public void setMatchElementNamesForTemplateInstances(Boolean matchElementNamesForTemplateInstances) {
+        this.matchElementNamesForTemplateInstances = matchElementNamesForTemplateInstances;
+    }
+    
+    public void prepareMachineAssignRepresentingAssemblyElement() {
+        updateCurrentUsingSelectedItemInTreeTable();
+
+        ItemDomainMachineDesign current = getCurrent();
+        ItemDomainMachineDesign parentMachineDesign = current.getParentMachineDesign();
+        
+        elementsAvaiableForNodeRepresentation = null; 
+        selectedElementForNodeRepresentation = null;
+        matchElementNamesForTemplateInstances = false; 
+        
+        if (current.getRepresentsCatalogElement() != null) {
+            ItemElement catElement = current.getRepresentsCatalogElement(); 
+            SessionUtility.addErrorMessage("Already assigned", "This element is representing catalog element " + catElement.getName());
+            return; 
+        }
+        
+        if (current.getAssignedItem() != null) {
+            Item assignedItem = current.getAssignedItem();
+            SessionUtility.addErrorMessage("Already assigned", "Please unassign assigned item before proceeding: " + assignedItem);
+            return; 
+        }                                                       
+        
+        if (parentMachineDesign != null) {
+            Item assignedItem = parentMachineDesign.getAssignedItem();
+            
+            if (assignedItem != null && assignedItem.getItemElementDisplayList().size() != 0) {                
+                elementsAvaiableForNodeRepresentation = controllerUtility.fetchElementsAvaiableForNodeRepresentation(current); 
+            } else {
+                SessionUtility.addErrorMessage("No Assembly", "Parent must have assembly assigned.");
+                return; 
+            }
+        } else {
+            SessionUtility.addErrorMessage("No Parent", "Cannot fetch a parent assembly for assigning to assembly element.`");
+            return; 
+        }        
+        
+        if (elementsAvaiableForNodeRepresentation != null && elementsAvaiableForNodeRepresentation.size() > 0) {
+            
+        } else {
+            SessionUtility.addErrorMessage("No Avaiable Elements", "All elements of parent's assembly have already been assigned to machine elements for representation.");
+            elementsAvaiableForNodeRepresentation = null; 
+            return; 
+        }
+    }
+    
+    public String assignRepresentingAssemblyElementForCurrentMachine() {
+        if (selectedElementForNodeRepresentation == null) {
+            SessionUtility.addErrorMessage("No Element Selected.", "Please select element and try again.");
+            return null; 
+        } 
+        
+        ItemDomainMachineDesign current = getCurrent();        
+        
+        try {             
+            this.controllerUtility.updateRepresentingAssemblyElementForMachine(current, selectedElementForNodeRepresentation, matchElementNamesForTemplateInstances);
+            update(); 
+        } catch (CdbException ex) {
+            LOGGER.error(ex);
+            SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+        }
+        
+        // Reset list data model to show exact state of the object after funciton if it failed or not.
+        resetListDataModel();
+        return listForCurrentEntity(); 
     }
 
     // </editor-fold>
