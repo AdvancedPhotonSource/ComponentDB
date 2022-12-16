@@ -15,6 +15,21 @@ See LICENSE file.
                        id="machineDesignDualViewCatalogContextMenu"
                        widgetVar="machineDesignDualViewCatalogContextMenuWidget">
             <ui:include src="contextMenu/addAssembyMachineElementContextMenuItem.xhtml"/>
+        </p:contextMenu>    
+
+        <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                       nodeType="MachineDesignTemplateMemberAssemblyCatalog"
+                       id="machineDesignDualViewTemplateMemberAssemblyCatalogContextMenu"
+                       widgetVar="machineDesignDualViewTemplateMemberAssemblyCatalogContextMenuWidget"
+                       event="select contextmenu">
+            <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />            
+            <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />                        
+            <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/branchMachineDesignSubMenu.xhtml" >
+                <ui:param name="nonRepresentedAssemblyPartMachine"
+                          value="#{false}" /> 
+            </ui:include> 
+            <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" /> 
+            <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/unlinkContainedItem2ContextMenuItem.xhtml" /> 
         </p:contextMenu>      
     </ui:define>
 

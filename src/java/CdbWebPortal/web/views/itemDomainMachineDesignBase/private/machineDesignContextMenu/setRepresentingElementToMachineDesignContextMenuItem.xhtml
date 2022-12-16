@@ -7,12 +7,23 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
+    
+    <ui:param name="nonRepresentedAssemblyPartMachine" value="#{nonRepresentedAssemblyPartMachine != null ? nonRepresentedAssemblyPartMachine : true}" /> 
 
-    <p:menuitem value="Represent assembly element"
+    <p:menuitem value="Link to assembly part"
                 icon="fa fa-link"
+                rendered="#{nonRepresentedAssemblyPartMachine}"
                 action="#{entityController.prepareMachineAssignRepresentingAssemblyElement()}"
                 oncomplete="PF('setRepElementDialogWidget').show()"
                 disabled="#{disabledEditContextMenuItemForSelection}"
                 update="@form:setRepElementDialog"/>
+    
+    <p:menuitem value="Unlink assembly part"
+                icon="fa fa-unlink"
+                action="#{entityController.prepareMachineUnlinkRepresentingAssemblyElement()}"
+                disabled="#{disabledEditContextMenuItemForSelection}" 
+                rendered="#{!nonRepresentedAssemblyPartMachine}"
+                oncomplete="PF('clearRepElementDialogWidget').show()"
+                update="@form:clearRepElementDialog"/> 
 
 </ui:composition>
