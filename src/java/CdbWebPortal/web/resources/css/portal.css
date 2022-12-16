@@ -550,6 +550,10 @@ th.narrowColumn {
     text-align: left;
 }
 
+.grayedText {
+    color: gray; 
+}
+
 h1 {
     font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
     font-size:  24px;
