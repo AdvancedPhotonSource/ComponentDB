@@ -203,7 +203,6 @@ INSERT INTO `system_log` VALUES
 (201,3),
 (202,3),
 (203,3),
-(204,3),
-(205,3);
+(204,3);
 /*!40000 ALTER TABLE `system_log` ENABLE KEYS */;
 UNLOCK TABLES;
