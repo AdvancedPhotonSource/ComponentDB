@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.rest.routes;
 import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
+import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
@@ -32,6 +33,7 @@ import gov.anl.aps.cdb.rest.entities.ItemHierarchy;
 import gov.anl.aps.cdb.rest.entities.NewControlRelationshipInformation;
 import gov.anl.aps.cdb.rest.entities.NewMachinePlaceholderOptions;
 import gov.anl.aps.cdb.rest.entities.PromoteMachineElementInformation;
+import gov.anl.aps.cdb.rest.entities.RepresentingAssemblyElementForMachineInformation;
 import gov.anl.aps.cdb.rest.entities.UpdateMachineAssignedItemInformation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -177,7 +179,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         
         int parentMdItemId = info.getParentMdItemId();
         ItemDomainMachineDesign parentMachine = getMachineDesignItemById(parentMdItemId);        
-        UserInfo creatorUser = verifyCurrentUserPermissionForItem(parentMachine);        
+        UserInfo creatorUser = verifyCurrentUserPermissionForItem(parentMachine);
         ItemElement assyElement = itemElementFacade.find(info.getAssemblyElementId()); 
                 
         ItemDomainMachineDesign promotedMachine = machineUtility.createRepresentingMachineForAssemblyElement(parentMachine, assyElement, creatorUser);
@@ -191,6 +193,39 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         
         return promotedMachine; 
     }
+    
+    @POST
+    @Path("/UpdateRepresentingAssemblyElementForMachine")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Update a machine design to represent parent's assembly element for its assigned item.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemDomainMachineDesign updateRepresentingAssemblyElementForMachine(@RequestBody(required = true) RepresentingAssemblyElementForMachineInformation info) throws InvalidArgument, ObjectNotFound, InvalidObjectState, CdbException {
+        ItemDomainMachineDesignControllerUtility machineUtility = new ItemDomainMachineDesignControllerUtility(); 
+        
+        int machineId = info.getMachineId();
+        Integer assemblyElementId = info.getAssemblyElementId();
+        boolean templateMatchByNameForCustomBuild = info.isTemplateMatchByNameForCustomBuild();
+         
+        ItemDomainMachineDesign machine = getMachineDesignItemById(machineId);
+        if (!machine.getIsItemTemplate() && templateMatchByNameForCustomBuild) {
+            throw new InvalidArgument("Template match by name for custom build can only be provided when updating a template machine element."); 
+        }
+        UserInfo updateUser = verifyCurrentUserPermissionForItem(machine);        
+        ItemElement assyElement;
+        if (assemblyElementId != null) {
+            assyElement = itemElementFacade.find(assemblyElementId);
+        } else {
+            // Cearing the assigned item. 
+            assyElement = null; 
+        }
+        
+        machineUtility.updateRepresentingAssemblyElementForMachine(machine, assyElement, templateMatchByNameForCustomBuild);               
+        machine = machineUtility.update(machine, updateUser); 
+        
+        return machine;                 
+    }    
     
     @POST
     @Path("/UpdateAssignedItem")
