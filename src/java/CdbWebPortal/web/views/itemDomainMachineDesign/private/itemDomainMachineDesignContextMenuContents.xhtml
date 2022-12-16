@@ -45,9 +45,12 @@ See LICENSE file.
             <ui:include src="contextMenu/relationshipSubMenu.xhtml"/>
             <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/templateSubMenu.xhtml"/> 
             <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />    
-            <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/branchMachineDesignSubMenu.xhtml" /> 
+            <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/branchMachineDesignSubMenu.xhtml" >
+                <ui:param name="nonRepresentedAssemblyPartMachine"
+                          value="#{false}" /> 
+            </ui:include>
             <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml"/>
-        </p:contextMenu>
+        </p:contextMenu>               
 
         <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
                        nodeType="MachineDesignMemberAssemblyInventory"
@@ -58,7 +61,10 @@ See LICENSE file.
             <ui:include src="contextMenu/relationshipSubMenu.xhtml"/>
             <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/templateSubMenu.xhtml"/> 
             <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />    
-            <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/branchMachineDesignSubMenu.xhtml" />             
+            <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/branchMachineDesignSubMenu.xhtml" >
+                <ui:param name="nonRepresentedAssemblyPartMachine"
+                          value="#{false}" /> 
+            </ui:include>
             <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml"/>
         </p:contextMenu>
 

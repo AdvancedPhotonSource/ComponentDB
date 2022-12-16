@@ -14,8 +14,12 @@ See LICENSE file.
     
     <ui:param name="assignedItem"
               value="#{mdTreeListObject != null ? mdTreeListObject.assignedItem : itemListObject}"/> 
+    
+    <ui:param name="representedElement"
+              value="#{mdTreeListObject != null ? mdTreeListObject.assignedRepresentedElement : null}"/> 
 
-    <p:column sortBy="#{assignedItem.qrId}" headerText="Installed QrId"
+    <p:column id="#{entityTypeName}installedQrIdColumn#{viewId}" 
+              sortBy="#{assignedItem.qrId}" headerText="Installed QrId"
               filterBy="#{assignedItem.qrIdFilter}" filterMatchMode="contains"                          
               filterable="#{filterable}"
               sortable="#{sortable}"
@@ -24,9 +28,13 @@ See LICENSE file.
                   value="#{assignedItem.qrIdDisplay}" />
         <ui:param name="installedQrIdPlannedText" 
                   value="#{mdTreeListObject != null and not mdTreeListObject.isHoused ? '(Planned)' : ''}" /> 
-                  
-                  
-        <h:outputText value="#{installedQrIdDisplayValue} #{installedQrIdPlannedText}" />
+                
+                                
+        <h:outputText id="#{entityTypeName}installedQrId#{viewId}" 
+                      styleClass="#{representedElement != null ? 'grayedText' : ''}"
+                      value="#{installedQrIdDisplayValue} #{installedQrIdPlannedText}" />
+        <p:tooltip for="#{entityTypeName}installedQrId#{viewId}" rendered="#{representedElement != null}" 
+                   value="Represented by part name: #{representedElement.name}" /> 
     </p:column>
 
 </ui:composition>

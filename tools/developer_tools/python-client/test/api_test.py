@@ -6,7 +6,7 @@ from CdbApiFactory import CdbApiFactory
 from cdbApi import OpenApiException, ItemStatusBasicObject, NewLocationInformation, SimpleLocationInformation, \
     LogEntryEditInformation, PropertyValue, PropertyMetadata, ConciseItemOptions, NewMachinePlaceholderOptions, \
     NewCatalogInformation, NewInventoryInformation, NewCatalogElementInformation, NewControlRelationshipInformation, \
-    UpdateMachineAssignedItemInformation, PromoteMachineElementInformation
+    UpdateMachineAssignedItemInformation, PromoteMachineElementInformation, RepresentingAssemblyElementForMachineInformation
 from cdbApi.models.allowed_property_value import AllowedPropertyValue
 from cdbApi.models.cable_design_connection_list_object import CableDesignConnectionListObject
 from cdbApi.models.control_relationship_hierarchy import ControlRelationshipHierarchy
@@ -36,6 +36,8 @@ class MyTestCase(unittest.TestCase):
     MACHINE_DESIGN_ID = 93
     MACHINE_DESIGN_PARENT_ID = 94
     MACHINE_DESIGN_CHILD_ID = 95
+    MACHINE_TO_REPRESENT_ID = 110
+    ELEMENT_NAME_TO_REPRESENT = 'E1'
     INVALID_CONTROL_INTERFACE = "Some other interface"
     MD_CONTROL_NAME_TOP_LEVEL = "Top Control Node"
     MD_CONTROL_NAME_TOP_LEVEL_2 = "Another Control Node"
@@ -647,6 +649,47 @@ class MyTestCase(unittest.TestCase):
             promoted_machine = self.machineDesignApi.promote_assembly_element_to_machine(promote_data)
 
             self.assertNotEqual(None, promoted_machine, msg="Promoted machine design has not been returned. ")
+
+    def test_update_representing_assembly_element_for_machine(self):         
+        # Fetch parent of machine
+        housing_hierarchy = self.machineDesignApi.get_housing_hierarchy_by_id(self.MACHINE_TO_REPRESENT_ID)
+        
+        child_item = housing_hierarchy.child_items[0]
+        parent_item_id = None
+
+        while child_item is not None:
+            if child_item.item.id == self.MACHINE_TO_REPRESENT_ID:
+                parent_item_id = housing_hierarchy.item.id
+                break
+            housing_hierarchy = child_item
+            child_item = housing_hierarchy.child_items[0]
+
+        self.assertNotEqual(parent_item_id, None, msg='Parent item id could not be found for representing machine.')
+
+        machine = self.machineDesignApi.get_machine_design_item_by_id(parent_item_id)
+        assembly = machine.assigned_item
+        assembly_hierarchy = self.itemApi.get_item_hierarchy_by_id(assembly.id)
+
+        element_id = None 
+        for child in assembly_hierarchy.child_items: 
+            if child.element_name == self.ELEMENT_NAME_TO_REPRESENT:
+                element_id = child.element_id
+                break
+
+        self.assertNotEqual(element_id, None, msg='Element id for %s could not be found' % self.ELEMENT_NAME_TO_REPRESENT)        
+
+        self.loginAsAdmin() 
+        info = RepresentingAssemblyElementForMachineInformation(machine_id=self.MACHINE_TO_REPRESENT_ID,
+                                                                assembly_element_id=element_id)
+
+        rep_machine = self.machineDesignApi.update_representing_assembly_element_for_machine(info)
+        self.assertEquals(rep_machine.assigned_represented_element.id, element_id, msg="The represented element was not assigned to item.")
+
+        # Clear represented element. 
+        info.assembly_element_id = None
+        rep_machine = self.machineDesignApi.update_representing_assembly_element_for_machine(info)
+
+        self.assertEquals(rep_machine.assigned_represented_element, None, msg="The reresented assembly element failed to clear.")        
 
     def test_user_route(self):
         users = self.userApi.get_all1()

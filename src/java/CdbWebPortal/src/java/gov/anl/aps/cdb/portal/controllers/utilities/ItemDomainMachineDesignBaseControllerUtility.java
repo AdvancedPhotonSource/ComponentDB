@@ -314,10 +314,10 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         }
 
         prepareAddItemElement(newParent, currentItemElement);
-        
+
         return currentItemElement;
     }
-    
+
     public ItemElement performMachineMoveWithUpdate(
             ItemDomainMachineDesign newParent, ItemDomainMachineDesign child, UserInfo sessionUser) throws CdbException {
         ItemElement currentItemElement = performMachineMove(newParent, child, sessionUser);
@@ -615,7 +615,7 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         if (newAssignment instanceof ItemDomainInventory) {
             for (ItemElement itemElement : newAssignment.getItemElementMemberList2()) {
                 Item item = itemElement.getParentItem();
-                if (item instanceof ItemDomainMachineDesign) {    
+                if (item instanceof ItemDomainMachineDesign) {
                     // Allow updates for the same item. 
                     if (!mdItem.equals(item)) {
                         String exMessage = "Inventory item used. Inventory item cannot be saved, used in: " + item.toString();
@@ -683,10 +683,10 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
             ItemDomainMachineDesign mdItem,
             Item originalContainedItem,
             Item newAssignedItem, UserInfo userInfo) throws CdbException {
-        
+
         if (mdItem.getIsItemTemplate()) {
-            List<ItemDomainMachineDesign> itemsCreatedFromThisTemplateItem = 
-                    (List<ItemDomainMachineDesign>) (List<?>) mdItem.getItemsCreatedFromThisTemplateItem();
+            List<ItemDomainMachineDesign> itemsCreatedFromThisTemplateItem
+                    = (List<ItemDomainMachineDesign>) (List<?>) mdItem.getItemsCreatedFromThisTemplateItem();
 
             for (ItemDomainMachineDesign item : itemsCreatedFromThisTemplateItem) {
                 Item assignedItem = item.getAssignedItem();
@@ -698,106 +698,109 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
                 }
             }
         }
-    } 
-    
+    }
+
     public void updateRepresentingAssemblyElementForMachine(ItemDomainMachineDesign node, ItemElement element, boolean matchElementNamesForTemplateInstances) throws InvalidArgument, InvalidObjectState {
-        node.clearItemsToUpdate(); 
+        node.clearItemsToUpdate();
         updateRepresentingAssemblyElementForMachine(node, element, matchElementNamesForTemplateInstances, false);
     }
-    
+
     private void updateRepresentingAssemblyElementForMachine(ItemDomainMachineDesign node, ItemElement representedElement, boolean matchElementNamesForTemplateInstances, boolean updateFromTemplate) throws InvalidArgument, InvalidObjectState {
         // Ensure this can only be applied for standard machine elements and template items. 
         if (node.getEntityTypeList().size() == 1) {
             if (node.getIsItemTemplate() == false) {
                 String entityTypeString = node.getEntityTypeString();
-                throw new InvalidObjectState("Cannot apply representing element for " + entityTypeString + " type items."); 
+                throw new InvalidObjectState("Cannot apply representing element for " + entityTypeString + " type items.");
             }
         } else if (node.getEntityTypeList().size() > 1) {
             String entityTypeString = node.getEntityTypeString();
-            throw new InvalidObjectState("Cannot apply representing element for " + entityTypeString + " type items.");             
+            throw new InvalidObjectState("Cannot apply representing element for " + entityTypeString + " type items.");
         }
-        
+
         // Do not allow update for machine created from template.  
         if (updateFromTemplate == false) {
             Item template = node.getCreatedFromTemplate();
             if (template != null) {
-                String errMessage = node.getName(); 
+                String errMessage = node.getName();
                 errMessage += " is created from template " + template.getName();
-                errMessage += ". Please update template to update representing element for this node."; 
-                throw new InvalidObjectState(errMessage);                     
+                errMessage += ". Please update template to update representing element for this node.";
+                throw new InvalidObjectState(errMessage);
             }
-        }        
-        
-        List<ItemElement> elements = fetchElementsAvaiableForNodeRepresentation(node); 
-        
-        if (elements.contains(representedElement)) {
-            // Valid element. Update the element set. 
-            if (node.getAssignedItem() != null) {
-                String errMessage = node.getName(); 
-                errMessage += " has an assigned item set.";                 
-                throw new InvalidObjectState(errMessage);     
+        }
+
+        List<ItemElement> elements = fetchElementsAvaiableForNodeRepresentation(node);
+
+        // Updating of element 
+        if (representedElement != null) {
+            if (elements.contains(representedElement)) {
+                // Valid element. Update the element set. 
+                if (node.getAssignedItem() != null) {
+                    String errMessage = node.getName();
+                    errMessage += " has an assigned item set.";
+                    throw new InvalidObjectState(errMessage);
+                }
             } else {
-                node.setRepresentsCatalogElement(representedElement);
-            }
-        } else {
-            boolean found = false;  
-            if (matchElementNamesForTemplateInstances && updateFromTemplate) {
-                String elementName = representedElement.getName();
-                for (ItemElement assemblyElement : elements) {
-                    if (assemblyElement.getName().equals(elementName)) {
-                        found = true; 
-                        representedElement = assemblyElement; 
-                        break; 
+                boolean found = false;
+                if (matchElementNamesForTemplateInstances && updateFromTemplate) {
+                    String elementName = representedElement.getName();
+                    for (ItemElement assemblyElement : elements) {
+                        if (assemblyElement.getName().equals(elementName)) {
+                            found = true;
+                            representedElement = assemblyElement;
+                            break;
+                        }
                     }
                 }
+
+                if (!found) {
+                    throw new InvalidArgument("Element provided is not an available element for representation for node " + node.getName() + ".");
+                }
             }
-            
-            if (!found) {
-                throw new InvalidArgument("Element provided is not an available element for representation for node " + node.getName() + "."); 
-            }
-        }      
-        
-        
+        } else {
+            // No additional validation needed for clearing represented element. 
+        }
+
+        node.setRepresentsCatalogElement(representedElement);
+
         if (node.getIsItemTemplate()) {
-            List<ItemDomainMachineDesign> itemsCreatedFromThisTemplateItem = 
-                    (List<ItemDomainMachineDesign>) (List<?>) node.getItemsCreatedFromThisTemplateItem();
-            
-            for (ItemDomainMachineDesign nodeFromTemplate: itemsCreatedFromThisTemplateItem) {
+            List<ItemDomainMachineDesign> itemsCreatedFromThisTemplateItem
+                    = (List<ItemDomainMachineDesign>) (List<?>) node.getItemsCreatedFromThisTemplateItem();
+
+            for (ItemDomainMachineDesign nodeFromTemplate : itemsCreatedFromThisTemplateItem) {
                 updateRepresentingAssemblyElementForMachine(nodeFromTemplate, representedElement, matchElementNamesForTemplateInstances, true);
                 node.addItemToUpdate(nodeFromTemplate);
             }
-            
+
         }
     }
-    
+
     public List<ItemElement> fetchElementsAvaiableForNodeRepresentation(ItemDomainMachineDesign node) {
         ItemDomainMachineDesign parentMachineDesign = node.getParentMachineDesign();
-        
+
         List<ItemElement> availableElementsForNodeRepresentation = null;
-        
+
         if (parentMachineDesign != null) {
             Item assignedCat = parentMachineDesign.getAssignedItem();
-            if (assignedCat.getDerivedFromItem() != null) { 
-                assignedCat = assignedCat.getDerivedFromItem(); 
+            if (assignedCat.getDerivedFromItem() != null) {
+                assignedCat = assignedCat.getDerivedFromItem();
             }
-            
+
             if (!assignedCat.getItemElementDisplayList().isEmpty()) {
-                availableElementsForNodeRepresentation = new ArrayList<>(); 
-                availableElementsForNodeRepresentation.addAll(assignedCat.getItemElementDisplayList()); 
-                
+                availableElementsForNodeRepresentation = new ArrayList<>();
+                availableElementsForNodeRepresentation.addAll(assignedCat.getItemElementDisplayList());
+
                 // Remove any already assigned elements.
                 List<ItemElement> machineChildren = parentMachineDesign.getItemElementDisplayList();
-                
+
                 for (ItemElement machineChild : machineChildren) {
                     ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) machineChild.getContainedItem();
                     ItemElement representingElement = containedItem.getRepresentsCatalogElement();
-                    availableElementsForNodeRepresentation.remove(representingElement);                     
-                }                               
-            } 
-        }    
-        
-        return availableElementsForNodeRepresentation; 
-    }        
-    
+                    availableElementsForNodeRepresentation.remove(representingElement);
+                }
+            }
+        }
+
+        return availableElementsForNodeRepresentation;
+    }
 
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">  
+
+    <p:dialog id="clearRepElementDialog"
+              header="Clear Represeting Catalog Element for Machine #{entityController.current}."
+              widgetVar="clearRepElementDialogWidget"              
+              styleClass="viewTransparentBackgroundDialog">
+
+        <p:outputPanel styleClass="leftAlignedText">
+            You are about to clear the represented part name: #{entityController.current.representsCatalogElement.name}
+        </p:outputPanel>
+
+        <f:facet name="footer">
+            <p:commandButton value="Clear"
+                             icon="fa fa-unlink"                             
+                             action="#{entityController.unlinkRepresentingAssemblyElementForCurrentMachine()}"
+                             onclick="PF('loadingDialog').show()"/> 
+        </f:facet>
+    </p:dialog>
+
+</ui:composition>
+
+

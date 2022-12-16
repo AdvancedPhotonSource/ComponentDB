@@ -2308,7 +2308,13 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         }
 
         if (currentLoaded != null && currentLoaded.getId() != null) {
-            this.currentViewIsTemplate = isItemMachineDesignAndTemplate(currentLoaded);
+            boolean itemMachineDesignAndTemplate = isItemMachineDesignAndTemplate(currentLoaded);     
+            // list.xhtml does not have required templateList functionality. 
+            if (itemMachineDesignAndTemplate && !currentViewIsTemplate) { 
+                Integer id = currentLoaded.getId();
+                SessionUtility.navigateTo("/views/" + getEntityViewsDirectory() + "/templateList" + ".xhtml?id=" + id + "&faces-redirect=true");                            
+                return; 
+            }            
         }
 
         if (resetFiltersOnPreRenderList()) {
@@ -3165,6 +3171,27 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     public void setMatchElementNamesForTemplateInstances(Boolean matchElementNamesForTemplateInstances) {
         this.matchElementNamesForTemplateInstances = matchElementNamesForTemplateInstances;
     }
+    
+    public void prepareMachineUnlinkRepresentingAssemblyElement() {
+        updateCurrentUsingSelectedItemInTreeTable();                
+    }
+    
+    public String unlinkRepresentingAssemblyElementForCurrentMachine() {
+        ItemDomainMachineDesign current = getCurrent();
+        
+        try {             
+            this.controllerUtility.updateRepresentingAssemblyElementForMachine(current, null, false);
+            update(); 
+        } catch (CdbException ex) {
+            LOGGER.error(ex);
+            SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+        }
+        
+        // Reset list data model to show exact state of the object after funciton if it failed or not.
+        resetListDataModel();
+        return listForCurrentEntity(); 
+    }
+    
     
     public void prepareMachineAssignRepresentingAssemblyElement() {
         updateCurrentUsingSelectedItemInTreeTable();
