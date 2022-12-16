@@ -203,6 +203,11 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
                     if (isItemMachineDesignAndTemplate(parentItem)) {
                         // parent is template -- default name is correct
                         defaultDomainAssignment += "Member";
+                        
+                        ItemElement representsCatalogElement = ((ItemDomainMachineDesign) item).getRepresentsCatalogElement();
+                        if (representsCatalogElement != null) {
+                            defaultDomainAssignment += "Assembly";
+                        }                        
                     } else {
                         // parent is machine design 
                         defaultDomainAssignment += "Placeholder";
