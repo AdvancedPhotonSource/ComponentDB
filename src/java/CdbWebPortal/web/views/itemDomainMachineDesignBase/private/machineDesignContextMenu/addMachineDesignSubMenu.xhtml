@@ -27,19 +27,21 @@ See LICENSE file.
             <ui:param name="value" value="From Template"/>
             <ui:param name="icon" value="ui-icon-machine-design-template"/>
             <ui:param name="action" value="prepareAddMdFromPlaceholder" /> 
+            <ui:param name="menuItemRendered" value="#{!entityController.currentViewIsTemplate}"/> 
         </ui:include>                
         
         <ui:include src="addMachineDesignContextMenuItem.xhtml">
             <ui:param name="value" value="From Catalog"/>
             <ui:param name="icon" value="ui-icon-catalog"/>
             <ui:param name="action" value="prepareAddMdFromCatalog"/>
+            <ui:param name="menuItemRendered" value="#{!entityController.currentViewIsTemplate}"/> 
         </ui:include>
         
         <ui:include src="addMachineDesignContextMenuItem.xhtml">
             <ui:param name="value" value="Top Machine Element"/>
             <ui:param name="icon" value="#{mdIcon}"/>
             <ui:param name="action" value="prepareAddMoveExistingMd"/>
-            <ui:param name="menuItemRendered" value="#{entityController.currentViewIsStandard or entityController.currentViewIsTemplate}" />
+            <ui:param name="menuItemRendered" value="#{!entityController.currentViewIsTemplate}" />
         </ui:include>
              
     </p:submenu>
