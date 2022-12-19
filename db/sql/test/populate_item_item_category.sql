@@ -5,6 +5,6 @@ INSERT INTO `item_item_category` VALUES
 (1,19),
 (2,40),
 (3,3),
-(96,43);
+(110,54);
 /*!40000 ALTER TABLE `item_item_category` ENABLE KEYS */;
 UNLOCK TABLES;

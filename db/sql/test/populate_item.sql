@@ -97,7 +97,6 @@ INSERT INTO `item` VALUES
 (93,6,'Test Machine',NULL,NULL,NULL,NULL),
 (94,6,'Component 1',NULL,NULL,NULL,NULL),
 (95,6,'Another Needed Component',NULL,'','',NULL),
-(96,9,'My Connection Between test machines',NULL,'','',NULL),
 (97,3,'Unit: 0001',6,'','',NULL),
 (98,3,'Unit: 0002',6,'','',NULL),
 (99,3,'Unit: 0003',6,'','',NULL),
@@ -110,7 +109,9 @@ INSERT INTO `item` VALUES
 (106,3,'Unit: 0010',6,'','',NULL),
 (107,1,'Yet another building',NULL,NULL,NULL,NULL),
 (108,1,'Pallet',NULL,NULL,NULL,101111101),
-(109,6,'Test Machine 2',NULL,NULL,NULL,NULL),
-(110,6,'TEST:E1',NULL,'','',NULL);
+(109,6,'TestControl',NULL,NULL,NULL,NULL),
+(110,9,'Test Cable Design',NULL,'','',NULL),
+(111,6,'Test Machine 2',NULL,NULL,NULL,NULL),
+(112,6,'TEST:E1',NULL,'','',NULL);
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;
