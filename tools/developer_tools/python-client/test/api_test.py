@@ -36,7 +36,7 @@ class MyTestCase(unittest.TestCase):
     MACHINE_DESIGN_ID = 93
     MACHINE_DESIGN_PARENT_ID = 94
     MACHINE_DESIGN_CHILD_ID = 95
-    MACHINE_TO_REPRESENT_ID = 110
+    MACHINE_TO_REPRESENT_ID = 112
     ELEMENT_NAME_TO_REPRESENT = 'E1'
     INVALID_CONTROL_INTERFACE = "Some other interface"
     MD_CONTROL_NAME_TOP_LEVEL = "Top Control Node"
@@ -821,7 +821,9 @@ class MyTestCase(unittest.TestCase):
 
     def test_get_control_herarchy_for_machine(self):
         result : ControlRelationshipHierarchy = self.machineDesignApi.get_control_hierarchy_for_machine_element(machine_id=self.MACHINE_DESIGN_ID)
-        
+
+        self.assertEqual(result.__len__(), 1, msg="One result of control hierarchy should be found.")
+        result = result[0]
         self.assertEqual(result.machine_item.id, self.MD_CONTROL_EXPECTED_PARENT_ID, msg='Not expected control parent found.')
         self.assertEqual(result.child_item.interface_to_parent, self.MD_CONTROL_INTERFACE_TO_PARENT, msg='Inteface to parent found is not correct.')
         self.assertEqual(result.child_item.machine_item.id, self.MACHINE_DESIGN_ID, msg="Not expected controlled machine found.")
