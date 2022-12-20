@@ -18,10 +18,12 @@ from cdbCli.common.utility.configurationManager import ConfigurationManager
 from rich import print
 from rich.panel import Panel
 from rich.table import Table
+from rich.json import JSON
 
 FORMAT_RICH_OPT = 'Rich'
 FORMAT_JSON_OPT = "JSON"
-FORMAT_OPTS = [FORMAT_RICH_OPT, FORMAT_JSON_OPT]
+PYTHON_OBJ_FORMAT = "Dict"
+FORMAT_OPTS = [FORMAT_RICH_OPT, FORMAT_JSON_OPT, PYTHON_OBJ_FORMAT]
 
 class CliBase:
 
@@ -132,8 +134,11 @@ def simple_obj_list_to_str(list):
 def print_results(console, result_obj, format=FORMAT_RICH_OPT, pager=False, table_style = [], header_style={}, **kwargs):
     if format == FORMAT_RICH_OPT:
         printables = create_rich_result_obj(result_obj, table_style, header_style)
-    else:
-        printables = [result_obj]
+    else:                            
+        if format == FORMAT_JSON_OPT:
+            printables = [JSON.from_data(result_obj)] 
+        elif format == PYTHON_OBJ_FORMAT:
+            printables = [result_obj]        
 
     if pager:
         with console.pager():
