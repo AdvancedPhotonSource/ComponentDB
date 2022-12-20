@@ -1,5 +1,5 @@
 {% set name = "ComponentDB-CLI" %}
-{% set version = "3.14.5.dev1" %}
+{% set version = "3.15.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -27,8 +27,8 @@ requirements:
     - rich    
     - InquirerPy
     - paho-mqtt    
-    - componentdb-api==3.14.5.dev0
-#   - componentdb-api=={{ version }}
+    - componentdb-api=={{ version }}
+
 
 test:
   imports:
