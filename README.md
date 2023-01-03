@@ -90,7 +90,7 @@ Once netbeans is open a few steps need to be taken to prepare netbeans for CDB d
 9. Copy over the required mysql client to new payara server. 
 ```sh 
 # cd into the $desired_dev_directory/$distribution_directory
-cp src/java/CdbWebPortal/lib/mysql-connector-java-5.1.23-bin.jar ../support-`hostname`/netbeans/payara/glassfish/domains/domain1/lib/
+cp src/java/CdbWebPortal/lib/mariadb-java-client-3.1.0.jar ../support-`hostname`/netbeans/payara/glassfish/domains/domain1/lib/
 ```
 10. Run the project
 
