@@ -6,10 +6,9 @@
 CDB_HOST_ARCH=$(uname -sm | tr -s '[:upper:][:blank:]' '[:lower:][\-]')
 CDB_HOSTNAME=`hostname -f`
 
-NETBEANS_VERSION=11.0
-NETBEANS_ZIP_FILE=incubating-netbeans-$NETBEANS_VERSION-bin.zip
-
-DOWNLOAD_URL=https://archive.apache.org/dist/incubator/netbeans/incubating-netbeans/incubating-$NETBEANS_VERSION/$NETBEANS_ZIP_FILE
+NETBEANS_VERSION=16
+NETBEANS_ZIP_FILE=netbeans-$NETBEANS_VERSION-bin.zip
+DOWNLOAD_URL=https://dlcdn.apache.org/netbeans/netbeans/$NETBEANS_VERSION/$NETBEANS_ZIP_FILE
 
 currentDir=`pwd`
 cd `dirname $0`/.. && topDir=`pwd`
@@ -19,9 +18,6 @@ binDir=$topDir/bin
 netbeansDir=$topDir/netbeans
 
 netbeansInstallDir=$netbeansDir/netbeans-$NETBEANS_VERSION
-netbeansPayaraInstallDir=$netbeansDir/payara
-
-payaraInstallScript=$binDir/install_glassfish.sh
 
 mkdir -p $srcDir
 mkdir -p $netbeansDir
@@ -50,7 +46,5 @@ mv netbeans `basename $netbeansInstallDir`
 # Create symlink to current netbeans
 rm currentNetbeans
 ln -s $netbeansInstallDir currentNetbeans
-
-eval $payaraInstallScript $netbeansPayaraInstallDir 1
 
 echo "Netbeans installation done"
