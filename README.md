@@ -76,30 +76,23 @@ For detailed development instructions please refer to our [developers guide](htt
 
 ## Preparing Netbeans
 Once netbeans is open a few steps need to be taken to prepare netbeans for CDB development.
-1. Click Tools > Plugins
-2. Navigate to Available Plugins and install the following:
-    * nbjavac Library
-    * Oracle JS Parser Implementation
-    * Payara EE Common
-    * Payara Common
-    * Payara Server
-    * Payara Tooling
-3. Add payara server reference. 
-4. Click Window > Services 
-5. Right click Server > Add Server
-6. Select Payara 
-7. Use installation location: $desired_dev_directory/support-`hostname`/netbeans/payara
-8. Ensure Local domain is selected and hit next. 
-9. Leaave defaults and hit finish. 
-10. Open CDB Project: File > Open Project
-11. Navigate to $desired_dev_directory/ComponentDB/src/java
-12. Select CdbWebPortal and hit Open Project
-13. If prompted install: JavaFX Implementation for linux
-14. Right click CdbWebPortal and hit Resolve Data Source Problem...
-15. Add Connection > Add Driver File
-16. Navigate to $desired_dev_directory/ComponentDB/src/java/CdbWebPortal/lib/mysql-connector-java-*-bin.jar
-17. Finish Add Connection wizard.
-18. Run the project 
+1. Open CDB Project: File > Open Project
+2. Navigate to $desired_dev_directory/ComponentDB/src/java
+3. Select CdbWebPortal and hit Open Project
+4. Right click on CdbWebPortal top level under projects
+5. Click "Resolve Missing Server Problem"
+6. Add Server -> Payara Server
+  - Installation Location: $desired_dev_directory/support-`hostname`/netbeans/payara
+  - Version: 5.2022.5
+  - Use the wizard's download 
+7. Next -> Use Default Domain Location -> Finish add server instance wizard
+8. Select the Newly added "Payara Server"
+9. Copy over the required mysql client to new payara server. 
+```sh 
+# cd into the $desired_dev_directory/$distribution_directory
+cp src/java/CdbWebPortal/lib/mysql-connector-java-5.1.23-bin.jar ../support-`hostname`/netbeans/payara/glassfish/domains/domain1/lib/
+```
+10. Run the project
 
 ## Python Web Service Development
     # Code is located in $desired_dev_directory/ComponentDB/src/python
