@@ -7,7 +7,7 @@
         <property name="databaseName" value="cdb"/>
         <property name="User" value="cdb"/>
         <property name="Password" value="CDB_DB_PASSWORD"/>
-        <property name="URL" value="jdbc:mariadb://127.0.0.1:3306/cdb?zeroDateTimeBehavior=convertToNull"/>
+        <property name="URL" value="jdbc:mariadb://127.0.0.1:3306/cdb?zeroDateTimeBehavior=convertToNull&amp;useMysqlMetadata=true"/>
         <property name="driverClass" value="org.mariadb.jdbc.Driver"/>
     </jdbc-connection-pool>
     <jdbc-resource enabled="true" jndi-name="CdbDataSource" object-type="user" pool-name="mysql_cdb_cdbPool"/>
