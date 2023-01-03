@@ -69,7 +69,7 @@ fi
 
 # copy mysql driver
 echo "Copying mysql driver"
-rsync -ar $CDB_ROOT_DIR/src/java/CdbWebPortal/lib/mysql-connector-java-5.1.23-bin.jar $GLASSFISH_DIR/glassfish/domains/${CDB_DOMAIN}/lib/
+rsync -ar $CDB_ROOT_DIR/src/java/CdbWebPortal/lib/mariadb-java-client-3.1.0.jar $GLASSFISH_DIR/glassfish/domains/${CDB_DOMAIN}/lib/
 
 # restart server
 echo "Restarting glassfish"
