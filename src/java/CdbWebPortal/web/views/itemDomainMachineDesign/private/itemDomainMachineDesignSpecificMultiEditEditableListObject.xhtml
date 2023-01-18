@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">        
+
+    <p:column rendered="#{entityController.updateFulfillment}">  
+        
+        <f:facet name="header">
+            Fulfillment
+            <p:commandButton value="Acknowledge All" 
+                             action="#{entityController.acknowledgeAllFulfillments()}"
+                             onclick="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"
+                             update="@form"/> 
+        </f:facet>
+        <ui:param name="machineDesignNameList"
+                  value="#{itemObject.machineDesignNameList}" /> 
+        <p:outputPanel rendered="#{machineDesignNameList != null}">
+            NOTE: All other fields are ignored until fulfillment is acknowledged and complete. 
+            <p:dataTable value="#{machineDesignNameList}"                     
+                         var="replacementName">
+                <p:column headerText="Parameter Name"
+                          styleClass="narrowColumn">
+                    <p:outputLabel value="#{replacementName.key}"/>                    
+                </p:column>
+                <p:column headerText="Replaced Value"
+                          styleClass="narrowColumn">
+                    <p:inputText value="#{replacementName.value}"/>
+                </p:column>
+            </p:dataTable>
+            <p:panelGrid columns="2">
+                <p:outputLabel value="Acknowledge Correct Values" />
+                <p:selectBooleanCheckbox value="#{itemObject.acknowledgeMultiEditFulfillment}"/> 
+            </p:panelGrid>
+        </p:outputPanel>
+
+        <p:outputPanel rendered="#{machineDesignNameList == null}">
+            N/A
+        </p:outputPanel>        
+    </p:column>
+
+    <p:column rendered="#{entityController.updateFulfillment}"
+              headerText="Parent Machine Name">
+        #{itemObject.currentHierarchyItemElement.parentItem}
+    </p:column>
+
+</ui:composition>
+
+
