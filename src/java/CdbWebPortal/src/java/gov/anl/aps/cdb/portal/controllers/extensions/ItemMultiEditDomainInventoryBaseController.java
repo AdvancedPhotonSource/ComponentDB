@@ -113,6 +113,7 @@ public abstract class ItemMultiEditDomainInventoryBaseController<InventoryDomain
     private List<PropertyType> getPropertyTypesRequiredForMultiCreate() {
         if (propertyTypesRequiredForMultiCreate == null) {
             if (selectedPropertyTypesForEditing == null || selectedPropertyTypesForEditing.isEmpty()) {
+                List<Item> selectedItemsToEdit = getSelectedItemsToEdit();
                 if (selectedItemsToEdit != null && !selectedItemsToEdit.isEmpty()) {
                     ItemEnforcedPropertiesController itemEnforcedPropertiesController = 
                             getItemEnforcedPropertiesController();
@@ -151,6 +152,7 @@ public abstract class ItemMultiEditDomainInventoryBaseController<InventoryDomain
     public void setUpdateInventoryStatus(boolean updateInventoryStatus) {
         if (updateInventoryStatus) {
             InventoryController itemController = getInventoryController();
+            List<Item> selectedItemsToEdit = getSelectedItemsToEdit();
             for (Item item : selectedItemsToEdit) {
                 itemController.prepareEditInventoryStatus((LocatableStatusItem) item);
             }

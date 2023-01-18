@@ -66,9 +66,10 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
     protected final String REL_PATH_EMPTY_PAGE = "../../common/private/commonEmptyPage.xhtml";
 
-    protected ListDataModel editableListDataModel;
+    private ListDataModel editableListDataModel;
 
-    protected List<Item> selectedItemsToEdit;
+    protected List<Item> editableItems;
+    private List<Item> selectedItemsToEdit;
 
     protected DefaultMenuModel editStepsMenuModel;
     protected DefaultMenuModel createStepsMenuModel;
@@ -106,13 +107,13 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     protected ItemDefaultColumnReferences currentApplyValuesToColumn = null;
     protected String currentPrefixValueToColumn = null;
     protected String currentPostfixValueToColumn = null;
-    protected String currentSequenceStartValueToColumnWithFormat = null; 
+    protected String currentSequenceStartValueToColumnWithFormat = null;
     protected Integer currentSequenceStartValueToColumn = null;
     protected List<Object> currentObjectListValueToColumn = null;
     protected String currentObjectListStringRep = null;
     protected Object currentObjectValueToColumn = null;
     protected PropertyValue currentMockPropertyValueApplyValuesToColumn = null;
-    protected PropertyCreateOptions currentPropertyCreateOptApplyValuesToColumn = null; 
+    protected PropertyCreateOptions currentPropertyCreateOptApplyValuesToColumn = null;
     protected boolean isInputValueDialogOpen;
 
     protected boolean renderMultiCreateConfigurationDialog = false;
@@ -162,26 +163,26 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         private MultiEditMode() {
         }
     }
-    
+
     public enum PropertyCreateOptions {
-        
+
         onlyUpdateExisting("Update Existing"),
         createOnlyForNull("Create When Needed"),
-        createForAll("Create New for All");        
-        
-        private String value; 
+        createForAll("Create New for All");
+
+        private String value;
 
         private PropertyCreateOptions(String value) {
             this.value = value;
         }
-        
+
         public String getValue() {
             return value;
-        }                
+        }
     }
-    
+
     public PropertyCreateOptions[] getPropertyCreateOptions() {
-        return PropertyCreateOptions.values(); 
+        return PropertyCreateOptions.values();
     }
 
     public String getPageTitle() {
@@ -242,9 +243,12 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         MultiEditMode ittrMode = MultiEditMode.delete;
 
         List<Integer> indexesToRemoveFromList = new ArrayList<>();
+        List<Integer> editableIndexesToRemove = new ArrayList<>();
 
         for (int i = selectedItemsToEdit.size() - 1; i >= 0; i--) {
             Item item = selectedItemsToEdit.get(i);
+            int editableInx = fetchEditableItemIndex(item);
+            editableIndexesToRemove.add(editableInx);
             if (isItemExistInDb(item)) {
                 try {
                     performDestroyOperations(item);
@@ -264,6 +268,14 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         }
 
         // reset data model to select from
+        for (int indexToRemove : editableIndexesToRemove) {
+            if (indexToRemove == -1) {
+                // Index not found just reset whole list to nothing. 
+                editableItems = null;
+                break;
+            }
+            editableItems.remove(indexToRemove);
+        }
         editableListDataModel = null;
 
         List<Item> newSelectedItems = new ArrayList<>();
@@ -286,8 +298,8 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
                 newSelectedItems.add(oldSelectedItemToEdit);
             }
         }
-
-        selectedItemsToEdit = newSelectedItems;
+        
+        setSelectedItemsToEdit(newSelectedItems);         
 
         int successDeleteCounter = indexesToRemoveFromList.size();
         if (successDeleteCounter == beforeDeletionCount) {
@@ -332,21 +344,23 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
         for (int i = 0; i < selectedItemsToEdit.size(); i++) {
             Item item = selectedItemsToEdit.get(i);
-            
-            boolean success = false; 
+            int editableInx = fetchEditableItemIndex(item);
+
+            boolean success = false;
             if (isItemExistInDb(item)) {
                 if (performSaveOperationsOnItem(item)) {
                     success = true;
                     successUpdateCounter++;
                 }
             } else if (performSaveOperationsOnItem(item)) {
-                success = true; 
+                success = true;
                 successCreateCounter++;
             }
 
             if (success) {
                 // Reload the updated item. 
                 Item updatedItem = getItemDbFacade().findById(item.getId());
+                updateEditableList(editableInx, updatedItem);
                 selectedItemsToEdit.remove(i);
                 selectedItemsToEdit.add(i, updatedItem);
             }
@@ -392,7 +406,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
         logger.error("Error performing a " + actionWord + " on item: " + ex);
         LogControllerUtility lcu = LogControllerUtility.getSystemLogInstance();
-        try {        
+        try {
             lcu.addSystemLog(SystemLogLevel.entityWarning, "Failed to " + actionWord);
         } catch (CdbException ex1) {
             logger.error(ex1);
@@ -435,25 +449,23 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     }
 
     public void editAllItemsDerivedFromItem(Item item) {
-        resetMultiEditVariables();                
+        resetMultiEditVariables();
 
         LoginController loginController = LoginController.getInstance();
         List<Item> derivedFromItemList = item.getDerivedFromItemList();
-        List<Item> editableItems = new ArrayList<>();        
+        editableItems = new ArrayList<>();
         for (Item derivedItem : derivedFromItemList) {
             if (loginController.isEntityWriteable(derivedItem.getEntityInfo())) {
                 editableItems.add(derivedItem);
             }
         }
-        
-        editableListDataModel = new ListDataModel(editableItems); 
-        
-        if (editableItems.size() > 25) {            
-            selectedItemsToEdit = new ArrayList<>(); 
+
+        if (editableItems.size() > 25) {
+            setSelectedItemsToEdit(new ArrayList<>());            
             setActiveIndex(MultipleEditMenu.selection.ordinal());
             multiEditMode = MultiEditMode.update;
         } else {
-            selectedItemsToEdit = editableItems; 
+            setSelectedItemsToEdit(editableItems);
             setActiveIndex(MultipleEditMenu.updateItems.ordinal());
             multiEditMode = MultiEditMode.update;
         }
@@ -466,6 +478,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         multiEditMode = null;
         selectedItemsToEdit = new ArrayList<>();
         selectedPropertyTypesForEditing = new ArrayList<>();
+        editableItems = null;
         editableListDataModel = null;
         activeIndex = 0;
         createNewItemCount = 0;
@@ -492,12 +505,18 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
     public ListDataModel getEditableListDataModel() {
         if (editableListDataModel == null) {
-
-            LoginController loginController = LoginController.getInstance();
-            if (loginController.isLoggedInAsAdmin()) {
-                editableListDataModel = new ListDataModel(getItemList());
-            } else {                
-                editableListDataModel = new ListDataModel(getEditableItemsForCurrentNonAdminUser());
+            // editableItems for the current session. 
+            if (editableItems != null) {
+                editableListDataModel = new ListDataModel(editableItems);
+            } else {
+                LoginController loginController = LoginController.getInstance();
+                if (loginController.isLoggedInAsAdmin()) {
+                    editableItems = getItemList();                    
+                    
+                } else {
+                    editableItems = getEditableItemsForCurrentNonAdminUser();                     
+                }
+                editableListDataModel = new ListDataModel(editableItems);
             }
         }
         return editableListDataModel;
@@ -507,56 +526,81 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         UserInfo userInfo = (UserInfo) SessionUtility.getUser();
         return getItemDbFacade().findItemsWithPermissionsOfDomain(userInfo.getId(), getDomainId());
     }
-    
-    private int fetchItemIndex(Item item) {
-        for (int i = 0; i < selectedItemsToEdit.size(); i++) {
-            Item ittrItem = selectedItemsToEdit.get(i); 
-            if (ittrItem.equals(item)) {
-                return i; 
+
+    private int fetchItemIndexForList(Item item, List<Item> list) {
+        for (int i = 0; i < list.size(); i++) {
+            Item ittrItem = list.get(i);
+            if (ittrItem == item) {
+                return i;
             }
         }
-        
-        return -1; 
+
+        return -1;
     }
-    
+
+    private int fetchItemIndex(Item item) {
+        return fetchItemIndexForList(item, selectedItemsToEdit);
+    }
+
+    private int fetchEditableItemIndex(Item item) {
+        if (editableItems != null) {
+            return fetchItemIndexForList(item, editableItems);
+        }
+        return -1;
+    }
+
     private void createUpdateSingleItem(MultiEditMode mode, Item item) {
         if (mode != MultiEditMode.create && mode != MultiEditMode.update) {
             // This function only does update and create            
             return;
         }
-        
-        int inx = fetchItemIndex(item); 
+
+        int inx = fetchItemIndex(item);
+        int editableInx = fetchEditableItemIndex(item);
+
         if (inx == -1) {
             SessionUtility.addErrorMessage("Could not find item reference", "Please try using 'Save All' button instead.");
             return;
-        }                
-        
-        try{
+        }
+
+        try {
             if (mode == MultiEditMode.update) {
                 performUpdateOperations(item);
             } else if (mode == MultiEditMode.create) {
                 performCreateOperations(item);
             }
-            
+
             // Reload the updated item. 
             Item updatedItem = getItemDbFacade().findById(item.getId());
             selectedItemsToEdit.remove(inx);
-            selectedItemsToEdit.add(inx, updatedItem);      
-            
+            selectedItemsToEdit.add(inx, updatedItem);
+            updateEditableList(editableInx, updatedItem);
+
             SessionUtility.addInfoMessage("Success", "Saved item: " + item.toString());
         } catch (CdbException ex) {
             processDatabaseOperationsException(ex, item, mode);
         } catch (RuntimeException ex) {
             processDatabaseOperationsException(ex, item, mode);
-        }                             
+        }
+    }
+
+    private void updateEditableList(int editedInx, Item updatedItem) {
+        if (editedInx != -1) {
+            editableItems.remove(editedInx);
+            editableItems.add(editedInx, updatedItem);
+        } else {
+            // Make selected the same as editable list since the replacement failed. 
+            editableItems = new ArrayList<>(selectedItemsToEdit);
+        }
+        editableListDataModel = null;
     }
 
     public void updateSingleItem(Item item) {
-        createUpdateSingleItem(MultiEditMode.update, item); 
+        createUpdateSingleItem(MultiEditMode.update, item);
     }
 
     public void createSingleItem(Item item) {
-        createUpdateSingleItem(MultiEditMode.create, item); 
+        createUpdateSingleItem(MultiEditMode.create, item);
     }
 
     @Override
@@ -770,7 +814,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         }
 
         if (selectedItemsToEdit == null) {
-            selectedItemsToEdit = new ArrayList<>();
+            setSelectedItemsToEdit(new ArrayList<>());            
         }
         int newItemsNeeded = createNewItemCount - selectedItemsToEdit.size();
         for (int i = 0; i < newItemsNeeded; i++) {
@@ -805,7 +849,11 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     }
 
     public void setSelectedItemsToEdit(List<Item> selectedItemsToEdit) {
-        this.selectedItemsToEdit = selectedItemsToEdit;
+        if (editableItems == selectedItemsToEdit) {
+            this.selectedItemsToEdit = new ArrayList<>(editableItems);
+        } else {
+            this.selectedItemsToEdit = selectedItemsToEdit;
+        }
     }
 
     public MultiEditPropertyRecord getCurrentMultiEditPropertyRecord() {
@@ -1047,14 +1095,14 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
         return true;
     }
-    
+
     public static String getFormatForSequenceStartWithFormat(String sequenceStartWithFormat) {
         if (sequenceStartWithFormat.startsWith("0")) {
             int zeroCount = sequenceStartWithFormat.length();
-            return "%0" + zeroCount + "d"; 
+            return "%0" + zeroCount + "d";
         } else {
-            return "%d"; 
-        }   
+            return "%d";
+        }
     }
 
     public void populateValuesForColumn() {
@@ -1064,7 +1112,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
             // Load the format of the sequence. 
             currentSequenceStartValueToColumnWithFormat = getFormatForSequenceStartWithFormat(currentSequenceStartValueToColumnWithFormat);
         }
-        
+
         isInputValueDialogOpen = false;
         for (Item item : selectedItemsToEdit) {
             switch (currentApplyValuesToColumn) {
@@ -1100,22 +1148,22 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
                     PropertyType currentPropertyType = currentMockPropertyValueApplyValuesToColumn.getPropertyType();
                     MultiEditPropertyRecord mepr = getMultiEditPropertyRecordForItem(currentPropertyType, item);
                     PropertyValue value = mepr.getPropertyValue();
-                    
+
                     switch (currentPropertyCreateOptApplyValuesToColumn) {
                         case createForAll:
-                            addPropertyValueForItem(mepr); 
+                            addPropertyValueForItem(mepr);
                             value = mepr.getPropertyValue();
                             break;
                         case createOnlyForNull:
                             if (value == null) {
-                                addPropertyValueForItem(mepr); 
+                                addPropertyValueForItem(mepr);
                                 value = mepr.getPropertyValue();
                             }
                             break;
                         case onlyUpdateExisting:
-                            break; 
+                            break;
                     }
-                    
+
                     if (value != null) {
                         value.setValue(currentMockPropertyValueApplyValuesToColumn.getValue());
                     }
@@ -1176,8 +1224,8 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     private String getNextValueForCurrentSequence() {
         String newValue = currentPrefixValueToColumn;
         if (getHasSequenceValueToSet()) {
-            newValue += String.format(currentSequenceStartValueToColumnWithFormat, 
-                    currentSequenceStartValueToColumn); 
+            newValue += String.format(currentSequenceStartValueToColumnWithFormat,
+                    currentSequenceStartValueToColumn);
             newValue += currentPostfixValueToColumn;
             currentSequenceStartValueToColumn++;
         }
@@ -1197,7 +1245,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         this.isInputValueDialogOpen = true;
         this.currentPrefixValueToColumn = null;
         this.currentPostfixValueToColumn = null;
-        this.currentSequenceStartValueToColumnWithFormat = null; 
+        this.currentSequenceStartValueToColumnWithFormat = null;
         this.currentSequenceStartValueToColumn = null;
         this.currentObjectListValueToColumn = null;
         this.currentObjectListStringRep = null;
@@ -1222,7 +1270,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
     public void setCurrentMockPropertyValueApplyValuesToColumn(PropertyValue currentMockPropertyValueApplyValuesToColumn) {
         this.currentMockPropertyValueApplyValuesToColumn = currentMockPropertyValueApplyValuesToColumn;
-    }  
+    }
 
     public PropertyCreateOptions getCurrentPropertyCreateOptApplyValuesToColumn() {
         return currentPropertyCreateOptApplyValuesToColumn;
