@@ -7,8 +7,9 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="../itemDomainMachineDesignBase/private/templates/itemDomainMachineDesignViewTemplate.xhtml">
-    
+                template="../itemDomainMachineDesignBase/private/templates/itemDomainMachineDesignViewTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui">
+
     <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />        
 
     <f:metadata>
@@ -19,9 +20,22 @@ See LICENSE file.
         <f:viewAction action="#{itemElementController.processPreRender()}"/>
         <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
     </f:metadata>  
-    
-    
-    
+
+    <ui:define name="createdFromTemplateAdditionalButtons">
+        <ui:param name="itemsCreatedFromCurrentTemplateItem"
+                  value="#{domainEntityObject.itemsCreatedFromThisTemplateItemWithUnfulfilledReferences}" /> 
+        <p:commandButton id='#{childEntityTypeName}#{viewName}EditAllButton'
+                         value="Edit Many"
+                         icon="fa fa-object-group"
+                         rendered="#{loginController.loggedIn}"
+                         action="#{itemMultiEditDomainMachineDesignController.editAllItemsCreatedFromTemplate(domainEntityObject)}">
+            <p:tooltip for="#{childEntityTypeName}#{viewName}EditAllButton"
+                       value="Edit many #{childEntityTypeName} items for which current user has permissions"/>
+        </p:commandButton>
+    </ui:define>
+
+
+
 </ui:composition>
 
 
