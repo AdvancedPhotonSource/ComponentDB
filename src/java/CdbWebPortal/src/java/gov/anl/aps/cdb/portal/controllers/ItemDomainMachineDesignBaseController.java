@@ -860,13 +860,11 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             }
         }
     }
-
-    @Deprecated
+    
     /**
-     * Templates are only created fully and only previously partially created md
-     * from templates will utilize this.
+     * New templates added to existing instances will need to be fulfilled. 
      */
-    public void prepareFullfilPlaceholder() {
+    public void prepareFulfillPlaceholder() {
         // Element with template to be fullfilled
         ItemElement templateElement = (ItemElement) selectedItemInListTreeTable.getData();
 
