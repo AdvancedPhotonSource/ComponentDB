@@ -558,7 +558,7 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     private transient Boolean isItemTemplate = null;
     private transient Boolean templateInfoLoaded = false;
-    private transient Item createdFromTemplate = null;
+    protected transient Item createdFromTemplate = null;
     private transient List<Item> itemsCreatedFromThisTemplateItem = null;
 
     private transient Boolean isItemDeleted = null;
@@ -1567,8 +1567,8 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public List<Item> getItemsCreatedFromThisTemplateItem() {
         if (!templateInfoLoaded) {
-            if (getIsItemTemplate()) {
-
+            if (getIsItemTemplate()) {                                
+                
                 String machineDesignTemplateRelationshipTypeName = ItemElementRelationshipTypeNames.template.getValue();
                 itemsCreatedFromThisTemplateItem = new ArrayList<>();
                 if (getItemElementRelationshipList1() != null) {

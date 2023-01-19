@@ -68,6 +68,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     private transient boolean filterMachineNode = true;
     private transient boolean skipSetfilterMachineNode = false;
+    
+    private transient List<Item> itemsCreatedFromThisTemplateItemWithUnfulfilledReferences = null;
+    private transient boolean acknowledgeMultiEditFulfillment = false; 
 
     private transient List<MachineDesignControlRelationshipListObject> controlRelationshipList; 
     
@@ -106,6 +109,37 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public Item createInstance() {
         return new ItemDomainMachineDesign();
     }
+    
+    @JsonIgnore
+    public List<Item> getItemsCreatedFromThisTemplateItemWithUnfulfilledReferences() {
+        if (itemsCreatedFromThisTemplateItemWithUnfulfilledReferences == null) {
+            itemsCreatedFromThisTemplateItemWithUnfulfilledReferences = getItemsCreatedFromThisTemplateItem();
+            
+            if (getIsItemTemplate()) {
+                List<ItemElement> itemElementMemberList1 = getItemElementMemberList();
+                for (ItemElement ie : itemElementMemberList1) {
+                    Item containedItem = ie.getContainedItem();
+                    if (containedItem.equals(this)) {                        
+                        // Unfullfilled element
+                        ItemDomainMachineDesign mockMachine = new ItemDomainMachineDesign();
+                        mockMachine.init(new EntityInfo());
+                        mockMachine.setCurrentHierarchyItemElement(ie);
+                        mockMachine.setName(getName());
+                        Item parentItem = ie.getParentItem();
+                        mockMachine.createdFromTemplate = this;                         
+                        if (parentItem.getIsItemTemplate()) {
+                            continue;
+                        }
+                        String parentName = parentItem.getName();
+                        mockMachine.setDescription("Unfulfilled Element of " + parentName);
+                        itemsCreatedFromThisTemplateItemWithUnfulfilledReferences.add(mockMachine);
+                    }
+                }
+            }
+        }
+        
+        return itemsCreatedFromThisTemplateItemWithUnfulfilledReferences; 
+    }
 
     @JsonIgnore
     public List<ItemElement> getCombinedItemElementList(ItemElement element) {
@@ -129,6 +163,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         }
 
         return combinedItemElementList;
+    }
+
+    @JsonIgnore
+    public boolean isAcknowledgeMultiEditFulfillment() {
+        return acknowledgeMultiEditFulfillment;
+    }
+
+    public void setAcknowledgeMultiEditFulfillment(boolean acknowledgeMultiEditFulfillment) {
+        this.acknowledgeMultiEditFulfillment = acknowledgeMultiEditFulfillment;
     }
 
     @JsonIgnore

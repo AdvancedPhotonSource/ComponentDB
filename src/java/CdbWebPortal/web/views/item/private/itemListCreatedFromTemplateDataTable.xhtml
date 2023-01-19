@@ -7,8 +7,13 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="itemsCreatedFromCurrentTemplateItem"
+              value="#{itemsCreatedFromCurrentTemplateItem != null 
+                       ? itemsCreatedFromCurrentTemplateItem 
+                       : entityController.itemsCreatedFromCurrentTemplateItem}"/>
 
-    <p:dataTable value="#{entityController.itemsCreatedFromCurrentTemplateItem}"
+    <p:dataTable value="#{itemsCreatedFromCurrentTemplateItem}"
                  sortMode="single"
                  stripedRows="true"
                  var="itemListObject">

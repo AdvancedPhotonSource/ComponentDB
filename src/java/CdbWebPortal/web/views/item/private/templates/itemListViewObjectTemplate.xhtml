@@ -18,9 +18,11 @@ See LICENSE file.
 
     <ui:define name="nameColumnObject">
         <f:attribute name="exportValue" value="#{itemListObject.name}"/>
-        <h:outputLink value="../item/view.xhtml?id=#{itemListObject.id}" title="View #{entityTypeName} details"> 
+        <h:outputLink value="../item/view.xhtml?id=#{itemListObject.id}" title="View #{entityTypeName} details"
+                      rendered="#{itemListObject.id != null}"> 
             <h:outputText value="#{itemListObject.name}" />
         </h:outputLink>
+        <h:outputLabel rendered="#{itemListObject.id == null}" value="#{itemListObject.name}" />
     </ui:define>
 
     <ui:define name="qrIdColumnObject">
