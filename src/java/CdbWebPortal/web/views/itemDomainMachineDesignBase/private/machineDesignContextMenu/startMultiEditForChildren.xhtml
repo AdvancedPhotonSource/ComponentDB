@@ -9,7 +9,8 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">         
 
     <p:menuitem value="Edit All Children"
-                icon="fa fa-object-group"                
+                icon="fa fa-object-group"
+                rendered="#{entityController.currentViewIsStandard}"
                 action="#{itemMultiEditDomainMachineDesignController.editAllChildrenOfSelectedMachine()}"
                 oncomplete="PF('setRepElementDialogWidget').show()"
                 disabled="#{disabledEditContextMenuItemForSelection}"/>
