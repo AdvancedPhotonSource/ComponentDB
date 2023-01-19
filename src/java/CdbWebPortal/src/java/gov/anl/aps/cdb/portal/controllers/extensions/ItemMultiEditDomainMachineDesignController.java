@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.LoginController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
+import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -88,6 +89,40 @@ public class ItemMultiEditDomainMachineDesignController extends ItemMultiEditCon
         return getItemDomainMachineDesignController().getMachineDesignTemplateRootTreeNode();
     }
     
+    public void editAllChildrenOfSelectedMachine() {
+        LoginController loginController = LoginController.getInstance();
+        ItemDomainMachineDesignController controller = getItemDomainMachineDesignController();
+        ItemDomainMachineDesignTreeNode selectedTreeNode = controller.getSelectedItemInListTreeTable();
+        ItemElement machineElement = selectedTreeNode.getElement();
+        Item containedItem = machineElement.getContainedItem();
+        
+        List<ItemElement> elements = containedItem.getItemElementDisplayList();
+        
+        if (elements.isEmpty()) {
+            SessionUtility.addInfoMessage("No children", "Nothing to edit. Will not redirect");
+            return; 
+        }
+        
+        List<Item> editableItemsList = new ArrayList<>();
+        
+        for (ItemElement element : elements) {
+            Item machine = element.getContainedItem();
+            
+            if (loginController.isEntityWriteable(machine.getEntityInfo())) {
+                editableItemsList.add(machine);
+            }
+        }
+        
+        if (editableItemsList.isEmpty()) {
+            SessionUtility.addInfoMessage("Insufficient privilages", "You do not have sufficient privilages to edit these children. Will not redirect");
+            return; 
+        }
+        
+        editableItems = editableItemsList; 
+        
+        prepareEditableItemsListAndRedirect();                 
+    }
+    
     public void editAllItemsCreatedFromTemplate(ItemDomainMachineDesign item) {
         resetMultiEditVariables();
 
@@ -102,23 +137,12 @@ public class ItemMultiEditDomainMachineDesignController extends ItemMultiEditCon
         
         editableItems = editableItemsList; 
         
-        if (editableItemsList.size() > 25) {            
-            setSelectedItemsToEdit(new ArrayList<>()); 
-            setActiveIndex(MultipleEditMenu.selection.ordinal());
-            multiEditMode = MultiEditMode.update;
-        } else {
-            setSelectedItemsToEdit(editableItemsList);             
-            setActiveIndex(MultipleEditMenu.updateItems.ordinal());
-            multiEditMode = MultiEditMode.update;
-        }
-
-        String desiredPath = getEntityApplicationViewPath() + "/" + EDIT_MULTIPLE_REDIRECT;
-        SessionUtility.navigateTo(desiredPath);
+        prepareEditableItemsListAndRedirect(); 
     } 
     
     private boolean isUnfulfilledTemplate(Item item) {
         return item.getId() == null && item.getCreatedFromTemplate() != null; 
-    }
+    } 
     
     private boolean fulfillMachineDesign(Item item) {
         if (isUnfulfilledTemplate(item)) {

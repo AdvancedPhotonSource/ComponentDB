@@ -460,6 +460,10 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
             }
         }
 
+        prepareEditableItemsListAndRedirect(); 
+    }
+    
+    protected void prepareEditableItemsListAndRedirect() {
         if (editableItems.size() > 25) {
             setSelectedItemsToEdit(new ArrayList<>());            
             setActiveIndex(MultipleEditMenu.selection.ordinal());
