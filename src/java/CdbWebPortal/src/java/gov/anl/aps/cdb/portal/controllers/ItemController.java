@@ -2131,6 +2131,11 @@ public abstract class ItemController<
         Domain defaultDomain = getDefaultDomain();
         return getDomainPath(defaultDomain) + "/view.xhtml";
     }
+    
+    public String getListPath() {
+        Domain defaultDomain = getDefaultDomain();
+        return getDomainPath(defaultDomain) + "/list.xhtml?faces-redirect=true";
+    }
 
     protected ItemDomainEntity performItemRedirection(ItemDomainEntity item, String paramString, boolean forceRedirection) {
         String currentViewId = SessionUtility.getCurrentViewId();
