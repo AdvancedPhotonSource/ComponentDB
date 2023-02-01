@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainAppControllerUtili
 import gov.anl.aps.cdb.portal.model.ItemDomainAppLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainAppFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainApp;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -17,12 +18,18 @@ import javax.inject.Named;
  *
  * @author djarosz
  */
-@Named("itemDomainAppController")
+@Named(ItemDomainAppController.controllerNamed)
 @SessionScoped
 public class ItemDomainAppController extends ItemController<ItemDomainAppControllerUtility, ItemDomainApp, ItemDomainAppFacade, ItemDomainAppSettings, ItemDomainAppLazyDataModel>{
 
     @EJB
     ItemDomainAppFacade itemDomainAppFacade; 
+    
+    public final static String controllerNamed = "itemDomainAppController";
+    
+    public static ItemDomainAppController getInstance() {
+        return (ItemDomainAppController) SessionUtility.findBean(controllerNamed);
+    }
     
     @Override
     public ItemDomainAppLazyDataModel createItemLazyDataModel() {

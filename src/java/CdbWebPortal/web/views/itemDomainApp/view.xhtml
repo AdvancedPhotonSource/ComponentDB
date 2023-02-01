@@ -8,9 +8,9 @@ See LICENSE file.
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../item/private/templates/itemViewTemplate.xhtml">
-    
+
     <ui:param name="entityController" value="#{itemDomainAppController}" />        
-    
+
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainAppController.processViewRequestParams}"/>
@@ -19,6 +19,11 @@ See LICENSE file.
         <f:viewAction action="#{itemElementController.processPreRender()}"/>
         <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
     </f:metadata>
+
+
+    <ui:define name="additonalPluginSections" >
+        <ui:include src="../plugins/private/appDetailsViewSections.xhtml"/>
+    </ui:define>
 
 </ui:composition>
 
