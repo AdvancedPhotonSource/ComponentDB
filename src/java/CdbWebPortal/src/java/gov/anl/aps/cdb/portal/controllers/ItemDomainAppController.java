@@ -22,6 +22,8 @@ import javax.inject.Named;
 @SessionScoped
 public class ItemDomainAppController extends ItemController<ItemDomainAppControllerUtility, ItemDomainApp, ItemDomainAppFacade, ItemDomainAppSettings, ItemDomainAppLazyDataModel>{
 
+    private final String DERIVED_DOMAIN_NAME = "App Deployment";
+    
     @EJB
     ItemDomainAppFacade itemDomainAppFacade; 
     
@@ -88,7 +90,7 @@ public class ItemDomainAppController extends ItemController<ItemDomainAppControl
 
     @Override
     public boolean getEntityDisplayItemsDerivedFromItem() {
-        return false; 
+        return true; 
     }
 
     @Override
@@ -103,7 +105,7 @@ public class ItemDomainAppController extends ItemController<ItemDomainAppControl
 
     @Override
     public String getItemsDerivedFromItemTitle() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return "Deployments";
     }
 
     @Override
@@ -118,7 +120,7 @@ public class ItemDomainAppController extends ItemController<ItemDomainAppControl
 
     @Override
     public String getDefaultDomainDerivedToDomainName() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return DERIVED_DOMAIN_NAME; 
     }   
     
 }

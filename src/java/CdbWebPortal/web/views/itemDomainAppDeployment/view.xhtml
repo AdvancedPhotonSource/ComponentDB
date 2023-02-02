@@ -9,25 +9,16 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../item/private/templates/itemViewTemplate.xhtml">
 
-    <ui:param name="entityController" value="#{itemDomainAppController}" />        
+    <ui:param name="entityController" value="#{itemDomainAppDeploymentController}" />        
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
-        <f:viewAction action="#{itemDomainAppController.processViewRequestParams}"/>
+        <f:viewAction action="#{itemDomainAppDeploymentController.processViewRequestParams}"/>
         <f:viewAction action="#{propertyValueController.processPreRender()}"/>
         <f:viewAction action="#{logController.processPreRender()}"/>
         <f:viewAction action="#{itemElementController.processPreRender()}"/>
         <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
     </f:metadata>
-
-
-    <ui:define name="additonalPluginSections" >
-        <ui:include src="../plugins/private/appDetailsViewSections.xhtml"/>
-    </ui:define>
-    
-    <ui:define name="derivedFromItems">
-        <ui:include src="private/deploymentList.xhtml"/> 
-    </ui:define>
 
 </ui:composition>
 
