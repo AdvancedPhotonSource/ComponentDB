@@ -15,7 +15,7 @@ See LICENSE file.
                        id="browseByDropdownButton"
                        icon="fa fa-search"
                        styleClass="wideSubMenu #{(fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') 
-                                     or fn:startsWith(view.viewId, '/views/itemDomainInventory/browse')) ? 'activeSubMenuParentItem' : ''} ">
+                                                 or fn:startsWith(view.viewId, '/views/itemDomainInventory/browse')) ? 'activeSubMenuParentItem' : ''} ">
                 <p:menuitem value="Browse By Function" 
                             id="browseByFunctionButton"
                             icon="ui-icon-catalog" 
@@ -111,7 +111,24 @@ See LICENSE file.
 
 
             <f:facet name="options">
-                <p:menubar styleClass="menuBarSupportingItems">    
+                <p:menubar styleClass="menuBarSupportingItems"> 
+                    <p:menuitem styleClass="noButtonMenuItem">
+                        <p:inputText id="jumpToQrIdInput" placeholder="QrId"
+                                     autocomplete="off"
+                                     styleClass="expandingInputText entityDataText menuBarInputText"
+                                     onkeypress="if ((event.which &lt; 48 || event.which &gt; 57) &amp;&amp; event.which != 32) return false;"
+                                     value="#{facesUtility.jumpToQrIdEntry}" 
+                                     title="Jump to QRID"/>                        
+                        <p:defaultCommand target="jumpToQrIdInputCommand" />
+                        <p:commandButton id="jumpToQrIdInputCommand"
+                                         action="#{facesUtility.jumpToItemQrId('jumpToQrIdFailed()')}"
+                                         value="Go"
+                                         style="display: none" 
+                                         onclick="PF('loadingDialog').show()"/> 
+
+                        <p:remoteCommand name="jumpToQrIdFailed"
+                                         onstart="PF('loadingDialog').hide()"/> 
+                    </p:menuitem>
                     <p:menuitem styleClass="noButtonMenuItem">
                         <p:inputText id="menuBarSearchInput" placeholder="Search"
                                      autocomplete="off"                                 
@@ -124,7 +141,7 @@ See LICENSE file.
                                          update="@form" 
                                          action="#{searchController.performInputBoxSearch()}"/>
                     </p:menuitem>
-                  
+
                     <ui:include src="portalViewSupplementalMenubar.xhtml"/>                       
                     <p:menuitem value="Settings"
                                 action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit')}" 
