@@ -84,6 +84,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignBaseController.class.getName());
 
     private final static String URL_PARAM_DETAIL_MODE = "detail";
+    private final static String URL_PARAM_EXPAND_MODE = "expand";
     private final static String URL_PARAM_DETAIL_MODE_SWITCHVAL = "switch";
 
     private final static String cableWizardRedirectSuccess
@@ -860,9 +861,9 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             }
         }
     }
-    
+
     /**
-     * New templates added to existing instances will need to be fulfilled. 
+     * New templates added to existing instances will need to be fulfilled.
      */
     public void prepareFulfillPlaceholder() {
         // Element with template to be fullfilled
@@ -1006,7 +1007,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             }
 
             try {
-                updateList(instancesToUpdate);                 
+                updateList(instancesToUpdate);
             } catch (CdbException ex) {
                 SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
                 LOGGER.error(ex);
@@ -2319,14 +2320,22 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         }
 
         if (currentLoaded != null && currentLoaded.getId() != null) {
+            MachineTreeNode machineNode = getCurrentMachineDesignListRootTreeNode();
+            machineNode.clearFilterResults();
             expandToSpecificMachineDesignItem(currentLoaded);
         }
 
         String mode = SessionUtility.getRequestParameterValue("mode");
-        if (mode != null && mode.equals(URL_PARAM_DETAIL_MODE)) {
-            displayListConfigurationView = true;
-            displayListViewItemDetailsView = true;
+        if (mode != null) {
+            if (mode.equals(URL_PARAM_DETAIL_MODE)) {
+                displayListConfigurationView = true;
+                displayListViewItemDetailsView = true;
+            }
+            if (mode.equals(URL_PARAM_EXPAND_MODE)) {
+                selectedItemInListTreeTable.setExpanded(true);
+            }
         }
+
     }
 
     @Override
@@ -2339,6 +2348,23 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         super.processViewRequestParams();
 
         String mode = SessionUtility.getRequestParameterValue(URL_PARAM_DETAIL_MODE);
+
+        String qrIdParam = SessionUtility.getRequestParameterValue("qrId");
+        if (qrIdParam != null) {
+            // Redirect to the list item selected             
+            String entityViewsDirectory = getDomainPath();
+            String listForCurrentEntity = listForCurrentEntity();
+            String redirect = entityViewsDirectory + "/" + listForCurrentEntity;
+            redirect += "&mode=" + URL_PARAM_EXPAND_MODE; 
+            try {
+                SessionUtility.redirectTo(redirect);
+            } catch (IOException ex) {
+                SessionUtility.addErrorMessage("Error", ex.getMessage());
+                LOGGER.error(ex);
+            }
+
+            return;
+        }
 
         if (mode == null || !mode.equals(URL_PARAM_DETAIL_MODE_SWITCHVAL)) {
             // Check if last page was machine design listView if yes then redirect to list view. 
