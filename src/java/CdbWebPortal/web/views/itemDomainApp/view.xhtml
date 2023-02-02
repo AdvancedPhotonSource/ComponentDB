@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../item/private/templates/itemViewTemplate.xhtml">
+
+    <ui:param name="entityController" value="#{itemDomainAppController}" />        
+
+    <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
+        <f:viewAction action="#{itemDomainAppController.processViewRequestParams}"/>
+        <f:viewAction action="#{propertyValueController.processPreRender()}"/>
+        <f:viewAction action="#{logController.processPreRender()}"/>
+        <f:viewAction action="#{itemElementController.processPreRender()}"/>
+        <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
+    </f:metadata>
+
+
+    <ui:define name="additonalPluginSections" >
+        <ui:include src="../plugins/private/appDetailsViewSections.xhtml"/>
+    </ui:define>
+
+</ui:composition>
+
+

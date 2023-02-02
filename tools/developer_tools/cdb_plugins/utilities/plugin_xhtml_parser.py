@@ -17,6 +17,7 @@ ITEM_DOMAIN_CABLE_INVENTORY_DETAIL_VIEW_SECTIONS = 'cableInventoryDetailsViewSec
 ITEM_DOMAIN_MACHINE_DESIGN_DETAIL_VIEW_SECTIONS = 'itemMachineDesignDetailsViewSections.xhtml'
 ITEM_DOMAIN_MACHINE_DESIGN_INVENTORY_DETAIL_VIEW_SECTIONS = 'itemMachineDesignInventoryDetailsViewSections.xhtml'
 ITEM_DOMAIN_MACHINE_DESIGN_DELETED_ITEMS_DETAIL_VIEW_SECTIONS = 'itemMachineDesignDeletedItemsDetailsViewSections.xhtml'
+ITEM_DOMAIN_APP_ITEMS_DETAIL_VIEW_SECTIONS = 'appDetailsViewSections.xhtml'
 PROPERTY_INFO_ACTION_DIALOGS_XHTML_FILENAME = 'propertyInfoActionDialogs.xhtml'
 PROPERTY_EDIT_LIST_SUPPORT_FILENAME = 'propertyEditListSupport.xhtml'
 PROPERTY_EDIT_OBJECT_SUPPORT_FILENAME = 'propertyEditObjectSupport.xhtml'
@@ -43,6 +44,7 @@ PLUGIN_ITEM_DOMAIN_CABLE_INVENTORY_VIEW_SECTION_PATH = '%s/cableInventorySection
 PLUGIN_ITEM_DOMAIN_MACHINE_DESIGN_VIEW_SECTION_PATH = '%s/itemMachineDesignSections.xhtml' % PLUGIN_ITEM_DETAIL_VIEW_SECTION_BASE_PATH
 PLUGIN_ITEM_DOMAIN_MACHINE_DESIGN_INVENTORY_VIEW_SECTION_PATH = '%s/itemMachineDesignInventorySections.xhtml' % PLUGIN_ITEM_DETAIL_VIEW_SECTION_BASE_PATH
 PLUGIN_ITEM_DOMAIN_MACHINE_DESIGN_DELETED_ITEMS_VIEW_SECTION_PATH = '%s/itemMachineDesignDeletedItemsSections.xhtml' % PLUGIN_ITEM_DETAIL_VIEW_SECTION_BASE_PATH
+PLUGIN_ITEM_DOMAIN_APP_VIEW_SECTION_PATH = '%s/appSections.xhtml' % PLUGIN_ITEM_DETAIL_VIEW_SECTION_BASE_PATH
 PLUGIN_PROPERTY_INFO_ACTION_DIALOGS_PATH = 'propertyValue/infoActionDialogs.xhtml'
 PLUGIN_PROPERTY_EDIT_LIST_SUPPORT_PATH = 'propertyValue/editListSupport.xhtml'
 PLUGIN_PROPERTY_EDIT_OBJECT_SUPPORT_PATH = 'propertyValue/editObjectSupport.xhtml'
@@ -82,6 +84,7 @@ class PluginXhtmlParser():
         item_domain_machine_design_view_sections = ''
         item_domain_machine_design_inventory_view_sections = ''
         item_domain_machine_design_deleted_items_view_sections = ''
+        item_domain_app_view_sections = ''
         property_info_action_dialogs = ''
         property_edit_list_support = ''
         property_edit_object_support = ''
@@ -115,6 +118,8 @@ class PluginXhtmlParser():
             item_domain_machine_design_view_sections += self.generate_ui_inlcude(PLUGIN_ITEM_DOMAIN_MACHINE_DESIGN_VIEW_SECTION_PATH, plugin_name)
             item_domain_machine_design_inventory_view_sections += self.generate_ui_inlcude(PLUGIN_ITEM_DOMAIN_MACHINE_DESIGN_INVENTORY_VIEW_SECTION_PATH, plugin_name)
             item_domain_machine_design_deleted_items_view_sections += self.generate_ui_inlcude(PLUGIN_ITEM_DOMAIN_MACHINE_DESIGN_DELETED_ITEMS_VIEW_SECTION_PATH, plugin_name)
+
+            item_domain_app_view_sections += self.generate_ui_inlcude(PLUGIN_ITEM_DOMAIN_APP_VIEW_SECTION_PATH, plugin_name)
 
             property_info_action_dialogs += self.generate_ui_inlcude(PLUGIN_PROPERTY_INFO_ACTION_DIALOGS_PATH, plugin_name)
             property_edit_list_support += self.generate_ui_inlcude(PLUGIN_PROPERTY_EDIT_LIST_SUPPORT_PATH, plugin_name)
@@ -162,6 +167,8 @@ class PluginXhtmlParser():
             XHTML_TEMPLATE_UI_INCLUDE_KEY, item_domain_machine_design_inventory_view_sections)
         result[ITEM_DOMAIN_MACHINE_DESIGN_DELETED_ITEMS_DETAIL_VIEW_SECTIONS] = xhtml_template_file_content.replace(
             XHTML_TEMPLATE_UI_INCLUDE_KEY, item_domain_machine_design_deleted_items_view_sections)
+        result[ITEM_DOMAIN_APP_ITEMS_DETAIL_VIEW_SECTIONS] = xhtml_template_file_content.replace(
+            XHTML_TEMPLATE_UI_INCLUDE_KEY, item_domain_app_view_sections)
         result[PROPERTY_INFO_ACTION_DIALOGS_XHTML_FILENAME] = xhtml_template_file_content.replace(
             XHTML_TEMPLATE_UI_INCLUDE_KEY, property_info_action_dialogs)
         result[PROPERTY_EDIT_LIST_SUPPORT_FILENAME] = xhtml_template_file_content.replace(

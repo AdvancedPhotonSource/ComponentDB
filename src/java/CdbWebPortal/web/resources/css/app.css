@@ -1,0 +1,40 @@
+/*
+ * Copyright (c) UChicago Argonne, LLC. All rights reserved.
+ * See LICENSE file.
+ */
+@import url("portal.css");
+
+.defaultBackground {
+    background-color: #FAFAD2;
+}
+
+html, body {
+    background-color: #FAFAD2;
+}
+
+
+#bottom {
+    background-color: #FAFAD2;
+}
+
+.domainEntityRowExpansion {
+    background-color: #FAFAD2;
+}
+
+h1 {
+    color: #FAFAD2;
+}
+
+.ui-accordion .ui-accordion-content {
+    background: #FAFAD2;    
+}
+
+.ui-panel {
+    border: 0px; 
+    background: #FAFAD2; 
+}
+
+.catalogItemPropertiesPanel {
+    background-color: #f1efe2; 
+    border-radius: 10px;
+}
