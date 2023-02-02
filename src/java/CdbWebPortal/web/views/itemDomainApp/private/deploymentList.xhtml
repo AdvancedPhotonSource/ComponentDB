@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="derivedController" value="#{derivedController != null ? derivedController : entityController.defaultDomainDerivedToDomainController}" />    
+    
+    
+    <ui:param name="childEntityTypeName" value="#{derivedController.entityTypeName}" />
+    <ui:param name="childEntityController" value="#{derivedController}"/>                
+
+    <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
+        <ui:param name="parentEntityController" value="#{entityController}"/>
+        <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(domainEntityObject.entityInfo)}"/>
+        <ui:param name="onCompleteAddButtonCommand" value="prepareAddDeployment()" /> 
+        <ui:param name="customizableListDataTable" value="#{false}" />
+    </ui:include>
+    
+    <ui:include src="../../item/private/itemDerivedListDataTable.xhtml"/>   
+    
+    <p:remoteCommand name="prepareAddDeployment"
+                     action="#{itemDomainAppDeploymentController.createEntityInstance(itemObject)}"
+                     immediate="true"
+                     /> 
+    
+</ui:composition>
+
+
