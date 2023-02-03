@@ -39,3 +39,6 @@ INSERT INTO `setting_type` VALUES
 
 INSERT INTO `domain` VALUES
 (11,'App Deployment', 'Item domain for managing C2 app deployments.', NULL, NULL, NULL, 'Deployment Type');
+
+UPDATE setting_type set default_value = 'true' where name = 'ItemDomainMachineDesign.List.Display.QrId';
+UPDATE setting_type set default_value = 'false' where name = 'ItemDomainMachineDesign.List.Display.InstalledQrId';
