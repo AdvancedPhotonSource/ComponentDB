@@ -112,14 +112,16 @@ See LICENSE file.
 
             <f:facet name="options">
                 <p:menubar styleClass="menuBarSupportingItems"> 
-                    <p:menuitem styleClass="noButtonMenuItem">
+                    <p:menuitem styleClass="noButtonMenuItem"
+                                id="qridMenuItem">
                         <p:inputText id="jumpToQrIdInput" placeholder="QrId"
                                      autocomplete="off"
                                      styleClass="expandingInputText entityDataText menuBarInputText"
                                      onkeypress="if ((event.which &lt; 48 || event.which &gt; 57) &amp;&amp; event.which != 32) return false;"
                                      value="#{facesUtility.jumpToQrIdEntry}" 
                                      title="Jump to QRID"/>                        
-                        <p:defaultCommand target="jumpToQrIdInputCommand" />
+                        <p:defaultCommand target="jumpToQrIdInputCommand"
+                                          scope="qridMenuItem"/>
                         <p:commandButton id="jumpToQrIdInputCommand"
                                          action="#{facesUtility.jumpToItemQrId('jumpToQrIdFailed()')}"
                                          value="Go"
@@ -129,13 +131,15 @@ See LICENSE file.
                         <p:remoteCommand name="jumpToQrIdFailed"
                                          onstart="PF('loadingDialog').hide()"/> 
                     </p:menuitem>
-                    <p:menuitem styleClass="noButtonMenuItem">
+                    <p:menuitem styleClass="noButtonMenuItem"
+                                id="searchMenuItem">
                         <p:inputText id="menuBarSearchInput" placeholder="Search"
                                      autocomplete="off"                                 
                                      styleClass="expandingInputText entityDataText menuBarInputText" 
                                      value="#{searchController.inputBoxSearchString}" 
                                      title="Search String"/>
-                        <p:defaultCommand target="menuBarSearchInputCommand" />
+                        <p:defaultCommand target="menuBarSearchInputCommand"
+                                          scope="searchMenuItem"/>
                         <p:commandButton id="menuBarSearchInputCommand" 
                                          style="display: none" 
                                          update="@form" 

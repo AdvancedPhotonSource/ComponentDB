@@ -357,6 +357,6 @@ class CdbSeleniumModuleBase:
 		self._click_on_xpath(upload_btn_xpath)
 
 		# Wait for AJAX 
-		time.sleep(2)
+		time.sleep(3)
 
 
