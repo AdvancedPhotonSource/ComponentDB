@@ -110,5 +110,10 @@ public class ItemDomainAppSettings extends ItemSettings<ItemDomainAppController>
         settingEntity.setSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
         settingEntity.setSettingValue(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
     }
+
+    @Override
+    public Boolean getDisplayRowExpansion() {
+        return true; 
+    }
     
 }

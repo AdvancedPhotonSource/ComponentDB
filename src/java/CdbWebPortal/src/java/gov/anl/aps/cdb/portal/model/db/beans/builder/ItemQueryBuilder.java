@@ -172,7 +172,7 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
 
     }
 
-    private void generateWhereString() {
+    protected void generateWhereString() {
         wherePart = "";
         appendWhere("=", "i.domain.id", domainId);
 

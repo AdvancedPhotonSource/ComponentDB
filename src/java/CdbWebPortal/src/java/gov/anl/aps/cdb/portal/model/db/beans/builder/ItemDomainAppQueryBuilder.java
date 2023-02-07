@@ -16,6 +16,17 @@ public class ItemDomainAppQueryBuilder extends ItemQueryBuilder {
     
     public ItemDomainAppQueryBuilder(Integer domainId, Map filterMap, String sortField, SortOrder sortOrder, ItemSettings scopeSettings) {
         super(domainId, filterMap, sortField, sortOrder, scopeSettings);
+    } 
+
+    @Override
+    protected void generateWhereString() {
+        super.generateWhereString(); 
+        
+        if (filterMap == null || filterMap.isEmpty()) {
+            appendRawWhere("i.itemElementMemberList IS EMPTY");
+        }
     }
+    
+    
     
 }

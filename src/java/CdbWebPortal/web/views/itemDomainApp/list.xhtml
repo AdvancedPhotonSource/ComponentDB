@@ -16,7 +16,10 @@ See LICENSE file.
         <f:viewAction action="#{itemDomainAppController.processPreRenderList()}" />
     </f:metadata>
     
-    
+    <ui:define name="listDataTable">
+        <ui:include src="private/itemListDataTable.xhtml"/>
+    </ui:define>
+       
 </ui:composition>
 
 
