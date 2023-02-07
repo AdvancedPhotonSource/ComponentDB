@@ -20,37 +20,37 @@ import javax.inject.Named;
  */
 @Named(ItemDomainAppController.controllerNamed)
 @SessionScoped
-public class ItemDomainAppController extends ItemController<ItemDomainAppControllerUtility, ItemDomainApp, ItemDomainAppFacade, ItemDomainAppSettings, ItemDomainAppLazyDataModel>{
+public class ItemDomainAppController extends ItemController<ItemDomainAppControllerUtility, ItemDomainApp, ItemDomainAppFacade, ItemDomainAppSettings, ItemDomainAppLazyDataModel> {
 
     private final String DERIVED_DOMAIN_NAME = "App Deployment";
-    
+
     @EJB
-    ItemDomainAppFacade itemDomainAppFacade; 
-    
+    ItemDomainAppFacade itemDomainAppFacade;
+
     public final static String controllerNamed = "itemDomainAppController";
-    
+
     public static ItemDomainAppController getInstance() {
         return (ItemDomainAppController) SessionUtility.findBean(controllerNamed);
     }
-    
+
     @Override
     public ItemDomainAppLazyDataModel createItemLazyDataModel() {
         return new ItemDomainAppLazyDataModel(itemDomainAppFacade, getDefaultDomain(), settingObject);
     }
-    
+
     @Override
     protected ItemDomainAppControllerUtility createControllerUtilityInstance() {
-        return new ItemDomainAppControllerUtility(); 
+        return new ItemDomainAppControllerUtility();
     }
 
     @Override
     protected ItemDomainAppSettings createNewSettingObject() {
-        return new ItemDomainAppSettings(this); 
+        return new ItemDomainAppSettings(this);
     }
 
     @Override
     protected ItemDomainAppFacade getEntityDbFacade() {
-        return itemDomainAppFacade; 
+        return itemDomainAppFacade;
     }
 
     @Override
@@ -60,12 +60,12 @@ public class ItemDomainAppController extends ItemController<ItemDomainAppControl
 
     @Override
     public boolean getEntityDisplayDerivedFromItem() {
-        return false; 
+        return false;
     }
 
     @Override
     public boolean getEntityDisplayItemGallery() {
-        return true; 
+        return true;
     }
 
     @Override
@@ -75,32 +75,44 @@ public class ItemDomainAppController extends ItemController<ItemDomainAppControl
 
     @Override
     public boolean getEntityDisplayItemSources() {
-        return false; 
+        return false;
     }
 
     @Override
     public boolean getEntityDisplayItemProperties() {
-        return true; 
+        return true;
     }
 
     @Override
     public boolean getEntityDisplayItemElements() {
-        return false; 
+        ItemDomainApp current = getCurrent();
+        if (current != null) {
+            if (current.getDerivedFromItemList().size() > 0) {
+                return false; 
+            }
+        }
+        return true;
     }
 
     @Override
     public boolean getEntityDisplayItemsDerivedFromItem() {
-        return true; 
+        ItemDomainApp current = getCurrent();
+        if (current != null) {
+            if (current.getItemElementDisplayList().size() > 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public boolean getEntityDisplayItemMemberships() {
-        return false; 
+        return true;
     }
 
     @Override
     public boolean getEntityDisplayItemEntityTypes() {
-        return false; 
+        return false;
     }
 
     @Override
@@ -110,7 +122,7 @@ public class ItemDomainAppController extends ItemController<ItemDomainAppControl
 
     @Override
     public String getStyleName() {
-        return "app"; 
+        return "app";
     }
 
     @Override
@@ -120,7 +132,17 @@ public class ItemDomainAppController extends ItemController<ItemDomainAppControl
 
     @Override
     public String getDefaultDomainDerivedToDomainName() {
-        return DERIVED_DOMAIN_NAME; 
-    }   
-    
+        return DERIVED_DOMAIN_NAME;
+    }
+
+    @Override
+    public boolean entityCanBeCreatedByUsers() {
+        return true; 
+    }
+
+    @Override
+    public String getItemElementsListTitle() {
+        return "App Listing";
+    }
+
 }
