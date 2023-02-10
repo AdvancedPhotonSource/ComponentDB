@@ -80,7 +80,7 @@ class CdbController(object):
 
     @classmethod
     def toJson(cls, o):
-        return json.dumps(o)
+        return json.dumps(o,  encoding='latin_1')
 
     @classmethod
     def fromJson(cls, s):
@@ -91,7 +91,8 @@ class CdbController(object):
         jsonList = []
         for cdbObject in cdbObjectList:
             jsonList.append(cdbObject.getDictRep(keyList='__all__'))
-        return json.dumps(jsonList)
+        jsonList = str(jsonList)
+        return json.dumps(jsonList, encoding='latin_1')
 
     @classmethod
     def getSessionUser(cls):
