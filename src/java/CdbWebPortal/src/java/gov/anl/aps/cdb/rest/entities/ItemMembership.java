@@ -13,12 +13,10 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
  */
 public class ItemMembership {
 
-    private Item partOfItem;
-    private ItemElement representedBy;
+    private Item partOfItem;    
 
-    public ItemMembership(ItemElement ie) {
-        representedBy = ie;
-        partOfItem = ie.getParentItem();
+    public ItemMembership(Item parentItem) {
+        partOfItem = parentItem;
     }
 
     public Item getPartOfItem() {
@@ -26,7 +24,11 @@ public class ItemMembership {
     }
 
     public ItemElement getRepresentedBy() {
-        return representedBy;
+        return partOfItem.getMembershipItemElement(); 
+    }
+    
+    public Item getMembershipBy() {
+        return partOfItem.getMembershipByItem(); 
     }
 
 }

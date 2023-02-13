@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.IItemStatusControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogControllerUtility;
@@ -328,14 +329,14 @@ public class ItemRoute extends ItemBaseRoute {
     public List<ItemMembership> getItemMemberships(@PathParam("itemId") int id) throws ObjectNotFound {
         LOGGER.debug("Fetching memberships for item with id: " + id);
         Item itemById = getItemByIdBase(id);
-
-        List<ItemElement> itemElementMemberList = new ArrayList<>();
-        itemElementMemberList.addAll(itemById.getItemElementMemberList());
-        itemElementMemberList.addAll(itemById.getItemElementMemberList2());
-
+        
+        ItemControllerUtility itemControllerUtility = itemById.getItemControllerUtility();
+        
+        List<Item> parentItemList = itemControllerUtility.getParentItemList(itemById); 
+        
         List<ItemMembership> itemMemberships = new ArrayList<>();
-        for (ItemElement itemElement : itemElementMemberList) {
-            ItemMembership itemMembership = new ItemMembership(itemElement);
+        for (Item parentItem : parentItemList) {
+            ItemMembership itemMembership = new ItemMembership(parentItem);
             itemMemberships.add(itemMembership);
         }
 
