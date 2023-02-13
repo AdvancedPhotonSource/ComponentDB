@@ -584,6 +584,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     protected transient Boolean currentEditItemElementSaveButtonEnabled = false;
     protected transient ItemSource currentEditItemSource = null;
     protected transient Boolean hasElementReorderChangesForCurrent = false;
+    protected transient List<Item> parentItemList = null; 
+    protected transient Item membershipByItem = null; 
+    protected transient ItemElement membershipItemElement = null; 
     // </editor-fold>
 
     public Item() {
@@ -2107,6 +2110,33 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setHasElementReorderChangesForCurrent(Boolean hasElementReorderChangesForCurrent) {
         this.hasElementReorderChangesForCurrent = hasElementReorderChangesForCurrent;
+    }
+    
+    @JsonIgnore
+    public List<Item> getParentItemList() {
+        return parentItemList;
+    }
+
+    public void setParentItemList(List<Item> parentItemList) {
+        this.parentItemList = parentItemList;
+    }
+
+    @JsonIgnore
+    public Item getMembershipByItem() {
+        return membershipByItem;
+    }
+
+    public void setMembershipByItem(Item membershipByItem) {
+        this.membershipByItem = membershipByItem;
+    }
+
+    @JsonIgnore
+    public ItemElement getMembershipItemElement() {
+        return membershipItemElement;
+    }
+
+    public void setMembershipItemElement(ItemElement membershipItemElement) {
+        this.membershipItemElement = membershipItemElement;
     }
     // </editor-fold>
 }
