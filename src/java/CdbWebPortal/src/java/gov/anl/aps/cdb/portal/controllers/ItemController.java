@@ -68,7 +68,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -124,8 +123,7 @@ public abstract class ItemController<
     protected ItemConnectorFacade itemConnectorFacade;
 
     private List<ItemElementRelationship> locationRelationshipCache;
-
-    private List<Item> parentItemList;
+    
     private int currentItemEntityHashCode;
 
     private LazyDataModel itemLazyDataModel;
@@ -1578,15 +1576,14 @@ public abstract class ItemController<
     public Boolean getDisplayItemMembership() {
         Item item = getCurrent();
         if (item != null) {
-            List<ItemElement> itemElementMemberList = item.getItemElementMemberList();
-            if (itemElementMemberList != null && !itemElementMemberList.isEmpty()) {
-                return true;
-            } else {
-                itemElementMemberList = item.getItemElementMemberList2();
-                return itemElementMemberList != null && !itemElementMemberList.isEmpty();
-            }
+            List<Item> parentItemList = getParentItemList();
+            return !parentItemList.isEmpty(); 
         }
         return false;
+    }
+    
+    public Boolean getDisplayMembershipByData() {
+        return false; 
     }
 
     public Boolean getDisplayDerivedFromPropertyList() {
@@ -1602,37 +1599,14 @@ public abstract class ItemController<
     }
 
     public List<Item> getParentItemList() {
-        if (currentHasChanged()) {
-            Item itemEntity = getCurrent();
-            parentItemList = getParentItemList(itemEntity);
-        }
-
-        return parentItemList;
+        ItemDomainEntity itemEntity = getCurrent();
+        
+        ControllerUtility utility = getControllerUtility();
+        return utility.getParentItemList(itemEntity);         
     }
 
     public static List<Item> getParentItemList(Item itemEntity) {
-
-        List<Item> itemList = new ArrayList<>();
-        List<ItemElement> itemElementList = new ArrayList<>();
-
-        if (itemEntity.getItemElementMemberList() != null) {
-            itemElementList.addAll(itemEntity.getItemElementMemberList());
-        }
-
-        if (itemEntity.getItemElementMemberList2() != null) {
-            itemElementList.addAll(itemEntity.getItemElementMemberList2());
-        }
-
-        // Remove currently being viewed item. 
-        for (ItemElement itemElement : itemElementList) {
-            Item memberItem = itemElement.getParentItem();
-
-            if (itemList.contains(memberItem) == false) {
-                itemList.add(memberItem);
-            }
-        }
-
-        return itemList;
+        return ItemControllerUtility.getStandardParentItemList(itemEntity);        
     }
 
     @Override

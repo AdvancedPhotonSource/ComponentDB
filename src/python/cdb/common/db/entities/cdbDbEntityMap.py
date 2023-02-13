@@ -165,7 +165,7 @@ CDB_DB_ENTITY_MAP = {
         'resourceType' : { 'parentEntity' : ResourceType, 'lazy' : False },
     }),
     'item_element_relationship_history' : ( ItemElementRelationshipHistory, {
-        'itemElementRelationship' : { 'parentEntity' : ItemElementRelationship, 'lazy' : True },
+        'itemElementRelationship' : { 'parentEntity' : ItemElementRelationship, 'lazy' : True, 'foreignKeyColumns' : ['item_element_relationship_id'] },
         'firstItemElement' : { 'parentEntity' : ItemElement, 'lazy' : True, 'foreignKeyColumns' : ['first_item_element_id'] },
         'secondItemElement' : { 'parentEntity' : ItemElement, 'lazy' : True, 'foreignKeyColumns' : ['second_item_element_id'] },
         'firstItemConnector' : { 'parentEntity' : ItemConnector, 'lazy' : True, 'foreignKeyColumns' : ['first_item_connector_id'] },

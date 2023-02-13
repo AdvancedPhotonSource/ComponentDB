@@ -30,6 +30,24 @@ See LICENSE file.
         </h:outputLink>         
     </p:column>
     
+    <p:column sortBy="#{currentPartIdentifier}"
+              filterBy="#{facesUtility.getFilterString(currentPartIdentifier)}"
+              filterMatchMode="contains"
+              filterable="#{filterable}"
+              headerText="Membership By"
+              rendered="#{entityController.displayMembershipByData}"
+              exportFunction="#{currentItemController.getItemMembmershipPartIdentifier(parentItemObject)}">
+        <p:outputPanel rendered="#{parentItemObject.membershipByItem != null}" > 
+            <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="itemObject"
+                          value="#{parentItemObject.membershipByItem}"/>
+            </ui:include>
+        </p:outputPanel>
+        <p:outputPanel rendered="#{parentItemObject.membershipByItem == null}" > 
+           Self            
+        </p:outputPanel>
+    </p:column>
+    
     <p:column headerText="Domain"
               sortBy="#{parentItemObject.domain.name}"
               filterBy="#{parentItemObject.domain.name}"

@@ -267,6 +267,11 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
         return 0;
     }
 
+    @Override
+    public Boolean getDisplayMembershipByData() {
+        return true; 
+    }   
+
     /**
      * Allows subclasses to perform custom validation of a new ItemConnector
      * instance.

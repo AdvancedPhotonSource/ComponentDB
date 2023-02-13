@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -110,7 +111,35 @@ public abstract class ItemDomainCatalogBaseControllerUtility<ItemCatalogBaseDoma
             addInventoryElementsForEachInventoryItem(itemElement, userInfo);
         }
         return itemElement;
-    }      
+    }   
+    
+    @Override
+    public List<Item> getParentItemList(ItemCatalogBaseDomainEntity itemEntity) {        
+        List<Item> parentItemList = itemEntity.getParentItemList();
+        if (parentItemList == null) {    
+            parentItemList = getFullCatalogParentItemList(itemEntity);
+            itemEntity.setParentItemList(parentItemList);
+        }
+
+        return parentItemList;
+    }
+    
+    private List<Item> getFullCatalogParentItemList(ItemCatalogBaseDomainEntity item) {
+        List<Item> parentItems = super.getParentItemList(item);
+        
+        List<Item> inventoryItemList = item.getInventoryItemList();
+        
+        for  (Item inventory : inventoryItemList) {
+            List<Item> inventoryParents = ItemControllerUtility.getStandardParentItemList(inventory); 
+            for (Item inventoryParent : inventoryParents) {
+                inventoryParent.setMembershipByItem(inventory);
+                
+            }
+            parentItems.addAll(inventoryParents);             
+        }
+        
+        return parentItems; 
+    }
     
     @Override
     public void checkItemElementsForItem(ItemCatalogBaseDomainEntity item) throws CdbException {
