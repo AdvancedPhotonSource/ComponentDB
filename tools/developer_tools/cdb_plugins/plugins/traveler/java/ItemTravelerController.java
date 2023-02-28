@@ -81,7 +81,8 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     private boolean renderTravelerTemplateLinkDialog;
     private boolean renderTravelerTemplateAddDialog;
     private boolean renderTravelerTemplateUpdatePrefVersionDialog;
-    private boolean renderAddNewTravelerDialog;
+    private boolean renderAddNewTravelerDialog;        
+    private boolean renderLatestDraftVersionColumn; 
 
     private Form selectedTemplate;
     private Form selectedTravelerInstanceTemplate;
@@ -206,6 +207,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         renderAddTravelerToBinderDialog = false;
         renderAddNewTravelerToBinderDialog = false;
         renderAddNewTravelerDialog = false;
+        renderLatestDraftVersionColumn = false; 
         renderTravelerTemplateAddDialog = false;
         renderTravelerTemplateLinkDialog = false;
         renderTravelerTemplateUpdatePrefVersionDialog = false;
@@ -730,6 +732,10 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         return renderAddNewTravelerDialog;
     }
 
+    public boolean isRenderLatestDraftVersionColumn() {
+        return renderLatestDraftVersionColumn;
+    }
+
     public boolean isRenderTravelerTemplateLinkDialog() {
         return renderTravelerTemplateLinkDialog;
     }
@@ -1228,6 +1234,24 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getMessage());
         }
+    }
+    
+    public void loadLatestTemplateVersion(List<Form> templateList) {
+        for (Form template : templateList) {
+            String preferredReleasedId = template.getPreferredReleasedId();
+            template.setPreferredReleasedId(null);
+            loadReleasedTemplatesForTemplate(template, true);
+            template.setPreferredReleasedId(preferredReleasedId);
+            
+            ReleasedForm selectedReleasedForm = template.getSelectedReleasedForm();
+            if (selectedReleasedForm != null) {
+                template.setLatestVersion(selectedReleasedForm.getVer());
+            } else {
+                template.setLatestVersion("No releases"); 
+            }
+        }
+        
+        renderLatestDraftVersionColumn=true;                 
     }
 
     /**

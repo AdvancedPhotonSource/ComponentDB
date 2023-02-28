@@ -100,4 +100,9 @@ public class ItemDomainMachineDesignControllerUtility extends ItemDomainMachineD
         return newMachine; 
     }
 
+    @Override
+    public List<ItemDomainMachineDesign> searchEntities(String searchString) {
+        return getEntityDbFacade().searchEntitiesNoEntityType(searchString); 
+    }
+
 }

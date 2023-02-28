@@ -973,4 +973,19 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
+        
+    public List<ItemDomainEntity> searchEntitiesNoEntityType(String searchString) {
+        try {
+            searchString = convertWildcards(searchString); 
+            ItemDomainName domain = getDomain();
+            return (List<ItemDomainEntity>) em.createNamedStoredProcedureQuery("item.searchItemsNoEntityType")
+                    .setParameter("domain_id", domain.getId())
+                    .setParameter("search_string", searchString)
+                    .setParameter("limit_row", SEARCH_RESULT_LIMIT)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
 }
