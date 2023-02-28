@@ -30,6 +30,7 @@ public class Form extends TravelerObject {
     
     private transient String preferredReleasedId;
     private transient String preferredReleasedVerCache; 
+    private transient String latestVersion; 
     
     public Form() {
         super();
@@ -135,7 +136,14 @@ public class Form extends TravelerObject {
 
     public void setPreferredReleasedVerCache(String preferredReleasedVerCache) {
         this.preferredReleasedVerCache = preferredReleasedVerCache;
+    }    
+
+    public String getLatestVersion() {
+        return latestVersion;
     }
-    
+
+    public void setLatestVersion(String latestVersion) {
+        this.latestVersion = latestVersion;
+    }
     
 }
