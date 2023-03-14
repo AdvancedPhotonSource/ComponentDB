@@ -496,6 +496,9 @@ public class PdmLinkDrawingBean implements Serializable {
         } catch (CdbException ex) {
             logger.error(ex);
             showErrorMessage(ex.getErrorMessage());
+        } catch (Exception ex) {
+            logger.error(ex);
+            showErrorMessage(ex.getMessage());
         }
     }
 

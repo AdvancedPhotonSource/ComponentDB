@@ -97,7 +97,6 @@ public class PdmLinkApi extends CdbRestApi {
         ArgumentUtility.verifyNonEmptyString("Search Pattern", searchPattern);
         String requestUrl = "/pdmLink/search/" + searchPattern;
         String jsonString = invokeGetRequest(requestUrl);
-        jsonString = "{\"searchResults\": " + jsonString + "}"; 
         PdmLinkSearchResults searchResults = (PdmLinkSearchResults) CdbObjectFactory.createCdbObject(jsonString, PdmLinkSearchResults.class);
         return searchResults;
     }
@@ -115,7 +114,6 @@ public class PdmLinkApi extends CdbRestApi {
         ArgumentUtility.verifyNonEmptyString("Drawing number base", drawingNumberBase);
         String requestUrl = "/pdmLink/searchRelated/" + drawingNumberBase;
         String jsonString = invokeGetRequest(requestUrl);
-        jsonString = "{\"searchResults\": " + jsonString + "}"; 
         PdmLinkSearchResults searchResults = (PdmLinkSearchResults) CdbObjectFactory.createCdbObject(jsonString, PdmLinkSearchResults.class);
         return searchResults;
     }
