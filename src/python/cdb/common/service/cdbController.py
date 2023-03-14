@@ -87,18 +87,24 @@ class CdbController(object):
         return json.loads(s)
 
     @classmethod
-    def listToJson(cls, cdbObjectList):
+    def listToJson(cls, cdbObjectList, topLevelKey=None):
         jsonList = []
+        if topLevelKey is not None:
+            responseObj = {}    
+            responseObj[topLevelKey] = jsonList
+        else:
+            responseObj = jsonList
+        
         for cdbObject in cdbObjectList:
             jsonList.append(cdbObject.getDictRep(keyList='__all__'))
         jsonList = str(jsonList)
-        return json.dumps(jsonList, encoding='latin_1')
+        return json.dumps(responseObj, encoding='latin_1')
 
     @classmethod
     def getSessionUser(cls):
         return cherrypy.serving.session.get('user')
 
-    @classmethod
+    @classmethod 
     def getSessionUsername(cls):
         return cherrypy.serving.session.get('_cp_username')
 
