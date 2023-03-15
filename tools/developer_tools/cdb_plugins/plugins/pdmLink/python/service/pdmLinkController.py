@@ -12,6 +12,8 @@ from cdb.cdb_web_service.plugins.pdmLink.impl.pdmLinkControllerImpl import PdmLi
 
 class PdmLinkController(CdbController):
 
+    TOP_LEVEL_SEARCH_RESULTS_KEY = 'searchResults'
+
     def __init__(self):
         CdbController.__init__(self)
         self.pdmLinkControllerImpl = PdmLinkControllerImpl()
@@ -24,17 +26,17 @@ class PdmLinkController(CdbController):
     @cherrypy.expose
     @CdbController.execute
     def getDrawings(self, searchPattern, **kwargs):
-        return self.listToJson(self.pdmLinkControllerImpl.getDrawings(searchPattern))
+        return self.listToJson(self.pdmLinkControllerImpl.getDrawings(searchPattern), topLevelKey=self.TOP_LEVEL_SEARCH_RESULTS_KEY)
 
     @cherrypy.expose
     @CdbController.execute
     def getDrawingSearchResults(self, searchPattern, **kwargs):
-        return self.listToJson(self.pdmLinkControllerImpl.getDrawingSearchResults(searchPattern))
+        return self.listToJson(self.pdmLinkControllerImpl.getDrawingSearchResults(searchPattern), topLevelKey=self.TOP_LEVEL_SEARCH_RESULTS_KEY)
 
     @cherrypy.expose
     @CdbController.execute
     def getRelatedDrawingSearchResults(self, drawingNumberBase, **kwargs):
-        return self.listToJson(self.pdmLinkControllerImpl.getRelatedDrawingSearchResults(drawingNumberBase))
+        return self.listToJson(self.pdmLinkControllerImpl.getRelatedDrawingSearchResults(drawingNumberBase), topLevelKey=self.TOP_LEVEL_SEARCH_RESULTS_KEY)
 
     @cherrypy.expose
     @CdbController.execute
