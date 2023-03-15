@@ -13,6 +13,8 @@ public enum ItemDomainName {
     cableCatalog("Cable Catalog", ItemDomainName.CABLE_CATALOG_ID),
     cableInventory("Cable Inventory", ItemDomainName.CABLE_INVENTORY_ID),
     cableDesign("Cable Design", ItemDomainName.CABLE_DESIGN_ID),
+    app("App", ItemDomainName.APPS_ID), 
+    appDeployment("App Deployment", ItemDomainName.APP_DEPLOYMENT_ID), 
     
     // Deprecated Domain
     cable("Cable", ItemDomainName.CABLE_ID);
@@ -29,6 +31,9 @@ public enum ItemDomainName {
     public final static int CABLE_CATALOG_ID = 7;
     public final static int CABLE_INVENTORY_ID = 8;
     public final static int CABLE_DESIGN_ID = 9;
+    
+    public final static int APPS_ID = 10;
+    public final static int APP_DEPLOYMENT_ID = 11;
 
     private String value;
     private Integer id;

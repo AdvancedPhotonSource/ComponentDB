@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.ListName;
+import static gov.anl.aps.cdb.portal.controllers.ItemController.getParentItemList;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
 import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyMetadataValueFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
@@ -908,6 +909,42 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         }
 
         return newItemElement;
+    }
+    
+    public List<Item> getParentItemList(ItemDomainEntity itemEntity) {        
+        List<Item> parentItemList = itemEntity.getParentItemList();
+        if (parentItemList == null) {            
+            parentItemList = getStandardParentItemList(itemEntity);
+            itemEntity.setParentItemList(parentItemList);
+        }
+
+        return parentItemList;
+    }
+    
+    public static List<Item> getStandardParentItemList(Item itemEntity) {
+
+        List<Item> itemList = new ArrayList<>();
+        List<ItemElement> itemElementList = new ArrayList<>();
+
+        if (itemEntity.getItemElementMemberList() != null) {
+            itemElementList.addAll(itemEntity.getItemElementMemberList());
+        }
+
+        if (itemEntity.getItemElementMemberList2() != null) {
+            itemElementList.addAll(itemEntity.getItemElementMemberList2());
+        }
+
+        // Remove currently being viewed item. 
+        for (ItemElement itemElement : itemElementList) {
+            Item memberItem = itemElement.getParentItem();
+            memberItem.setMembershipItemElement(itemElement);
+
+            if (itemList.contains(memberItem) == false) {
+                itemList.add(memberItem);
+            }
+        }
+
+        return itemList;
     }
 
 }

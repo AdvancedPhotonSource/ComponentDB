@@ -119,12 +119,12 @@ class CdbObject(UserDict.UserDict):
         return display
 
     def getJsonRep(self, keyList=None):
-        dictRep = self.getDictRep(keyList)
-        return json.dumps(dictRep)
+        dictRep = self.getDictRep(keyList)        
+        return json.dumps(dictRep, encoding='latin_1')
 
     def getFullJsonRep(self):
-        dictRep = self.getDictRep(CdbObject.ALL_KEYS)
-        return json.dumps(dictRep)
+        dictRep = self.getDictRep(CdbObject.ALL_KEYS)            
+        return json.dumps(dictRep, encoding='latin_1')
 
     @classmethod 
     def fromJsonString(cls, jsonString):

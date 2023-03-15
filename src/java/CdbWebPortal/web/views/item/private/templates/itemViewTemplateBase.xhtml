@@ -139,6 +139,9 @@ See LICENSE file.
                          rendered="#{entityController.displayCreatedFromCurrentItemList}"
                          toggleable="true"
                          collapsed="#{entityController.displayContentsOfCreatedFromTemplateItem}">
+                    
+                    <ui:insert name="createdFromTemplateAdditionalButtons"/>
+                    
                     <ui:include src="../itemListCreatedFromTemplateDataTable.xhtml" /> 
                 </p:panel>
 

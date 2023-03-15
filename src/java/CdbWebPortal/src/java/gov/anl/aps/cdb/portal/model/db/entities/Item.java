@@ -221,6 +221,28 @@ import org.primefaces.model.TreeNode;
             }
     ),
     @NamedStoredProcedureQuery(
+            name = "item.searchItemsNoEntityType",
+            procedureName = "search_items_no_entity_type",
+            resultClasses = Item.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "limit_row",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "domain_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "search_string",
+                        mode = ParameterMode.IN,
+                        type = String.class
+                )
+            }
+    ),
+    @NamedStoredProcedureQuery(
             name = "item.itemWithWritePermissionsForUser",
             procedureName = "items_with_write_permission_for_user",
             resultClasses = Item.class,
@@ -558,7 +580,7 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     private transient Boolean isItemTemplate = null;
     private transient Boolean templateInfoLoaded = false;
-    private transient Item createdFromTemplate = null;
+    protected transient Item createdFromTemplate = null;
     private transient List<Item> itemsCreatedFromThisTemplateItem = null;
 
     private transient Boolean isItemDeleted = null;
@@ -584,6 +606,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     protected transient Boolean currentEditItemElementSaveButtonEnabled = false;
     protected transient ItemSource currentEditItemSource = null;
     protected transient Boolean hasElementReorderChangesForCurrent = false;
+    protected transient List<Item> parentItemList = null; 
+    protected transient Item membershipByItem = null; 
+    protected transient ItemElement membershipItemElement = null; 
     // </editor-fold>
 
     public Item() {
@@ -1567,8 +1592,8 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public List<Item> getItemsCreatedFromThisTemplateItem() {
         if (!templateInfoLoaded) {
-            if (getIsItemTemplate()) {
-
+            if (getIsItemTemplate()) {                                
+                
                 String machineDesignTemplateRelationshipTypeName = ItemElementRelationshipTypeNames.template.getValue();
                 itemsCreatedFromThisTemplateItem = new ArrayList<>();
                 if (getItemElementRelationshipList1() != null) {
@@ -2107,6 +2132,33 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setHasElementReorderChangesForCurrent(Boolean hasElementReorderChangesForCurrent) {
         this.hasElementReorderChangesForCurrent = hasElementReorderChangesForCurrent;
+    }
+    
+    @JsonIgnore
+    public List<Item> getParentItemList() {
+        return parentItemList;
+    }
+
+    public void setParentItemList(List<Item> parentItemList) {
+        this.parentItemList = parentItemList;
+    }
+
+    @JsonIgnore
+    public Item getMembershipByItem() {
+        return membershipByItem;
+    }
+
+    public void setMembershipByItem(Item membershipByItem) {
+        this.membershipByItem = membershipByItem;
+    }
+
+    @JsonIgnore
+    public ItemElement getMembershipItemElement() {
+        return membershipItemElement;
+    }
+
+    public void setMembershipItemElement(ItemElement membershipItemElement) {
+        this.membershipItemElement = membershipItemElement;
     }
     // </editor-fold>
 }

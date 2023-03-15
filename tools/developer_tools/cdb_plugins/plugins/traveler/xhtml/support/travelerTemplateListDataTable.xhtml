@@ -19,7 +19,10 @@ See LICENSE file.
                  value="#{travelerDomainTemplateController.templatesForCurrent}"
                  var="templateObject">
 
-        <ui:include src="travelerTemplateListObject.xhtml" />
+        <ui:include src="travelerTemplateListObject.xhtml">
+            <ui:param name="dataTableTravelerTemplateList"
+                      value="#{travelerDomainTemplateController.templatesForCurrent}"/>
+        </ui:include>
         
         <p:column headerText="Actions"
                   exportable="false">
