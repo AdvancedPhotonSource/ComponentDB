@@ -3,7 +3,8 @@ cdb:
   user: cdb
   password: cdb
 data_source:
-  csv_list:
-  - ./test_input.csv
+  xlsx_path: ./testInput.xlsx
+  sheet_list:
+    - Vacuum S01-S40
   multiple_match_top_level_name: APS-U Facility Design - April 2023
 error_file_path: error.log
