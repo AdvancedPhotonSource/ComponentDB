@@ -612,7 +612,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Operation(summary = "Delete an item by its id.")
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public void deleteItemById(@PathParam("itemId") int itemId) throws ObjectNotFound, ObjectNotFound, AuthorizationError, CdbException {
+    public void deleteItemById(@PathParam("itemId") int itemId) throws ObjectNotFound, AuthorizationError, CdbException {
         LOGGER.debug("Deleting item with id: " + itemId);
 
         Item dbItem = getItemByIdBase(itemId);
