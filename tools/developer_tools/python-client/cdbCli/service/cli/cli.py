@@ -19,9 +19,10 @@ from cdbCli.service.cli.cdbCliCmnds.setItemLogById import set_item_log_by_id
 from cdbCli.service.cli.cdbCliCmnds.setItemStatusById import set_item_status_by_id
 from cdbCli.service.cli.cdbCliCmnds.setMachineInstallState import set_machine_install_state
 from cdbCli.service.cli.cdbCliCmnds.setParentLocation import set_parent_location
-# from cdbCli.service.cli.cdbCliCmnds.setProperties import set_properties
+from cdbCli.service.cli.cdbCliCmnds.setPropertiesAndMetadata import set_properties
 from cdbCli.service.cli.cdbCliCmnds.setQrIdById import set_qr_id_by_id
 from cdbCli.service.cli.cdbCliCmnds.updateHierarchy import update_hierarchy
+from cdbCli.service.cli.cdbCliCmnds.addProperty import add_property
 
 class AliasedGroup(click.Group):
 
@@ -49,6 +50,7 @@ def main():
     entry_point.add_command(cdb_info)
     entry_point.add_command(add_document_file)
     entry_point.add_command(add_document_property)
+    entry_point.add_command(add_property)
     entry_point.add_command(cdb_log_to_mqtt)
     entry_point.add_command(create_location)
     entry_point.add_command(get_catalog_items_by_name)
@@ -60,7 +62,7 @@ def main():
     entry_point.add_command(set_item_status_by_id)
     entry_point.add_command(set_machine_install_state)
     entry_point.add_command(set_parent_location)
-    # entry_point.add_command(set_properties)
+    entry_point.add_command(set_properties)
     entry_point.add_command(set_qr_id_by_id)
     entry_point.add_command(update_hierarchy)
 
