@@ -2,6 +2,7 @@ LOCK TABLES `item_element_property` WRITE;
 SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `item_element_property` DISABLE KEYS */;
 INSERT INTO `item_element_property` VALUES
+(1,34),
 (60,23),
 (119,1),
 (120,2),

@@ -356,6 +356,10 @@ class MyTestCase(unittest.TestCase):
         refreshed_item = self.itemApi.get_item_by_id(self.INVENTORY_ITEM_ID)
         self.assertEqual(refreshed_item.name, original_name, msg='failed updating item detail.')
 
+    def test_delete_item_propery(self):
+        self.loginAsAdmin()
+        self.propertyValueApi.delete_property_by_id(34)        
+
     def test_update_item_property(self):
         # Try adding status
         status_type = self.propertyTypeApi.get_inventory_status_property_type()
