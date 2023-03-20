@@ -1,5 +1,4 @@
-import csv
-import io
+import pandas as pd
 import yaml
 
 from CdbApiFactory import CdbApiFactory
@@ -30,7 +29,8 @@ with open("config.yaml", 'r') as stream:
     config_yaml = yaml.safe_load(stream)
 
 # Script configuration
-csv_file_paths = config_yaml['data_source']['csv_list']
+xlsx_file_path = config_yaml['data_source']['xlsx_path']
+sheet_list = config_yaml['data_source']['sheet_list']
 multiple_match_top_machine_name = config_yaml['data_source']['multiple_match_top_level_name']
 cdb_url = config_yaml['cdb']['url']
 cdb_user = config_yaml['cdb']['user']
@@ -48,12 +48,28 @@ result_dict = {}
 def append_error_log(error_message):
     with open(error_file_path, 'a') as file:
         file.write(error_message + "\n")
+    
+def isNaN(num):
+    return num!= num
 
-def convert_to_boolean(value):
-    if value == '1' or value.lower() == 'true':
-        return True
-    else:
-        return False
+def convert_sheet_to_dict(df):
+    columns = df.columns
+    data_list = []
+
+    nan = float("nan")
+
+    for row in range(df.shape[0]): 
+        row_data = {}
+        for col in range(df.shape[1]):
+
+            key = columns.values[col]
+            value = df.iat[row,col]
+            if isNaN(value):
+                value = ''
+            row_data[key] = value
+
+        data_list.append(row_data)
+    return data_list
 
 def get_id_for_item(item_name, create_control_group=False, row=None):
     if item_name.startswith("#"):
@@ -224,18 +240,18 @@ def process_item_rec(parent_rec, try_index, interface_name, child_rec=None, row_
         append_error_log(msg)
         print(msg)
 
-for csv_file_path in csv_file_paths:
-    with open(csv_file_path) as csv_file:
-        if len(csv_file.read()):
-            print("Success opening: %s" % csv_file_path)
+with open(xlsx_file_path, 'rb') as xlsx_file:
+    # Ensure that all sheet names are valid
+    for sheet in sheet_list:
+        pd.read_excel(xlsx_file, sheet_name=sheet)
 
-for csv_file_path in csv_file_paths:    
-    start_message = "Processing: %s" % csv_file_path
-    append_error_log(start_message)
-    print(start_message)
+    for sheet in sheet_list:
+        start_message = "Processing: %s" % sheet
+        append_error_log(start_message)
+        print(start_message)
 
-    with open(csv_file_path) as csv_file:
-        control_hierarchy_data = csv.DictReader(csv_file)
+        df = pd.read_excel(xlsx_file, sheet_name=sheet)
+        control_hierarchy_data = convert_sheet_to_dict(df)
 
         parents = []
 
@@ -264,7 +280,8 @@ for csv_file_path in csv_file_paths:
                     control_group_name = row[CONTROL_GROUP_NAME_KEY]
                     machine_parent_name = row[MACHINE_PARENT_NAME_KEY]
                     global_relationship = row[GLOBAL_RELATIONSHIP_KEY]
-                    global_relationship = convert_to_boolean(global_relationship)
+                    global_relationship = global_relationship
+                    
                     item_rec = {ITEM_REC_NAME_KEY: item_name, ITEM_REC_CONTROL_GROUP_NAME_KEY: control_group_name,
                                 ITEM_REC_MACHINE_PARENT_NAME_KEY: machine_parent_name, ITEM_REC_ROW_KEY: row}
 
@@ -291,9 +308,9 @@ for csv_file_path in csv_file_paths:
 
             process_item_rec(parent, try_index, interface_name, child, row_num=row_num, linked_parent_machine=linked_machine_parent)
 
-    end_message = "Finished: %s" % csv_file_path
-    append_error_log(end_message)
-    print(end_message)
+        end_message = "Finished: %s" % sheet
+        append_error_log(end_message)
+        print(end_message)
 
 # Add new line after complete.
 append_error_log("Done\n")
