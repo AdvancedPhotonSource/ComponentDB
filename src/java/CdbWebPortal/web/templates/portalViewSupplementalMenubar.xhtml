@@ -63,5 +63,11 @@ See LICENSE file.
                     icon="ui-icon-connector"
                     styleClass="#{fn:startsWith(view.viewId, '/views/connectorType/') ? 'activeMenuItem' : ''} "
                     action="#{connectorTypeController.prepareListFromViewPath('/views/connectorType')}"/>                        
+
+        <p:menuitem value="Import Templates"                    
+                    id="importTemplatesButton"
+                    icon="fa fa-plus"
+                    styleClass="#{fn:startsWith(view.viewId, '/views/importTemplates/') ? 'activeMenuItem' : ''} "
+                    url="#{request.contextPath}/views/importTemplates/browseImportTemplates" />                        
     </p:submenu>      
 </ui:composition>

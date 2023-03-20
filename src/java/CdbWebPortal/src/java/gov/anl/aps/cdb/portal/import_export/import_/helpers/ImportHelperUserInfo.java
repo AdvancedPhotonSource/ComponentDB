@@ -152,6 +152,9 @@ public class ImportHelperUserInfo extends ImportHelperBase<UserInfo, UserInfoCon
     
     private void updatePassword(UserInfo entity, Map<String, Object> rowMap) {
         Boolean setPassword = (Boolean) rowMap.get(KEY_SET_PASSWORD);
+        if (setPassword == null) {
+            setPassword = false;
+        }
         if (setPassword) {
             String passwordVal = (String) rowMap.get(KEY_PASSWORD);
             if ((passwordVal != null) && (!passwordVal.isEmpty())) {
