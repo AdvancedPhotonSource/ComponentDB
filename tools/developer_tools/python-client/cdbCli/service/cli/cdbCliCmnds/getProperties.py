@@ -12,6 +12,8 @@ import sqlite3
 from rich import print
 from rich.traceback import install
 
+
+from CdbApiFactory import CdbApiFactory
 from cdbCli.common.cli.cliBase import CliBase
 
 
@@ -24,8 +26,9 @@ from cdbCli.common.cli.cliBase import CliBase
     help="itemnumbers reads item numbers from input, otherwise scans entire database [d:--no-itemnumbers]",
     default=False,
 )
+@click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
 @click.option(
-    "--input-file",
+    "--inputfile",
     help="Input for itemnumbers when --itemnumber selected, default is STDIN",
     type=click.File("r"),
     default=sys.stdin,
@@ -36,7 +39,7 @@ from cdbCli.common.cli.cliBase import CliBase
     default=True,
 )
 @click.option(
-    "--output-file",
+    "--outputfile",
     help="Output csv file with item info and properties, default is STDOUT",
     type=click.File("r"),
     default=sys.stdout,
@@ -47,36 +50,24 @@ from cdbCli.common.cli.cliBase import CliBase
     type=click.Choice(["id", "qr_id"], case_sensitive=False),
     help="Allowed values are 'id'(default) or 'qr_id'",
 )
+
 @click.option(
     "--item-type",
     default="inventory",
-    type=click.Choice(["catalog", "inventory"], case_sensitive=False),
+    type=click.Choice(["catalog","inventory"],case_sensitive=False),
     help="Allowed cdb types are 'inventory'(default) or 'catalog' for full scan",
 )
-@click.pass_obj
 def get_properties(
-    cli,
-    property,
-    output_file,
-    input_file,
-    itemnumbers,
-    item_id_type,
-    item_type,
-    printheader    
-):
+    property, outputfile, inputfile, itemnumbers, item_id_type, item_type, printheader, dist=None):
     """Inspects CDB for inventory with the selected property name and outputs a
     CSV of the current values in CDB.  It can scan the CDB inventory for items
     that have the property or take selected id or qr ids from a file."""
     install(show_locals=True)
-    resultDF = get_properties_helper(
-        cli, property, input_file, item_id_type, item_type, itemnumbers
-    )
-    resultDF.to_csv(output_file, index=False, header=printheader)
+    resultDF = get_properties_helper(property, inputfile, item_id_type, item_type, itemnumbers, dist)
+    resultDF.to_csv(outputfile, index=False, header=printheader)
 
 
-def get_properties_helper(
-    cli, property, input_file, item_id_type, item_type, itemnumbers
-):
+def get_properties_helper(property, inputfile, item_id_type, item_type, itemnumbers, dist=None):
     """Takes a csv file of CDB Item, and Property Names and returns a
     dataframe of the current values in CDB or it can scan the CDB inventory for items
     that have the property and return that in the dataframe
@@ -84,11 +75,14 @@ def get_properties_helper(
     Args:
         property (str): _description_
         inputfile (file descripter): _description_
-        itemnumbers (boolean): Take item number input from input file handler or scan CDB        
+        itemnumbers (boolean): Take item number input from input file handler or scan CDB
+        dist (str, optional): CDB Distribution. Defaults to None.
 
     Returns:
         Pandas Dataframe:  Dataframe with results
-    """    
+    """
+
+    cli = CliBase(dist)
     factory = cli.require_api()
     itemApi = factory.getItemApi()
     cableCatalogApi = factory.getCableCatalogItemApi()
@@ -119,12 +113,13 @@ def get_properties_helper(
             if len(property_dicts) > 0:
                 list_of_property_dicts = list_of_property_dicts + property_dicts
     else:
-        for itemnumberstr in input_file:
+        for itemnumberstr in inputfile:
             item_number = int(itemnumberstr.rstrip())
             if item_id_type == "qr_id":
                 item = itemApi.get_item_by_qr_id(item_number)
             else:
                 item = itemApi.get_item_by_id(item_number)
+            print("Checking: ",item.id)
             property_dicts = screen_item_for_property(
                 itemApi, propValueApi, propname, item
             )
@@ -185,13 +180,13 @@ def screen_item_for_property(itemApi, propValueApi, propname, item):
     """_summary_
     # TODO: Need to finish comments
         Args:
-            itemApi (object): Item Api object
-            propValueApi (object): Property Value Api object
-            propname (string): Property name string
-            inv_item (object): Inventory item object
+            itemApi (_type_): _description_
+            propValueApi (_type_): _description_
+            propname (_type_): _description_
+            inv_item (_type_): _description_
 
         Returns:
-            list: property dicts
+            _type_: _description_
     """
     list_of_property_dicts = []
     properties = itemApi.get_properties_for_item(item.id)
