@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../templates/portalViewTemplate.xhtml">      
+
+    <ui:define name="pageTitle">: Browse Import Templates</ui:define> 
+
+    <ui:define name="middleCenter">
+        <h:form> 
+            <div class="pageTitle">
+                <h1>Browse Import Templates</h1>
+            </div>
+            
+            <p:dataTable value="#{importExportInfoController.getDomains()}"
+                         sortMode="single"
+                         stripedRows="true"
+                         resizableColumns="true"
+                         liveResize="true"
+                         var="domainName">                
+
+                <p:column headerText="Domain">
+                    <h:outputText value="#{domainName}"/> 
+                </p:column>
+                
+                <p:column headerText="Formats">
+                    <ui:repeat value="#{importExportInfoController.getImportFormatsForDomain(domainName)}"
+                               var="importFormatInfo">
+                        <p:commandLink value="#{importFormatInfo.formatName}"
+                                       ajax="false">
+                            <p:fileDownload value="#{importExportInfoController.downloadTemplate(importFormatInfo)}" />
+                        </p:commandLink>
+                        <br/>
+                    </ui:repeat>
+                </p:column>
+                
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+</ui:composition>
