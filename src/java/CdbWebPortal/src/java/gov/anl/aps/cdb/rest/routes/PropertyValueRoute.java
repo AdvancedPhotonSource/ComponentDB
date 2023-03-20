@@ -7,7 +7,11 @@ package gov.anl.aps.cdb.rest.routes;
 import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
+import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
+import gov.anl.aps.cdb.portal.controllers.PropertyValueController;
+import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.PropertyValueControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
@@ -19,6 +23,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.rest.authentication.Secured;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -106,6 +112,42 @@ public class PropertyValueRoute extends BaseRoute {
         PropertyValue propertyValue = getPropertyValue(id);
         return propertyValue.getPropertyMetadataList();
     }
+    
+    @DELETE
+    @Path("/DeleteById/{propertyValueId}")
+    @Operation(summary = "Delete a property value by its id.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public void deletePropertyById(@PathParam("propertyValueId") int propertyValueId) throws ObjectNotFound, InvalidArgument, AuthorizationError, CdbException {
+        LOGGER.debug("Deleting item with id: " + propertyValueId);
+
+        PropertyValue dbProperty = getPropertyValue(propertyValueId);
+        UserInfo updatedByUser = getCurrentRequestUserInfo();
+        
+        List<ItemElement> itemElementList = dbProperty.getItemElementList();
+        if (itemElementList.size() != 1) {
+            throw new InvalidArgument("Property may already be deleted. Only properties associated with a one item are supported");
+        }
+        
+        ItemElement ie = itemElementList.get(0);
+        Item parentItem = ie.getParentItem();
+        
+        if (parentItem == null) {
+            throw new InvalidArgument("Only properties associated with a one item are supported");
+        }
+                   
+        if (!verifyUserPermissionForItem(updatedByUser, parentItem)) {
+            AuthorizationError ex = new AuthorizationError("User does not have permission to delete item");
+            LOGGER.error(ex);
+            throw ex;
+        }
+        
+        List<PropertyValue> propertyValueList = parentItem.getPropertyValueList();
+        propertyValueList.remove(dbProperty);
+        
+        CdbEntityControllerUtility controllerUtility = parentItem.getControllerUtility();
+        controllerUtility.updateOnRemoval(parentItem, updatedByUser);                 
+    }
         
     @POST
     @Path("/ById/{id}/AddUpdateMetadata")
@@ -114,7 +156,7 @@ public class PropertyValueRoute extends BaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public List<PropertyMetadata> addOrUpdatePropertyValueMetadataByMap(@PathParam("id") int propertyValueId, @RequestBody(required = true) Map<String, String> metadataMap) throws InvalidArgument, AuthorizationError, CdbException {
-        List<Item> items = itemFacade.fetchItemsWithPropertyValue(propertyValueId);                
+        List<Item> items = itemFacade.fetchItemsWithPropertyValue(propertyValueId);
         
         if (items.size() != 1) {
             throw new InvalidArgument("Only properties assigned to a single item can be updated via this API call.");            
