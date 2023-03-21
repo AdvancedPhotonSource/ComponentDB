@@ -54,6 +54,7 @@ INSERT INTO `item_category` VALUES
 (55,'IT','Information Technology',9),
 (56,'Survey/Alignment','',9),
 (57,'Experimental Facilities Ops','',9),
-(58,'CMB-S4','The \'Stage-4\' ground-based cosmic microwave background (CMB) experiment, CMB-S4',9);
+(58,'CMB-S4','The \'Stage-4\' ground-based cosmic microwave background (CMB) experiment, CMB-S4',9),
+(59,'Test App System ','',10);
 /*!40000 ALTER TABLE `item_category` ENABLE KEYS */;
 UNLOCK TABLES;

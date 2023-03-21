@@ -204,6 +204,8 @@ INSERT INTO `item_type` VALUES
 (203,'Scanner','Bar code / QR code scanner',2),
 (204,'CDB Equipment','Devices recommended for CDB / eTraveler ',2),
 (205,'Assembled Undulator','',2),
-(206,'Wafer','',2);
+(206,'Wafer','',2),
+(208,'App Type 1','',10),
+(209,'App Type 2','',10);
 /*!40000 ALTER TABLE `item_type` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -6,6 +6,7 @@ INSERT INTO `item_item_type` VALUES
 (90,1),
 (91,3),
 (92,3),
-(107,1);
+(107,1),
+(113,208);
 /*!40000 ALTER TABLE `item_item_type` ENABLE KEYS */;
 UNLOCK TABLES;
