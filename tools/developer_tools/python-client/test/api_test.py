@@ -6,7 +6,8 @@ from CdbApiFactory import CdbApiFactory
 from cdbApi import OpenApiException, ItemStatusBasicObject, NewLocationInformation, SimpleLocationInformation, \
     LogEntryEditInformation, PropertyValue, PropertyMetadata, ConciseItemOptions, NewMachinePlaceholderOptions, \
     NewCatalogInformation, NewInventoryInformation, NewCatalogElementInformation, NewControlRelationshipInformation, \
-    UpdateMachineAssignedItemInformation, PromoteMachineElementInformation, RepresentingAssemblyElementForMachineInformation
+    UpdateMachineAssignedItemInformation, PromoteMachineElementInformation, RepresentingAssemblyElementForMachineInformation, \
+    NewAppInformation
 from cdbApi.models.allowed_property_value import AllowedPropertyValue
 from cdbApi.models.cable_design_connection_list_object import CableDesignConnectionListObject
 from cdbApi.models.control_relationship_hierarchy import ControlRelationshipHierarchy
@@ -51,6 +52,9 @@ class MyTestCase(unittest.TestCase):
     TEST_NEW_INVENTORY_ITEM_TAG = "TEST_TAG"
     SAMPLE_IMAGE_PATH = './data/AnlLogo.png'
     SAMPLE_DOC_PATH = './data/CdbSchema-v3.0-3.pdf'
+    APP_DOMAIN_NAME = "App"
+    NEW_APP_NAME = "Test app"
+    NEW_APP_DESCRIPTION = "Created from API"
 
     def setUp(self):
         self.factory = CdbApiFactory('http://127.0.0.1:8080/cdb')
@@ -66,6 +70,7 @@ class MyTestCase(unittest.TestCase):
         self.propertyTypeApi = self.factory.propertyTypeApi
         self.propertyValueApi = self.factory.propertyValueApi
         self.domainApi = self.factory.domainApi
+        self.appApi = self.factory.appItemApi
         self.logApi = self.factory.logApi
         self.searchApi = self.factory.searchApi
         self.loggedIn = False
@@ -355,6 +360,24 @@ class MyTestCase(unittest.TestCase):
 
         refreshed_item = self.itemApi.get_item_by_id(self.INVENTORY_ITEM_ID)
         self.assertEqual(refreshed_item.name, original_name, msg='failed updating item detail.')
+    
+    def test_create_app(self):
+        self.loginAsUser()
+        # Gather Technical system and type 
+        domain = self.domainApi.get_domain_by_name(self.APP_DOMAIN_NAME)
+        techsys = self.domainApi.get_domain_category_list(domain.id)
+        specific_techsys = techsys[0]
+        types = self.domainApi.get_item_category_allowed_types(specific_techsys.id)
+
+        # Create New App
+        new_app_info = NewAppInformation(name=self.NEW_APP_NAME, 
+                                         description=self.NEW_APP_DESCRIPTION, 
+                                         technical_system_list=[specific_techsys], 
+                                         type_list=types)
+        new_app = self.appApi.create_app(new_app_info)
+
+        self.assertNotEqual(new_app, None, msg="Failed to create app")
+
 
     def test_delete_item_propery(self):
         self.loginAsAdmin()

@@ -112,6 +112,7 @@ INSERT INTO `item` VALUES
 (109,6,'TestControl',NULL,NULL,NULL,NULL),
 (110,9,'Test Cable Design',NULL,'','',NULL),
 (111,6,'Test Machine 2',NULL,NULL,NULL,NULL),
-(112,6,'TEST:E1',NULL,'','',NULL);
+(112,6,'TEST:E1',NULL,'','',NULL),
+(113,10,'Test API',NULL,'','',NULL);
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -6,7 +6,7 @@ import base64
 import os
 
 from cdbApi import ApiException, DomainApi, FileUploadObject, LocationItemsApi, LogApi, PropertyValueApi, \
-	ComponentCatalogItemsApi, ComponentInventoryItemsApi, ApiExceptionMessage, CableImportApi
+	ComponentCatalogItemsApi, ComponentInventoryItemsApi, ApiExceptionMessage, CableImportApi, AppItemsApi
 from cdbApi.api.item_api import ItemApi
 from cdbApi.api.downloads_api import DownloadsApi
 from cdbApi.api.property_type_api import PropertyTypeApi
@@ -51,6 +51,7 @@ class CdbApiFactory:
 		self.cableCatalogItemApi = CableCatalogItemsApi(api_client=self.apiClient)
 		self.cableDesignItemApi = CableDesignItemsApi(api_client=self.apiClient)
 		self.machineDesignItemApi = MachineDesignItemsApi(api_client=self.apiClient)
+		self.appItemApi = AppItemsApi(api_client=self.apiClient)
 		self.locationItemApi = LocationItemsApi(api_client=self.apiClient)
 		self.componentCatalogItemApi = ComponentCatalogItemsApi(api_client=self.apiClient)
 		self.componentInventoryItemApi = ComponentInventoryItemsApi(api_client=self.apiClient)
@@ -60,52 +61,55 @@ class CdbApiFactory:
 
 		self.authApi = AuthenticationApi(api_client=self.apiClient)
 
-	def getItemApi(self):
+	def getItemApi(self) -> ItemApi:
 		return self.itemApi
 
-	def getDomainApi(self):
+	def getDomainApi(self) -> DomainApi:
 		return self.domainApi
 
-	def getDownloadApi(self):
+	def getDownloadApi(self) -> DownloadsApi:
 		return self.downloadsApi
 
-	def getPropertyTypeApi(self):
+	def getPropertyTypeApi(self) -> PropertyTypeApi:
 		return self.propertyTypeApi
 
-	def getPropertyValueApi(self):
+	def getPropertyValueApi(self) -> PropertyValueApi:
 		return self.propertyValueApi
 
-	def getUsersApi(self):
+	def getUsersApi(self) -> UsersApi:
 		return self.usersApi
 
-	def getSourceApi(self):
+	def getSourceApi(self) -> SourcesApi:
 		return self.sourceApi
 
-	def getLogApi(self):
+	def getLogApi(self) -> LogApi:
 		return self.logApi
 
-	def getCableCatalogItemApi(self):
+	def getCableCatalogItemApi(self) -> CableCatalogItemsApi:
 		return self.cableCatalogItemApi
 
-	def getCableDesignItemApi(self):
+	def getCableDesignItemApi(self) -> CableDesignItemsApi:
 		return self.cableDesignItemApi
 
-	def getMachineDesignItemApi(self):
+	def getMachineDesignItemApi(self) -> MachineDesignItemsApi:
 		return self.machineDesignItemApi
+	
+	def getAppItemApi(self) -> AppItemsApi:
+		return self.appItemApi
 
-	def getLocationItemApi(self):
+	def getLocationItemApi(self) -> LocationItemsApi:
 		return self.locationItemApi
 
-	def getComponentCatalogItemApi(self):
+	def getComponentCatalogItemApi(self) -> ComponentCatalogItemsApi:
 		return self.componentCatalogItemApi
 
-	def getConnectorTypesApi(self):
+	def getConnectorTypesApi(self) -> ConnectorTypesApi:
 		return self.connectorTypesApi
 
-	def getCableImportApi(self):
+	def getCableImportApi(self) -> CableImportApi:
 		return self.cableImportApi
 
-	def getSearchApi(self):
+	def getSearchApi(self) -> SearchApi:
 		return self.searchApi
 
 	def generateCDBUrlForItemId(self, itemId):
