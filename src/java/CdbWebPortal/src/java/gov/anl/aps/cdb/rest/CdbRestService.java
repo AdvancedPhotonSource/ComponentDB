@@ -44,6 +44,7 @@ public class CdbRestService extends Application {
         Set<Class<?>> resources = new java.util.HashSet<Class<?>>();
         resources.add(gov.anl.aps.cdb.rest.authentication.AuthenticationFilter.class);
         resources.add(gov.anl.aps.cdb.rest.provider.GenericAPIExceptionProvider.class);
+        resources.add(gov.anl.aps.cdb.rest.routes.AppItemRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.AuthenticationRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.CableCatalogItemRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.CableDesignItemRoute.class);
@@ -59,10 +60,10 @@ public class CdbRestService extends Application {
         resources.add(gov.anl.aps.cdb.rest.routes.MachineDesignItemRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.PropertyTypeRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.PropertyValueRoute.class);
+        resources.add(gov.anl.aps.cdb.rest.routes.SearchRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.SourceRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.TestRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.UsersRoute.class);
-        resources.add(gov.anl.aps.cdb.rest.routes.SearchRoute.class); 
         return resources;
     }
 
