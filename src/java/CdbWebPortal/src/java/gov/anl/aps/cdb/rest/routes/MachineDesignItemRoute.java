@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -420,18 +421,35 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         if (controlledMachineElement == null) {
             throw new InvalidArgument("Invalid controlled machine id entered."); 
         }
-        
-        ItemDomainMachineDesign linkedParentMachine = null;
-        Integer linkedParentMachineId = controlRelationshipInformation.getLinkedParentMachineId();
-        if (linkedParentMachineId != null) {
-            linkedParentMachine = facade.find(linkedParentMachineId); 
-        }
+                
+        Integer linkedParentMachineRelationshipId = controlRelationshipInformation.getLinkedParentMachineRelationshipId();         
         
         String controlInterfaceToParent = controlRelationshipInformation.getControlInterfaceToParent();
         
-        ItemElementRelationship relationship = utility.applyRelationship(controlledMachineElement, controllingMachineElement, linkedParentMachine, controlInterfaceToParent, currentRequestUserInfo); 
+        ItemElementRelationship relationship = utility.applyRelationship(controlledMachineElement, controllingMachineElement, linkedParentMachineRelationshipId, controlInterfaceToParent, currentRequestUserInfo); 
         
-        utility.update(controllingMachineElement, currentRequestUserInfo);
+        ItemDomainMachineDesign updatedItem = utility.update(controllingMachineElement, currentRequestUserInfo);
+        
+        List<ItemElementRelationship> relationshipList = updatedItem.getItemElementRelationshipList1();
+        for (ItemElementRelationship ier : relationshipList) {
+            Item firstItem = ier.getFirstItem();
+            
+            if (firstItem.equals(controlledMachineElement)) {
+                if (linkedParentMachineRelationshipId != null) { 
+                    ItemElementRelationship rfp = ier.getRelationshipForParent();
+                    if (rfp == null) {
+                        // Should not be possible because this would mean a global and non-global relationship was created. 
+                        continue;
+                    }
+                    if (!Objects.equals(rfp.getId(), linkedParentMachineRelationshipId)) {
+                        continue; 
+                    }
+                }
+                relationship = ier;
+                break; 
+            }
+            
+        }
         
         return relationship;        
     }
