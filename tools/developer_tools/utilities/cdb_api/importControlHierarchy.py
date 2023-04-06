@@ -17,6 +17,7 @@ GLOBAL_RELATIONSHIP_KEY = "Global Relationship"
 ITEM_REC_NAME_KEY = "name"
 ITEM_REC_CONTROL_GROUP_NAME_KEY = "control_group"
 ITEM_REC_MACHINE_PARENT_NAME_KEY = "machine_parent_name"
+ITEM_REC_RELATIONSHIP_REF_KEY = "control_relationship"
 ITEM_REC_ROW_KEY = "Row"
 ITEM_REC_GLOBAL = "Global"
 
@@ -181,7 +182,7 @@ def get_id_for_item(item_name, create_control_group=False, row=None):
     return parent_result_id
 
 
-def process_item_rec(parent_rec, try_index, interface_name, child_rec=None, row_num=None, linked_parent_machine=None):
+def process_item_rec(parent_rec, try_index, interface_name, child_rec=None, row_num=None, link_parent_relationship=False):
     parent_machine_parent = parent_rec[ITEM_REC_MACHINE_PARENT_NAME_KEY]
     parent_control_group = parent_rec[ITEM_REC_CONTROL_GROUP_NAME_KEY]
     parent_name = parent_rec[ITEM_REC_NAME_KEY]
@@ -207,8 +208,9 @@ def process_item_rec(parent_rec, try_index, interface_name, child_rec=None, row_
 
             opts = NewControlRelationshipInformation(controlled_machine_id=parent_id,
                                                      controlling_machine_id=control_group_id,
-                                                     control_interface_to_parent=interface_name)
-            machine_api.create_control_relationship(opts)
+                                                     control_interface_to_parent=interface_name)            
+            relationship = machine_api.create_control_relationship(opts)
+            parent_rec[ITEM_REC_RELATIONSHIP_REF_KEY] = relationship
         if child_rec is not None:
             child_name = child_rec[ITEM_REC_NAME_KEY]
 
@@ -220,12 +222,18 @@ def process_item_rec(parent_rec, try_index, interface_name, child_rec=None, row_
                                                      controlling_machine_id=parent_id,
                                                      control_interface_to_parent=interface_name)
 
-            if linked_machine_parent is not None:
-                # Add linked machine parent information. 
-                linked_parent_name = linked_parent_machine[ITEM_REC_NAME_KEY]
-                linked_parent_id = get_id_for_item(linked_parent_name)
-                opts.linked_parent_machine_id = linked_parent_id
-            machine_api.create_control_relationship(opts)
+            if link_parent_relationship:                                
+                if ITEM_REC_RELATIONSHIP_REF_KEY in parent_rec.keys():
+                    opts.linked_parent_machine_relationship_id = parent_rec[ITEM_REC_RELATIONSHIP_REF_KEY].id
+                else: 
+                    parent_name = parent_rec[ITEM_REC_NAME_KEY]
+                    message = "Error processing line %d: ('No relationship with %s exists. Cannot link to parent')" % (row_num, parent_name)
+                    append_error_log(message)
+                    print(message)                    
+                    return 
+
+            relationship = machine_api.create_control_relationship(opts)
+            child_rec[ITEM_REC_RELATIONSHIP_REF_KEY] = relationship            
     except ApiException as ex:
         exception_body = cdb_api.parseApiException(ex)        
         message = "Error processing line %d: %s" % (row_num, exception_body.message)
@@ -296,18 +304,15 @@ with open(xlsx_file_path, 'rb') as xlsx_file:
             if len(parents) < 2:
                 if len(parents) == 1:
                     parent = parents[0]
-                    process_item_rec(parent, try_index, interface_name, row_num=row_num)
+                    ier = process_item_rec(parent, try_index, interface_name, row_num=row_num)
                 continue
 
             parent = parents[-2]
-            child = parents[-1]
-            linked_machine_parent = None
+            child = parents[-1]                     
+            link_parent_relationship = (not global_relationship)            
 
-            if (len(parents) >= 3) and not global_relationship:
-                linked_machine_parent = parents[-3]
-
-            process_item_rec(parent, try_index, interface_name, child, row_num=row_num, linked_parent_machine=linked_machine_parent)
-
+            ier = process_item_rec(parent, try_index, interface_name, child, row_num=row_num, link_parent_relationship=link_parent_relationship)
+        
         end_message = "Finished: %s" % sheet
         append_error_log(end_message)
         print(end_message)
