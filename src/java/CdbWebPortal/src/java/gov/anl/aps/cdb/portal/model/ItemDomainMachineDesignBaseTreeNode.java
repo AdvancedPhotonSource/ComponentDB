@@ -123,26 +123,16 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
 
     protected void loadRelationshipsFromRelationshipList(boolean fetchParents, ItemElementRelationshipTypeNames relationshipTypeName, String customType) {
         ItemElement element = this.getElement();
-        Item machineElement = element.getContainedItem();
+        Item machineElement = element.getContainedItem();                
         
-        ItemDomainMachineDesignBaseTreeNode parent = this.getParent();
-        Integer parentItemId = null; 
-        if (parent != null) {
-            ItemElement parentElement = parent.getElement();
-            if (parentElement != null) {
-                Item containedItem = parentElement.getContainedItem();
-                if (containedItem != null) {
-                    parentItemId = containedItem.getId(); 
-                }
-            }
-        }
 
         List<ItemDomainMachineDesign> results = null;
         ItemDomainMachineDesignFacade designFacade = config.getFacade();
         if (fetchParents) {
             results = designFacade.fetchRelationshipParentItems(machineElement.getId(), relationshipTypeName.getDbId());
         } else {
-            results = designFacade.fetchRelationshipChildrenItems(machineElement.getId(), relationshipTypeName.getDbId(), parentItemId);
+            Integer parentRelationshipId = machineElement.getParentRelationshipId();
+            results = designFacade.fetchRelationshipChildrenItems(machineElement.getId(), relationshipTypeName.getDbId(), parentRelationshipId);
         }
 
         for (ItemDomainMachineDesign item : results) {
