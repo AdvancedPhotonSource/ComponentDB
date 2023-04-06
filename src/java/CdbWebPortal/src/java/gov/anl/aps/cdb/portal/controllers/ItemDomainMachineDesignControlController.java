@@ -157,14 +157,14 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
     @Override
     protected void performApplyRelationship() throws InvalidArgument, InvalidObjectState {
         ItemDomainMachineDesignControlControllerUtility controllerUtility = getControllerUtility();
-        UserInfo enteredByUser = (UserInfo) SessionUtility.getUser();
+        UserInfo enteredByUser = (UserInfo) SessionUtility.getUser();                
         
-        ItemDomainMachineDesign linkedParentItem = null;
-        
+        Integer linkedRelationshipId = null; 
         if (linksOnlyToParentControlledNode) {
-            linkedParentItem = getParentOfSelectedItemInHierarchy(); 
-        } 
-        controllerUtility.applyRelationship(getMachineRelatedByCurrent(), getCurrent(), linkedParentItem, controlInterfaceSelection, enteredByUser);
+            ItemDomainMachineDesign current = getCurrent();
+            linkedRelationshipId = current.getParentRelationshipId();
+        }         
+        controllerUtility.applyRelationship(getMachineRelatedByCurrent(), getCurrent(), linkedRelationshipId, controlInterfaceSelection, enteredByUser);
     }
     
     @Override
