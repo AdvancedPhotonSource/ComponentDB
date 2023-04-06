@@ -112,31 +112,23 @@ BEGIN
 END //
 
 DROP PROCEDURE IF EXISTS fetch_relationship_children_items;//
-CREATE PROCEDURE `fetch_relationship_children_items` (IN item_id INT, IN relationship_type_id INT, IN parent_item_id INT) 
+CREATE PROCEDURE `fetch_relationship_children_items` (IN item_id INT, IN relationship_type_id INT, IN parent_relationship_id INT) 
 BEGIN
-	IF(parent_item_id IS NULL) THEN
-		SELECT item.*
+	IF(parent_relationship_id IS NULL) THEN
+		SELECT item.*, ier.id as parent_relationship_id
 		FROM item_element_relationship ier
 		INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
 		INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id
 		INNER JOIN item on vitem1.item_id = item.id	
 		WHERE ier.relationship_type_id = relationship_type_id and vitem2.item_id = item_id;
-	ELSE
-		SET @parent_relationship_id = (SELECT ier.id
-		FROM item_element_relationship ier
-		INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
-		INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id		
-		WHERE ier.relationship_type_id = relationship_type_id 
-		AND vitem1.item_id = item_id
-		AND vitem2.item_id = parent_item_id);
-
-		SELECT item.*
+	ELSE		
+		SELECT item.*, ier.id as parent_relationship_id
 		FROM item_element_relationship ier
 		INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
 		INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id
 		INNER JOIN item on vitem1.item_id = item.id	
 		WHERE ier.relationship_type_id = relationship_type_id and vitem2.item_id = item_id
-		AND (ier.relationship_id_for_parent = @parent_relationship_id or ier.relationship_id_for_parent is null);
+		AND (ier.relationship_id_for_parent = parent_relationship_id or ier.relationship_id_for_parent is null);
 	END IF;	
 END //
 

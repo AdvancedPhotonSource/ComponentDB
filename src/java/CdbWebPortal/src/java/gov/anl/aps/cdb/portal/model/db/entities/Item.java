@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -45,6 +46,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.EntityResult;
 import javax.persistence.ManyToOne;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -55,6 +57,8 @@ import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.ParameterMode;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
 import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
@@ -70,6 +74,13 @@ import org.primefaces.model.TreeNode;
  */
 @Entity
 @Table(name = "item")
+@SqlResultSetMappings({
+    @SqlResultSetMapping(
+            name = "relationshipResultList",
+            entities = {@EntityResult(entityClass=Item.class)},
+            columns = {@ColumnResult(name="parent_relationship_id", type = Integer.class)}
+    )
+})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "domain_id")
 @NamedQueries({
@@ -285,8 +296,8 @@ import org.primefaces.model.TreeNode;
     ),
     @NamedStoredProcedureQuery(
             name = "item.fetchRelationshipChildrenItems",
-            procedureName = "fetch_relationship_children_items",
-            resultClasses = Item.class,
+            procedureName = "fetch_relationship_children_items",    
+            resultSetMappings = "relationshipResultList", 
             parameters = {
                 @StoredProcedureParameter(
                         name = "item_id",
@@ -299,7 +310,7 @@ import org.primefaces.model.TreeNode;
                         type = Integer.class
                 ),
                 @StoredProcedureParameter(
-                        name = "parent_item_id",
+                        name = "parent_relationship_id",
                         mode = ParameterMode.IN,
                         type = Integer.class
                 )
@@ -547,7 +558,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     @OneToMany(mappedBy = "containedItem1")
     private List<ItemElementHistory> historyMemberList;
     @OneToMany(mappedBy = "containedItem2")
-    private List<ItemElementHistory> historyMemberList2;
+    private List<ItemElementHistory> historyMemberList2;    
 
     private transient ItemElement selfItemElement;
 
@@ -600,6 +611,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient List<ItemConnector> syncedConnectorList = null;
 
     private transient List<ItemConnector> itemConnectorListSorted = null;
+    
+    //Helper variable for results from fetching relationship children. 
+    private transient Integer parentRelationshipId = null; 
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
     protected transient ItemElement currentEditItemElement = null;
@@ -2095,6 +2109,15 @@ public class Item extends CdbDomainEntity implements Serializable {
         clone.setItem(this);
 
         return clone;
+    }
+
+    @JsonIgnore
+    public Integer getParentRelationshipId() {
+        return parentRelationshipId;
+    }
+
+    public void setParentRelationshipId(Integer parentRelationshipId) {
+        this.parentRelationshipId = parentRelationshipId;
     }
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">

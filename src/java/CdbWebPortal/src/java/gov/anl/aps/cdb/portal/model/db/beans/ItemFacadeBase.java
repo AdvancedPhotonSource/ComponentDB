@@ -27,6 +27,7 @@ import gov.anl.aps.cdb.portal.view.objects.AdvancedFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -435,16 +436,24 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return fetchRelationshipChildrenItems(itemId, relationshipTypeId, null); 
     }
     
-    public List<ItemDomainEntity> fetchRelationshipChildrenItems(Integer itemId, Integer relationshipTypeId, Integer parentItemId) {
+    public List<ItemDomainEntity> fetchRelationshipChildrenItems(Integer itemId, Integer relationshipTypeId, Integer parentRelationshipId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchRelationshipChildrenItems");
             query.setParameter("item_id", itemId);
             query.setParameter("relationship_type_id", relationshipTypeId);
-            query.setParameter("parent_item_id", parentItemId);
+            query.setParameter("parent_relationship_id", parentRelationshipId);
 
-            List<ItemDomainEntity> resultList = query.getResultList();
+            List<Object[]> resultList = query.getResultList();
+            List<ItemDomainEntity> itemList = new ArrayList<>(); 
+            for (Object[] result : resultList) {
+                ItemDomainEntity item = (ItemDomainEntity) result[0];
+                Long relationshipId = (Long) result[1]; 
+                                
+                item.setParentRelationshipId(relationshipId.intValue());
+                itemList.add(item); 
+            }
 
-            return resultList;
+            return itemList; 
         } catch (NoResultException ex) {
         }
         return null;
