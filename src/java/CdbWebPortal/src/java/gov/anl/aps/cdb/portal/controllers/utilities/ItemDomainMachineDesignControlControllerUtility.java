@@ -23,6 +23,7 @@ import gov.anl.aps.cdb.portal.view.objects.MachineDesignControlRelationshipListO
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -73,24 +74,26 @@ public class ItemDomainMachineDesignControlControllerUtility extends ItemDomainM
         throw new InvalidArgument("Missing information. Use applyRelationship with the interface to parent input.");
     }        
 
-    public ItemElementRelationship applyRelationship(ItemDomainMachineDesign controlledElement, ItemDomainMachineDesign controllingElement, ItemDomainMachineDesign linkedParentMachine, String interfaceToParent, UserInfo enteredByUser) throws InvalidArgument, InvalidObjectState {
-        ItemElementRelationship relationship = super.applyRelationship(controlledElement, controllingElement);
+    public ItemElementRelationship applyRelationship(ItemDomainMachineDesign controlledElement, ItemDomainMachineDesign controllingElement, Integer linkedParentRelationshipId, String interfaceToParent, UserInfo enteredByUser) throws InvalidArgument, InvalidObjectState {
+        ItemElementRelationship relationship = super.applyRelationship(controlledElement, controllingElement, linkedParentRelationshipId);
         
-        if (linkedParentMachine != null) {           
+        if (linkedParentRelationshipId != null) {           
             List<ItemElementRelationship> parentItemElementRelationships = controllingElement.getItemElementRelationshipList();
             
             ItemElementRelationship relationshipForParent = null; 
+            ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();            
+            Integer relationshipTypeId = relationshipTypeName.getDbId();
             
             for (ItemElementRelationship parentRelationship : parentItemElementRelationships) {
-                Item parentItem = parentRelationship.getSecondItem();
-                if (parentItem.equals(linkedParentMachine)) {
-                    relationshipForParent = parentRelationship; 
-                    break; 
+                if (Objects.equals(parentRelationship.getRelationshipType().getId(), relationshipTypeId)) {
+                    if (Objects.equals(parentRelationship.getId(), linkedParentRelationshipId)) {
+                        relationshipForParent = parentRelationship; 
+                    }
                 }
             }
             
             if (relationshipForParent == null) {
-                throw new InvalidArgument("Existing linked parent machine relationship cannot be found. ");
+                throw new InvalidArgument("Existing linked parent relationship cannot be found. ");
             }
             
             relationship.setRelationshipForParent(relationshipForParent);
