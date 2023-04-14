@@ -79,10 +79,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient List<ItemElement> elementsToCreate = null;
     
     // collection of machine design items to update when updating this machine design item
-    private transient List<ItemDomainMachineDesign> itemsToUpdate = null;
-    
-    // Internally used to store a control child item id this is used for fetching control hierarchy from a child to a parent. 
-    private transient Integer controlChildItemId = null; 
+    private transient List<ItemDomainMachineDesign> itemsToUpdate = null;   
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
@@ -643,15 +640,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             itemsToUpdate.clear();
         }
     }
-
-    @JsonIgnore
-    public Integer getControlChildItemId() {
-        return controlChildItemId;
-    }
-
-    public void setControlChildItemId(Integer controlChildItemId) {
-        this.controlChildItemId = controlChildItemId;
-    }     
 
     @Override
     public boolean equals(Object object) {
