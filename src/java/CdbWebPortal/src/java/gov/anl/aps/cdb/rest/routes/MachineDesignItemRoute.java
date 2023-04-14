@@ -464,6 +464,14 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         List<ControlRelationshipHierarchy> controlHierarchyList = new ArrayList<>(); 
         createControlHierarchyList(controlHierarchyList, utility, machine); 
         
+        controlHierarchyList.sort((o1, o2) -> {
+            ItemDomainMachineDesign machineItem = o1.getMachineItem();
+            ItemDomainMachineDesign machineItem1 = o2.getMachineItem();
+                        
+            return machineItem.getId() - machineItem1.getId();            
+        });
+        
+        
         return controlHierarchyList; 
     }
     
@@ -482,13 +490,8 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         createControlHierarchyList(controlHierarchyList, utility, machine, activeRelationshipHierarchy);
     }
     
-    private void createControlHierarchyList(List<ControlRelationshipHierarchy> controlHierarchyList, ItemDomainMachineDesignControlControllerUtility utility, ItemDomainMachineDesign machine, ControlRelationshipHierarchy activeRelationshipHierarchy) {
-        ItemDomainMachineDesign childItem = null;
-        if (activeRelationshipHierarchy != null) {
-            childItem = activeRelationshipHierarchy.getMachineItem();            
-        }
-        
-        List<ItemDomainMachineDesign> controlParentItems = utility.getControlParentItems(machine, childItem);               
+    private void createControlHierarchyList(List<ControlRelationshipHierarchy> controlHierarchyList, ItemDomainMachineDesignControlControllerUtility utility, ItemDomainMachineDesign machine, ControlRelationshipHierarchy activeRelationshipHierarchy) {        
+        List<ItemDomainMachineDesign> controlParentItems = utility.getControlParentItems(machine);               
         ControlRelationshipHierarchy newRelationshipHierarchy = null; 
         
         if (controlParentItems.size() == 0) {

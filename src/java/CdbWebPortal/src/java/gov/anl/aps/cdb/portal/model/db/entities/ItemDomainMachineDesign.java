@@ -28,6 +28,7 @@ import gov.anl.aps.cdb.portal.view.objects.MachineDesignControlRelationshipListO
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import javax.faces.model.DataModel;
 import javax.persistence.DiscriminatorValue;
@@ -78,10 +79,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient List<ItemElement> elementsToCreate = null;
     
     // collection of machine design items to update when updating this machine design item
-    private transient List<ItemDomainMachineDesign> itemsToUpdate = null;
-    
-    // Internally used to store a control child item id this is used for fetching control hierarchy from a child to a parent. 
-    private transient Integer controlChildItemId = null; 
+    private transient List<ItemDomainMachineDesign> itemsToUpdate = null;   
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
@@ -643,14 +641,17 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         }
     }
 
-    @JsonIgnore
-    public Integer getControlChildItemId() {
-        return controlChildItemId;
+    @Override
+    public boolean equals(Object object) {
+        boolean equals = super.equals(object);                
+        
+        if (equals) {
+            ItemDomainMachineDesign other = (ItemDomainMachineDesign) object; 
+            equals = Objects.equals(this.getParentRelationshipId(), other.getParentRelationshipId());
+        }
+        
+        return equals;
     }
-
-    public void setControlChildItemId(Integer controlChildItemId) {
-        this.controlChildItemId = controlChildItemId;
-    }     
 
     // <editor-fold defaultstate="collapsed" desc="Import functionality">
     

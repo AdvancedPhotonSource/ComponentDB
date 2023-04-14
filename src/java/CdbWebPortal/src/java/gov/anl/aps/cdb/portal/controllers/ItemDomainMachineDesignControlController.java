@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettin
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignRelationshipTreeNode;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -20,6 +21,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
+import java.util.Objects;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.model.DataModel;
@@ -162,7 +164,28 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
         Integer linkedRelationshipId = null; 
         if (linksOnlyToParentControlledNode) {
             ItemDomainMachineDesign current = getCurrent();
+                        
             linkedRelationshipId = current.getParentRelationshipId();
+            
+            if (linkedRelationshipId == null) {
+                // Attempt to load it.                                
+                if (parentControlledNode != null) {
+                    parentControlledNode.getParentRelationshipId();
+                    
+                    List<ItemDomainMachineDesign> children = controllerUtility.getControlChildItems(parentControlledNode); 
+                    for (ItemDomainMachineDesign child : children) {
+                        if (Objects.equals(child.getId(), current.getId())) {
+                            Integer parentRelationshipId = child.getParentRelationshipId();
+                            current.setParentRelationshipId(parentRelationshipId);
+                            linkedRelationshipId = parentRelationshipId; 
+                            break; 
+                        }
+                    }
+                }
+                if (linkedRelationshipId == null) {
+                    throw new InvalidObjectState("Cannot find parent relationship id. Please try reseting hierarchy and manually expand to node.");
+                }
+            }
         }         
         controllerUtility.applyRelationship(getMachineRelatedByCurrent(), getCurrent(), linkedRelationshipId, controlInterfaceSelection, enteredByUser);
     }

@@ -7,14 +7,12 @@ package gov.anl.aps.cdb.rest.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
  * @author darek
  */
-public class ControlRelationshipHierarchy {
+public class ControlRelationshipHierarchy {        
     
     ControlRelationshipHierarchy childItem; 
     ItemDomainMachineDesign machineItem; 
