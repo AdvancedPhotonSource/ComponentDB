@@ -133,33 +133,25 @@ BEGIN
 END //
 
 DROP PROCEDURE IF EXISTS fetch_relationship_parent_items;//
-CREATE PROCEDURE `fetch_relationship_parent_items` (IN item_id int, IN relationship_type_id int, IN child_item_id int) 
-BEGIN
-   	SET @parent_relationship_id = NULL; 
-	IF(child_item_id IS NOT NULL) THEN	
-		SET @parent_relationship_id = (SELECT ier.relationship_id_for_parent
-		FROM item_element_relationship ier
-		INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
-		INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id		
-		WHERE ier.relationship_type_id = relationship_type_id 
-		and vitem1.item_id = child_item_id and vitem2.item_id = item_id);
-	END IF; 
-
-	IF (@parent_relationship_id is NULL) THEN
-		SELECT item.* 
+CREATE PROCEDURE `fetch_relationship_parent_items` (IN item_id int, IN relationship_type_id int, IN parent_relationship_id int) 
+BEGIN   	
+	IF (parent_relationship_id is NULL) THEN		
+		SELECT item.*, ier.relationship_id_for_parent as parent_relationship_id
 		FROM item_element_relationship ier
 		INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
 		INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id
 		INNER JOIN item on vitem2.item_id = item.id	
-		WHERE ier.relationship_type_id = relationship_type_id and vitem1.item_id = item_id;
+		WHERE ier.relationship_type_id = relationship_type_id 
+		AND vitem1.item_id = item_id ;
 	ELSE
-		SELECT item.* 
+		SELECT item.*, ier.relationship_id_for_parent as parent_relationship_id
 		FROM item_element_relationship ier
 		INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
 		INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id
 		INNER JOIN item on vitem2.item_id = item.id	
 		WHERE ier.relationship_type_id = relationship_type_id 
-		AND vitem1.item_id = item_id AND ier.id = @parent_relationship_id; 
+		AND vitem1.item_id = item_id
+		AND ier.id = parent_relationship_id; 
 	END IF; 
 END //
 

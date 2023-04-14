@@ -27,12 +27,13 @@ import gov.anl.aps.cdb.portal.view.objects.AdvancedFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.StoredProcedureQuery;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -43,20 +44,23 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     @PersistenceContext(unitName = "CdbWebPortalPU")
     protected EntityManager em;
     
+    private static final Logger logger = LogManager.getLogger(ItemFacadeBase.class.getName());
+
     List<ItemDomainEntity> itemsToAdd;
-    
+
     protected final Integer SEARCH_RESULT_LIMIT = 1000;
-    
+
     /**
      * Returns Item domain for subclass implementation.
-     * @return 
+     *
+     * @return
      */
-    public abstract ItemDomainName getDomain(); 
-    
+    public abstract ItemDomainName getDomain();
+
     public final String getDomainName() {
         ItemDomainName domain = getDomain();
         if (domain != null) {
-            return domain.getValue(); 
+            return domain.getValue();
         }
         return "";
     }
@@ -71,15 +75,16 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     }
 
     /**
-     * Allows subclass to override with domain-specific advanced filter information.
+     * Allows subclass to override with domain-specific advanced filter
+     * information.
      */
     public List<AdvancedFilter> initializeAdvancedFilterInfo(ItemController controller) {
         return new ArrayList<>();
     }
 
     /**
-     * Allows subclasses to override in a domain-specific way for processing specified
-     * filter and parameters.
+     * Allows subclasses to override in a domain-specific way for processing
+     * specified filter and parameters.
      */
     public List<ItemDomainEntity> processAdvancedFilter(String name, Map<String, String> parameterValueMap) {
         return null;
@@ -173,7 +178,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return null;
 
     }
-    
+
     public List<ItemDomainEntity> findByDataTableFilterQueryBuilderWithPagination(ItemQueryBuilder queryBuilder, Integer start, Integer limit) {
         String fullQuery = queryBuilder.getQueryForItems();
 
@@ -186,18 +191,18 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
         return null;
     }
-    
+
     public Long getCountForQuery(ItemQueryBuilder queryBuilder) {
         String fullQuery = queryBuilder.getCountQueryForItems();
-        
+
         try {
             Query query = em.createQuery(fullQuery);
             long count = (long) query.getSingleResult();
             return count;
-        } catch (NoResultException ex) {            
+        } catch (NoResultException ex) {
         }
-        
-        return Long.MIN_VALUE; 
+
+        return Long.MIN_VALUE;
     }
 
     public List<ItemDomainEntity> findByDomainAndEntityType(String domainName, String entityTypeName) {
@@ -387,7 +392,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-    
+
     public List<ItemDomainEntity> fetchItemsWithPropertyValue(Integer propertyValueId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchItemsWithPropertyValue");
@@ -399,7 +404,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-    
+
     public ItemDomainLocation fetchLocationItemForLocatableItem(Integer locatableItemId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchLocationItemForLocatableItem");
@@ -431,48 +436,70 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-    
-    public List<ItemDomainEntity> fetchRelationshipChildrenItems(Integer itemId, Integer relationshipTypeId) {
-        return fetchRelationshipChildrenItems(itemId, relationshipTypeId, null); 
+
+    private List<ItemDomainEntity> convertRelationshipResultListToItemList(List<Object[]> relationshipResultList) {
+        List<ItemDomainEntity> itemList = new ArrayList<>();
+        for (Object[] result : relationshipResultList) {
+            ItemDomainEntity item = (ItemDomainEntity) result[0];
+            Long relationshipId = (Long) result[1];
+            
+            if (item.getParentRelationshipId() != null) {
+                // Same item result with different parent relationship result. 
+                try { 
+                    ItemDomainEntity clonedItem = (ItemDomainEntity) item.internalClone();
+                    item = clonedItem;                     
+                } catch (CloneNotSupportedException ex) {
+                    logger.error(ex);
+                }
+            }
+            
+            if (relationshipId != null) {                
+                item.setParentRelationshipId(relationshipId.intValue());    
+            }
+            
+            itemList.add(item);
+        }
+
+        return itemList;
     }
-    
+
+    public List<ItemDomainEntity> fetchRelationshipChildrenItems(Integer itemId, Integer relationshipTypeId) {
+        return fetchRelationshipChildrenItems(itemId, relationshipTypeId, null);
+    }
+
     public List<ItemDomainEntity> fetchRelationshipChildrenItems(Integer itemId, Integer relationshipTypeId, Integer parentRelationshipId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchRelationshipChildrenItems");
             query.setParameter("item_id", itemId);
             query.setParameter("relationship_type_id", relationshipTypeId);
-            query.setParameter("parent_relationship_id", parentRelationshipId);
+            query.setParameter("parent_relationship_id", parentRelationshipId);           
 
             List<Object[]> resultList = query.getResultList();
-            List<ItemDomainEntity> itemList = new ArrayList<>(); 
-            for (Object[] result : resultList) {
-                ItemDomainEntity item = (ItemDomainEntity) result[0];
-                Long relationshipId = (Long) result[1]; 
-                                
-                item.setParentRelationshipId(relationshipId.intValue());
-                itemList.add(item); 
-            }
+            List<ItemDomainEntity> itemList;
+            itemList = convertRelationshipResultListToItemList(resultList);
 
-            return itemList; 
+            return itemList;
         } catch (NoResultException ex) {
         }
         return null;
     }
-    
+
     public List<ItemDomainEntity> fetchRelationshipParentItems(Integer itemId, Integer relationshipTypeId) {
         return fetchRelationshipParentItems(itemId, relationshipTypeId, null);
     }
-    
-    public List<ItemDomainEntity> fetchRelationshipParentItems(Integer itemId, Integer relationshipTypeId, Integer childItemId) {
+
+    public List<ItemDomainEntity> fetchRelationshipParentItems(Integer itemId, Integer relationshipTypeId, Integer parentRelationshipId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchRelationshipParentItems");
             query.setParameter("item_id", itemId);
             query.setParameter("relationship_type_id", relationshipTypeId);
-            query.setParameter("child_item_id", childItemId);
+            query.setParameter("parent_relationship_id", parentRelationshipId);                        
 
-            List<ItemDomainEntity> resultList = query.getResultList();
+            List<Object[]> resultList = query.getResultList();
+            List<ItemDomainEntity> itemList;
+            itemList = convertRelationshipResultListToItemList(resultList);
 
-            return resultList;
+            return itemList; 
         } catch (NoResultException ex) {
         }
         return null;
@@ -480,13 +507,13 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
     public List<ItemDomainEntity> fetchNameFilterForRelationshipHierarchy(Integer domainId, Integer entityTypeId, Integer relationshipTypeId, String namePattern) {
         namePattern = CdbQueryBuilder.resolveLikeQueryStringWithWildcards(namePattern);
-                
+
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchNameFilterForRelationshipHierarchy");
             query.setParameter("domain_id", domainId);
             query.setParameter("entity_type_id", entityTypeId);
             query.setParameter("relationship_type_id", relationshipTypeId);
-            query.setParameter("name_pattern", namePattern);             
+            query.setParameter("name_pattern", namePattern);
 
             List<ItemDomainEntity> resultList = query.getResultList();
 
@@ -495,7 +522,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-    
+
     public List<ItemDomainInventory> fetchInventoryAssignedToMachineItemHiearchy(int machineItemId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchInventoryAssignedToMachineItemHiearchy");
@@ -970,7 +997,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     @Override
     public List<ItemDomainEntity> searchEntities(String searchString) {
         try {
-            searchString = convertWildcards(searchString); 
+            searchString = convertWildcards(searchString);
             ItemDomainName domain = getDomain();
             return (List<ItemDomainEntity>) em.createNamedStoredProcedureQuery("item.searchItems")
                     .setParameter("domain_id", domain.getId())
@@ -982,10 +1009,10 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-        
+
     public List<ItemDomainEntity> searchEntitiesNoEntityType(String searchString) {
         try {
-            searchString = convertWildcards(searchString); 
+            searchString = convertWildcards(searchString);
             ItemDomainName domain = getDomain();
             return (List<ItemDomainEntity>) em.createNamedStoredProcedureQuery("item.searchItemsNoEntityType")
                     .setParameter("domain_id", domain.getId())

@@ -319,7 +319,7 @@ import org.primefaces.model.TreeNode;
     @NamedStoredProcedureQuery(
             name = "item.fetchRelationshipParentItems",
             procedureName = "fetch_relationship_parent_items",
-            resultClasses = Item.class,
+            resultSetMappings = "relationshipResultList",             
             parameters = {
                 @StoredProcedureParameter(
                         name = "item_id",
@@ -332,7 +332,7 @@ import org.primefaces.model.TreeNode;
                         type = Integer.class
                 ),
                 @StoredProcedureParameter(
-                        name = "child_item_id",
+                        name = "parent_relationship_id",
                         mode = ParameterMode.IN,
                         type = Integer.class
                 )
@@ -650,6 +650,10 @@ public class Item extends CdbDomainEntity implements Serializable {
     public Item createInstance() {
         return null;
     }
+    
+    public Object internalClone()throws CloneNotSupportedException{  
+        return super.clone();  
+    }  
 
     @Override
     public Item clone(UserInfo userInfo) throws CloneNotSupportedException {
