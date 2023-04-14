@@ -389,8 +389,8 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
         Pattern searchPattern;
         String patternString;
         if (searchString.contains("?") || searchString.contains("*")) { 
-            patternString = searchString.replace("*", ".+"); 
-            patternString = patternString.replace("?", ".");            
+            patternString = searchString.replace("*", ".*"); 
+            patternString = patternString.replace("?", ".");
         } else {
             patternString = Pattern.quote(searchString); 
         }
@@ -401,11 +401,11 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             searchPattern = Pattern.compile(patternString);
         }
         List<EntityType> allObjectList = searchEntities(searchString);
-        for (EntityType entity : allObjectList) {
+        for (EntityType entity : allObjectList) {            
             try {
                 SearchResult searchResult = entity.createSearchResultInfo(searchPattern);
-                if (!searchResult.isEmpty()) {
-                    searchResultList.add(searchResult);
+                if (!searchResult.isEmpty()) {                    
+                    searchResultList.add(searchResult);                    
                 }
             } catch (RuntimeException ex) {
                 logger.warn("Could not search entity " + entity.toString() + " (Error: " + ex.toString() + ")");
