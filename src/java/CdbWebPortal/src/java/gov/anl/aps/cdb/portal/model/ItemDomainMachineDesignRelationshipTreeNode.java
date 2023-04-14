@@ -68,21 +68,17 @@ public class ItemDomainMachineDesignRelationshipTreeNode extends ItemDomainMachi
         String type = MachineTreeRelationshipConfiguration.RELATIONSHIP_CHILD_NODE_TYPE;
         newNode.setType(type);
         return (T) newNode;         
-    }
+    } 
 
     @Override
-    protected List<ItemDomainMachineDesign> getParentItems(ItemDomainMachineDesign item) {
+    protected List<ItemDomainMachineDesign> getParentItems(ItemDomainMachineDesign item) {        
         ItemDomainMachineDesignFacade designFacade = config.getFacade();
         ItemElementRelationshipTypeNames relationshipToLoad = config.getRelationshipToLoad();
-        
+                       
         Integer currentItemId = item.getId();
-        Integer controlChildItemId = item.getControlChildItemId();
-        List<ItemDomainMachineDesign> relationshiParentItems = designFacade.fetchRelationshipParentItems(currentItemId, relationshipToLoad.getDbId(), controlChildItemId);
+        Integer parentRelationshipId = item.getParentRelationshipId();
         
-        // Set control child for referencing in next itteration. 
-        for (ItemDomainMachineDesign parent : relationshiParentItems) {
-            parent.setControlChildItemId(currentItemId);
-        }
+        List<ItemDomainMachineDesign> relationshiParentItems = designFacade.fetchRelationshipParentItems(currentItemId, relationshipToLoad.getDbId(), parentRelationshipId);                
         
         return relationshiParentItems; 
     }

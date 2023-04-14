@@ -337,6 +337,10 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
         ItemDomainMachineDesign parentMachineDesign = item.getParentMachineDesign();
         return Arrays.asList(parentMachineDesign);
     }
+    
+    protected List<ItemDomainMachineDesign> getParentItems(ItemDomainMachineDesign item, Set<ItemDomainMachineDesign> additionalParents) {
+        return getParentItems(item); 
+    }
 
     protected ItemElement getParentItemElement(ItemDomainMachineDesign item) {
         return item.getParentMachineElement();
@@ -351,29 +355,28 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
         if (item == null) {
             return null;
         }
-        List<ItemDomainMachineDesign> parentMachineDesigns = getParentItems(item);
+        List<ItemDomainMachineDesign> parentMachineDesigns = getParentItems(item, additionalParents);
         ItemDomainMachineDesign parentMachineDesign = null;
 
-        if (parentMachineDesigns.size() > 0) {
-            parentMachineDesign = parentMachineDesigns.get(0);
-            if (parentMachineDesigns.size() > 1) {
-                for (ItemDomainMachineDesign potentialParent : parentMachineDesigns) {
-                    if (potentialParent.equals(parentMachineDesign)) {
-                        // Skip the first node. Already processed or will be process on this run. 
-                        continue;
-                    }
-
-                    if (processWithParent != null) {
-                        if (processWithParent.contains(potentialParent)) {
-                            parentMachineDesign = potentialParent;
-                            break;
-                        }
-                    }
-
-                    additionalParents.add(potentialParent);
+        if (!parentMachineDesigns.isEmpty()) {
+            parentMachineDesign = parentMachineDesigns.get(0);           
+                        
+            for (int i = 0; i < parentMachineDesigns.size(); i++) {
+                if (i == 0) {
+                    continue;
                 }
-            }
-        }
+                ItemDomainMachineDesign potentialParent = parentMachineDesigns.get(i); 
+
+                if (processWithParent != null) {
+                    if (processWithParent.contains(potentialParent)) {
+                        parentMachineDesign = potentialParent;
+                        break;
+                    }
+                }
+
+                additionalParents.add(potentialParent);
+            }           
+        }                
 
         ItemDomainMachineDesignBaseTreeNode parentNode = createTreeFromFilter(parentMachineDesign, false, displayedNodes, additionalParents, processWithParent);
 
@@ -464,8 +467,8 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
             }
         }
         this.filterAllNodes = filterAllNodes;
-    }
-
+    }    
+    
     public class MachineTreeBaseConfiguration extends ItemTreeBaseConfiguration {
 
         private boolean setMachineTreeNodeType = true;
