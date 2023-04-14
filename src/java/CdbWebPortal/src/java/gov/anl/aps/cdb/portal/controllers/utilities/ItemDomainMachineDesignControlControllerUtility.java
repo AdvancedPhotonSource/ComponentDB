@@ -12,7 +12,6 @@ import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.SystemPropertyTypeNames;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -136,10 +135,11 @@ public class ItemDomainMachineDesignControlControllerUtility extends ItemDomainM
     
     public List<ItemDomainMachineDesign> getControlChildItems(ItemDomainMachineDesign mdItem) {
         ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();
+        Integer parentRelationshipId = mdItem.getParentRelationshipId();
         int relationshipId = relationshipTypeName.getDbId();
         Integer itemId = mdItem.getId();
         
-        List<ItemDomainMachineDesign> children = itemFacade.fetchRelationshipChildrenItems(itemId, relationshipId);
+        List<ItemDomainMachineDesign> children = itemFacade.fetchRelationshipChildrenItems(itemId, relationshipId, parentRelationshipId);
         
         return children; 
     }
@@ -166,17 +166,13 @@ public class ItemDomainMachineDesignControlControllerUtility extends ItemDomainM
         return controlRelationshipList; 
     }
    
-    public List<ItemDomainMachineDesign> getControlParentItems(ItemDomainMachineDesign mdItem, ItemDomainMachineDesign childItem) {
+    public List<ItemDomainMachineDesign> getControlParentItems(ItemDomainMachineDesign mdItem) {
         ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();
             int relationshipId = relationshipTypeName.getDbId();
         List<ItemDomainMachineDesign> controlParentItems;
         
-        if (childItem != null) {
-            controlParentItems = itemFacade.fetchRelationshipParentItems(mdItem.getId(), relationshipId, childItem.getId());
-        } else {
-            controlParentItems = itemFacade.fetchRelationshipParentItems(mdItem.getId(), relationshipId);
-        }
-        
+        Integer parentRelationshipId = mdItem.getParentRelationshipId();                
+        controlParentItems = itemFacade.fetchRelationshipParentItems(mdItem.getId(), relationshipId, parentRelationshipId);                
 
         return controlParentItems;
     }
