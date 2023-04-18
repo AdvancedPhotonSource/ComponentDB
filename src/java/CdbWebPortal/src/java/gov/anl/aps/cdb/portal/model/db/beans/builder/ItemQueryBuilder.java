@@ -223,10 +223,10 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
 
                 if (keyString.startsWith(PROPERTY_FIELD_START)) {
                     addPropertyWhereByTypeId(keyString, valueString);
-                    return;
+                    continue;
                 } else if (keyString.startsWith(METADATA_FIELD_START)) {
                     addCoreMetadataWhere(keyString, valueString);
-                    return;
+                    continue;
                 }
 
                 QueryTranslator qt = QueryTranslator.getQueryTranslatorByValue(keyString);
