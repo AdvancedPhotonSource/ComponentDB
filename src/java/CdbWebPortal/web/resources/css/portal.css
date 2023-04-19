@@ -834,6 +834,15 @@ h2 {
     filter: grayscale(100%) brightness(500%) brightness(10%);
 }
 
+.ui-icon-control {    
+    background-image: url(../../resources/images/control.svg) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;     
+    animation: transition-ui-icon-machine-design 0.25s;
+    filter: grayscale(100%) brightness(500%) brightness(10%);
+}
+
 @keyframes transition-ui-icon-machine-design {
     0% {        
         transform:rotate(0deg);  
