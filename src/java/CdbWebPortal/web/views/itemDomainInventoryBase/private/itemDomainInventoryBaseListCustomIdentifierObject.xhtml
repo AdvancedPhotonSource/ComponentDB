@@ -16,6 +16,7 @@ See LICENSE file.
               value="#{partNameString != null ? partNameString : itemDomainInventoryController.getItemDisplayString(itemListObject)}" />
     <p:column headerText="Inventory Item"
               sortBy="#{partNameString}"
+              exportValue="#{partNameString}"
               filterBy="#{facesUtility.getFilterString(partNameString)}" 
               filterMatchMode="contains"
               filterable="#{filterable}"

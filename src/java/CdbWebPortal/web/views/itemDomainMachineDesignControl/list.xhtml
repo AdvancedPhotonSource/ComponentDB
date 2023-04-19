@@ -25,17 +25,7 @@ See LICENSE file.
 
     <ui:define name="additionalDualColumnEditPanels">
         <ui:include src="private/itemDomainMachineDesignControlSelectMachineControlledByElement.xhtml" /> 
-    </ui:define>
-    
-    <ui:define name="additonalItemListButtons">
-        <p:commandButton id="#{entityTypeName}AppsListPageButton"                         
-                         alt="Apps List" styleClass="actionButtonRight"
-                         action="#{itemDomainAppController.getListPath()}"
-                         ajax="false"
-                         icon="fa fa-code">
-            <p:tooltip for="#{entityTypeName}AppsListPageButton" value="Go to apps list."/>
-        </p:commandButton>
-    </ui:define>
+    </ui:define>        
     
     <ui:define name="machineDesignExtraInfoPromotedColumn">
         <ui:param name="controlInterfaceToParentPV"

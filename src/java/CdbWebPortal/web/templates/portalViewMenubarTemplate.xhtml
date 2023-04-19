@@ -92,7 +92,7 @@ See LICENSE file.
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableDesign/list') ? 'activeMenuItem' : ''} "/>
                 <p:menuitem value="Control"
                             id="machineControlMenubarButton"
-                            icon="fa fa-code"
+                            icon="ui-icon-control"
                             url="#{request.contextPath}/views/itemDomainMachineDesignControl/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesignControl/list') ? 'activeMenuItem' : ''} "/>
                 <p:menuitem value="Power"
@@ -101,6 +101,11 @@ See LICENSE file.
                             rendered="#{false}"
                             url="#{request.contextPath}/views/itemDomainMachineDesignPower/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesignPower/list') ? 'activeMenuItem' : ''} "/>
+                <p:menuitem value="Applications"
+                            id="machineApplicationsMenubarButton"
+                            icon="fa fa-code"
+                            url="#{request.contextPath}/views/itemDomainApp/list"
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainApp/list') ? 'activeMenuItem' : ''} "/>
             </p:submenu>
 
             <p:menuitem value="MAARC" 
