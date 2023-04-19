@@ -3,7 +3,9 @@
 -- See LICENSE file.
 --
 
--- Execute by running `mysql CDB_DB_NAME --host=127.0.0.1 --user=cdb -p < updateTo3.15.4.sql`
+-- Execute by running `mysql CDB_DB_NAME --host=127.0.0.1 --user=cdb -p < updateTo3.15.5.sql`
+
+delimiter //
 
 DROP PROCEDURE IF EXISTS fetch_relationship_children_items;//
 CREATE PROCEDURE `fetch_relationship_children_items` (IN item_id INT, IN relationship_type_id INT, IN parent_relationship_id INT) 
