@@ -21,7 +21,7 @@ from cdbCli.common.cli.cliBase import CliBase
 @click.option("--dist", help="Change the CDB distribution (as provided in cdb.conf)")
 @click.option(
     "--inputfile",
-    help="Input csv file with item info and properties, default is STDOUT",
+    help="Input csv file with item info and properties, default is STDIN",
     type=click.File("r"),
     default=sys.stdin,
 )
@@ -35,11 +35,20 @@ from cdbCli.common.cli.cliBase import CliBase
     type=click.Choice(["yes","echo","no"]),
     default="echo",
 )
+@click.option(
+    "--remove/--no-remove",
+    default=False
+)
+    
 
-def set_properties(inputfile, changemeta, changeproperty, dist=None):
+
+def set_properties(inputfile, changemeta, changeproperty, remove, dist=None):
     """Takes a headered csv file with change data for the properties.  The format is the same as
     what comes out of get_properties.  Execute that first and then edit the
-    resulting csv file for the new property data."""
+    resulting csv file for the new property data.
+
+    Set the remove flag to remove the property in its entirety
+    """
     
     install()
     cli = CliBase(dist)
@@ -73,6 +82,10 @@ def set_properties(inputfile, changemeta, changeproperty, dist=None):
         properties = itemApi.get_properties_for_item(item_dict["id"])
         for prop in properties:
             if prop.id == int(prop_dict["id"]):
+                if remove == True:
+                    changeproperty == "no"
+                    changemeta == "no"
+                    propValueApi.delete_property_by_id(prop.id)
                 if changeproperty == "yes":
                     if "value" in prop_dict.keys():
                         prop.value = prop_dict["value"]
