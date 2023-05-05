@@ -14,11 +14,21 @@ See LICENSE file.
     <ui:param name="itemTypeHasCategories" value="#{simpleEntityObject.hasCategories}" />
 
     <ui:define name="additionalSimpleEntityInformation">
+        <h:outputLabel for="sortOrder"                        
+                       value="Sort Order" 
+                       styleClass="entityDataLabel"/>
+        
+        <p:column>
+            <h:inputText id="sortOrder" value="#{simpleEntityObject.sortOrder}" title="Sort Order" styleClass="entityDataEmphasizedText"/>
+            <p:message for="sortOrder"/> 
+            <p:tooltip for="sortOrder" value="Display sort order."/>
+        </p:column>        
+                
         <ui:include src="../../itemTypeCategory/private/itemTypeCategoryEditPanelGridObject.xhtml">
             <ui:param name="itemTypeCategoryController" value="#{itemTypeController}" />
         </ui:include>
         
-        
+                
         <h:outputLabel for="itemCategory"
                        rendered="#{itemTypeHasCategories}"
                        value="#{itemTypeController.itemCategoryTitle}" 
@@ -35,7 +45,7 @@ See LICENSE file.
             </p:selectCheckboxMenu>
             <p:remoteCommand name="updateItemCategory"
                              update="itemCategory" />
-        </p:column>
+        </p:column>                 
     </ui:define>
 </ui:composition>
 
