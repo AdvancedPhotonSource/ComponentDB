@@ -517,12 +517,14 @@ public class Item extends CdbDomainEntity implements Serializable {
         @JoinColumn(name = "item_category_id", referencedColumnName = "id")})
     @ManyToMany
     @JsonProperty("itemCategoryList")
+    @OrderBy("sortOrder ASC")
     private List<ItemCategory> itemCategoryList;
     @JoinTable(name = "item_item_type", joinColumns = {
         @JoinColumn(name = "item_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "item_type_id", referencedColumnName = "id")})
     @ManyToMany
     @JsonProperty("itemTypeList")
+    @OrderBy("sortOrder ASC")
     private List<ItemType> itemTypeList;
     @JoinTable(name = "item_item_project", joinColumns = {
         @JoinColumn(name = "item_id", referencedColumnName = "id")}, inverseJoinColumns = {

@@ -13,6 +13,13 @@ See LICENSE file.
     <ui:param name="itemTypeHasCategories" value="#{simpleEntityObject.hasCategories}" />
     
     <ui:define name="additionalSimpleEntityInformation">
+        <h:outputLabel for="sortOrder" 
+                       value="Sort Order" 
+                       styleClass="entityDataLabel"/>
+        
+        <h:outputText id="sortOrder"
+                      value="#{simpleEntityObject.sortOrder}"/>
+        
         <h:outputLabel for="domain" 
                        value="Domain" 
                        styleClass="entityDataLabel"/>

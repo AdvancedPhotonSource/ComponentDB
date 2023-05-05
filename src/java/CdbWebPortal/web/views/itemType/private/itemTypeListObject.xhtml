@@ -13,6 +13,12 @@ See LICENSE file.
     <ui:define name="simpleEntityAdditionalColumns">
         <ui:param name="itemTypeListObject" value="#{simpleEntityListObject}"/>
         
+        <p:column headerText="Sort Order"
+                  filterBy="#{itemTypeListObject.sortOrder}" 
+                  filterMatchMode="contains">
+            <h:outputText value="#{itemTypeListObject.sortOrder}" />
+        </p:column>
+        
         <p:column headerText="#{itemTypeController.itemCategoryTitle}"
                   filterBy="#{itemTypeListObject.itemCategoryString}" 
                   filterMatchMode="contains">

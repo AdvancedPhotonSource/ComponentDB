@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import java.util.ArrayList;
@@ -20,6 +21,9 @@ import java.util.Map;
  */
 public class ImportHelperItemCategory extends ImportHelperBase<ItemCategory, ItemCategoryController> {
 
+    private static final String KEY_SORT_ORDER = "sortOrder";
+    private static final String HEADER_SORT_ORDER = "Sort Order";
+    
     @Override
     protected List<ColumnSpec> initColumnSpecs() {
         
@@ -45,6 +49,15 @@ public class ImportHelperItemCategory extends ImportHelperBase<ItemCategory, Ite
                 "getDescription", 
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
+        
+        specs.add(new FloatColumnSpec(
+                HEADER_SORT_ORDER,
+                KEY_SORT_ORDER,
+                "setSortOrder",
+                "Sort order within parent catalog item (as decimal), defaults to order in input sheet.",
+                "getSortOrder",
+                null,
+                ColumnModeOptions.oCREATEoUPDATE()));
         
         specs.add(domainItemTypeListColumnSpec(ColumnModeOptions.oCREATEoUPDATE()));
 

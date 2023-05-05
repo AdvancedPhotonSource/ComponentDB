@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.Cacheable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -42,7 +43,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ItemCategory.findById", query = "SELECT i FROM ItemCategory i WHERE i.id = :id"),
     @NamedQuery(name = "ItemCategory.findByName", query = "SELECT i FROM ItemCategory i WHERE i.name = :name"),
     @NamedQuery(name = "ItemCategory.findByDescription", query = "SELECT i FROM ItemCategory i WHERE i.description = :description"),
-    @NamedQuery(name = "ItemCategory.findByDomainName", query = "SELECT i FROM ItemCategory i WHERE i.domain.name = :domainName ORDER BY i.name ASC"),
+    @NamedQuery(name = "ItemCategory.findByDomainName", query = "SELECT i FROM ItemCategory i WHERE i.domain.name = :domainName ORDER BY i.sortOrder ASC"),
     @NamedQuery(name = "ItemCategory.findByNameAndDomainName", query = "SELECT i FROM ItemCategory i WHERE i.name = :name AND i.domain.name = :domainName ORDER BY i.name ASC")})
 public class ItemCategory extends ItemTypeCategoryEntity implements Serializable {
 
@@ -63,6 +64,8 @@ public class ItemCategory extends ItemTypeCategoryEntity implements Serializable
     @JoinColumn(name = "domain_id", referencedColumnName = "id")
     @ManyToOne
     private Domain domain;
+    @Column(name = "sort_order")
+    private Float sortOrder;
     @JoinTable(name = "item_category_item_type", joinColumns = {
         @JoinColumn(name = "item_category_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "item_type_id", referencedColumnName = "id")})
@@ -156,6 +159,14 @@ public class ItemCategory extends ItemTypeCategoryEntity implements Serializable
     @Override
     public void setDomain(Domain domain) {
         this.domain = domain;
+    }
+    
+    public Float getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Float sortOrder) {
+        this.sortOrder = sortOrder;
     }
 
     @Override
