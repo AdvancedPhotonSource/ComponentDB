@@ -20,7 +20,7 @@ See LICENSE file.
                             id="browseByFunctionButton"
                             icon="ui-icon-catalog" 
                             url="#{request.contextPath}/views/itemDomainCatalog/browseCategoryType"  
-                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/browseCategoryType') ? 'activeMenuItem' : ''} "/>
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/browseCategoryType') ? 'activeMenuItem' : ''} "/>                
                 <p:menuitem value="Browse By Owner"
                             id="browseByOwnerButton"
                             icon="ui-icon-catalog" 
@@ -30,8 +30,12 @@ See LICENSE file.
                             id="browseByLocationButton"
                             icon="ui-icon-inventory"
                             url="#{request.contextPath}/views/itemDomainInventory/browseLocation"  
-                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/browseLocation') ? 'activeMenuItem' : ''} "/>
-
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/browseLocation') ? 'activeMenuItem' : ''} "/>               
+                <p:menuitem value="Browse Apps" 
+                            id="browseAppsButton"
+                            icon="fa fa-code" 
+                            url="#{request.contextPath}/views/itemDomainApp/browseCategoryType"  
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainApp/browseCategoryType') ? 'activeMenuItem' : ''} "/>
             </p:submenu>
             <p:submenu label="Catalog"
                        id="catalogDropdownButton"
