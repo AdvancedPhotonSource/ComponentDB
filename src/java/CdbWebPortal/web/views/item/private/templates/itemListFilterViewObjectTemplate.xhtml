@@ -10,7 +10,7 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="renderWheneverAvaiable" value="#{true}" />
-    
+
     <ui:define name="idColumn" />
 
     <ui:define name="itemTypeColumn"/>
@@ -20,10 +20,11 @@ See LICENSE file.
     <ui:define name="itemSourceColumn" />
 
     <ui:define name="derivedFromItemColumn" />
-    
-    <ui:define name="itemProjectColumn" />
-    
+
+    <ui:define name="itemProjectColumn" />       
+
     <ui:define name="addionalTemplateUseColumns" >
+        <ui:insert name="customFilterViewColumns"/>
         <p:column>
             <ui:include src="../../../common/private/reusedParts/listActionLinksFavoritesLink.xhtml" >
                 <ui:param name="renderFavorites" value="#{settingController.userHaveUpdateFavoritesPermission}" />
