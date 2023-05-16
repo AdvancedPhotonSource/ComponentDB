@@ -7,9 +7,20 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                template="../item/private/templates/itemBrowseCategoryTypeTemplate.xhtml">
+                template="../item/private/templates/itemBrowseCategoryTypeTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui">
     
     <ui:param name="entityController" value="#{itemFilterViewDomainAppController}" />
+    
+    <ui:param name="filterable"
+              value="#{true}" /> 
+    
+    <ui:define name="customFilterViewColumns">
+        <ui:include src="../entityInfo/private/templateDefaults/itemListObjectColumns/ownerUser.xhtml"> 
+            <ui:param name="renderedOwnerColumn" value="#{true}" />
+            <ui:param name="entityInfoObject" value="#{itemListObject.entityInfo}"/>
+        </ui:include>
+    </ui:define>
     
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />

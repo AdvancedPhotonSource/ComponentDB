@@ -481,13 +481,13 @@ public abstract class ItemController<
                 }
             }
 
-            if (itemCategoryList.size() > 1) {
+            if (avaiableItemTypes.size() > 1) {
                 // Alphabetical sort order needs to be re-applied. 
                 Comparator<ItemType> itemTypesAlphabeticalComperitor;
                 itemTypesAlphabeticalComperitor = new Comparator<ItemType>() {
                     @Override
                     public int compare(ItemType o1, ItemType o2) {
-                        return o1.getName().compareTo(o2.getName());
+                        return o1.getSortOrder().compareTo(o2.getSortOrder());
                     }
                 };
                 avaiableItemTypes.sort(itemTypesAlphabeticalComperitor);
