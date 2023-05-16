@@ -13,14 +13,7 @@ See LICENSE file.
     
     <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
 
-    <p:column sortBy="#{entityInfoObject.ownerUser.username}" headerText="Owner"
-              filterable="#{filterable}"
-              sortable="#{sortable}"
-              filterBy="#{entityInfoObject.ownerUser.username}" filterMatchMode="contains"
-              filterValue="#{entitySettingObject.filterByOwnerUser}"
-              rendered="#{rendered and entitySettingObject.displayOwnerUser}">
-        <h:outputText value="#{entityInfoObject.ownerUser.username}"/>
-    </p:column>
+    <ui:include src="templateDefaults/itemListObjectColumns/ownerUser.xhtml"/> 
 
     <p:column sortBy="#{entityInfoObject.ownerUserGroup.name}" headerText="Group"
               filterable="#{filterable}"
