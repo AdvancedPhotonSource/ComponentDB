@@ -38,3 +38,7 @@ h1 {
     background-color: #f1efe2; 
     border-radius: 10px;
 }
+
+.itemTypeListBox .ui-selectlistbox-listcontainer {
+    height: 500px !important;
+}
