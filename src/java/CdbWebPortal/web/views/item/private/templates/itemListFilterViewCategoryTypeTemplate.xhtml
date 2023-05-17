@@ -19,7 +19,7 @@ See LICENSE file.
         <p:selectManyMenu id="filterViewItemCategorySelection"
                           value="#{entityController.filterViewItemCategorySelection}"
                           converter="itemCategoryConverter"
-                          styleClass="wideListBox"
+                          styleClass="wideListBox itemCategoryListBox"
                           onchange="updateForm()">
             <f:selectItems value="#{entityController.domainItemCategoryList}"
                            var="itemCategory"
@@ -35,7 +35,7 @@ See LICENSE file.
                             converter="itemTypeConverter"
                             value="#{entityController.filterViewSelectedItemType}"
                             disabled="#{entityController.filterViewItemTypeSelectOneDisabled}"
-                            styleClass="wideListBox">
+                            styleClass="wideListBox itemTypeListBox">
             <f:selectItem itemLabel="All" />
             <f:selectItems value="#{entityController.filterViewItemTypeList}"
                            var="itemType"
