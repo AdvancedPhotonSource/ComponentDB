@@ -42,7 +42,7 @@ public abstract class ItemFilterViewController extends ItemControllerExtensionHe
     // Generated based on the currently selected user group.  
     protected List<UserInfo> filterViewUserInfoList = null;
 
-    protected ItemType filterViewSelectedItemType = null;
+    protected List<ItemType> filterViewSelectedItemTypeList = null;
 
     protected UserInfo filterViewSelectedUserInfo = null;
 
@@ -124,26 +124,32 @@ public abstract class ItemFilterViewController extends ItemControllerExtensionHe
             filterViewItemTypeList = null;
             filterViewCategoryTypeListDataModelLoaded = false;
             // Verify validity of current selection. 
-            setFilterViewSelectedItemType(filterViewSelectedItemType);
+            setFilterViewSelectedItemTypeList(filterViewSelectedItemTypeList);
         }
     }
 
-    public ItemType getFilterViewSelectedItemType() {
-        return filterViewSelectedItemType;
+    private boolean isValidTypeList(List<ItemType> itemTypeList) { 
+        for (ItemType itemType : itemTypeList) {
+            if (!getFilterViewItemTypeList().contains(itemType)) {
+                return false; 
+            }
+        }
+        return true; 
     }
 
-    public void setFilterViewSelectedItemType(ItemType filterViewSelectedItemType) {
-        if (getFilterViewItemTypeList().contains(filterViewSelectedItemType)) {
+    public List<ItemType> getFilterViewSelectedItemTypeList() {
+        return filterViewSelectedItemTypeList;
+    }
+
+    public void setFilterViewSelectedItemTypeList(List<ItemType> filterViewSelectedItemTypeList) {
+        if (isValidTypeList(filterViewSelectedItemTypeList)) {
             filterViewCategoryTypeListDataModelLoaded = false;
-            this.filterViewSelectedItemType = filterViewSelectedItemType;
-        } else if (!getFilterViewItemTypeList().contains(this.filterViewSelectedItemType)) {
-            // Current item is not valid
+            this.filterViewSelectedItemTypeList = filterViewSelectedItemTypeList;            
+        } else {
             filterViewCategoryTypeListDataModelLoaded = false;
-            this.filterViewSelectedItemType = null;
-        } else if (filterViewSelectedItemType == null) {
-            filterViewCategoryTypeListDataModelLoaded = false;
-            this.filterViewSelectedItemType = null;
+            this.filterViewSelectedItemTypeList = null;
         }
+        
     }
 
     public UserInfo getFilterViewSelectedUserInfo() {
@@ -192,9 +198,9 @@ public abstract class ItemFilterViewController extends ItemControllerExtensionHe
             ItemProject project = ItemProjectController.getSelectedItemProject();
             if (project != null
                     || filterViewItemCategorySelectionList != null
-                    || filterViewSelectedItemType != null) {
+                    || filterViewSelectedItemTypeList != null) {
                 filterViewItemList = getItemDbFacade().findByFilterViewCategoryTypeAttributes(project,
-                        filterViewItemCategorySelectionList, filterViewSelectedItemType, getItemController().getDefaultDomainName());
+                        filterViewItemCategorySelectionList, filterViewSelectedItemTypeList, getItemController().getDefaultDomainName());
             }
 
             filterViewCategoryTypeDataModel = createFilterViewListDataModel(filterViewItemList);
