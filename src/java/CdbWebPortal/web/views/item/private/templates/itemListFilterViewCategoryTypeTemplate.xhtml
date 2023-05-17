@@ -30,10 +30,10 @@ See LICENSE file.
 
     <ui:define name="secondFilter">
         #{entityController.itemItemTypeTitle}s
-        <p:selectOneListbox id="filterViewItemType"
+        <p:selectManyMenu id="filterViewItemType"
                             onchange="updateForm()"
                             converter="itemTypeConverter"
-                            value="#{entityController.filterViewSelectedItemType}"
+                            value="#{entityController.filterViewSelectedItemTypeList}"
                             disabled="#{entityController.filterViewItemTypeSelectOneDisabled}"
                             styleClass="wideListBox itemTypeListBox">
             <f:selectItem itemLabel="All" />
@@ -41,7 +41,7 @@ See LICENSE file.
                            var="itemType"
                            itemLabel="#{itemType.name}"
                            itemValue="#{itemType}"/>
-        </p:selectOneListbox>
+        </p:selectManyMenu>
     </ui:define>
 
 </ui:composition>

@@ -298,13 +298,13 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
             fiel_included_in_where = true;
         }
     }
-    
+
     protected String getSelfElementNameField(String attribute) {
         return ITEM_ELEMENTS_LIST_JOIN_NAME + "." + attribute;
     }
 
     protected void addSelfElementWhereByAttribute(String attribute, String value) {
-        String nameField = getSelfElementNameField(attribute); 
+        String nameField = getSelfElementNameField(attribute);
 
         appendWhere(QUERY_LIKE, nameField, value);
 
@@ -513,7 +513,7 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
 
     public static String findByFilterViewAttributesQuery(ItemProject itemProject,
             List<ItemCategory> itemCategoryList,
-            ItemType itemType,
+            List<ItemType> itemTypeList,
             String itemDomainName,
             List<UserGroup> ownerUserGroupList,
             UserInfo ownerUserName) {
@@ -545,9 +545,19 @@ public abstract class ItemQueryBuilder extends CdbQueryBuilder {
             }
         }
 
-        if (itemType != null) {
-            queryString += " JOIN i.itemTypeList itl ";
-            queryParameters.add("itl.id = " + itemType.getId());
+        if (itemTypeList != null) {
+            if (!itemTypeList.isEmpty()) {
+                queryString += " JOIN i.itemTypeList itl ";
+                String queryParameter = "(";
+                for (ItemType itemType : itemTypeList) {
+                    if (itemTypeList.indexOf(itemType) != 0) {
+                        queryParameter += " OR ";
+                    }
+                    queryParameter += "itl.id = " + itemType.getId();
+                }
+                queryParameter += ")";
+                queryParameters.add(queryParameter);
+            }
         }
 
         if (ownerUserGroupList != null || ownerUserName != null) {

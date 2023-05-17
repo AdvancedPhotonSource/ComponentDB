@@ -679,8 +679,8 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     }
 
     public List<ItemDomainEntity> findByFilterViewCategoryTypeAttributes(ItemProject itemProject,
-            List<ItemCategory> itemCategoryList, ItemType itemType, String itemDomainName) {
-        return findByFilterViewAttributes(itemProject, itemCategoryList, itemType, itemDomainName, null, null);
+            List<ItemCategory> itemCategoryList, List<ItemType> itemTypeList, String itemDomainName) {
+        return findByFilterViewAttributes(itemProject, itemCategoryList, itemTypeList, itemDomainName, null, null);
     }
 
     public List<ItemDomainEntity> findByFilterViewOwnerAttributes(ItemProject itemProject,
@@ -694,13 +694,13 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
     private List<ItemDomainEntity> findByFilterViewAttributes(ItemProject itemProject,
             List<ItemCategory> itemCategoryList,
-            ItemType itemType,
+            List<ItemType> itemTypeList,
             String itemDomainName,
             List<UserGroup> ownerUserGroupList,
             UserInfo ownerUserName) {
         String queryString = ItemQueryBuilder.findByFilterViewAttributesQuery(itemProject,
                 itemCategoryList,
-                itemType,
+                itemTypeList,
                 itemDomainName,
                 ownerUserGroupList,
                 ownerUserName);
