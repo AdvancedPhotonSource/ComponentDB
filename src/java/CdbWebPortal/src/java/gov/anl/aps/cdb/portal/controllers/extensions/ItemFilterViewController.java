@@ -129,9 +129,11 @@ public abstract class ItemFilterViewController extends ItemControllerExtensionHe
     }
 
     private boolean isValidTypeList(List<ItemType> itemTypeList) { 
-        for (ItemType itemType : itemTypeList) {
-            if (!getFilterViewItemTypeList().contains(itemType)) {
-                return false; 
+        if (itemTypeList != null) {
+            for (ItemType itemType : itemTypeList) {
+                if (!getFilterViewItemTypeList().contains(itemType)) {
+                    return false; 
+                }
             }
         }
         return true; 
