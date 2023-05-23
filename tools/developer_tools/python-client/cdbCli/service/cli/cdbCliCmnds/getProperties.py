@@ -119,7 +119,6 @@ def get_properties_helper(property, inputfile, item_id_type, item_type, itemnumb
                 item = itemApi.get_item_by_qr_id(item_number)
             else:
                 item = itemApi.get_item_by_id(item_number)
-            print("Checking: ",item.id)
             property_dicts = screen_item_for_property(
                 itemApi, propValueApi, propname, item
             )
