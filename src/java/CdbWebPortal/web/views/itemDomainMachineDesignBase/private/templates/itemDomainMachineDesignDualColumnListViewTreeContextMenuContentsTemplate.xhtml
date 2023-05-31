@@ -30,7 +30,7 @@ See LICENSE file.
         <ui:include src="../machineDesignContextMenu/branchMachineDesignSubMenu.xhtml" /> 
         <ui:include src="../machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
         <ui:include src="../machineDesignContextMenu/unlinkContainedItem2ContextMenuItem.xhtml" />
-    </p:contextMenu>
+    </p:contextMenu>       
 
     <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
                    nodeType="MachineDesignTemplateMember"
@@ -152,6 +152,20 @@ See LICENSE file.
         <ui:include src="../machineDesignContextMenu/branchMachineDesignSubMenu.xhtml" /> 
         <ui:include src="../machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" />
         <ui:include src="../machineDesignContextMenu/installedInventorySubMenu.xhtml" />
+        <ui:include src="../machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
+    </p:contextMenu>
+    
+    <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                   nodeType="MachineDesignMemberApp"
+                   id="machineDesignDualViewMachineDesignMemberAppContextMenu"
+                   widgetVar="machineDesignDualViewMachineDesignMemberAppContextMenuWidget"
+                   event="select contextmenu">
+        <ui:include src="../machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />        
+        <ui:include src="../machineDesignContextMenu/templateSubMenu.xhtml"/> 
+        <ui:include src="../machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/branchMachineDesignSubMenu.xhtml" /> 
+        <ui:include src="../machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" />
+        <ui:include src="../machineDesignContextMenu/unlinkContainedItem2ContextMenuItem.xhtml" />     
         <ui:include src="../machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
     </p:contextMenu>
     

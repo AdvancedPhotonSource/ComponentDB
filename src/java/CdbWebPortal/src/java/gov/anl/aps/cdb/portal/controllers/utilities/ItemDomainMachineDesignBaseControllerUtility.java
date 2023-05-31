@@ -17,6 +17,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainApp;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -78,8 +79,8 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
 
         Item newAssignedItem = item.getAssignedItem();
         if (newAssignedItem != null) {
-            if ((newAssignedItem instanceof ItemDomainCatalog || newAssignedItem instanceof ItemDomainInventory) == false) {
-                throw new CdbException("The new assigned item must be either catalog or inventory item.");
+            if ((newAssignedItem instanceof ItemDomainCatalog || newAssignedItem instanceof ItemDomainInventory || newAssignedItem instanceof ItemDomainApp) == false) {
+                throw new CdbException("The new assigned item must be either catalog, inventory or app item.");
             }
 
             Integer itemId = item.getId();

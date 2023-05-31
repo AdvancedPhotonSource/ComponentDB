@@ -77,8 +77,10 @@ import org.primefaces.model.TreeNode;
 @SqlResultSetMappings({
     @SqlResultSetMapping(
             name = "relationshipResultList",
-            entities = {@EntityResult(entityClass=Item.class)},
-            columns = {@ColumnResult(name="parent_relationship_id", type = Integer.class)}
+            entities = {
+                @EntityResult(entityClass = Item.class)},
+            columns = {
+                @ColumnResult(name = "parent_relationship_id", type = Integer.class)}
     )
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -296,8 +298,8 @@ import org.primefaces.model.TreeNode;
     ),
     @NamedStoredProcedureQuery(
             name = "item.fetchRelationshipChildrenItems",
-            procedureName = "fetch_relationship_children_items",    
-            resultSetMappings = "relationshipResultList", 
+            procedureName = "fetch_relationship_children_items",
+            resultSetMappings = "relationshipResultList",
             parameters = {
                 @StoredProcedureParameter(
                         name = "item_id",
@@ -319,7 +321,7 @@ import org.primefaces.model.TreeNode;
     @NamedStoredProcedureQuery(
             name = "item.fetchRelationshipParentItems",
             procedureName = "fetch_relationship_parent_items",
-            resultSetMappings = "relationshipResultList",             
+            resultSetMappings = "relationshipResultList",
             parameters = {
                 @StoredProcedureParameter(
                         name = "item_id",
@@ -404,7 +406,7 @@ import org.primefaces.model.TreeNode;
     @NamedStoredProcedureQuery(
             name = "item.isItemRelationshipHaveCircularReference",
             procedureName = "is_item_relationship_have_circular_reference",
-            resultClasses = Item.class, 
+            resultClasses = Item.class,
             parameters = {
                 @StoredProcedureParameter(
                         name = "relationship_type_id",
@@ -560,7 +562,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     @OneToMany(mappedBy = "containedItem1")
     private List<ItemElementHistory> historyMemberList;
     @OneToMany(mappedBy = "containedItem2")
-    private List<ItemElementHistory> historyMemberList2;    
+    private List<ItemElementHistory> historyMemberList2;
 
     private transient ItemElement selfItemElement;
 
@@ -613,18 +615,18 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient List<ItemConnector> syncedConnectorList = null;
 
     private transient List<ItemConnector> itemConnectorListSorted = null;
-    
+
     //Helper variable for results from fetching relationship children. 
-    private transient Integer parentRelationshipId = null; 
+    private transient Integer parentRelationshipId = null;
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
     protected transient ItemElement currentEditItemElement = null;
     protected transient Boolean currentEditItemElementSaveButtonEnabled = false;
     protected transient ItemSource currentEditItemSource = null;
     protected transient Boolean hasElementReorderChangesForCurrent = false;
-    protected transient List<Item> parentItemList = null; 
-    protected transient Item membershipByItem = null; 
-    protected transient ItemElement membershipItemElement = null; 
+    protected transient List<Item> parentItemList = null;
+    protected transient Item membershipByItem = null;
+    protected transient ItemElement membershipItemElement = null;
     // </editor-fold>
 
     public Item() {
@@ -652,10 +654,10 @@ public class Item extends CdbDomainEntity implements Serializable {
     public Item createInstance() {
         return null;
     }
-    
-    public Object internalClone()throws CloneNotSupportedException{  
-        return super.clone();  
-    }  
+
+    public Object internalClone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
     @Override
     public Item clone(UserInfo userInfo) throws CloneNotSupportedException {
@@ -1221,8 +1223,8 @@ public class Item extends CdbDomainEntity implements Serializable {
             }
             itemElementDisplayList = new ArrayList<>(fullItemElementList);
             ItemElement selfElement = getSelfElement();
-            itemElementDisplayList.remove(selfElement);            
-            itemElementDisplayList.sort(new ItemElementRelevantSortOrderComparator());            
+            itemElementDisplayList.remove(selfElement);
+            itemElementDisplayList.sort(new ItemElementRelevantSortOrderComparator());
         }
         return itemElementDisplayList;
     }
@@ -1591,18 +1593,26 @@ public class Item extends CdbDomainEntity implements Serializable {
         return internalPropertyValues;
     }
 
+    @JsonIgnore
+    public ItemElementRelationship getCreatedFromTemplateRelationship() {
+        String machineDesignTemplateRelationshipTypeName = ItemElementRelationshipTypeNames.template.getValue();
+        if (getItemElementRelationshipList() != null) {
+            for (ItemElementRelationship ier : getItemElementRelationshipList()) {
+                if (ier.getRelationshipType().getName().equals(machineDesignTemplateRelationshipTypeName)) {
+                    return ier; 
+                }
+            }
+        }
+        return null; 
+    }
+
     public Item getCreatedFromTemplate() {
         if (!templateInfoLoaded) {
             if (!getIsItemTemplate()) {
-
-                String machineDesignTemplateRelationshipTypeName = ItemElementRelationshipTypeNames.template.getValue();
-                if (getItemElementRelationshipList() != null) {
-                    for (ItemElementRelationship ier : getItemElementRelationshipList()) {
-                        if (ier.getRelationshipType().getName().equals(machineDesignTemplateRelationshipTypeName)) {
-                            createdFromTemplate = ier.getSecondItemElement().getParentItem();
-                        }
-                    }
-                }
+                ItemElementRelationship ier = getCreatedFromTemplateRelationship();
+                if (ier != null) {
+                    createdFromTemplate = ier.getSecondItemElement().getParentItem();
+                }              
 
                 templateInfoLoaded = true;
             }
@@ -1612,8 +1622,8 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public List<Item> getItemsCreatedFromThisTemplateItem() {
         if (!templateInfoLoaded) {
-            if (getIsItemTemplate()) {                                
-                
+            if (getIsItemTemplate()) {
+
                 String machineDesignTemplateRelationshipTypeName = ItemElementRelationshipTypeNames.template.getValue();
                 itemsCreatedFromThisTemplateItem = new ArrayList<>();
                 if (getItemElementRelationshipList1() != null) {
@@ -1730,8 +1740,8 @@ public class Item extends CdbDomainEntity implements Serializable {
         if (qrId != null) {
             toString += " (QRID: " + getQrIdDisplay() + ")";
         }
-        
-        return toString; 
+
+        return toString;
     }
 
     @Override
@@ -2162,7 +2172,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setHasElementReorderChangesForCurrent(Boolean hasElementReorderChangesForCurrent) {
         this.hasElementReorderChangesForCurrent = hasElementReorderChangesForCurrent;
     }
-    
+
     @JsonIgnore
     public List<Item> getParentItemList() {
         return parentItemList;

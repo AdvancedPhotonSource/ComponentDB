@@ -28,6 +28,15 @@ See LICENSE file.
                 onstart="PF('loadingDialog').show();"
                 oncomplete="PF('loadingDialog').hide(); showItemDomainMachineDesignTemplateReassignMacrosDialog()"
                 action='#{entityController.generateTemplateVarsForSelectedMdCreatedFromTemplate()}'/>
+        
+        <p:menuitem value="Unassign Template" icon="fa fa-unlink"
+                update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel emphasizedContentBelowTitleOutputPanel"
+                rendered="#{entityController.selectedItemInTreeTableCreatedFromTemplate}"
+                disabled="#{disabledEditContextMenuItemForSelection or disabled}"                
+                immediate="true"
+                onstart="PF('loadingDialog').show();"
+                oncomplete="PF('loadingDialog').hide(); showItemDomainMachineDesignTemplateUnassignDialog()"                
+                action='#{entityController.prepareUnassignMachineTemplate()}'/>
  
     </p:submenu>
 
