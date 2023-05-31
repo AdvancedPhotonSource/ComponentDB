@@ -64,13 +64,14 @@ import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizardClient;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementRelationshipControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidWarningInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.WarningInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import static gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode.CONNECTOR_NODE_TYPE;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import java.io.IOException;
-import java.util.logging.Level;
 
 /**
  *
@@ -93,7 +94,11 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignDetailsViewSections";
 
     private TreeNode searchResultsTreeNode;
-
+    
+    // <editor-fold defaultstate="collapsed" desc="Unassign from template variables">
+    private TreeNode unassignMachineTemplateNode = null;
+    private List<TreeNode> selectedUnassignTemplateNodes;
+    // </editor-fold>       
     // <editor-fold defaultstate="collapsed" desc="Favorites toggle variables">
     private boolean favoritesShown = false;
     private MachineTreeNode favoriteMachineDesignTreeRootTreeNode;
@@ -290,10 +295,106 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         currentMachineDesignListRootTreeNode = null;
         machineDesignTemplateRootTreeNode = null;
         machineDesignTreeRootTreeNode = null;
-        favoriteMachineDesignTreeRootTreeNode = null;
+        favoriteMachineDesignTreeRootTreeNode = null;        
+        unassignMachineTemplateNode = null; 
+        selectedUnassignTemplateNodes = null; 
     }
     // </editor-fold>   
+    
+    // <editor-fold defaultstate="collapsed" desc="Unassign from template implementation">   
+        public void prepareUnassignMachineTemplate() {
+        ItemElement selectedItemElement = getItemElementFromSelectedItemInTreeTable();
+        unassignMachineTemplateNode = new DefaultTreeNode();
+        TreeNode child = new DefaultTreeNode(selectedItemElement);
+        child.setExpanded(true);
+        selectedUnassignTemplateNodes = new ArrayList<>();
+        unassignMachineTemplateNode.getChildren().add(child);
+        generateUnassignTree(child);
+    }
 
+    public void unassignMachineTemplateForSelection() {        
+        List<ItemElementRelationship> relationshipsToDestroy = new ArrayList<>();
+        List<ItemElement> elementsToUpdate = new ArrayList<>();
+        List<ItemDomainMachineDesign> machinesToUpdate = new ArrayList<>();
+        UserInfo user = SessionUtility.getUser();
+        CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
+        boolean proceedWithUpdate = true;
+
+        for (TreeNode selectedNode : selectedUnassignTemplateNodes) {
+            ItemElement element = (ItemElement) selectedNode.getData();
+
+            ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) element.getContainedItem();
+            ItemElementRelationship templateRelationship = containedItem.getCreatedFromTemplateRelationship();
+            relationshipsToDestroy.add(templateRelationship);
+
+            List<ItemElement> childElements = containedItem.getItemElementDisplayList();
+
+            for (ItemElement derivedElement : childElements) {
+                derivedElement.setDerivedFromItemElement(null);
+                elementsToUpdate.add(element);
+            }
+            if (sessionRole != CdbRole.ADMIN) { 
+                if (!AuthorizationUtility.isEntityWriteableByUser(containedItem, user)) {
+                    proceedWithUpdate = false;
+                    SessionUtility.addErrorMessage("Error", "Cannot proceed with update. User does not have permission to item %s " + containedItem.toString());
+                    break;
+                }                
+            }
+            machinesToUpdate.add(containedItem);
+            elementsToUpdate.add(element);
+        }
+
+        if (proceedWithUpdate) {
+            ItemElementRelationshipControllerUtility ieru = new ItemElementRelationshipControllerUtility();
+            ItemElementControllerUtility ieu = new ItemElementControllerUtility();
+
+            try {
+                updateList(machinesToUpdate);
+                ieru.destroyList(relationshipsToDestroy, null, user);
+            } catch (CdbException ex) {
+                SessionUtility.addErrorMessage("Error", "Could not delete item relationships: " + ex.getMessage());
+            }
+        }
+
+        resetListConfigurationVariables();
+        resetListDataModel();
+        expandToSelectedTreeNodeAndSelect();
+    }
+
+    private void generateUnassignTree(TreeNode node) {
+        node.setSelected(true);
+        List children = node.getChildren();
+        ItemElement itemElement = (ItemElement) node.getData();
+        Item machineItem = itemElement.getContainedItem();
+        List<ItemElement> elements = machineItem.getItemElementDisplayList();
+
+        for (ItemElement element : elements) {
+            Item containedItem = element.getContainedItem();
+            if (containedItem.getCreatedFromTemplate() != null) {
+                TreeNode child = new DefaultTreeNode(element);
+                child.setExpanded(true);
+                children.add(child);
+                generateUnassignTree(child);
+            }
+        }
+    }
+
+    public TreeNode getUnassignMachineTemplateNode() {
+        return unassignMachineTemplateNode;
+    }
+
+    public void setUnassignMachineTemplateNode(TreeNode unassignMachineTemplateNode) {
+        this.unassignMachineTemplateNode = unassignMachineTemplateNode;
+    }
+
+    public List<TreeNode> getSelectedUnassignTemplateNodes() {
+        return selectedUnassignTemplateNodes;
+    }
+
+    public void setSelectedUnassignTemplateNodes(List<TreeNode> selectedUnassignTemplateNodes) {
+        this.selectedUnassignTemplateNodes = selectedUnassignTemplateNodes;
+    }
+    // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Dual list view configuration implementation ">   
     public MachineTreeNode getCurrentMachineDesignListRootTreeNode() {
         if (currentMachineDesignListRootTreeNode == null) {
@@ -2054,7 +2155,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             reassignTemplateVarsForSelectedMdCreatedFromTemplateRecursivelly(containedItem, itemsToUpdate);
         }
     }
-
+        
     public void generateTemplateVarsForSelectedMdCreatedFromTemplate() {
         ItemDomainMachineDesign selectedItem = getItemFromSelectedItemInTreeTable();
 
@@ -2355,7 +2456,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             String entityViewsDirectory = getDomainPath();
             String listForCurrentEntity = listForCurrentEntity();
             String redirect = entityViewsDirectory + "/" + listForCurrentEntity;
-            redirect += "&mode=" + URL_PARAM_EXPAND_MODE; 
+            redirect += "&mode=" + URL_PARAM_EXPAND_MODE;
             try {
                 SessionUtility.redirectTo(redirect);
             } catch (IOException ex) {
