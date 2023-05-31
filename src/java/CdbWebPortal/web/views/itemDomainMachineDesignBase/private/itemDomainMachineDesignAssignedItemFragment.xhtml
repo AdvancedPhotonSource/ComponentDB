@@ -14,9 +14,11 @@ See LICENSE file.
     <ui:fragment>
         <ui:param name="isAssignedItemInventory"
                   value="#{entityController.isItemInventory(assignedItem)}" />
-
         <ui:param name="isAssignedItemCatalog"
                   value="#{entityController.isItemCatalog(assignedItem)}" /> 
+        <ui:param name="isAssignedItemApp"
+                  value="#{entityController.isItemApp(assignedItem)}" />                         
+        
         <ui:fragment rendered="#{isAssignedItemInventory}">
             <div class="actionLink">
                 <p:commandLink id="#{entityTypeName}CatalogLink#{viewName}" 
@@ -38,6 +40,16 @@ See LICENSE file.
                                onclick="PF('loadingDialog').show()"
                                action="#{entityController.prepareView(assignedItem)}" 
                                styleClass="ui-icon ui-icon-catalog custom-icon-blue" 
+                               title="View Catalog Item"/>
+            </div>
+        </ui:fragment>
+        
+        <ui:fragment rendered="#{isAssignedItemApp}">
+            <div class="actionLink">
+                <p:commandLink id="#{entityTypeName}AppLink#{viewName}" 
+                               onclick="PF('loadingDialog').show()"
+                               action="#{entityController.prepareView(assignedItem)}" 
+                               styleClass="fa fa-link-icon fa-icon-blue fa-code" 
                                title="View Catalog Item"/>
             </div>
         </ui:fragment>

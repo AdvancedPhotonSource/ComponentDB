@@ -70,6 +70,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidWarningInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.WarningInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import static gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode.CONNECTOR_NODE_TYPE;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainApp;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import java.io.IOException;
 
@@ -87,6 +88,9 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     private final static String URL_PARAM_DETAIL_MODE = "detail";
     private final static String URL_PARAM_EXPAND_MODE = "expand";
     private final static String URL_PARAM_DETAIL_MODE_SWITCHVAL = "switch";
+    
+    private final static String ASSIGN_ITEM_DEFAULT_DOMAIN = "catalog";
+    private final static String ASSIGN_ITEM_APP_DOMAIN = "app";
 
     private final static String cableWizardRedirectSuccess
             = "/views/itemDomainMachineDesign/list?faces-redirect=true";
@@ -119,11 +123,13 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     private boolean displayAddMDFromTemplateConfigurationPanel = true;
     private boolean displayAddMDMoveExistingConfigurationPanel = true;
     private boolean displayAddCatalogItemListConfigurationPanel = true;
-    private boolean displayAssignCatalogItemListConfigurationPanel = true;
+    private boolean displayAssignCatalogItemListConfigurationPanel = true;    
     private boolean displayAssignInventoryItemListConfigurationPanel = true;
     private boolean displayUpdateInstalledInventoryStateDialogContents = true;
     private boolean displayAttachTemplateToMachine = true;
     private boolean displayMachineDesignReorderOverlayPanel = true;
+        
+    private String assignItemDomainSelection = null; 
 
     private List<ItemDomainCatalog> catalogItemsDraggedAsChildren = null;
     private TreeNode newCatalogItemsInMachineDesignModel = null;
@@ -206,6 +212,10 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     public boolean isItemCatalog(Item item) {
         return item instanceof ItemDomainCatalog;
+    }
+    
+    public boolean isItemApp(Item item) {
+        return item instanceof ItemDomainApp;
     }
 
     public boolean isItemMachineDesign(Item item) {
@@ -707,6 +717,8 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         catalogItemsDraggedAsChildren = null;
         newCatalogItemsInMachineDesignModel = null;
         currentMachineDesignListRootTreeNode = null;
+        
+        assignItemDomainSelection = ASSIGN_ITEM_DEFAULT_DOMAIN; 
     }
 
     public void prepareAddPlaceholder() {
@@ -810,6 +822,14 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     public boolean isDisplayMachineDesignReorderOverlayPanel() {
         return displayMachineDesignReorderOverlayPanel;
+    }
+
+    public String getAssignItemDomainSelection() {
+        return assignItemDomainSelection;
+    }
+
+    public void setAssignItemDomainSelection(String assignItemDomainSelection) {
+        this.assignItemDomainSelection = assignItemDomainSelection;
     }
 
     protected ItemDomainMachineDesign getParentOfSelectedItemInHierarchy(MachineTreeNode machineTreeNode) {
@@ -1408,6 +1428,10 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
         displayListConfigurationView = true;
         displayAssignCatalogItemListConfigurationPanel = true;
+    }
+    
+    public boolean isAssignApp() {
+        return assignItemDomainSelection.equals(ASSIGN_ITEM_APP_DOMAIN); 
     }
 
     public String completeAssignCatalogListConfiguration() {

@@ -6,21 +6,51 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
-                xmlns:p="http://primefaces.org/ui">   
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">   
 
 
-    <p:panel header="Assign Catalog to Machine Element"
-             id="assignCatalogListConfigurationPanel"
+    <p:panel header="Assign Item to Machine Element"
+             id="assignItemListConfigurationPanel"
              rendered="#{entityController.displayAssignCatalogItemListConfigurationPanel}">
 
-        <ui:include src="../../item/private/itemSelectDataTable.xhtml">
-            <ui:param name="updateTarget" value="assignCatalogListConfigurationPanel" />
-            <ui:param name="overrideSelectionValue" value="#{true}" /> 
-            <ui:param name="selectionValue" value="#{entityController.catalogForElement}" />            
-            <ui:param name="entityController" value="#{itemDomainCatalogController}" />     
-            <ui:param name="viewName" value="assignCatalogSelection" />
-        </ui:include>
+        <p:panelGrid columns="2">
+            <h:outputText value="Domain"/>
+            <p:selectOneButton value="#{entityController.assignItemDomainSelection}"
+                               onchange="updateAssignItemListConfigurationPanel()">
+                <f:selectItem itemLabel="Catalog" itemValue="catalog"/>
+                <f:selectItem itemLabel="App" itemValue="app"/>
+            </p:selectOneButton>
+        </p:panelGrid>       
+
+        <p:remoteCommand name="updateAssignItemListConfigurationPanel"
+                         onstart="PF('loadingDialog').show()"
+                         oncomplete="PF('loadingDialog').hide()"
+                         update="assignItemListConfigurationPanel" /> 
         
+        <ui:param name="assignApp"
+                  value="#{entityController.assignApp}" /> 
+
+        <p:outputPanel rendered="#{!assignApp}">
+            <ui:include src="../../item/private/itemSelectDataTable.xhtml">
+                <ui:param name="updateTarget" value="assignItemListConfigurationPanel" />
+                <ui:param name="overrideSelectionValue" value="#{true}" /> 
+                <ui:param name="selectionValue" value="#{entityController.catalogForElement}" />            
+                <ui:param name="entityController" value="#{itemDomainCatalogController}" />     
+                <ui:param name="viewName" value="assignCatalogSelection" />
+            </ui:include>
+        </p:outputPanel>
+        <p:outputPanel rendered="#{assignApp}">
+            <ui:include src="../../item/private/itemSelectDataTable.xhtml">
+                <ui:param name="updateTarget" value="assignItemListConfigurationPanel" />
+                <ui:param name="overrideSelectionValue" value="#{true}" /> 
+                <ui:param name="selectionValue" value="#{entityController.catalogForElement}" />            
+                <ui:param name="entityController" value="#{itemDomainAppController}" />     
+                <ui:param name="viewName" value="assignAppSelection" />
+            </ui:include>
+        </p:outputPanel>
+
         <p:commandButton value="Save"
                          id="assignCatalogToMachineDesignSave"
                          icon="fa fa-save"
