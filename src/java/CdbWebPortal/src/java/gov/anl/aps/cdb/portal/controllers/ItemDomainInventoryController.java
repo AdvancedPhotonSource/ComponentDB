@@ -23,6 +23,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.InventoryItemElementConstraintInformation;
@@ -254,4 +255,29 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     protected ItemDomainInventoryControllerUtility createControllerUtilityInstance() {
         return new ItemDomainInventoryControllerUtility();
     }
+    
+    @Override
+    protected ItemDomainInventory performItemRedirection(ItemDomainInventory item, String paramString, boolean forceRedirection) {
+        // Special redirect for qrid 
+        if (paramString.contains("qrId")) {
+            List<ItemElement> memberList = item.getItemElementMemberList2();
+
+            if (memberList.size() == 1) {
+                ItemElement memberElement = memberList.get(0); 
+                Item parentItem = memberElement.getParentItem();
+                if (parentItem instanceof ItemDomainMachineDesign) {               
+                    String listForEntity = ItemDomainMachineDesignController.listForEntity((ItemDomainMachineDesign) parentItem); 
+                    ItemDomainMachineDesignController mdc = ItemDomainMachineDesignController.getInstance();
+                    String domainPath = mdc.getDomainPath();
+
+                    SessionUtility.addInfoMessage("Machine Redirect", "Redirected " + paramString + " to installed in machine element. Use link in 'Assigned Item' column for inventory details.");
+                    SessionUtility.navigateTo(domainPath + "/" + listForEntity);
+                    return null;
+                }           
+            }
+        }
+        
+        return super.performItemRedirection(item, paramString, forceRedirection); 
+    }
+
 }
