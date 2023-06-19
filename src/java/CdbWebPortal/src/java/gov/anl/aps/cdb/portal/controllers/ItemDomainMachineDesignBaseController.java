@@ -652,7 +652,11 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
      */
     public String listForCurrentEntity() {
         ItemDomainMachineDesign current = getCurrent();
-        return "list?id=" + current.getId() + "&faces-redirect=true";
+        return listForEntity(current); 
+    }
+    
+    public static String listForEntity(ItemDomainMachineDesign machine) {
+        return "list?id=" + machine.getId() + "&faces-redirect=true";
     }
 
     public String updateDetailsForCurrentSelectedTreeNode() {
