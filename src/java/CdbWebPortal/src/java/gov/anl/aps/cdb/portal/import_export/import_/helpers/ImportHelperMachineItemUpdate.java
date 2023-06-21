@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
@@ -113,6 +114,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
         specs.add(MachineImportHelperCommon.descriptionColumnSpec(ColumnModeOptions.oUPDATE()));
         specs.add(MachineImportHelperCommon.sortOrderColumnSpec(ColumnModeOptions.oUPDATE()));
         specs.add(MachineImportHelperCommon.assignedItemColumnSpec(ColumnModeOptions.oUPDATE()));
+        specs.add(MachineImportHelperCommon.assemblyPartColumnSpec(ColumnModeOptions.oUPDATE())); 
         specs.add(locationColumnSpec());
         specs.add(locationDetailsColumnSpec());
         specs.add(MachineImportHelperCommon.isInstalledColumnSpec(ColumnModeOptions.oUPDATE()));
@@ -197,9 +199,11 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMa
             // validate and handle "assigned item" and "is installed" columns if either has changed
             Boolean itemIsHoused = item.getImportIsInstalled();
             Item oldAssignedItem = item.getAssignedItem();
+            String oldAssemblyPartName = item.getImportAssemblyPart(); 
             if (((itemIsHoused == null && isInstalled != null) || (itemIsHoused != null && isInstalled == null) || (itemIsHoused != null && !itemIsHoused.equals(isInstalled))) 
-                    || ((oldAssignedItem == null && newAssignedItem != null) || (oldAssignedItem != null && newAssignedItem == null) || (oldAssignedItem != null && !oldAssignedItem.equals(newAssignedItem)))) {
-
+                    || ((oldAssignedItem == null && newAssignedItem != null) || (oldAssignedItem != null && newAssignedItem == null) || (oldAssignedItem != null && !oldAssignedItem.equals(newAssignedItem)))
+                    || (!ObjectUtility.equals(oldAssemblyPartName, assemblyPartName))) {
+                
                 ValidInfo assignedItemValidInfo
                         = MachineImportHelperCommon.handleAssignedItem(
                                 item, newAssignedItem, assemblyPartName, importUser, isInstalled);

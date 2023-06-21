@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.import_export.import_.objects;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
@@ -21,8 +22,10 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyC
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
@@ -501,13 +504,78 @@ public class MachineImportHelperCommon {
                 isValid = false;
                 validString = "Must specify '" + MachineImportHelperCommon.HEADER_INSTALLED + "' with assigned inventory item.";
                 return new ValidInfo(isValid, validString);
+            }            
+        }
+        
+        ItemElement representedElement = null;
+        boolean clearAssignedItem = false; 
+        boolean skipUpdateAssignedItem = false; 
+        if (assemblyPartName != null && !assemblyPartName.isEmpty()) {
+            ItemDomainMachineDesign parentMachineDesign = item.getParentMachineDesign();
+            Item parentAssignedItem = parentMachineDesign.getAssignedItem();
+            Item catalogAssembly = null; 
+            if (parentAssignedItem == null) {
+                isValid = false;
+                validString = "Parent item has no assigned item/assembly for assinging represented element.";
+                return new ValidInfo(isValid, validString);
             }
+            if (parentAssignedItem instanceof ItemDomainInventory) {
+                catalogAssembly = parentAssignedItem.getDerivedFromItem(); 
+            } else if (parentAssignedItem instanceof ItemDomainCatalog) {
+                catalogAssembly = parentAssignedItem; 
+            } else {
+                isValid = false;               
+                validString = "Parent item has a non catalog/inventory item assigned for represented element assignment.";
+                return new ValidInfo(isValid, validString);
+            }
+            
+            for (ItemElement itemElement : catalogAssembly.getItemElementDisplayList()) {
+                if (itemElement.getName().equals(assemblyPartName)) {
+                    representedElement = itemElement; 
+                    break;
+                }
+            }
+            
+            if (representedElement == null) {
+               isValid = false;               
+                validString = "Represented element: " + assemblyPartName + " canont be found.";
+                return new ValidInfo(isValid, validString); 
+            }
+            
+            ItemElement representsCatalogElement = item.getRepresentsCatalogElement();
+            if (representsCatalogElement != null) {
+                skipUpdateAssignedItem = true; 
+            } else {
+                clearAssignedItem = true; 
+                
+                if (assignedItem != null) {
+                    // Ensure that it matches representedElement. 
+                    if (!representedElement.getContainedItem().equals(assignedItem)) {
+                        isValid = false;               
+                        validString = "Assigned Catalog ID must be empty or match assembly part.";
+                        return new ValidInfo(isValid, validString);
+                    }
+                }
+            }
+            
         }
 
         // handle assigned item
         ItemDomainMachineDesignControllerUtility utility = new ItemDomainMachineDesignControllerUtility();
-        try {
-            utility.updateAssignedItem(item, assignedItem, user, isInstalled);
+        try {                        
+            Item assignedItemAssignment = assignedItem; 
+            if (clearAssignedItem) {
+                assignedItemAssignment = null; 
+            } 
+            if (!skipUpdateAssignedItem) {
+                utility.updateAssignedItem(item, assignedItemAssignment, user, isInstalled);
+            }
+            
+            // Update representing assembly element when needed. 
+            String oldAssemblyPartName = item.getImportAssemblyPart();
+            if (!ObjectUtility.equals(assemblyPartName, oldAssemblyPartName)) {
+                utility.updateRepresentingAssemblyElementForMachine(item, representedElement, false);
+            }
         } catch (CdbException ex) {
             isValid = false;
             validString = "Error updating assigned item: " + ex.getMessage();

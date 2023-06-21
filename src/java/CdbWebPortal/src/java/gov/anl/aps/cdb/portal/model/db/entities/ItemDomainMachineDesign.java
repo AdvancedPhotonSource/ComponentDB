@@ -734,6 +734,12 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     
     @JsonIgnore
     public String getImportAssemblyPart() {
+        if (importAssemblyPart == null) {
+            ItemElement representsElement = getAssignedRepresentedElement();
+            if (representsElement != null) {
+                importAssemblyPart = representsElement.getName(); 
+            }
+        }
         return importAssemblyPart;
     }
 
