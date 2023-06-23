@@ -92,6 +92,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     // <editor-fold defaultstate="collapsed" desc="Element edit variables ">
     private transient Item inventoryForElement = null;
     private transient boolean inventoryIsInstalled = true;
+    private transient String qrIdForAssignedItem = null; 
     private transient Item catalogForElement = null;
     private transient Item originalForElement = null;
     protected transient DataModel installedInventorySelectionForCurrentElement;
@@ -913,6 +914,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public void setInventoryIsInstalled(boolean inventoryIsInstalled) {
         this.inventoryIsInstalled = inventoryIsInstalled;
+    }
+
+    @JsonIgnore
+    public String getQrIdForAssignedItem() {
+        return qrIdForAssignedItem;
+    }
+
+    public void setQrIdForAssignedItem(String qrIdForAssignedItem) {
+        this.qrIdForAssignedItem = qrIdForAssignedItem;
     }
 
     @JsonIgnore

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">    
+
+    <p:dialog id="itemDomainMachineDesignUpdateInstalledQrIdDialog"
+              widgetVar="itemDomainMachineDesignUpdateInstalledQrIdDialogWidget"
+              styleClass="viewTransparentBackgroundDialog"
+              header="Update Installed QRID for machine element"
+              modal="true"
+              resizable="false">
+        <p:outputPanel rendered="#{entityController.displayUpdateInstalledItemQridDialogContents}"
+                       id="itemDomainMachineDesignUpdateInstalledQrIdDialogContents">
+            <ui:param name="machineItem" 
+                      value="#{entityController.current}"/>
+            <p:inputText placeholder="Enter QRID" 
+                         value="#{machineItem.qrIdForAssignedItem}"/> 
+        </p:outputPanel>
+
+        <f:facet name="footer">
+            <p:commandButton action="#{itemDomainMachineDesignController.updateInstalledQrId()}"                              
+                             value="Save"                             
+                             update="itemDomainMachineDesignUpdateInstalledQrIdDialogContents"
+                             icon="fa fa-save"
+                             onclick="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"/> 
+        </f:facet>
+    </p:dialog>
+
+    <p:remoteCommand name="prepareShowUpdateInventoryInstalledQrIdDialog"
+                     oncomplete="PF('loadingDialog').hide(); PF('itemDomainMachineDesignInventoryInstallStateDialogWidget').show();"
+                     action="#{entityController.prepareUpdateInventoryInstallState()}" 
+                     update="@form:itemDomainMachineDesignInventoryInstallStateDialog"
+                     /> 
+
+</ui:composition>
