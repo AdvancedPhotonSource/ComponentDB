@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbRole;
+import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
@@ -70,9 +71,11 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidWarningInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.WarningInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import static gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode.CONNECTOR_NODE_TYPE;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainApp;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import java.io.IOException;
+import java.util.logging.Level;
 
 /**
  *
@@ -126,6 +129,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     private boolean displayAssignCatalogItemListConfigurationPanel = true;    
     private boolean displayAssignInventoryItemListConfigurationPanel = true;
     private boolean displayUpdateInstalledInventoryStateDialogContents = true;
+    private boolean displayUpdateInstalledItemQridDialogContents = true; 
     private boolean displayAttachTemplateToMachine = true;
     private boolean displayMachineDesignReorderOverlayPanel = true;
         
@@ -205,6 +209,9 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     @EJB
     ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
+    
+    @EJB
+    ItemFacade itemFacade; 
 
     public boolean isItemInventory(Item item) {
         return item instanceof ItemDomainInventory;
@@ -716,6 +723,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         displayAssignCatalogItemListConfigurationPanel = false;
         displayAssignInventoryItemListConfigurationPanel = false;
         displayUpdateInstalledInventoryStateDialogContents = false;
+        displayUpdateInstalledItemQridDialogContents = false; 
         displayAttachTemplateToMachine = false;
         displayMachineDesignReorderOverlayPanel = false;
         catalogItemsDraggedAsChildren = null;
@@ -818,6 +826,10 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     public boolean isDisplayUpdateInstalledInventoryStateDialogContents() {
         return displayUpdateInstalledInventoryStateDialogContents;
+    }
+
+    public boolean isDisplayUpdateInstalledItemQridDialogContents() {
+        return displayUpdateInstalledItemQridDialogContents;
     }
 
     public boolean isDisplayAttachTemplateToMachine() {
@@ -1027,6 +1039,103 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
         resetListConfigurationVariables();
         expandToSelectedTreeNodeAndSelect();
+    }
+    
+    public void preapreUpdateInstalledQrId(ItemDomainMachineDesign machine, String onSuccess) {
+        // Verify permission to item 
+        CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
+        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+        if (sessionRole != CdbRole.ADMIN) { 
+            if (!AuthorizationUtility.isEntityWriteableByUser(machine, sessionUser)) {                
+                SessionUtility.addErrorMessage("Error", "Cannot proceed with update. User does not have permission to item " + machine.toString());
+                return; 
+            }                
+        }
+        
+        displayUpdateInstalledItemQridDialogContents = true; 
+        setCurrent(machine);
+        SessionUtility.executeRemoteCommand(onSuccess);
+    }
+    
+    public String updateInstalledQrId() {
+        displayUpdateInstalledItemQridDialogContents = false;
+        
+        ItemDomainMachineDesign current = getCurrent();
+        String qrIdForAssignedItem = current.getQrIdForAssignedItem();                
+        
+        Item newAssignedItem = null; 
+        boolean update = false; 
+        
+        // Blank input
+        if (qrIdForAssignedItem.isEmpty()) {
+            Item assignedItem = current.getAssignedItem();
+            if (assignedItem instanceof ItemDomainInventory) {
+                newAssignedItem = assignedItem.getDerivedFromItem(); 
+                update = true; 
+            }
+        } else {
+            // QRID entered 
+            Integer qrid = null; 
+            if (qrIdForAssignedItem.contains("qrId=")) {
+                qrIdForAssignedItem = qrIdForAssignedItem.split("qrId=")[1]; 
+            } 
+            try {
+                qrid = Integer.valueOf(qrIdForAssignedItem); 
+            } catch (NumberFormatException ex) {
+                SessionUtility.addErrorMessage("Parse Error", "Cannot extract qrid from '" + qrIdForAssignedItem + "'");
+                return null; 
+            }
+            
+            if (qrid != null) {
+                Item scannedItem = itemFacade.findByQrId(qrid);
+                if (scannedItem instanceof ItemDomainInventory) {
+                    Item assignedItem = current.getAssignedItem();
+                    if (assignedItem == null) {
+                        newAssignedItem = scannedItem; 
+                        update = true; 
+                    } else {
+                        Item catalogItem = null; 
+                        if (assignedItem instanceof ItemDomainInventory) {
+                            catalogItem = assignedItem.getDerivedFromItem(); 
+                        } else if (assignedItem instanceof ItemDomainCatalog) {
+                            catalogItem = assignedItem; 
+                        }
+                        
+                        if (catalogItem != null) {
+                             Item qridCatalog = scannedItem.getDerivedFromItem();
+                             if (!qridCatalog.equals(catalogItem)) {
+                                SessionUtility.addErrorMessage("Cannot update", "Inventory must be of type " + catalogItem.toString());
+                                return null; 
+                             } else {
+                                 newAssignedItem = scannedItem; 
+                                 update = true; 
+                             }
+                        } else {
+                            SessionUtility.addErrorMessage("Cannot update", "Only inventory qrids are supported.");
+                            return null; 
+                        }                        
+                    }
+                } else {
+                    SessionUtility.addErrorMessage("Cannot update", "Only inventory qrids are supported.");
+                    return null; 
+                }                                
+            }            
+        }
+        
+        if (update) {
+            UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+            controllerUtility cu = getControllerUtility();
+            try {
+                cu.updateAssignedItem(current, newAssignedItem, sessionUser);
+                update(); 
+            } catch (CdbException ex) {
+                SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+            }            
+        }
+        
+        SessionUtility.executeRemoteCommand("PF('loadingDialog').show()");
+        
+        return listForCurrentEntity();
     }
 
     public void prepareAssignInventoryMachineDesignListConfiguration() {
