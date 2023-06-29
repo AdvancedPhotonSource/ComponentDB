@@ -1053,13 +1053,12 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         }
         
         displayUpdateInstalledItemQridDialogContents = true; 
+        machine.setQrIdForAssignedItem(null);
         setCurrent(machine);
         SessionUtility.executeRemoteCommand(onSuccess);
     }
     
-    public String updateInstalledQrId() {
-        displayUpdateInstalledItemQridDialogContents = false;
-        
+    public String updateInstalledQrId(String failRemoteCommand) {                
         ItemDomainMachineDesign current = getCurrent();
         String qrIdForAssignedItem = current.getQrIdForAssignedItem();                
         
@@ -1067,7 +1066,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         boolean update = false; 
         
         // Blank input
-        if (qrIdForAssignedItem.isEmpty()) {
+        if (qrIdForAssignedItem == null || qrIdForAssignedItem.isEmpty()) {
             Item assignedItem = current.getAssignedItem();
             if (assignedItem instanceof ItemDomainInventory) {
                 newAssignedItem = assignedItem.getDerivedFromItem(); 
@@ -1076,13 +1075,15 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         } else {
             // QRID entered 
             Integer qrid = null; 
-            if (qrIdForAssignedItem.contains("qrId=")) {
-                qrIdForAssignedItem = qrIdForAssignedItem.split("qrId=")[1]; 
+            qrIdForAssignedItem = qrIdForAssignedItem.toLowerCase(); 
+            if (qrIdForAssignedItem.contains("qrid=")) {
+                qrIdForAssignedItem = qrIdForAssignedItem.split("qrid=")[1]; 
             } 
             try {
                 qrid = Integer.valueOf(qrIdForAssignedItem); 
             } catch (NumberFormatException ex) {
                 SessionUtility.addErrorMessage("Parse Error", "Cannot extract qrid from '" + qrIdForAssignedItem + "'");
+                SessionUtility.executeRemoteCommand(failRemoteCommand);
                 return null; 
             }
             
@@ -1105,6 +1106,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
                              Item qridCatalog = scannedItem.getDerivedFromItem();
                              if (!qridCatalog.equals(catalogItem)) {
                                 SessionUtility.addErrorMessage("Cannot update", "Inventory must be of type " + catalogItem.toString());
+                                SessionUtility.executeRemoteCommand(failRemoteCommand);
                                 return null; 
                              } else {
                                  newAssignedItem = scannedItem; 
@@ -1112,11 +1114,13 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
                              }
                         } else {
                             SessionUtility.addErrorMessage("Cannot update", "Only inventory qrids are supported.");
+                            SessionUtility.executeRemoteCommand(failRemoteCommand);
                             return null; 
                         }                        
                     }
                 } else {
                     SessionUtility.addErrorMessage("Cannot update", "Only inventory qrids are supported.");
+                    SessionUtility.executeRemoteCommand(failRemoteCommand);
                     return null; 
                 }                                
             }            
@@ -1131,10 +1135,9 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             } catch (CdbException ex) {
                 SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
             }            
-        }
+        }                
         
-        SessionUtility.executeRemoteCommand("PF('loadingDialog').show()");
-        
+        displayUpdateInstalledItemQridDialogContents = false;     
         return listForCurrentEntity();
     }
 

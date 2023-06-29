@@ -20,23 +20,24 @@ See LICENSE file.
             <ui:param name="machineItem" 
                       value="#{entityController.current}"/>
             <p:inputText placeholder="Enter QRID" 
+                         id="itemDomainMachineDesignUpdateInstalledQrIdDialogQRInput"
+                         widgetVar="itemDomainMachineDesignUpdateInstalledQrIdDialogQRInputWidget"                         
                          value="#{machineItem.qrIdForAssignedItem}"/> 
         </p:outputPanel>
 
         <f:facet name="footer">
-            <p:commandButton action="#{itemDomainMachineDesignController.updateInstalledQrId()}"                              
+            <p:commandButton id="itemDomainMachineDesignUpdateInstalledQrIdDialogSaveButton"
+                             widgetVar="itemDomainMachineDesignUpdateInstalledQrIdDialogSaveButtonWidget"
+                             action="#{itemDomainMachineDesignController.updateInstalledQrId('failItemDomainMachineDesignUpdateInstalledQrIdDialog()')}"  
+                             disabled="#{!entityController.displayUpdateInstalledItemQridDialogContents}"
                              value="Save"                             
                              update="itemDomainMachineDesignUpdateInstalledQrIdDialogContents"
                              icon="fa fa-save"
-                             onclick="PF('loadingDialog').show()"
-                             oncomplete="PF('loadingDialog').hide()"/> 
+                             onclick="PF('loadingDialog').show()"/> 
         </f:facet>
-    </p:dialog>
-
-    <p:remoteCommand name="prepareShowUpdateInventoryInstalledQrIdDialog"
-                     oncomplete="PF('loadingDialog').hide(); PF('itemDomainMachineDesignInventoryInstallStateDialogWidget').show();"
-                     action="#{entityController.prepareUpdateInventoryInstallState()}" 
-                     update="@form:itemDomainMachineDesignInventoryInstallStateDialog"
-                     /> 
+    </p:dialog>           
+    
+    <p:remoteCommand name="failItemDomainMachineDesignUpdateInstalledQrIdDialog"
+                     oncomplete="PF('loadingDialog').hide()"/>
 
 </ui:composition>

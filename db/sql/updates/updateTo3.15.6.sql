@@ -8,6 +8,9 @@
 ALTER TABLE item_type ADD COLUMN `sort_order` float(10,2) unsigned DEFAULT NULL AFTER domain_id;
 ALTER TABLE item_category ADD COLUMN `sort_order` float(10,2) unsigned DEFAULT NULL AFTER domain_id;
 
+update domain set item_type_label = 'Tag' where id = 10;
+update domain set item_category_label = 'Application Type' where id = 10;
+
 # Set default sort order for item_type
 SET @row_number = 0;
 CREATE TEMPORARY TABLE sorted_type_ids AS

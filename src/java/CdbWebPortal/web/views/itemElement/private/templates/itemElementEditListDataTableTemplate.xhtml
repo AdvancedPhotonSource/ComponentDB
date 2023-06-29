@@ -88,9 +88,9 @@ See LICENSE file.
             <div class="actionLink">                
                 <p:commandLink actionListener="#{itemElementController.destroy(itemElementObject)}"
                                styleClass="fa fa-link-icon #{constraintInfo.safeToRemove ? '' : 'fa-icon-warning'} fa-trash" title="Delete" update="@form"
-                               rendered="#{loginController.isEntityWriteable(itemElementObject.entityInfo)}"/>
+                               rendered="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
                 <p:commandLink onclick="PF('itemElement#{itemElementObject.viewUUID}ConstraintInformationDialogWidget').show()"
-                               rendered="#{loginController.loggedInAsAdmin}"
+                               rendered="#{loginController.isEntityWriteable(itemObject.entityInfo)}"
                                styleClass="fa fa-link-icon fa-info" />
             </div>
             <ui:insert name="itemElementEditConstraintInformationDialog">
