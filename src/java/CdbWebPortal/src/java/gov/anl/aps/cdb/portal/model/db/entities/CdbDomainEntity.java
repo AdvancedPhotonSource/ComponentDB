@@ -65,9 +65,14 @@ public abstract class CdbDomainEntity extends CdbEntity {
         }
         PropertyValueInformation propertyValueInfo = propertyValueCacheMap.get(propertyTypeId);
         if (propertyValueInfo == null) {
+            List<PropertyValue> propertyValueList = getPropertyValueList();
+            if (propertyValueList == null) {
+                return null; 
+            }
             propertyValueInfo = new PropertyValueInformation(); 
             PropertyTypeHandlerInterface propertyHandler = null;
-            List<PropertyValue> propertyValueList = getPropertyValueList();
+            
+            
             for (PropertyValue propertyValue : propertyValueList) {
                 if (propertyValue.getPropertyType().getId().equals(propertyTypeId)) {
                     propertyHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
