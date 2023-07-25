@@ -733,7 +733,7 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
 
         // Updating of element 
         if (representedElement != null) {
-            if (elements.contains(representedElement)) {
+            if (elements != null && elements.contains(representedElement)) {
                 // Valid element. Update the element set. 
                 if (node.getAssignedItem() != null) {
                     String errMessage = node.getName();
@@ -742,7 +742,7 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
                 }
             } else {
                 boolean found = false;
-                if (matchElementNamesForTemplateInstances && updateFromTemplate) {
+                if (elements != null && matchElementNamesForTemplateInstances && updateFromTemplate) {
                     String elementName = representedElement.getName();
                     for (ItemElement assemblyElement : elements) {
                         if (assemblyElement.getName().equals(elementName)) {
@@ -782,21 +782,23 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
 
         if (parentMachineDesign != null) {
             Item assignedCat = parentMachineDesign.getAssignedItem();
-            if (assignedCat.getDerivedFromItem() != null) {
-                assignedCat = assignedCat.getDerivedFromItem();
-            }
+            if (assignedCat != null) {
+                if (assignedCat.getDerivedFromItem() != null) {
+                    assignedCat = assignedCat.getDerivedFromItem();
+                }
 
-            if (!assignedCat.getItemElementDisplayList().isEmpty()) {
-                availableElementsForNodeRepresentation = new ArrayList<>();
-                availableElementsForNodeRepresentation.addAll(assignedCat.getItemElementDisplayList());
+                if (!assignedCat.getItemElementDisplayList().isEmpty()) {
+                    availableElementsForNodeRepresentation = new ArrayList<>();
+                    availableElementsForNodeRepresentation.addAll(assignedCat.getItemElementDisplayList());
 
-                // Remove any already assigned elements.
-                List<ItemElement> machineChildren = parentMachineDesign.getItemElementDisplayList();
+                    // Remove any already assigned elements.
+                    List<ItemElement> machineChildren = parentMachineDesign.getItemElementDisplayList();
 
-                for (ItemElement machineChild : machineChildren) {
-                    ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) machineChild.getContainedItem();
-                    ItemElement representingElement = containedItem.getRepresentsCatalogElement();
-                    availableElementsForNodeRepresentation.remove(representingElement);
+                    for (ItemElement machineChild : machineChildren) {
+                        ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) machineChild.getContainedItem();
+                        ItemElement representingElement = containedItem.getRepresentsCatalogElement();
+                        availableElementsForNodeRepresentation.remove(representingElement);
+                    }
                 }
             }
         }
