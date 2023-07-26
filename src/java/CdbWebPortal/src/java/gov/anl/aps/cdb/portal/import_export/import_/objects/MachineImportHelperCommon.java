@@ -556,13 +556,22 @@ public class MachineImportHelperCommon {
                         return new ValidInfo(isValid, validString);
                     }
                 }
-            }
-            
+            }            
         }
 
         // handle assigned item
         ItemDomainMachineDesignControllerUtility utility = new ItemDomainMachineDesignControllerUtility();
-        try {                        
+        try {   
+            boolean repElementUpdated = false; 
+            if (assemblyPartName == null || assemblyPartName.isEmpty()) {
+                ItemElement representsCatalogElement = item.getRepresentsCatalogElement();  
+                if (representsCatalogElement != null) {
+                    // Need to clear representation. 
+                    repElementUpdated = true; 
+                    utility.updateRepresentingAssemblyElementForMachine(item, null, false);
+                }
+            }
+            
             Item assignedItemAssignment = assignedItem; 
             if (clearAssignedItem) {
                 assignedItemAssignment = null; 
@@ -573,7 +582,7 @@ public class MachineImportHelperCommon {
             
             // Update representing assembly element when needed. 
             String oldAssemblyPartName = item.getImportAssemblyPart();
-            if (!ObjectUtility.equals(assemblyPartName, oldAssemblyPartName)) {
+            if (!ObjectUtility.equals(assemblyPartName, oldAssemblyPartName) && !repElementUpdated) {
                 utility.updateRepresentingAssemblyElementForMachine(item, representedElement, false);
             }
         } catch (CdbException ex) {
