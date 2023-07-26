@@ -29,8 +29,8 @@ See LICENSE file.
         <ui:param name="installedQrIdPlannedText" 
                   value="#{mdTreeListObject != null and not mdTreeListObject.isHoused ? '(Planned)' : ''}" /> 
         
-        <p:commandLink id="#{entityTypeName}updateQrId" styleClass="fa fa-link-icon fa-qrcode"
-                       rendered="#{loginController.loggedIn}"
+        <p:commandLink id="#{entityTypeName}updateQrId" styleClass="fa fa-link-icon fa-qrcode"                       
+                       rendered="#{representedElement == null and loginController.loggedIn}"
                        action="#{entityController.preapreUpdateInstalledQrId(mdTreeListObject, 'PF(\'itemDomainMachineDesignUpdateInstalledQrIdDialogWidget\').show()')}"
                        update="@form:itemDomainMachineDesignUpdateInstalledQrIdDialog">
             <p:tooltip for="#{entityTypeName}updateQrId" value="Update installed item qrid" />
