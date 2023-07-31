@@ -60,6 +60,10 @@ def cdbInfo_helper(factory: CdbApiFactory,
     header_style["Item Details"] = "green"
 
     item_details.append({"Id": item.id})
+    if isinstance(item.qr_id,int):  
+        item_details.append({"QR Id": str(item.qr_id).zfill(9)})
+    else:
+        item_details.append({"QR Id": item.qr_id})
     item_details.append({"Name": item.name})
     if domain.item_identifier1_label:
         item_details.append({domain.item_identifier1_label: item.item_identifier1})
@@ -148,6 +152,30 @@ def cdbInfo_helper(factory: CdbApiFactory,
                 if location:
                     item_details.append({"Location": location.location_string})                    
 
+    # JPQ - Added to include assembly listings                
+    if all and item.domain_id == factory.INVENTORY_DOMAIN_ID:
+        item_h = item_api.get_item_hierarchy_by_id(item.id)
+        child_data_list = []
+        for c in item_h.child_items:
+            child_data = {}
+            child_data["Part Name"] = c.derived_element_name
+            child_data["Name"] = c.derived_item.name
+            child_data["Catalog Number"] = c.derived_item.id
+            if c.item != None:
+                child_data["Id"] = c.item.id
+                child_data["Name"] = child_data["Name"] + " - " + c.item.name 
+                if isinstance(c.item.qr_id,int):  
+                    child_data["QR Id"] =  str(c.item.qr_id).zfill(9)
+                else:
+                    child_data["QR Id"] = c.item.qr_id
+            else:
+                child_data["Id"] = None
+                child_data["QR Id"] = None
+            child_data_list.append(child_data)
+        result_obj["Inventory Item Children"] = child_data_list
+        header_style["Item Details"] = "orange"
+
+                    
     if all and item.domain_id == factory.MACHINE_DESIGN_DOMAIN_ID:
         machine_item = machine_api.get_machine_design_item_by_id(item_id)
         machine_conn_list : list[MachineDesignConnectorListObject] = machine_api.get_machine_design_connector_list(item_id)
