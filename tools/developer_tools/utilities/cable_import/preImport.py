@@ -53,8 +53,12 @@ LABEL_CABLES_END2_PORT = "End2 port"
 LABEL_CABLES_IMPORT_ID = "Import cable ID"
 LABEL_CABLES_FIRST_WAYPOINT = "First waypoint"
 LABEL_CABLES_FINAL_WAYPOINT = "Final waypoint"
-LABEL_CABLES_NOTES = "Notes"
-
+#nda
+LABEL_CABLES_TOTAL_LENGTH = "Total Required Cable Length (feet)"
+LABEL_CABLES_END1_LENGTH = "End1 Length (feet)"
+LABEL_CABLES_END2_LENGTH = "End2 Length (feet)"
+LABEL_CABLES_CABLE_DESCRIPTION = "Cable Description"
+#
 LABEL_CABLESPECS_DESCRIPTION = "cable type description"
 LABEL_CABLESPECS_MANUFACTURER = "manufacturer"
 LABEL_CABLESPECS_PART_NUM = "part number"
@@ -144,8 +148,11 @@ CABLE_DESIGN_END2_PORT_NAME_KEY = "end2Port"
 CABLE_DESIGN_IMPORT_ID_KEY = "importId"
 CABLE_DESIGN_VIA_ROUTE_KEY = "via"
 CABLE_DESIGN_WAYPOINT_ROUTE_KEY = "waypoint"
-CABLE_DESIGN_NOTES_KEY = "notes"
-
+#nda
+CABLE_DESIGN_TOTAL_LENGTH_KEY = "totalLength"
+CABLE_DESIGN_END1_LENGTH_KEY = "end1Length"
+CABLE_DESIGN_END2_LENGTH_KEY = "end2Length"
+CABLE_DESIGN_CABLE_DESCRIPTION_KEY = "cableDescription"
 
 class ConnectedMenuManager:
 
@@ -1324,19 +1331,24 @@ class CableDesignOutputObject(OutputObject):
             OutputColumnModel(method="get_ext_name", label="Ext Cable Name"),
             OutputColumnModel(method="get_import_id", label="Import Cable ID"),
             OutputColumnModel(method="empty_column", label="Alternate Cable ID"),
-            OutputColumnModel(method="empty_column", label="Description"),
+            #nda
+            OutputColumnModel(method="get_cable_description", label="Description"),
+            #
             OutputColumnModel(method="get_laying", label="Laying"),
             OutputColumnModel(method="get_voltage", label="Voltage"),
             OutputColumnModel(method="empty_column", label="Routed Length (ft)"),
-            OutputColumnModel(method="empty_column", label="Route"),
-            OutputColumnModel(method="empty_column", label="Total Required Cable Length (ft)"),
+            #nda
+            OutputColumnModel(method="get_route", label="Route"),
+            OutputColumnModel(method="get_total_length_req", label="Total Required Cable Length (ft)"),
+            #
             OutputColumnModel(method="empty_column", label="Notes"),
             OutputColumnModel(method="get_endpoint1_id", label="Endpoint1"),
             OutputColumnModel(method=endpoint1_port_method, label="Endpoint1 Port"),
             OutputColumnModel(method="get_endpoint1_connector", label="Endpoint1 Connector"),
             OutputColumnModel(method="get_endpoint1_description", label="Endpoint1 Desc"),
             OutputColumnModel(method="get_endpoint1_route", label="Endpoint1 Route"),
-            OutputColumnModel(method="empty_column", label="Endpoint1 End Length (ft)"),
+            #nda
+            OutputColumnModel(method="get_end1_length_req", label="Endpoint1 End Length (ft)"),
             OutputColumnModel(method="empty_column", label="Endpoint1 Termination"),
             OutputColumnModel(method="empty_column", label="Endpoint1 Pinlist"),
             OutputColumnModel(method="empty_column", label="Endpoint1 Notes"),
@@ -1346,7 +1358,8 @@ class CableDesignOutputObject(OutputObject):
             OutputColumnModel(method="get_endpoint2_connector", label="Endpoint2 Connector"),
             OutputColumnModel(method="get_endpoint2_description", label="Endpoint2 Desc"),
             OutputColumnModel(method="get_endpoint2_route", label="Endpoint2 Route"),
-            OutputColumnModel(method="empty_column", label="Endpoint2 End Length (ft)"),
+            #nda
+            OutputColumnModel(method="get_end2_length_req", label="Endpoint2 End Length (ft)"),
             OutputColumnModel(method="empty_column", label="Endpoint2 Termination"),
             OutputColumnModel(method="empty_column", label="Endpoint2 Pinlist"),
             OutputColumnModel(method="empty_column", label="Endpoint2 Notes"),
@@ -1394,6 +1407,25 @@ class CableDesignOutputObject(OutputObject):
 
     def get_import_id(self):
         return str(self.input_dict[CABLE_DESIGN_IMPORT_ID_KEY])
+
+    #nda
+    def get_total_length_req(self):
+        return str(self.input_dict[CABLE_DESIGN_TOTAL_LENGTH_KEY])
+
+    #nda
+    def get_end1_length_req(self):
+        return str(self.input_dict[CABLE_DESIGN_END1_LENGTH_KEY])
+
+    #nda
+    def get_end2_length_req(self):
+        return str(self.input_dict[CABLE_DESIGN_END2_LENGTH_KEY])
+
+    #nda
+    def get_route(self):
+        return str(self.input_dict[CABLE_DESIGN_VIA_ROUTE_KEY]) + " | " + str(self.input_dict[CABLE_DESIGN_WAYPOINT_ROUTE_KEY])
+    #nda
+    def get_cable_description(self):
+        return str(self.input_dict[CABLE_DESIGN_CABLE_DESCRIPTION_KEY])
 
     def get_laying(self):
         return self.input_dict[CABLE_DESIGN_LAYING_KEY]
@@ -2625,7 +2657,11 @@ class CablesSheetHelper(InputSheetHelper):
             InputColumnModel(key=CABLE_DESIGN_IMPORT_ID_KEY, label=LABEL_CABLES_IMPORT_ID, required=True),
             InputColumnModel(key=CABLE_DESIGN_VIA_ROUTE_KEY, label=LABEL_CABLES_FIRST_WAYPOINT, required=False),
             InputColumnModel(key=CABLE_DESIGN_WAYPOINT_ROUTE_KEY, label=LABEL_CABLES_FINAL_WAYPOINT, required=False),
-            InputColumnModel(key=CABLE_DESIGN_NOTES_KEY, label=LABEL_CABLES_NOTES, required=False),
+            #nda
+            InputColumnModel(key=CABLE_DESIGN_TOTAL_LENGTH_KEY, label=LABEL_CABLES_TOTAL_LENGTH, required=False),
+            InputColumnModel(key=CABLE_DESIGN_END1_LENGTH_KEY, label=LABEL_CABLES_END1_LENGTH, required=False),
+            InputColumnModel(key=CABLE_DESIGN_END2_LENGTH_KEY, label=LABEL_CABLES_END2_LENGTH, required=False),
+            InputColumnModel(key=CABLE_DESIGN_CABLE_DESCRIPTION_KEY, label=LABEL_CABLES_CABLE_DESCRIPTION, required=False),
         ]
         return column_list
 
@@ -2702,7 +2738,11 @@ class CablesSheetHelper(InputSheetHelper):
     def blank_row_columns_allowed_dict(cls):
         return {CABLE_DESIGN_NAME_KEY: "[] | []",
                 CABLE_DESIGN_IMPORT_ID_KEY: None,
-                CABLE_DESIGN_NOTES_KEY: None}
+                #nda
+                CABLE_DESIGN_TOTAL_LENGTH_KEY: None,
+                CABLE_DESIGN_END1_LENGTH_KEY: None,
+                CABLE_DESIGN_END2_LENGTH_KEY: None,
+                CABLE_DESIGN_CABLE_DESCRIPTION_KEY:None}
 
     def handle_valid_row(self, input_dict):
 
