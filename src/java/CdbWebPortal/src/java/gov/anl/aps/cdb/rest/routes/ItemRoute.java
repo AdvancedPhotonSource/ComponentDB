@@ -153,6 +153,17 @@ public class ItemRoute extends ItemBaseRoute {
     public ItemHierarchy getItemHierarchyByIdDeprecated(@PathParam("id") int id) throws ObjectNotFound {
         return getItemHierarchyById(id);
     }
+    
+    @GET
+    @Path("/ById/{itemId}/ItemElementCount")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Fetch count of item elements for item id.")
+    public Integer getItemElementCount(@PathParam("itemId") int id) throws ObjectNotFound {
+        Item itemByIdBase = getItemByIdBase(id);       
+        List<ItemElement> itemElementDisplayList = itemByIdBase.getItemElementDisplayList();
+        
+        return itemElementDisplayList.size(); 
+    }
 
     @POST
     @Path("/UpdateParentItem/{elementId}/{parentItemId}")
