@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -78,6 +79,14 @@ public class DomainRoute extends BaseRoute {
     public List<ItemType> getDomainTypeList(@PathParam("id") int id) {
         Domain domainById = getDomainById(id);
         return domainById.getItemTypeList();
+    }
+    
+    @GET
+    @Path("/ById/{id}/EntityTypes")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<EntityType> getEntityType(@PathParam("id") int id) {
+        Domain domainById = getDomainById(id);
+        return domainById.getAllowedEntityTypeList();
     }
     
     @GET

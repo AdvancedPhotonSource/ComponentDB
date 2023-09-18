@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import java.io.Serializable;
 import java.util.List;
@@ -181,6 +182,7 @@ public class Domain extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<EntityType> getAllowedEntityTypeList() {
         return allowedEntityTypeList;
     }
