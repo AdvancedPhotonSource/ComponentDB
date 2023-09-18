@@ -16,7 +16,11 @@ from setuptools import setup
 from setuptools import find_packages
 
 setup(name='ComponentDB-API',
+<<<<<<< Updated upstream
       version='3.15.7',
+=======
+      version='3.15.7.dev0',
+>>>>>>> Stashed changes
       packages=["cdbApi",
                 "cdbApi.api",
                 "cdbApi.models"],

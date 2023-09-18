@@ -6,7 +6,7 @@ import base64
 import os
 
 from cdbApi import ApiException, DomainApi, FileUploadObject, LocationItemsApi, LogApi, PropertyValueApi, \
-	ComponentCatalogItemsApi, ComponentInventoryItemsApi, ApiExceptionMessage, CableImportApi, AppItemsApi
+	ComponentCatalogItemsApi, ComponentInventoryItemsApi, ApiExceptionMessage, CableImportApi, AppItemsApi, MAARCItemsApi
 from cdbApi.api.item_api import ItemApi
 from cdbApi.api.downloads_api import DownloadsApi
 from cdbApi.api.property_type_api import PropertyTypeApi
@@ -51,6 +51,7 @@ class CdbApiFactory:
 		self.cableCatalogItemApi = CableCatalogItemsApi(api_client=self.apiClient)
 		self.cableDesignItemApi = CableDesignItemsApi(api_client=self.apiClient)
 		self.machineDesignItemApi = MachineDesignItemsApi(api_client=self.apiClient)
+		self.maarcItemApi = MAARCItemsApi(api_client=self.apiClient)
 		self.appItemApi = AppItemsApi(api_client=self.apiClient)
 		self.locationItemApi = LocationItemsApi(api_client=self.apiClient)
 		self.componentCatalogItemApi = ComponentCatalogItemsApi(api_client=self.apiClient)
@@ -93,6 +94,9 @@ class CdbApiFactory:
 
 	def getMachineDesignItemApi(self) -> MachineDesignItemsApi:
 		return self.machineDesignItemApi
+	
+	def getMAARCItemApi(self) -> MAARCItemsApi:
+		return self.maarcItemApi
 	
 	def getAppItemApi(self) -> AppItemsApi:
 		return self.appItemApi
