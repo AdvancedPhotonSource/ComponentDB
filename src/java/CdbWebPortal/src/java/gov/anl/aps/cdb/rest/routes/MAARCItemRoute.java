@@ -85,10 +85,20 @@ public class MAARCItemRoute extends ItemBaseRoute {
             
             if (parentElementName != null) {
                 createItemElement.setName(parentElementName);
+            } else {
+                parentElementName = createItemElement.getName(); 
             }
             createItemElement.setContainedItem(newItem);            
             
-            utility.update(parentItem, requestUser);             
+            parentItem = utility.update(parentItem, requestUser);
+            List<ItemElement> elements = parentItem.getItemElementDisplayList();
+            for (ItemElement element : elements) {
+                if (element.getName().equals(parentElementName)) {
+                    newItem = (ItemDomainMAARC) element.getContainedItem(); 
+                }
+            }
+                    
+                    
         } else {
             utility.create(newItem, requestUser);
         }
