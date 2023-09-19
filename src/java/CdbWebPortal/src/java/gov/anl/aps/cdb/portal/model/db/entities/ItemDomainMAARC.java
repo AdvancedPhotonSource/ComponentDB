@@ -28,6 +28,12 @@ public class ItemDomainMAARC extends Item {
     public Item createInstance() {
         return new ItemDomainMAARC(); 
     }
+    
+    // OpenAPI generates incorrect entity definition without any fields within the class. 
+    // Remove this after adding any maarc specific field to this class.
+    public Integer getPlaceholderValue() {
+        return null; 
+    }
 
     @Override
     public ItemDomainMAARCControllerUtility getItemControllerUtility() {
