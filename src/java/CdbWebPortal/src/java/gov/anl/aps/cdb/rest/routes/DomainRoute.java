@@ -84,7 +84,7 @@ public class DomainRoute extends BaseRoute {
     @GET
     @Path("/ById/{id}/EntityTypes")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<EntityType> getEntityType(@PathParam("id") int id) {
+    public List<EntityType> getAllowedEntityTypeList(@PathParam("id") int id) {
         Domain domainById = getDomainById(id);
         return domainById.getAllowedEntityTypeList();
     }
