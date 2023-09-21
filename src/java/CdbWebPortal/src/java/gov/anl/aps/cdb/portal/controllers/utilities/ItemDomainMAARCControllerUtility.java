@@ -5,13 +5,20 @@
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMAARCFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMAARC;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -96,6 +103,59 @@ public class ItemDomainMAARCControllerUtility extends ItemControllerUtility<Item
         }
 
         return false;
+    }
+    
+    protected String getMAARCConnectionRelationshipName() {
+        return ItemElementRelationshipTypeNames.maarc.getValue();
+    }
+    
+    public ItemElementRelationship addMAARCConnectionRelationshipToItem(ItemDomainMAARC maarcItem, Item relatedMAARCItem) throws InvalidArgument {
+        if ((relatedMAARCItem instanceof ItemDomainInventory || relatedMAARCItem instanceof ItemDomainMachineDesign) == false) {
+            throw new InvalidArgument("Item related to MAARC item can only be of domain inventory or machine design."); 
+        }
+        
+        RelationshipType maarcConnectionRelationship
+                = relationshipTypeFacade.findByName(getMAARCConnectionRelationshipName());
+        
+        // Verify if already exists
+        List<ItemElementRelationship> ierList = maarcItem.getItemElementRelationshipList1();
+        for (ItemElementRelationship existingIER : ierList) {
+            RelationshipType relationshipType = existingIER.getRelationshipType();
+            
+            if (relationshipType.equals(maarcConnectionRelationship)) {
+                Item firstItem = existingIER.getFirstItem();
+                if (firstItem.equals(relatedMAARCItem)) {
+                    throw new InvalidArgument("MAARC Relationship already exists.");
+                }
+            }
+        }
+
+        // Create item element relationship between the template and the clone 
+        ItemElementRelationship itemElementRelationship = new ItemElementRelationship();
+        itemElementRelationship.setRelationshipType(maarcConnectionRelationship);
+        itemElementRelationship.setFirstItemElement(relatedMAARCItem.getSelfElement());
+        itemElementRelationship.setSecondItemElement(maarcItem.getSelfElement());
+
+        maarcItem.setItemElementRelationshipList1(new ArrayList<>());
+        maarcItem.getItemElementRelationshipList1().add(itemElementRelationship);
+        
+        return itemElementRelationship;
+    }
+    
+    public List<ItemElementRelationship> getMAARCRelationshipsForItem(ItemDomainMAARC item) {
+        List<ItemElementRelationship> maarcRelationships = new ArrayList<>();
+        List<ItemElementRelationship> itemElementRelationshipList1 = item.getItemElementRelationshipList1();
+        String relationshipName = getMAARCConnectionRelationshipName();
+        
+        maarcRelationships = new ArrayList<>();            
+       
+        for (ItemElementRelationship ier : itemElementRelationshipList1) {
+            if (ier.getRelationshipType().getName().equals(relationshipName)) {
+                maarcRelationships.add(ier);
+            }
+        }
+
+        return maarcRelationships;
     }
 
     @Override

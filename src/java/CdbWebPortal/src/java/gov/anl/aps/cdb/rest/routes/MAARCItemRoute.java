@@ -10,8 +10,10 @@ import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMAARCControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMAARCFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMAARC;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.entities.NewMAARCInformation;
@@ -93,10 +95,37 @@ public class MAARCItemRoute extends ItemBaseRoute {
             utility.saveNewItemElement(createItemElement, requestUser);                                        
         } else {
             utility.create(newItem, requestUser);
-        }
+        }                
 
         return newItem;
 
+    }
+    
+    @PUT
+    @Path("/createRelationship/{maarcID}/{relatedItemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Create maarc connection relationsip.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemElementRelationship createMAARCConnectionRelationship(@PathParam("maarcID") Integer maarcId, @PathParam("relatedItemId") Integer relatedItemId) throws ObjectNotFound, InvalidArgument, CdbException {               
+        ItemDomainMAARC maarcItem = (ItemDomainMAARC) this.getItemByIdBase(maarcId);
+        Item relatedItem = this.getItemByIdBase(relatedItemId);
+                
+        UserInfo requestUser = getCurrentRequestUserInfo();
+        ItemDomainMAARCControllerUtility utility = new ItemDomainMAARCControllerUtility();
+        utility.addMAARCConnectionRelationshipToItem(maarcItem, relatedItem); 
+        
+        ItemDomainMAARC updatedMAARCItem = utility.update(maarcItem, requestUser); 
+                
+        List<ItemElementRelationship> maarcIERs = utility.getMAARCRelationshipsForItem(updatedMAARCItem);        
+        for (ItemElementRelationship maarcIER : maarcIERs) {
+            Item firstItem = maarcIER.getFirstItem();
+            if (relatedItem.equals(firstItem)) {
+                return maarcIER; 
+            }
+        }
+        
+        return null; 
     }
 
 }

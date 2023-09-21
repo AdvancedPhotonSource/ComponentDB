@@ -38,7 +38,6 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.DataModel;
 import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -202,15 +201,9 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
         ItemDomainMAARC current = getCurrent();
         List<ItemElementRelationship> relatedRelationshipsForCurrent = current.getRelatedRelationshipsForCurrent();
         if (relatedRelationshipsForCurrent == null) {
-            List<ItemElementRelationship> itemElementRelationshipList1 = getCurrent().getSelfElement().getItemElementRelationshipList1();
-            relatedRelationshipsForCurrent = new ArrayList<>();
-            current.setRelatedRelationshipsForCurrent(relatedRelationshipsForCurrent);
-
-            for (ItemElementRelationship ier : itemElementRelationshipList1) {
-                if (ier.getRelationshipType().getName().equals(MAARC_CONNECTION_RELATIONSHIP_TYPE_NAME)) {
-                    relatedRelationshipsForCurrent.add(ier);
-                }
-            }
+            ItemDomainMAARCControllerUtility utility = getControllerUtility();
+            relatedRelationshipsForCurrent = utility.getMAARCRelationshipsForItem(current); 
+            current.setRelatedRelationshipsForCurrent(relatedRelationshipsForCurrent);           
         }
 
         return relatedRelationshipsForCurrent;
