@@ -1,5 +1,4 @@
 LOCK TABLES `user_setting` WRITE;
-SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `user_setting` DISABLE KEYS */;
 INSERT INTO `user_setting` VALUES
 (240,2,1,'true'),

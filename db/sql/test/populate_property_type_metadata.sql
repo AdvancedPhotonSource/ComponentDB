@@ -1,5 +1,4 @@
 LOCK TABLES `property_type_metadata` WRITE;
-SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `property_type_metadata` DISABLE KEYS */;
 INSERT INTO `property_type_metadata` VALUES
 (1,9,'heatLimit','Heat limit rating.'),

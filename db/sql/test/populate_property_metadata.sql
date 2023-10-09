@@ -1,5 +1,4 @@
 LOCK TABLES `property_metadata` WRITE;
-SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `property_metadata` DISABLE KEYS */;
 INSERT INTO `property_metadata` VALUES
 (1,1,'url',''),

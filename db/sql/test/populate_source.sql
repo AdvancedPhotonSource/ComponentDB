@@ -1,5 +1,4 @@
 LOCK TABLES `source` WRITE;
-SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `source` DISABLE KEYS */;
 INSERT INTO `source` VALUES
 (1,'Testing Store','','','');

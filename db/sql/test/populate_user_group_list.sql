@@ -1,5 +1,4 @@
 LOCK TABLES `user_group_list` WRITE;
-SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `user_group_list` DISABLE KEYS */;
 /*!40000 ALTER TABLE `user_group_list` ENABLE KEYS */;
 UNLOCK TABLES;

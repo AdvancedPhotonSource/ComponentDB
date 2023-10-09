@@ -1,5 +1,4 @@
 LOCK TABLES `setting_type` WRITE;
-SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `setting_type` DISABLE KEYS */;
 INSERT INTO `setting_type` VALUES
 (1,'DomainEntity.Detail.Display.GalleryViewableDocuments','Display viewable documents in the gallery.','true'),

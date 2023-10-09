@@ -1,5 +1,4 @@
 LOCK TABLES `item_project` WRITE;
-SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `item_project` DISABLE KEYS */;
 INSERT INTO `item_project` VALUES
 (1,'APS-U Other',NULL),

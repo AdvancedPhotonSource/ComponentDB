@@ -1,5 +1,4 @@
 LOCK TABLES `property_type` WRITE;
-SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `property_type` DISABLE KEYS */;
 INSERT INTO `property_type` VALUES
 (1,'Image',NULL,NULL,1,2,NULL,NULL,0,0,0,1,1),

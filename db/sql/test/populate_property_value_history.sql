@@ -1,5 +1,4 @@
 LOCK TABLES `property_value_history` WRITE;
-SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `property_value_history` DISABLE KEYS */;
 INSERT INTO `property_value_history` VALUES
 (1,24,NULL,'Test Val',NULL,NULL,'2021-02-04 13:48:41',1,'2021-02-04 13:48:41',NULL,NULL,NULL),

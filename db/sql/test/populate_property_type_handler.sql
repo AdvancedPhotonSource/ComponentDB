@@ -1,5 +1,4 @@
 LOCK TABLES `property_type_handler` WRITE;
-SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `property_type_handler` DISABLE KEYS */;
 INSERT INTO `property_type_handler` VALUES
 (1,'Document','Generic document handler.'),

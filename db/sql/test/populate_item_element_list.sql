@@ -1,5 +1,4 @@
 LOCK TABLES `item_element_list` WRITE;
-SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `item_element_list` DISABLE KEYS */;
 /*!40000 ALTER TABLE `item_element_list` ENABLE KEYS */;
 UNLOCK TABLES;

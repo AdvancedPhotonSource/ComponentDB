@@ -1,5 +1,4 @@
 LOCK TABLES `item_element_relationship_history` WRITE;
-SET SESSION FOREIGN_KEY_CHECKS=0;
 /*!40000 ALTER TABLE `item_element_relationship_history` DISABLE KEYS */;
 INSERT INTO `item_element_relationship_history` VALUES
 (1,1,41,NULL,NULL,139,NULL,NULL,NULL,NULL,'',NULL,NULL,NULL,'2021-02-01 14:41:03',1),
