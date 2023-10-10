@@ -22,6 +22,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -804,6 +805,38 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         }
 
         return availableElementsForNodeRepresentation;
+    }
+    
+    public void unassignMachineTemplate(List<ItemElement> machineElementList, UserInfo updateUser) throws CdbException {
+        List<ItemElementRelationship> relationshipsToDestroy = new ArrayList<>();        
+        List<ItemDomainMachineDesign> machinesToUpdate = new ArrayList<>();
+        ItemElementRelationshipControllerUtility ieru = new ItemElementRelationshipControllerUtility();
+        
+        for (ItemElement element : machineElementList) {
+            boolean updateItem = false; 
+            if (element.getDerivedFromItemElement() != null) {
+                element.setDerivedFromItemElement(null);
+                updateItem = true; 
+            }
+            ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) element.getContainedItem();
+            ItemElementRelationship templateRelationship = containedItem.getCreatedFromTemplateRelationship();
+            if (templateRelationship != null) { 
+                updateItem = true; 
+                relationshipsToDestroy.add(templateRelationship);
+                List<ItemElement> childElements = containedItem.getItemElementDisplayList();
+
+                for (ItemElement derivedElement : childElements) {
+                    derivedElement.setDerivedFromItemElement(null);                
+                }
+            }
+            if (updateItem) {
+                machinesToUpdate.add(containedItem);         
+            }
+        }
+        
+        
+        updateList(machinesToUpdate, updateUser);
+        ieru.destroyList(relationshipsToDestroy, null, updateUser);
     }
 
 }

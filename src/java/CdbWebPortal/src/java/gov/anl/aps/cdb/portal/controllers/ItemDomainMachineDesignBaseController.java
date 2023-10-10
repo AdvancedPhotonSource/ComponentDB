@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbRole;
-import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
@@ -65,8 +64,6 @@ import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizardClient;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementControllerUtility;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementRelationshipControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidWarningInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.WarningInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
@@ -75,7 +72,6 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainApp;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import java.io.IOException;
-import java.util.logging.Level;
 
 /**
  *
@@ -329,45 +325,29 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         generateUnassignTree(child);
     }
 
-    public void unassignMachineTemplateForSelection() {        
-        List<ItemElementRelationship> relationshipsToDestroy = new ArrayList<>();
-        List<ItemElement> elementsToUpdate = new ArrayList<>();
-        List<ItemDomainMachineDesign> machinesToUpdate = new ArrayList<>();
+    public void unassignMachineTemplateForSelection() {                
         UserInfo user = SessionUtility.getUser();
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
+        List<ItemElement> machineElements = new ArrayList<>(); 
         boolean proceedWithUpdate = true;
 
         for (TreeNode selectedNode : selectedUnassignTemplateNodes) {
             ItemElement element = (ItemElement) selectedNode.getData();
-
-            ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) element.getContainedItem();
-            ItemElementRelationship templateRelationship = containedItem.getCreatedFromTemplateRelationship();
-            relationshipsToDestroy.add(templateRelationship);
-
-            List<ItemElement> childElements = containedItem.getItemElementDisplayList();
-
-            for (ItemElement derivedElement : childElements) {
-                derivedElement.setDerivedFromItemElement(null);
-                elementsToUpdate.add(element);
-            }
+            ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) element.getContainedItem();            
+            
             if (sessionRole != CdbRole.ADMIN) { 
                 if (!AuthorizationUtility.isEntityWriteableByUser(containedItem, user)) {
                     proceedWithUpdate = false;
                     SessionUtility.addErrorMessage("Error", "Cannot proceed with update. User does not have permission to item %s " + containedItem.toString());
-                    break;
-                }                
-            }
-            machinesToUpdate.add(containedItem);
-            elementsToUpdate.add(element);
+                    break; 
+                }
+            }    
+            machineElements.add(element); 
         }
-
+                
         if (proceedWithUpdate) {
-            ItemElementRelationshipControllerUtility ieru = new ItemElementRelationshipControllerUtility();
-            ItemElementControllerUtility ieu = new ItemElementControllerUtility();
-
             try {
-                updateList(machinesToUpdate);
-                ieru.destroyList(relationshipsToDestroy, null, user);
+                getControllerUtility().unassignMachineTemplate(machineElements, user);                
             } catch (CdbException ex) {
                 SessionUtility.addErrorMessage("Error", "Could not delete item relationships: " + ex.getMessage());
             }
