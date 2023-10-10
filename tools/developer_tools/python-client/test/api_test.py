@@ -45,6 +45,7 @@ class MyTestCase(unittest.TestCase):
     MD_CONTROL_NAME = "ioctest"
     MD_CONTROL_INTERFACE_TO_PARENT = "Direct Connection"
     MD_CONTROL_EXPECTED_PARENT_ID = 109
+    MD_CREATED_FROM_TEMPLATE_ID = 118
     TEST_PROPERTY_TYPE_NAME = "Test Property"
     CONTROL_INTERFACE_PROPERTY_TYPE_ID = "14"
     LOCATION_QRID_TESTUSER_PERMISSIONS = 101111101
@@ -863,6 +864,20 @@ class MyTestCase(unittest.TestCase):
         connection = result[0]
         self.assertEqual(connection.connected_items[0].id, self.MACHINE_DESIGN_CHILD_ID) 
         self.assertEqual(connection.connected_cables[0].id, self.CABLE_DESIGN_ITEM_ID)  
+
+    def test_unassign_template_from_machine(self):
+        template = self.itemApi.get_created_from_template(self.MD_CREATED_FROM_TEMPLATE_ID)
+        self.assertNotEqual(template, None, msg="Template not assigned to machine create from template.")
+
+        self.loginAsAdmin()                
+        self.machineDesignApi.unassign_template_from_machine_element(self.MD_CREATED_FROM_TEMPLATE_ID)
+
+
+        try:
+            template = self.itemApi.get_created_from_template(self.MD_CREATED_FROM_TEMPLATE_ID)
+        except OpenApiException:
+            template = None 
+        self.assertEqual(template, None, msg="Template was not unassigned sucessfully.")
 
     def test_get_inventory_located_here(self):
         results: list[ItemDomainInventoryBase] = self.locationApi.get_inventory_located_here(self.LOCATION_WITH_INVENTORY_ID)

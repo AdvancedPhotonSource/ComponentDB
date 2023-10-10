@@ -112,6 +112,11 @@ INSERT INTO `item` VALUES
 (110,9,'Test Cable Design',NULL,'','',NULL),
 (111,6,'Test Machine 2',NULL,NULL,NULL,NULL),
 (112,6,'TEST:E1',NULL,'','',NULL),
-(113,10,'Test API',NULL,'','',NULL);
+(113,10,'Test API',NULL,'','',NULL),
+(114,6,'Template_Test {nn}',NULL,NULL,NULL,NULL),
+(115,6,'child {nn}',NULL,'','',NULL),
+(116,6,'Template Holder',NULL,NULL,NULL,NULL),
+(117,6,'child 01',NULL,'','c8696da153c4451585945ac16e4792a2',NULL),
+(118,6,'Template_Test 01',NULL,NULL,'c9c62b55c1244095851ad74a3d38142b',NULL);
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;
