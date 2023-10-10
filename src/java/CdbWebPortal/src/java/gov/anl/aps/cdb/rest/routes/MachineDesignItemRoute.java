@@ -87,7 +87,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         LOGGER.debug("Fetching item with id: " + id);
         ItemDomainMachineDesign item = facade.find(id);
         if (item == null) {
-            ObjectNotFound ex = new ObjectNotFound("Could not find item with id: " + id);
+            ObjectNotFound ex = new ObjectNotFound("Could not find item with id: " + id + ". Ensure that it is a machine item id.");
             LOGGER.error(ex);
             throw ex;
         }
@@ -226,7 +226,31 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         machine = machineUtility.update(machine, updateUser); 
         
         return machine;                 
-    }    
+    }  
+    
+    
+    @POST
+    @Path("/unassignTemplateFromMachineElement/{machineId}")
+    @Produces(MediaType.APPLICATION_JSON)    
+    @Operation(summary = "Unassign template from a machine element.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemDomainMachineDesign unassignTemplateFromMachineElement(@PathParam("machineId") int machineId) throws InvalidArgument, ObjectNotFound, CdbException {
+        ItemDomainMachineDesign machineItem = getMachineDesignItemById(machineId);
+                        
+        UserInfo updateUser = verifyCurrentUserPermissionForItem(machineItem);
+        
+        ItemDomainMachineDesignControllerUtility machineUtility = new ItemDomainMachineDesignControllerUtility(); 
+        ItemElement machineElement = machineItem.getParentMachineElement();  
+        
+        List<ItemElement> itemElementList = new ArrayList<>(); 
+        itemElementList.add(machineElement);
+        
+        machineUtility.unassignMachineTemplate(itemElementList, updateUser);
+        
+        machineItem = getMachineDesignItemById(machineId);
+        return machineItem; 
+    }
     
     @POST
     @Path("/UpdateAssignedItem")

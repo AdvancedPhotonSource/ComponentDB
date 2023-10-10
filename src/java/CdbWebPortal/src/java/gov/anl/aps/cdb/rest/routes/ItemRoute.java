@@ -961,6 +961,21 @@ public class ItemRoute extends ItemBaseRoute {
         Item itemById = getItemByIdBase(itemId);
         return itemById.getLogList();
     }
+    
+    @GET
+    @Path("/ById/{itemid}/CreatedFromTemplate")
+    @Produces(MediaType.APPLICATION_JSON)    
+    @Operation(summary = "Get created from template for item id.")
+    public Item getCreatedFromTemplate(@PathParam("itemid") int itemId) throws ObjectNotFound {
+        Item itemById = getItemById(itemId);
+        Item createdFromTemplate = itemById.getCreatedFromTemplate();
+        
+        if (createdFromTemplate == null) {
+            throw new ObjectNotFound("Item " + itemById.toString() + " does not have a template association.");
+        }
+        
+        return createdFromTemplate;
+    }
 
     @GET
     @Path("/ById/{itemId}/ImageProperties")
