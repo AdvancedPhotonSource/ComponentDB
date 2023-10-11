@@ -1565,3 +1565,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
     position: sticky;
     top: 0;
 }
+
+body .ui-inplace .ui-inplace-display {
+    padding: 0;
+}
