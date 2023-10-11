@@ -41,7 +41,7 @@ See LICENSE file.
                       styleClass="#{representedElement != null ? 'grayedText' : ''}"
                       value="#{installedQrIdDisplayValue} #{installedQrIdPlannedText}" />
         <p:tooltip for="#{entityTypeName}installedQrId#{viewId}" rendered="#{representedElement != null}" 
-                   value="Represented by part name: #{representedElement.name}" /> 
+                   value="Represented by part name: #{representedElement.relevantItemElementName}" /> 
     </p:column>
 
 </ui:composition>

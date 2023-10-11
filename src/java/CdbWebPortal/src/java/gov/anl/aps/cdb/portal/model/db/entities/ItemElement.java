@@ -264,15 +264,26 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
-
-    public Float getRelevantItemElementSortOrder() {
+    
+    private ItemElement getRelevantMetadataElement() {
         if (derivedFromItemElement != null && parentItem != null) {
             String inventoryDomain = ItemDomainName.inventory.getValue();
             if (parentItem.getDomain().getName().equals(inventoryDomain)) {
-                return derivedFromItemElement.getSortOrder();
+                return derivedFromItemElement;
             }
         }
-        return getSortOrder();
+        return this;
+    }
+
+    public Float getRelevantItemElementSortOrder() {
+        ItemElement relevantElement = getRelevantMetadataElement();
+        return relevantElement.getSortOrder(); 
+        
+    }
+    
+    public String getRelevantItemElementName() {
+        ItemElement relevantElement = getRelevantMetadataElement();
+        return relevantElement.getName(); 
     }
 
     public Object getCustomizableSortOrder() {
