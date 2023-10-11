@@ -1038,7 +1038,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         SessionUtility.executeRemoteCommand(onSuccess);
     }
     
-    public String updateInstalledQrId(String failRemoteCommand) {                
+    public String updateInstalledQrId(String failRemoteCommand) {
         ItemDomainMachineDesign current = getCurrent();
         String qrIdForAssignedItem = current.getQrIdForAssignedItem();                
         
@@ -1118,7 +1118,25 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         }                
         
         displayUpdateInstalledItemQridDialogContents = false;     
+        
+        if (isCurrentViewIdView()) {
+            return viewForCurrentEntity(); 
+        }
+        if (isCurrentViewIdListView()) {
+            return listViewForCurrentEntity(); 
+        }
+        
         return listForCurrentEntity();
+    }
+    
+    private boolean isCurrentViewIdView() {        
+        String currentViewId = SessionUtility.getCurrentViewId();        
+        return currentViewId.contains("/view.xhtml");        
+    }
+    
+    private boolean isCurrentViewIdListView() {        
+        String currentViewId = SessionUtility.getCurrentViewId();        
+        return currentViewId.contains("/listView.xhtml");        
     }
 
     public void prepareAssignInventoryMachineDesignListConfiguration() {

@@ -7,7 +7,8 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                template="../../../item/private/templates/itemViewPanelGridTemplate.xhtml">
+                template="../../../item/private/templates/itemViewPanelGridTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="locationObjectSrc"
               value="#{entityController.currentViewIsTemplate 
@@ -26,9 +27,12 @@ See LICENSE file.
                        value="Installed QR Id"
                        rendered="#{!entityController.currentViewIsTemplate}"
                        styleClass="entityDataEmphasizedLabel"/>
-        <h:outputText value="#{itemObject.assignedItem.qrIdDisplay}" 
-                      title="QR Id" styleClass="entityDataEmphasizedText" 
-                      rendered="#{!entityController.currentViewIsTemplate}" />
+        <p:column>
+            <ui:include src="../templateDefaults/common/itemInstalledQrIdField.xhtml">
+                <ui:param name="machineDesignObject"
+                      value="#{itemObject}"/> 
+            </ui:include>
+        </p:column>                
     </ui:define>
 
     <ui:define name="additionalItemInformation">

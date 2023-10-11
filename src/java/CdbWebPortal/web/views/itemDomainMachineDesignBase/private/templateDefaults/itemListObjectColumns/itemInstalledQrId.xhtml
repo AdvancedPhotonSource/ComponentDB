@@ -6,42 +6,22 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                xmlns:p="http://primefaces.org/ui">
     
-    <ui:param name="mdTreeListObject"
-              value="#{itemElementListObject.mdTypeContainedItem}"/> 
     
-    <ui:param name="assignedItem"
-              value="#{mdTreeListObject != null ? mdTreeListObject.assignedItem : itemListObject}"/> 
-    
-    <ui:param name="representedElement"
-              value="#{mdTreeListObject != null ? mdTreeListObject.assignedRepresentedElement : null}"/> 
 
     <p:column id="#{entityTypeName}installedQrIdColumn#{viewId}" 
               sortBy="#{assignedItem.qrId}" headerText="Installed QrId"
               filterBy="#{assignedItem.qrIdFilter}" filterMatchMode="contains"                          
               filterable="#{filterable}"
               sortable="#{sortable}"
-              rendered="#{rendered}" >
-        <ui:param name="installedQrIdDisplayValue"
-                  value="#{assignedItem.qrIdDisplay}" />
-        <ui:param name="installedQrIdPlannedText" 
-                  value="#{mdTreeListObject != null and not mdTreeListObject.isHoused ? '(Planned)' : ''}" /> 
+              rendered="#{rendered}">        
         
-        <p:commandLink id="#{entityTypeName}updateQrId" styleClass="fa fa-link-icon fa-qrcode"                       
-                       rendered="#{representedElement == null and loginController.loggedIn}"
-                       action="#{entityController.preapreUpdateInstalledQrId(mdTreeListObject, 'PF(\'itemDomainMachineDesignUpdateInstalledQrIdDialogWidget\').show()')}"
-                       update="@form:itemDomainMachineDesignUpdateInstalledQrIdDialog">
-            <p:tooltip for="#{entityTypeName}updateQrId" value="Update installed item qrid" />
-        </p:commandLink>
-                
-                                
-        <h:outputText id="#{entityTypeName}installedQrId#{viewId}" 
-                      styleClass="#{representedElement != null ? 'grayedText' : ''}"
-                      value="#{installedQrIdDisplayValue} #{installedQrIdPlannedText}" />
-        <p:tooltip for="#{entityTypeName}installedQrId#{viewId}" rendered="#{representedElement != null}" 
-                   value="Represented by part name: #{representedElement.relevantItemElementName}" /> 
+        <ui:include src="../common/itemInstalledQrIdField.xhtml" > 
+            <ui:param name="machineDesignObject"
+                      value="#{itemElementListObject.mdTypeContainedItem}"/> 
+        </ui:include>
+        
     </p:column>
 
 </ui:composition>
