@@ -6,6 +6,8 @@ INSERT INTO `log` VALUES
 (3,'User: cdb | Created: Template_Test {nn} [Item Id: 114]','2023-10-09 10:24:04',1,NULL,NULL,NULL),
 (4,'User: cdb | Updated: Template_Test {nn} [Item Id: 114]','2023-10-09 10:24:25',1,NULL,NULL,NULL),
 (5,'User: cdb | Created: Template Holder [Item Id: 116]','2023-10-09 10:24:50',1,NULL,NULL,NULL),
-(6,'User: cdb | Updated: Template Holder [Item Id: 116]','2023-10-09 10:25:54',1,NULL,NULL,NULL);
+(6,'User: cdb | Updated: Template Holder [Item Id: 116]','2023-10-09 10:25:54',1,NULL,NULL,NULL),
+(7,'Authentication Succeeded: cdb','2023-10-12 13:08:58',1,NULL,NULL,NULL),
+(8,'User: cdb | Created: TEST MAARC [Item Id: 119]','2023-10-12 13:09:09',1,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;
