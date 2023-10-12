@@ -118,19 +118,19 @@ See LICENSE file.
                         rendered="#{resources.EnabledMAARCDomainFunctionality}"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMAARC/') ? 'activeMenuItem' : ''} "/>
 
-
             <f:facet name="options">
                 <p:menubar styleClass="menuBarSupportingItems"> 
                     <p:menuitem styleClass="noButtonMenuItem"
                                 id="qridMenuItem">
-                        <p:inputText id="jumpToQrIdInput" placeholder="QrId"
-                                     autocomplete="off"
-                                     styleClass="expandingInputText entityDataText menuBarInputText"
+                        <p:autoComplete id="jumpToQrIdInput" placeholder="QrId/ID"       
+                                        styleClass="expandingAutoComplete menuBarAutoComplete"
                                      onkeypress="if ((event.which &lt; 48 || event.which &gt; 57) &amp;&amp; event.which != 32) return false;"
-                                     value="#{facesUtility.jumpToQrIdEntry}" 
-                                     title="Jump to QRID"/>                        
-                        <p:defaultCommand target="jumpToQrIdInputCommand"
-                                          scope="qridMenuItem"/>
+                                     completeMethod="#{facesUtility.getJumpToQrIdEntryCompleteText}"                                     
+                                     value="#{facesUtility.jumpToQrIdEntry}"                                                                           
+                                     title="Jump to QRID">
+                            <p:ajax event="itemSelect" onstart="$('#jumpToQrIdInputCommand').click();" />
+                        </p:autoComplete>
+                        
                         <p:commandButton id="jumpToQrIdInputCommand"
                                          action="#{facesUtility.jumpToItemQrId('jumpToQrIdFailed()')}"
                                          value="Go"

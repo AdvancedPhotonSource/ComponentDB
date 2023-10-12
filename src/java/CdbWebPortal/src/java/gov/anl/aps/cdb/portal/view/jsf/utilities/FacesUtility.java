@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.view.jsf.utilities;
 import gov.anl.aps.cdb.common.constants.CdbProperty;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -161,19 +162,9 @@ public class FacesUtility {
 
     public String jumpToItemQrId(String failRemoteCommand) {
         // Remove any spaces 
-        jumpToQrIdEntry = jumpToQrIdEntry.replace(" ", "");
+        jumpToQrIdEntry = jumpToQrIdEntry.replace(" ", "");       
 
-        Integer qrIdNum = null;
-
-        try {
-            qrIdNum = Integer.parseInt(jumpToQrIdEntry);
-        } catch (NumberFormatException ex) {
-            SessionUtility.addErrorMessage("Error parsing qrid", ex.getMessage());
-            SessionUtility.executeRemoteCommand(failRemoteCommand); 
-            return null;
-        }
-
-        return "/views/item/view?qrId=" + qrIdNum + "&faces-redirect=true";
+        return "/views/item/view?" + jumpToQrIdEntry + "&faces-redirect=true";
     }
 
     public String getJumpToQrIdEntry() {
@@ -182,6 +173,15 @@ public class FacesUtility {
 
     public void setJumpToQrIdEntry(String jumpToQrIdEntry) {
         this.jumpToQrIdEntry = jumpToQrIdEntry;
+    }
+    
+    public List<String> getJumpToQrIdEntryCompleteText(String query) {
+        List<String> results = new ArrayList<>();
+        
+        results.add("qrId=" + query); 
+        results.add("id=" + query);
+         
+        return results;
     }
 
     @FacesConverter("genericSelectOneMenuObjectConverter")

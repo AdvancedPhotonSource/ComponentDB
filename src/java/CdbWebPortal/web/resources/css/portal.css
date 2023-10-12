@@ -469,10 +469,6 @@ tr:hover .actionLink {
     width: 284px;	
 }
 
-.ui-autocomplete .ui-inputfield {
-    width: 268px;
-}
-
 .loginInput input {
     width: 200px;
 }
@@ -1381,18 +1377,21 @@ body .ui-panel .ui-panel-titlebar  {
     padding: 0px;
 }
 
-.expandingInputText.ui-state-focus {
+.expandingInputText.ui-state-focus,
+.expandingAutoComplete.ui-inputwrapper-focus  > input {
     width: 250px;
     height: 30px;
 }
 
-.expandingInputText {
+.expandingInputText,
+.expandingAutoComplete > input {
     width: 60px;
     transition-duration: 0.5s !important;
     transition-property: width, height !important;     
 }
 
-.menuBarInputText {
+.menuBarInputText,
+.menuBarAutoComplete > input{
     height: 20px;
 }
 
