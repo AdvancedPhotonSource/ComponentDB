@@ -63,6 +63,21 @@ public class MAARCItemRoute extends ItemBaseRoute {
         }
         return itemList.get(0);
     }
+    
+    @GET
+    @Path("/ById/{id}")
+    @Operation(summary = "Fetches a single maarc item by id.")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ItemDomainMAARC getMAARCItemById(@PathParam("id") int id) throws ObjectNotFound {
+        LOGGER.debug("Fetching maarc item with id: " + id);
+        ItemDomainMAARC item = facade.find(id);
+        if (item == null) {
+            ObjectNotFound ex = new ObjectNotFound("Could not find maarc item with id: " + id);
+            LOGGER.error(ex);
+            throw ex; 
+        }
+        return item;
+    }
 
     @PUT
     @Path("/create")
@@ -126,6 +141,20 @@ public class MAARCItemRoute extends ItemBaseRoute {
         }
         
         return null; 
+    }
+    
+    @GET
+    @Path("/getMaarcRelationshipList/{maarcID}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get a list of maarc connection relationsip.")    
+    public List<ItemElementRelationship> getMAARCConnectionRelationshipList(@PathParam("maarcID") int maarcItemId) throws ObjectNotFound {
+        ItemDomainMAARC maarcItem = getMAARCItemById(maarcItemId); 
+        
+        ItemDomainMAARCControllerUtility utility = new ItemDomainMAARCControllerUtility();
+        List<ItemElementRelationship> relatedRelationshipsForCurrent; 
+        relatedRelationshipsForCurrent = utility.getMAARCRelationshipsForItem(maarcItem); 
+        
+        return relatedRelationshipsForCurrent; 
     }
 
 }
