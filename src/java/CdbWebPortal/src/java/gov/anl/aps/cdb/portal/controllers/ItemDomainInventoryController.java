@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.DataModel;
 import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -239,6 +238,11 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     @Override
     public boolean getEntityDisplayItemMemberships() {
         return true;
+    } 
+
+    @Override
+    public Boolean getDisplayMembershipByData() {
+        return true; 
     }
 
     @Override
@@ -260,11 +264,11 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     protected ItemDomainInventory performItemRedirection(ItemDomainInventory item, String paramString, boolean forceRedirection) {
         // Special redirect for qrid 
         if (paramString.contains("qrId")) {
-            List<ItemElement> memberList = item.getItemElementMemberList2();
-
-            if (memberList.size() == 1) {
-                ItemElement memberElement = memberList.get(0); 
-                Item parentItem = memberElement.getParentItem();
+            
+            ItemDomainInventoryControllerUtility utility = getControllerUtility();
+            List<Item> parentItemList = utility.getParentItemList(item);
+            
+            for (Item parentItem : parentItemList) {
                 if (parentItem instanceof ItemDomainMachineDesign) {               
                     String listForEntity = ItemDomainMachineDesignController.listForEntity((ItemDomainMachineDesign) parentItem); 
                     ItemDomainMachineDesignController mdc = ItemDomainMachineDesignController.getInstance();
@@ -274,6 +278,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
                     SessionUtility.navigateTo(domainPath + "/" + listForEntity);
                     return null;
                 }           
+                
             }
         }
         
