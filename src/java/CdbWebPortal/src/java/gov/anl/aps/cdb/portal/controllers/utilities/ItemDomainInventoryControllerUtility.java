@@ -6,7 +6,11 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,5 +61,54 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
     @Override
     public String getStatusPropertyTypeName() {
         return ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
-    }
+    }        
+
+    @Override
+    public List<Item> getParentItemList(ItemDomainInventory itemEntity) {
+        List<Item> parentItemList = itemEntity.getParentItemList();
+        List<Item> parentItems = super.getParentItemList(itemEntity);
+        if (parentItemList != null) {
+            return parentItems; 
+        }
+        
+        List<Item> additionalParents = new ArrayList<>(); 
+        
+        // First time executing. Process represented element references. 
+        for (Item parentItem : parentItems) {                        
+            if (parentItem instanceof ItemDomainInventory) {
+                ItemElement membershipItemElement = parentItem.getMembershipItemElement();
+                ItemElement catalogElement = membershipItemElement.getDerivedFromItemElement(); 
+                List<ItemElement> represntedItemElements = catalogElement.getRepresentsItemElementList();
+                if (represntedItemElements.isEmpty()) {
+                    // No representation set up for current element. 
+                    continue; 
+                }
+                List<ItemElement> machineMembers = parentItem.getItemElementMemberList2();
+                if (machineMembers.size() != 1) {
+                    continue; 
+                }
+                ItemElement machineItemElement = machineMembers.get(0);
+                Item machineItem = machineItemElement.getParentItem();
+                if (machineItem instanceof ItemDomainMachineDesign == false) {
+                    continue; 
+                }
+                
+                for (ItemElement repElement : represntedItemElements) {
+                    ItemDomainMachineDesign repParent = (ItemDomainMachineDesign) repElement.getParentItem();
+                    ItemDomainMachineDesign repCommonParent = repParent.getParentMachineDesign();
+                    
+                    if (repCommonParent.equals(machineItem)) {                        
+                        repParent.setMembershipByItem(parentItem);                        
+                        additionalParents.add(repParent); 
+                        break; 
+                    }
+                }
+            }            
+        }
+        
+        parentItems.addAll(additionalParents); 
+        
+        return parentItems; 
+     }
+
 }
