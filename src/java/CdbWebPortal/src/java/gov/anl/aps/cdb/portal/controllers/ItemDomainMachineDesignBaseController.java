@@ -3475,8 +3475,14 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         }
 
         if (parentMachineDesign != null) {
+            ItemElement representsCatalogElement = parentMachineDesign.getRepresentsCatalogElement();
+            if (representsCatalogElement != null) {
+                SessionUtility.addErrorMessage("Represented Parent", "Parent item is represented by another assembly part, cannot link another level of representation.");
+                return;
+            }
+            
             Item assignedItem = parentMachineDesign.getAssignedItem();
-
+                        
             if (assignedItem != null && assignedItem.getItemElementDisplayList().size() != 0) {
                 elementsAvaiableForNodeRepresentation = controllerUtility.fetchElementsAvaiableForNodeRepresentation(current);
             } else {
