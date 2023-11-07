@@ -22,27 +22,31 @@ See LICENSE file.
     
     <p:column sortBy="#{propertyValueObject.propertyType.name}" headerText="Type"
               filterBy="#{propertyValueObject.propertyType.name}"
+              filterMatchMode="contains"
               filterable="#{filterable}">
         <h:outputText value="#{propertyValueObject.propertyType.name}"/>
     </p:column>
     
     <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
               filterBy="#{propertyValueObject.tag}" 
+              filterMatchMode="contains"
               filterable="#{filterable}"
               rendered="#{propertyValueSettingObject.displayTag}">
         <h:outputText value="#{propertyValueObject.tag}"/>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.value}" headerText="Value"
-              filterBy="#{propertyValueObject.value}"
+              filterBy="#{propertyValueObject.filterValue}"
+              filterMatchMode="contains"
               filterable="#{filterable}"
               exportFunction="#{propertyValueObject.getValue()}">
-        <ui:include src="propertyValueListObjectValue.xhtml"/>
+        <ui:include src="propertyValueListObjectValue.xhtml"/>        
     </p:column>
     
      <p:column sortBy="#{propertyValueObject.description}" headerText="Description"
               filterBy="#{propertyValueObject.description}"
               filterable="#{filterable}"
+              filterMatchMode="contains"
               rendered="#{propertyValueSettingObject.displayDescription}">
         <h:outputText value="#{propertyValueObject.description}"/>
     </p:column>           
@@ -50,6 +54,7 @@ See LICENSE file.
     <p:column sortBy="#{propertyValueObject.propertyType.propertyTypeCategory.name}" headerText="Category" 
               filterBy="#{propertyValueObject.propertyType.propertyTypeCategory.name}"
               filterable="#{filterable}"
+              filterMatchMode="contains"
               rendered="#{propertyValueSettingObject.displayTypeCategory}">
         <h:outputText value="#{propertyValueObject.propertyType.propertyTypeCategory.name}"/>
     </p:column>   
@@ -57,6 +62,7 @@ See LICENSE file.
     <p:column sortBy="#{propertyValueObject.units}" headerText="Units"
               filterBy="#{propertyValueObject.units}"
               filterable="#{filterable}"
+              filterMatchMode="contains"
               rendered="#{propertyValueSettingObject.displayUnits}">
         <h:outputText value="#{propertyValueObject.units}"/>
     </p:column>
@@ -64,6 +70,7 @@ See LICENSE file.
     <p:column sortBy="#{propertyValueObject.enteredByUser.username}" headerText="Entered By"
               filterBy="#{propertyValueObject.enteredByUser.username}"
               filterable="#{filterable}"
+              filterMatchMode="contains"
               rendered="#{propertyValueSettingObject.displayEnteredByUser}">
         <h:outputText value="#{propertyValueObject.enteredByUser.username}"/>
     </p:column>
@@ -71,6 +78,7 @@ See LICENSE file.
     <p:column sortBy="#{propertyValueObject.enteredOnDateTime}" headerText="Entered On"
               filterBy="#{propertyValueObject.enteredOnDateTime}"
               filterable="#{filterable}"
+              filterMatchMode="contains"
               rendered="#{propertyValueSettingObject.displayEnteredOnDateTime}">
         <h:outputText value="#{propertyValueObject.enteredOnDateTime}"/>
     </p:column>
@@ -78,6 +86,7 @@ See LICENSE file.
     <p:column sortBy="#{propertyValueObject.effectiveFromDateTime}" headerText="Effective Date"
               filterBy="#{propertyValueObject.effectiveFromDateTime}"
               filterable="#{filterable}"
+              filterMatchMode="contains"
               rendered="#{propertyValueSettingObject.displayEffectiveFromDateTime}">
         <h:outputText value="#{propertyValueObject.effectiveFromDateTime}"/>
     </p:column>

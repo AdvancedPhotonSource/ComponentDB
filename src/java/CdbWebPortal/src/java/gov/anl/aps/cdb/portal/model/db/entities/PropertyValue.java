@@ -299,6 +299,14 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     public void setTargetValue(String targetValue) {
         this.targetValue = targetValue;
     }
+    
+    @JsonIgnore
+    public String getFilterValue() {
+        if (displayValue != null && !displayValue.isEmpty()) {
+            return displayValue; 
+        }
+        return value; 
+    }
 
     @XmlTransient
     public List<ItemConnector> getItemConnectorList() {
