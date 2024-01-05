@@ -607,6 +607,20 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
+    
+    public List<ItemDomainEntity> findByDomainNameNameItemIdentifier1AndItemIdentifier2(String domainName, String name, String itemIdentifier1, String itemIdentifier2) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameNameItemIdentifier1AndItemIdentifier2")
+                    .setParameter("domainName", domainName)
+                    .setParameter("name", name)
+                    .setParameter("itemIdentifier1", itemIdentifier1)
+                    .setParameter("itemIdentifier2", itemIdentifier2)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
 
     public List<ItemDomainEntity> findByDomainAndNameExcludeDeleted(String domainName, String name) {
         try {

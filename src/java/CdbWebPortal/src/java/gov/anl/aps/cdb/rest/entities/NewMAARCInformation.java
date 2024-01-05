@@ -34,6 +34,10 @@ public class NewMAARCInformation {
     private Integer parentItemId; 
    
     private String parentElementName; 
+    
+    private String experimentFilePath;
+    
+    private String experimentName; 
 
     public NewMAARCInformation() {
     }
@@ -69,6 +73,14 @@ public class NewMAARCInformation {
     public String getParentElementName() {
         return parentElementName;
     }
+
+    public String getExperimentFilePath() {
+        return experimentFilePath;
+    }
+
+    public String getExperimentName() {
+        return experimentName;
+    }
     
     public void updateItemDomainMAARCWithInformation(ItemDomainMAARC itemDomainMAARC) throws InvalidArgument, CdbException {
         if (name == null) {
@@ -84,10 +96,12 @@ public class NewMAARCInformation {
         }
         
         itemDomainMAARC.setName(name);
+        itemDomainMAARC.setItemIdentifier1(experimentName);
+        itemDomainMAARC.setItemIdentifier2(experimentFilePath);
         itemDomainMAARC.setEntityTypeList(entityTypeList);
         itemDomainMAARC.setItemProjectList(itemProjectsList);
         itemDomainMAARC.setDescription(description);
-        
+                
         if (ownerUser != null) {
             itemDomainMAARC.setOwnerUser(ownerUser);
         }

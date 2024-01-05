@@ -65,6 +65,25 @@ public class MAARCItemRoute extends ItemBaseRoute {
     }
     
     @GET
+    @Path("/ByUniqueAttributes/{name}/{experimentName}/{experimentFilePath}")
+    @Operation(summary = "Fetches a single maarc item by unique name, experimentName, experimentFilePath.")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ItemDomainMAARC getMAARCItemByUniqueAttributes(@PathParam("name") String name, @PathParam("experimentName") String experimentName, @PathParam("experimentFilePath") String experimentFilePath) throws ObjectNotFound {
+        LOGGER.debug("Fetching items with name: " + name);
+        List<ItemDomainMAARC> itemList = facade.findByUniqueFields(name, experimentName, experimentFilePath); 
+        if (itemList == null || itemList.isEmpty()) {
+            ObjectNotFound ex = new ObjectNotFound("Could not find item with name: " + name);
+            LOGGER.error(ex);
+            throw ex;
+        } else if (itemList.size() > 1) {
+            ObjectNotFound ex = new ObjectNotFound("Multiple results exit for: " + name);
+            LOGGER.error(ex);
+            throw ex;
+        }
+        return itemList.get(0);
+    }
+    
+    @GET
     @Path("/ById/{id}")
     @Operation(summary = "Fetches a single maarc item by id.")
     @Produces(MediaType.APPLICATION_JSON)

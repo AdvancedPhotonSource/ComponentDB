@@ -33,4 +33,8 @@ public class ItemDomainMAARCFacade extends ItemFacadeBase<ItemDomainMAARC> {
     public List<ItemDomainMAARC> findByName(String name) {
         return findByDomainAndName(getDomainName(), name);
     }  
+    
+    public List<ItemDomainMAARC> findByUniqueFields(String name, String experimentName, String experimentFilePath) {
+        return findByDomainNameNameItemIdentifier1AndItemIdentifier2(getDomainName(), name, experimentName, experimentFilePath); 
+    }
 }
