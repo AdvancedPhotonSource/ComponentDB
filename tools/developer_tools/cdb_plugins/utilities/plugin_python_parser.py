@@ -4,7 +4,7 @@ Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
 
-from plugin_configuration import PluginConfiguration
+from .plugin_configuration import PluginConfiguration
 
 CONFIGURATION_FILE_EXTENSION = "cfg"
 

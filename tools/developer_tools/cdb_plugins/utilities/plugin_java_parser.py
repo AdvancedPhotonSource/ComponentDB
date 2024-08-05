@@ -5,7 +5,7 @@ See LICENSE file.
 """
 
 import os
-from plugin_configuration import PluginConfiguration
+from .plugin_configuration import PluginConfiguration
 
 JAVA_PLUGIN_PACKAGE="gov.anl.aps.cdb.portal.plugins.support"
 
