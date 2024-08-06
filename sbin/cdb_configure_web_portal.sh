@@ -78,7 +78,7 @@ $ASADMIN_CMD start-domain ${CDB_DOMAIN}
 
 # create JDBC connection pool
 echo "Creating JDBC connection pool $CDB_DB_POOL"
-$ASADMIN_CMD create-jdbc-connection-pool --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource --restype javax.sql.DataSource --property user=${CDB_DB_USER}:password=${CDB_DB_PASSWORD}:driverClass="com.mysql.jdbc.Driver":portNumber=${CDB_DB_PORT}:databaseName=${CDB_DB_NAME}:serverName=${CDB_DB_HOST}:url="jdbc\:mysql\://${CDB_DB_HOST}\:${CDB_DB_PORT}/${CDB_DB_NAME}?zeroDateTimeBehavior\=convertToNull" ${CDB_DB_POOL}
+$ASADMIN_CMD create-jdbc-connection-pool --datasourceclassname org.mariadb.jdbc.MariaDbDataSource --restype javax.sql.DataSource --property user=${CDB_DB_USER}:password=${CDB_DB_PASSWORD}:driverClass="org.mariadb.jdbc.Driver":portNumber=${CDB_DB_PORT}:databaseName=${CDB_DB_NAME}:serverName=${CDB_DB_HOST}:url="jdbc\:mariadb\://${CDB_DB_HOST}\:${CDB_DB_PORT}/${CDB_DB_NAME}?zeroDateTimeBehavior\=convertToNull&useMysqlMetadata\=true" ${CDB_DB_POOL}
 
 # create JDBC resource associated with this connection pool
 echo "Creating JDBC resource $CDB_DATA_SOURCE"
