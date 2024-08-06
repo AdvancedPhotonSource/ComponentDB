@@ -2,17 +2,23 @@
 
 [![Documentation Status](https://readthedocs.org/projects/componentdb/badge/?version=latest)](http://componentdb.readthedocs.io/en/latest/?badge=latest)
 
-**Prerequisites:**
+# Prerequisites:
 
 In order to deploy or develop Component DB, you must have some support software installed. Follow the instructions below to achieve this.
     
     # For red-hat based linux distribution run the following:
-    yum install -y gcc libgcc expect zlib-devel openssl-devel openldap-devel readline-devel git make cmake sed gawk autoconf automake wget mysql mysql-libs mysql-server mysql-devel curl unzip
+    yum install -y gcc libgcc expect zlib-devel openssl-devel openldap-devel readline-devel git make cmake sed gawk autoconf automake wget mariadb mariadb-server curl unzip rsync
     # For debian based linux distributions run the following:
-    apt-get install wget gcc git make cmake build-essential libcurses-ocaml-dev curl expect mysql-server libmysqlclient-dev openssl libssl-dev libldap2-dev libsasl2-dev sed gawk unzip
+    apt-get install wget gcc git make cmake build-essential libcurses-ocaml-dev curl expect mariadb-client mariadb-server openssl libssl-dev libldap2-dev libsasl2-dev sed gawk unzip rsync
+
+***Versions used in production***
+- mariadb: 10.5.22
+- Other dependencies are automatically downloaded and installed when running `make support` command.
+
 
 # Deployment
-For detailed deployment instructions please refer to our [administrators guide](https://confluence.aps.anl.gov/display/APSUCMS/Administrator+Guide).
+[//]: # "For detailed deployment instructions please refer to our [administrators guide](https://confluence.aps.anl.gov/display/APSUCMS/Administrator+Guide)."
+Below are the steps to be followed to deploy an installation of CDB. These steps are designed to be done as a standard non-root user account. Before starting ensure that you have set the `root` password for your mariadb installation (See [Helpful Utility](https://mariadb.com/kb/en/mariadb-secure-installation/)).
 
 **Deployment Procedure:**
 
@@ -34,12 +40,13 @@ For detailed deployment instructions please refer to our [administrators guide](
     # Prepare web portal configuraiton
     make configure-web-portal
     # Deploy web portal
-    make deploy-web-portal
-    # Deploy REST web service
-    make deploy-web-service
+    make deploy-web-portal    
     
     # All done... output of the command below should print url to the deployed portal. 
     echo "https://`hostname`:8181/cdb"
+
+    # Valid SSL certificates can also be applied using the following command:
+    # ./sbin/cdb_update_glassfish_ssl.sh KEY_FILE CRT_FILE # NOTE, this will prompt for the master password set during the `make support` step. 
     
     
 # Development 
@@ -94,7 +101,9 @@ cp src/java/CdbWebPortal/lib/mariadb-java-client-3.1.0.jar ../support-`hostname`
 ```
 10. Run the project
 
-## Python Web Service Development
+## ~~Python Web Service Development~~
+The python web service is deprecated but is still a part of the distribution for legacy integrations. 
+
     # Code is located in $desired_dev_directory/ComponentDB/src/python
     # For web service development (Use your favorite python editor) to test run web service using:
     ./sbin/cdbWebService.sh
