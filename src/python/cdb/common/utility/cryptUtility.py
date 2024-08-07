@@ -16,7 +16,7 @@ import base64
 class CryptUtility:
 
     CRYPT_TYPE = 6  # SHA-512 (man crypt)
-    SALT_CHARACTERS = string.lowercase + string.uppercase + string.digits
+    SALT_CHARACTERS = string.ascii_lowercase + string.ascii_uppercase + string.digits
     SALT_DELIMITER = '$'
     SALT_LENGTH_IN_BYTES = 4
 
@@ -54,13 +54,15 @@ class CryptUtility:
     @classmethod
     def saltAndCryptPasswordWithPbkdf2(cls, password, salt):
         """ Crypt salted password with pbkdf2 package and encode with b64. """
+        password = password.encode('utf-8')
+        salt = salt.encode('utf-8')
         cryptedPassword = hashlib.pbkdf2_hmac(
             CryptUtility.PBKDF2_ENCRYPTION, 
             password, salt, 
             CryptUtility.PBKDF2_ITERATIONS, 
             CryptUtility.PBKDF2_KEY_LENGTH_IN_BYTES)
         encodedPassword = base64.b64encode(cryptedPassword)
-        return '%s%s%s' % (salt, CryptUtility.SALT_DELIMITER, encodedPassword)
+        return '%s%s%s' % (salt.decode(), CryptUtility.SALT_DELIMITER, encodedPassword.decode())
 
     @classmethod
     def verifyPasswordWithPbkdf2(cls, password, cryptedPassword):
@@ -77,14 +79,14 @@ if __name__ == '__main__':
     import sys
     #password = "cdb"
     password = sys.argv[1]
-    print 'Clear text: ', password
+    print('Clear text: ', password)
     #cryptedPassword = CryptUtility.cryptPassword(password)
     #print 'Crypted: ', cryptedPassword
     #isVerified = CryptUtility.verifyPassword(password, cryptedPassword)
     #print 'Verify: ', isVerified
 
     cryptedPassword = CryptUtility.cryptPasswordWithPbkdf2(password)
-    print 'Crypted: ', cryptedPassword
+    print('Crypted: ', cryptedPassword)
     isVerified = CryptUtility.verifyPasswordWithPbkdf2(password, cryptedPassword)
-    print 'Verify: ', isVerified
+    print('Verify: ', isVerified)
 

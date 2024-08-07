@@ -123,12 +123,12 @@ if [ -d $CDB_SUPPORT_DIR/mysql ]; then
     fi
 fi
 
-mysqlCmd="mysql --port=$CDB_DB_PORT --host=$CDB_DB_HOST -u $CDB_DB_ADMIN_USER"
+mysqlCmd="mariadb --port=$CDB_DB_PORT --host=$CDB_DB_HOST -u $CDB_DB_ADMIN_USER"
 if [ ! -z "$CDB_DB_ADMIN_PASSWORD" ]; then
     mysqlCmd="$mysqlCmd -p$CDB_DB_ADMIN_PASSWORD"
 fi
 
-mysqlUserCmd="mysql $CDB_DB_NAME --port=$CDB_DB_PORT --host=$CDB_DB_HOST -u $CDB_DB_USER -p$CDB_DB_PASSWORD"
+mysqlUserCmd="mariadb $CDB_DB_NAME --port=$CDB_DB_PORT --host=$CDB_DB_HOST -u $CDB_DB_USER -p$CDB_DB_PASSWORD"
 
 execute() {
     msg="$@"
@@ -278,7 +278,7 @@ if [ -z "$adminWithLocalPassword" ]; then
     read -sp "Enter password for local portal admin (username: cdb): [leave blank for no local password] " CDB_LOCAL_SYSTEM_ADMIN_PASSWORD
     echo ""
     if [ ! -z "$CDB_LOCAL_SYSTEM_ADMIN_PASSWORD" ]; then
-	adminCryptPassword=`python -c "from cdb.common.utility.cryptUtility import CryptUtility; print CryptUtility.cryptPasswordWithPbkdf2('$CDB_LOCAL_SYSTEM_ADMIN_PASSWORD')"`
+	adminCryptPassword=`python -c "from cdb.common.utility.cryptUtility import CryptUtility; print(str(CryptUtility.cryptPasswordWithPbkdf2('$CDB_LOCAL_SYSTEM_ADMIN_PASSWORD')))"`
 	echo "update user_info set password = '$adminCryptPassword' where username='cdb'" > temporaryAdminCommand.sql
         execute $mysqlCmd temporaryAdminCommand.sql
     fi

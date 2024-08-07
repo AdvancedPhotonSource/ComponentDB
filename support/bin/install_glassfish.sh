@@ -100,7 +100,7 @@ tar cf $PASSWORD_TAR_FILE $PASSWORD_FILES
 
 # Read new master password
 echo
-echo "Changing master password"
+echo "Changing payara master password"
 sttyOrig=`stty -g`
 stty -echo
 read -p "Enter master password: " MASTER_PASSWORD
@@ -129,7 +129,7 @@ $ASADMIN_CMD start-domain $PAYARA_DOMAIN_NAME
 
 # read new glassfish admin password
 echo
-echo "Changing admin password"
+echo "Changing payara admin password"
 sttyOrig=`stty -g`
 stty -echo
 read -p "Enter glassfish admin password: " ADMIN_PASSWORD

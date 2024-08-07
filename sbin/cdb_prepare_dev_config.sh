@@ -126,6 +126,6 @@ cmd="cat $CDB_ROOT_DIR/etc/cdb-web-service.conf.template \
 eval $cmd || exit 1
 #rsync -ar $CDB_DB_PASSWORD_FILE $CDB_ETC_DIR || exit 1
 
-python $CDB_ROOT_DIR/tools/developer_tools/cdb_plugins/update_plugin_generated_files.py
+python3 $CDB_ROOT_DIR/tools/developer_tools/cdb_plugins/update_plugin_generated_files.py
 
 echo "Done preparing development configuration"

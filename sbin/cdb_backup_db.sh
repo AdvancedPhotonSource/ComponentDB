@@ -92,7 +92,7 @@ if [ -z $CDB_DB_USER_PASSWORD ]; then
     exit 1
 fi
 
-mysqlCmd="mysqldump --port=$CDB_DB_PORT --host=$CDB_DB_HOST -u $CDB_DB_NAME -p$CDB_DB_USER_PASSWORD"
+mysqlCmd="mariadb-dump --port=$CDB_DB_PORT --host=$CDB_DB_HOST -u $CDB_DB_NAME -p$CDB_DB_USER_PASSWORD"
 
 mysqlCmd="$mysqlCmd $CDB_DB_NAME"
 

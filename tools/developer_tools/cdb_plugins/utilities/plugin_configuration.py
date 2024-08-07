@@ -28,23 +28,23 @@ class PluginConfiguration():
             ext = ext_split[-1]
             # Verify that file is not simply called the same as extension adn
             if ext_split.__len__() > 1 and ext.upper() == configuration_extension.upper():
-                print '\n\nUpdating configuration for plugin: %s (%s)' % (plugin_name, listing)
+                print('\n\nUpdating configuration for plugin: %s (%s)' % (plugin_name, listing))
                 plugin_listing_path = '%s/%s' % (destination_path, listing)
                 default_configuration = open(plugin_listing_path).read()
                 plugin_configuration_directory = "%s/%s" % (self.cdb_plugin_configuration_storage, plugin_name)
                 plugin_stored_configuration_file = "%s/%s" % (plugin_configuration_directory, listing)
 
                 if os.path.exists(plugin_stored_configuration_file):
-                    print "Using stored configuration file: %s" % plugin_stored_configuration_file
+                    print("Using stored configuration file: %s" % plugin_stored_configuration_file)
                 else:
-                    print "\n\nNo configuration exists, follow prompts\n"
+                    print("\n\nNo configuration exists, follow prompts\n")
                     resulting_configuration = ''
                     for configuration_line in default_configuration.split('\n'):
                         if configuration_line.startswith('#'):
-                            print 'Configuration Comment: %s' % configuration_line[1:]
+                            print('Configuration Comment: %s' % configuration_line[1:])
                             resulting_configuration += configuration_line
                         elif configuration_line.startswith('['):
-                            print "Section: %s" % configuration_line
+                            print("Section: %s" % configuration_line)
                             resulting_configuration += configuration_line
                         else:
                             configuration_split = configuration_line.split('=')
@@ -56,7 +56,7 @@ class PluginConfiguration():
                             if configuration_split.__len__() == 2:
                                 config_default_value = configuration_split[1]
 
-                            config_value = raw_input("%s [%s]: " % (config_key, config_default_value))
+                            config_value = input("%s [%s]: " % (config_key, config_default_value))
                             if config_value is None or config_value == '':
                                 config_value = config_default_value
                             new_config_line = "%s=%s" % (config_key, config_value)
@@ -76,7 +76,7 @@ class PluginConfiguration():
 
                 # Update the configuration stored.
                 shutil.copyfile(plugin_stored_configuration_file, plugin_listing_path)
-                print 'New configuration stored in deployment: %s' % plugin_listing_path
+                print('New configuration stored in deployment: %s' % plugin_listing_path)
 
     @classmethod
     def backup_original_plugin_configurations(cls, plugin_storage_path, configuration_extension):
@@ -98,7 +98,7 @@ class PluginConfiguration():
                     if not os.path.exists(configuration_backup_dir):
                         os.makedirs(configuration_backup_dir)
                     configuration_backup_path = "%s/%s" % (configuration_backup_dir, listing)
-                    print "Storing a default plugin configuration file %s to %s: " % (listing, configuration_backup_path)
+                    print("Storing a default plugin configuration file %s to %s: " % (listing, configuration_backup_path))
                     shutil.copyfile(configuration_storage_path, configuration_backup_path)
 
         return configuration_backup_dir
@@ -119,6 +119,6 @@ class PluginConfiguration():
                 for listing in directory_listings:
                     configuration_storage_path = "%s/%s" % (plugin_storage_path, listing)
                     configuration_backup_storage_path = "%s/%s" % (configuration_backup_dir, listing)
-                    print "Reverting backup file %s to %s" % (listing, configuration_storage_path)
+                    print("Reverting backup file %s to %s" % (listing, configuration_storage_path))
                     shutil.move(configuration_backup_storage_path, configuration_storage_path)
 
