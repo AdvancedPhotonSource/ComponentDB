@@ -16,7 +16,7 @@ from setuptools import setup
 from setuptools import find_packages
 
 setup(name='ComponentDB-CLI',
-      version='3.15.8',
+      version='3.15.9',
       packages=['cdbCli',
                 'cdbCli.common',
                 'cdbCli.common.cli',
