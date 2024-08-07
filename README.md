@@ -6,10 +6,12 @@
 
 In order to deploy or develop Component DB, you must have some support software installed. Follow the instructions below to achieve this.
     
-    # For red-hat based linux distribution run the following:
-    yum install -y gcc libgcc expect zlib-devel openssl-devel openldap-devel readline-devel git make cmake sed gawk autoconf automake wget mariadb mariadb-server curl unzip rsync
-    # For debian based linux distributions run the following:
-    apt-get install wget gcc git make cmake build-essential libcurses-ocaml-dev curl expect mariadb-client mariadb-server openssl libssl-dev libldap2-dev libsasl2-dev sed gawk unzip rsync
+```sh
+# For red-hat based linux distribution run the following:
+yum install -y gcc libgcc expect zlib-devel openssl-devel openldap-devel readline-devel git make cmake sed gawk autoconf automake wget mariadb mariadb-server curl unzip rsync
+# For debian based linux distributions run the following:
+apt-get install wget gcc git make cmake build-essential libcurses-ocaml-dev curl expect mariadb-client mariadb-server openssl libssl-dev libldap2-dev libsasl2-dev sed gawk unzip rsync
+```
 
 ***Versions used in production***
 - mariadb: 10.5.22
