@@ -22,64 +22,130 @@ Below are the steps to be followed to deploy an installation of CDB. These steps
 
 **Deployment Procedure:**
 
-    # Make a new directory to hold cdb and its support directories. (replace or set DESIRED_CDB_INSTALL_DIRECTORY var with a unix directory.)
-    mkdir $DESIRED_CDB_INSTALL_DIRECTORY
-    cd $DESIRED_CDB_INSTALL_DIRECTORY 
-    # get the distribution of Component DB (Alternativelly download a release zip and unzip it). 
-    git clone https://github.com/AdvancedPhotonSource/ComponentDB.git
-    # Navigate inside the distribution. 
-    cd ComponentDb
-    # Build support needed for the application
-    make support
-    # load enviornment variables with new support built. 
-    source setup.sh    
-    # Create deployment configuration
-    make configuration
-    # Create a clean db for the distribution 
-    make clean-db
-    # Prepare web portal configuraiton
-    make configure-web-portal
-    # Deploy web portal
-    make deploy-web-portal    
-    
-    # All done... output of the command below should print url to the deployed portal. 
-    echo "https://`hostname`:8181/cdb"
+```sh
+# Make a new directory to hold cdb and its support directories. (replace or set DESIRED_CDB_INSTALL_DIRECTORY var with a unix directory.)
+mkdir $DESIRED_CDB_INSTALL_DIRECTORY
+cd $DESIRED_CDB_INSTALL_DIRECTORY 
+# get the distribution of Component DB (Alternativelly download a release zip and unzip it). 
+git clone https://github.com/AdvancedPhotonSource/ComponentDB.git
+# Navigate inside the distribution. 
+cd ComponentDB
+# Build support needed for the application
+make support
+# load enviornment variables with new support built. 
+source setup.sh    
+# Create deployment configuration
+make configuration
+# Create a clean db for the distribution 
+make clean-db
+# Prepare web portal configuraiton
+make configure-web-portal
 
-    # Valid SSL certificates can also be applied using the following command:
-    # ./sbin/cdb_update_glassfish_ssl.sh KEY_FILE CRT_FILE # NOTE, this will prompt for the master password set during the `make support` step. 
-    
+# Deploy plugins if needed using `make deploy-cdb-plugin`
+# See https://github.com/AdvancedPhotonSource/ComponentDB/wiki/Plugins
+
+# Deploy web portal
+make deploy-web-portal    
+
+# All done... output of the command below should print url to the deployed portal. 
+echo "https://`hostname`:8181/cdb"
+
+# Valid SSL certificates can also be applied using the following command:
+# ./sbin/cdb_update_glassfish_ssl.sh KEY_FILE CRT_FILE # NOTE, this will prompt for the master password set during the `make support` step. 
+```
+
+**Troubleshooting:**
+
+Managing Payara:
+```sh
+# Navigate to the ComponentDB distribution directory. 
+
+# Viewing logs
+tail -f ../support-`hostname -a`/payara/linux-x86_64/glassfish/domains/production/logs/server.log
+
+# Restart payara server
+./etc/init.d/cdb-glassfish restart
+```
+
+**Other notes:**
+
+*Setting Project:*
+
+The item project has been mostly static attribute, therefore there is no UI. Currently this can only be done within SQL. 
+```sql
+-- Log into the mariadb shell with cdb database. 
+use cdb;
+-- Override the default project
+update item_project set name='OPS' where id = 1;
+-- Adding additional projects 
+insert into item_project(name) values ('Upgrade');
+```
+Restart application to reset any caches for `item_project`. 
+```sh
+# Navigate to the ComponentDB distribution directory. 
+./etc/init.d/cdb-glassfish restart
+```
+
+# Deployment Upgrade
+```sh
+# Navigate to cdb installation directory
+cd $CDB_INSTALL_DIRECTORY
+
+# Download the release package to cdb install dicrectory
+# Using version 3.10 as an example. 
+wget https://github.com/AdvancedPhotonSource/ComponentDB/archive/v3.10.0.tar.gz
+tar -xvf v3.10.0.tar.gz
+rm v3.10.0.tar.gz
+cd ComponentDB-3.10.0
+
+# Backup the database. 
+make backup
+
+# Verify db changes. 
+cd db/sql/updates
+# Check to see if the release has a updateTo(Version).sql script. 
+# Follow instructions described in the top comments of the sql update file.
+cd ../../../ # Navigate back to release directory
+
+# Deploy plugins if needed using `make deploy-cdb-plugin`
+# See https://github.com/AdvancedPhotonSource/ComponentDB/wiki/Plugins
+
+make deploy-web-portal
+```
     
 # Development 
 For detailed development instructions please refer to our [developers guide](https://confluence.aps.anl.gov/display/APSUCMS/Developer+Guide). 
 
 **Getting Started with development:**
 
-    # first make a fork of this project. 
-    # create a desired development directory and cdb into it
-    mkdir $desired_dev_directory
-    cd $desired_dev_directory
-    git clone https://github.com/AdvancedPhotonSource/ComponentDB.git
-    
-    # Getting support software
-    cd ComponentDb
-    make support 
-    # Get Netbeans
-    make support-netbeans
+```sh
+# first make a fork of this project. 
+# create a desired development directory and cdb into it
+mkdir $desired_dev_directory
+cd $desired_dev_directory
+git clone https://github.com/AdvancedPhotonSource/ComponentDB.git
 
-    # Load up the environment 
-    source setup.sh
+# Getting support software
+cd ComponentDb
+make support 
+# Get Netbeans
+make support-netbeans
 
-    # Prepare Dev DB    
-    # mysql could be installed as part of ComponentDB support by running 'make support-mysql' 
-    # - Afterwards run `./etc/init.d/cdb-mysql start`
-    # if you have mysql installed and started run...
-    make clean-db   # sample-db will be coming later 
-    
-    # Start development
-    make dev-config     
+# Load up the environment 
+source setup.sh
 
-    # Open Netbeans
-    netbeans & 
+# Prepare Dev DB    
+# mysql could be installed as part of ComponentDB support by running 'make support-mysql' 
+# - Afterwards run `./etc/init.d/cdb-mysql start`
+# if you have mysql installed and started run...
+make clean-db   # sample-db will be coming later 
+
+# Start development
+make dev-config     
+
+# Open Netbeans
+netbeans & 
+```
 
 ## Preparing Netbeans
 Once netbeans is open a few steps need to be taken to prepare netbeans for CDB development.
@@ -104,9 +170,11 @@ cp src/java/CdbWebPortal/lib/mariadb-java-client-3.1.0.jar ../support-`hostname`
 ## ~~Python Web Service Development~~
 The python web service is deprecated but is still a part of the distribution for legacy integrations. 
 
-    # Code is located in $desired_dev_directory/ComponentDB/src/python
-    # For web service development (Use your favorite python editor) to test run web service using:
-    ./sbin/cdbWebService.sh
+```sh
+# Code is located in $desired_dev_directory/ComponentDB/src/python
+# For web service development (Use your favorite python editor) to test run web service using:
+./sbin/cdbWebService.sh
+```
     
 # License
 [Copyright (c) UChicago Argonne, LLC. All rights reserved.](https://github.com/AdvancedPhotonSource/ComponentDB/blob/master/LICENSE)
