@@ -84,6 +84,11 @@ See LICENSE file.
                            onclick="#{entityPropertyTypeName}InfoAction#{propertyValueObject.id}()">
                 <h:outputText value="#{propertyValueObject.displayValue}"  />
             </p:commandLink>
+            
+            <p:commandLink rendered="#{propertyValueController.displayMarkdownValue(propertyValueObject)}"
+                           onclick="displayMarkdownPropertyDialog#{propertyValueObject.id}()">
+                <h:outputText value="#{propertyValueObject.value}"  />
+            </p:commandLink>
 
             <ui:fragment rendered="#{propertyValueController.displayBooleanValue(propertyValueObject)}">         
                 <h:outputText value="" styleClass="fa fa-link-icon fa-check" 

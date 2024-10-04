@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="propertyValueMarkdownValueDialog"
+              widgetVar="propertyValueMarkdownValueDialogWidget"
+              width="80vw"
+              height="80vh"
+              maximizable="true"
+              modal="true" >
+
+        <ui:param name="propertyValueObject"
+                  value="#{propertyValueController.current}"/> 
+
+        <f:facet name="header">
+            #{propertyValueObject.value}
+        </f:facet>
+
+        <f:facet name="footer">
+            <p:outputPanel id="propertyValueMarkdownValueDialogFooter">
+                <p:commandButton value="Close" 
+                                 icon="fa fa-close"
+                                 onclick="PF('propertyValueMarkdownValueDialogWidget').hide()"/>
+
+                <p:commandButton value="#{propertyValueObject.editMode ? 'Save' : 'Edit'}" 
+                                 icon="#{propertyValueObject.editMode ? 'fa fa-save' : 'fa fa-pencil'}"                             
+                                 oncomplete="#{propertyValueObject.editMode ? 'propertyValueMarkdownValueUpdateItem()' : ''}"
+                                 update="propertyValueMarkdownValueDialogFooter propertyValueMarkdownValueDialogContent">
+                    <f:setPropertyActionListener target="#{propertyValueObject.editMode}"
+                                                 value="#{true}" /> 
+                </p:commandButton>
+                
+                <p:remoteCommand name="propertyValueMarkdownValueUpdateItem"
+                                 action="#{entityController.update()}" /> 
+            </p:outputPanel>
+        </f:facet>
+
+        <p:outputPanel id="propertyValueMarkdownValueDialogContent">
+            <h:outputText escape="false" 
+                          value="#{propertyValueObject.generatedHTMLText}" styleClass="markdownGeneratedContent"
+                          rendered="#{!propertyValueObject.editMode}"/> 
+
+            <p:inputTextarea  value="#{propertyValueObject.text}"
+                              style="width: 100%"
+                              rows="25"
+                              rendered="#{propertyValueObject.editMode}" /> 
+        </p:outputPanel>
+
+
+    </p:dialog>
+
+
+</ui:composition>
+
+
