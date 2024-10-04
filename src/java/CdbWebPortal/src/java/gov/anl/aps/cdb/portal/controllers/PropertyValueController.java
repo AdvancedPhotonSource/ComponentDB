@@ -20,6 +20,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueBase;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.GalleryUtility;
+import gov.anl.aps.cdb.portal.utilities.MarkdownParser;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
     @EJB
     private PropertyMetadataFacade propertyMetadataFacade;
 
-    private PropertyValueMetadata currentPropertyMetadata;
+    private PropertyValueMetadata currentPropertyMetadata;        
 
     private static final Logger logger = LogManager.getLogger(PropertyValueController.class.getName());
 
@@ -234,6 +235,22 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
             return GalleryUtility.isFileNameExcel(fileName); 
         }
         return false; 
+    }
+    
+    public void setCurrentAndUpdateGeneratedHTML(PropertyValue propertyValue) {
+        // Fetch latest text before generating html. 
+        PropertyValue latestProperty = findById(propertyValue.getId()); 
+        
+        propertyValue.setText(latestProperty.getText());
+        propertyValue.setEditMode(false);
+        
+        String text = propertyValue.getText();
+        String html = MarkdownParser.parseMarkdownAsHTML(text);
+        propertyValue.setGeneratedHTMLText(html);
+        
+        
+        
+        setCurrent(propertyValue); 
     }
     
     public static String getAPIDownloadPath(PropertyValue propertyValue) {

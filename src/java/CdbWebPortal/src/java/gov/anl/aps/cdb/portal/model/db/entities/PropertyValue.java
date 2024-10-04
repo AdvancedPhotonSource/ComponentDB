@@ -92,6 +92,9 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     private String tag;
     @Size(max = 512)
     private String value;
+    @Lob
+    @Size(max = 65535)
+    private String text;
     @Size(max = 16)
     private String units;
     @Size(max = 256)
@@ -156,6 +159,9 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     private transient AllowedPropertyValue selectedAllowedPropertyValue = null; 
     
     private transient List<Item> itemList = null; 
+    
+    // Generated HTML for the markdown property type handler. 
+    private transient String generatedHTMLText; 
 
     public PropertyValue() {
     }
@@ -194,6 +200,14 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     public void setValue(String value) {
         this.booleanValue = null;
         this.value = value;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public String getUnits() {
@@ -495,6 +509,14 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
 
     public void setTargetValueToValue() {
         this.targetValue = value;
+    }
+
+    public String getGeneratedHTMLText() {
+        return generatedHTMLText;
+    }
+
+    public void setGeneratedHTMLText(String generatedHTMLText) {
+        this.generatedHTMLText = generatedHTMLText;
     }
 
     public List<PropertyValueMetadata> getPropertyValueMetadataList() {
