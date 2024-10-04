@@ -3,7 +3,7 @@
 -- See LICENSE file.
 --
 
--- Execute by running `mysql CDB_DB_NAME --host=127.0.0.1 --user=cdb -p < updateTo3.16.0.sql`
+-- Execute by running `mysql CDB_DB_NAME -h 127.0.0.1 -u cdb -p < updateTo3.16.0.sql`
 
 INSERT INTO property_type_handler (name, description) VALUES ('Markdown', 'Handler for properties containing markdown documentation');
 
