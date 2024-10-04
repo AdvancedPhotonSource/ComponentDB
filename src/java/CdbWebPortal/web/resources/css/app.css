@@ -2,7 +2,7 @@
  * Copyright (c) UChicago Argonne, LLC. All rights reserved.
  * See LICENSE file.
  */
-@import url("portal.css");
+@import url("portal.css?v3.16.dev0");
 
 .defaultBackground {
     background-color: #FAFAD2;
