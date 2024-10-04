@@ -224,6 +224,10 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.FILE_DOWNLOAD);
     }
     
+    public boolean displayMarkdownValue(PropertyValue propertyValue) {
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.MARKDOWN); 
+    }
+    
     public boolean displayDownloadActionExcelPDFValue(PropertyValue propertyValue) {
         if (displayDownloadActionValue(propertyValue)) {
             String fileName = propertyValue.getValue();

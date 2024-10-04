@@ -25,6 +25,7 @@ public class PropertyTypeHandlerFactory {
         hMap.put(HttpLinkPropertyTypeHandler.HANDLER_NAME, new HttpLinkPropertyTypeHandler());
         hMap.put(DocumentPropertyTypeHandler.HANDLER_NAME, new DocumentPropertyTypeHandler());
         hMap.put(CurrencyPropertyTypeHandler.HANDLER_NAME, new CurrencyPropertyTypeHandler());
+        hMap.put(MarkdownPropertyTypeHandler.HANDLER_NAME, new MarkdownPropertyTypeHandler());
         hMap.put(DatePropertyTypeHandler.HANDLER_NAME, new DatePropertyTypeHandler());
         hMap.put(BooleanPropertyTypeHandler.HANDLER_NAME, new BooleanPropertyTypeHandler());
         return hMap;
