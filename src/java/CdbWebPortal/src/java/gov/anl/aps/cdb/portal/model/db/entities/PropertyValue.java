@@ -21,6 +21,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -162,6 +163,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     
     // Generated HTML for the markdown property type handler. 
     private transient String generatedHTMLText; 
+    private transient boolean editMode = false; 
 
     public PropertyValue() {
     }
@@ -517,6 +519,14 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
 
     public void setGeneratedHTMLText(String generatedHTMLText) {
         this.generatedHTMLText = generatedHTMLText;
+    }
+
+    public boolean isEditMode() {
+        return editMode;
+    }
+
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
     }
 
     public List<PropertyValueMetadata> getPropertyValueMetadataList() {
