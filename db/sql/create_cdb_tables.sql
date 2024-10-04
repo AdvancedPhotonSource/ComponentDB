@@ -999,6 +999,7 @@ CREATE TABLE `property_value` (
   `property_type_id` int(11) unsigned NOT NULL,
   `tag` varchar(64) DEFAULT NULL,
   `value` varchar(256) DEFAULT NULL,
+  `text` text DEFAULT NULL, 
   `units` varchar(16) DEFAULT NULL,
   `description` varchar(256) DEFAULT NULL,
   `entered_on_date_time` datetime NOT NULL,
