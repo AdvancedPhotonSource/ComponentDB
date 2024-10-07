@@ -33,6 +33,7 @@ See LICENSE file.
                 <p:commandButton value="#{propertyValueObject.editMode ? 'Save' : 'Edit'}" 
                                  icon="#{propertyValueObject.editMode ? 'fa fa-save' : 'fa fa-pencil'}"                             
                                  oncomplete="#{propertyValueObject.editMode ? 'propertyValueMarkdownValueUpdateItem()' : ''}"
+                                 rendered="#{isEntityWriteable}"
                                  update="propertyValueMarkdownValueDialogFooter propertyValueMarkdownValueDialogContent">
                     <f:setPropertyActionListener target="#{propertyValueObject.editMode}"
                                                  value="#{true}" /> 
