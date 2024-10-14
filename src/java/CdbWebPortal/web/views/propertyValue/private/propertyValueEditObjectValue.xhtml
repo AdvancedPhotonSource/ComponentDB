@@ -29,18 +29,20 @@ See LICENSE file.
                 <h:inputText id="freeFormTextValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
                              rendered="#{propertyValueController.displayFreeFormTextValue(propertyValueObject)}"/>
                 <p:tooltip for="freeFormTextValue" value="Enter property value."/>
-                
+
                 <p:outputPanel rendered="#{propertyValueController.displayMarkdownValue(propertyValueObject)}">
-                <p:panelGrid columns="3">
-                    <p:outputLabel value="Title" />
-                    <h:inputText id="mdTitle" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"/>
-                    <p:tooltip for="mdTitle" value="Enter link value."/>                                                           
-                    <p:outputLabel value="Markdown" />
-                </p:panelGrid>        
-                    
-                    <p:inputTextarea id="mdText" value="#{propertyValueObject.text}" styleClass="#{defaultStyleClass}"
-                                     rows="15" cols="50" autoResize="false"/>
-                    <p:tooltip for="mdText" value="Enter markdown value."/>
+                    <p:panelGrid columns="3">
+                        <p:outputLabel value="Title" />
+                        <h:inputText id="mdTitle" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"/>
+                        <p:tooltip for="mdTitle" value="Enter link value."/>                                                           
+                        <p:outputLabel value="Markdown" /> 
+                        <p:commandLink value="Update Value" 
+                                       action="#{propertyValueController.setCurrentAndEditNewMarkdown(propertyValueObject)}"
+                                       update="@form:propertyValueMarkdownValueDialog"
+                                       oncomplete="PF('propertyValueMarkdownValueDialogWidget').initPosition();
+                                       PF('propertyValueMarkdownValueDialogWidget').show()"
+                                       />
+                    </p:panelGrid>                           
                 </p:outputPanel>
 
                 <h:inputText id="GeneratedHttpLinkValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
