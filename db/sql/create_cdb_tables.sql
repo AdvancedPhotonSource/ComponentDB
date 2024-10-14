@@ -215,6 +215,7 @@ DROP TABLE IF EXISTS `attachment`;
 CREATE TABLE `attachment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(128) NOT NULL,
+  `original_filename` varchar(256) NOT NULL, 
   `tag` varchar(64) DEFAULT NULL,
   `description` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1072,6 +1073,21 @@ CREATE TABLE `property_metadata_history` (
   UNIQUE KEY `property_metadata_history_u1` (`property_value_history_id`, `metadata_key`),
   KEY `property_metadata_history_k1` (`property_value_history_id`),
   CONSTRAINT `property_metadata_history_fk1` FOREIGN KEY (`property_value_history_id`) REFERENCES `property_value_history` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `property_attachment`
+--
+
+DROP TABLE IF EXISTS `property_attachment`;
+CREATE TABLE `log_attachment` (
+  `property_value_id` int(11) unsigned NOT NULL,
+  `attachment_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`property_value_id`, `attachment_id`),
+  KEY `property_attachment_k1` (`property_value_id`),
+  KEY `property_attachment_k2` (`attachment_id`),
+  CONSTRAINT `property_attachment_fk1` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT `property_attachment_fk2` FOREIGN KEY (`attachment_id`) REFERENCES `attachment` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
