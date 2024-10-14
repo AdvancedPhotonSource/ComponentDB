@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.view.jsf.utilities;
 
 import gov.anl.aps.cdb.common.constants.CdbProperty;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
+import gov.anl.aps.cdb.portal.utilities.MarkdownParser;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.Date;
@@ -182,6 +183,14 @@ public class FacesUtility {
         results.add("id=" + query);
          
         return results;
+    }
+    
+    public String getMarkdownExampleText() {
+        return MarkdownParser.getMarkdownExampleText(); 
+    }
+
+    public String getMarkdownExampleHtml() {
+        return MarkdownParser.getMarkdownExampleHtml();
     }
 
     @FacesConverter("genericSelectOneMenuObjectConverter")
