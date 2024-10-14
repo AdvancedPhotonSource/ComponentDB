@@ -4,10 +4,12 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.common.utilities.FileUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,7 +28,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author djarosz
  */
 @Entity
-@Table(name="attachment")
+@Table(name = "attachment")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Attachment.findAll", query = "SELECT a FROM Attachment a"),
@@ -45,13 +47,18 @@ public class Attachment implements Serializable {
     @NotNull
     @Size(min = 1, max = 128)
     private String name;
+    @Size(min = 1, max = 256)
+    @Column(name = "original_filename")
+    private String originalFilename;
     @Size(max = 64)
     private String tag;
     @Size(max = 256)
     private String description;
     @ManyToMany(mappedBy = "attachmentList")
     private List<Log> logList;
-    
+    @ManyToMany(mappedBy = "attachmentList")
+    private List<PropertyValue> propertyValueList;
+
     private transient String filePath = null;
 
     public Attachment() {
@@ -81,12 +88,20 @@ public class Attachment implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    
+
+    public String getOriginalFilename() {
+        return originalFilename;
+    }
+
+    public void setOriginalFilename(String originalFilename) {
+        this.originalFilename = FileUtility.shortenFileNameIfNeeded(originalFilename, name, 256);
+    }
+
     public String getDisplayName() {
         if (tag != null && !tag.isEmpty()) {
             return tag;
         }
-        return name; 
+        return name;
     }
 
     public String getTag() {
@@ -118,7 +133,7 @@ public class Attachment implements Serializable {
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
-        return hash; 
+        return hash;
     }
 
     @Override
@@ -138,12 +153,21 @@ public class Attachment implements Serializable {
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.Attachment[ id=" + id + " ]";
     }
-    
-     public String getFilePath() {
+
+    public String getFilePath() {
         if (filePath == null) {
             filePath = StorageUtility.getApplicationLogAttachmentPath(name);
         }
         return filePath;
     }
-    
+
+    @XmlTransient
+    public List<PropertyValue> getPropertyValueList() {
+        return propertyValueList;
+    }
+
+    public void setPropertyValueList(List<PropertyValue> propertyValueList) {
+        this.propertyValueList = propertyValueList;
+    }
+
 }

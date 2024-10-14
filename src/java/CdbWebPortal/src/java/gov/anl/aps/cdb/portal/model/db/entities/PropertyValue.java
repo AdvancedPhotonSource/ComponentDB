@@ -21,6 +21,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -83,7 +84,7 @@ import javax.xml.bind.annotation.XmlTransient;
     ),
 })
 public class PropertyValue extends PropertyValueBase implements Serializable {
-
+        
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -137,7 +138,12 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValue")
     private List<PropertyValueHistory> propertyValueHistoryList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValue")    
-    private List<PropertyMetadata> propertyMetadataList;
+    private List<PropertyMetadata> propertyMetadataList;    
+    @JoinTable(name = "property_attachment", joinColumns = {
+        @JoinColumn(name = "property_value_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "attachment_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<Attachment> attachmentList;
 
     public static final transient SimpleDateFormat InputDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
     
@@ -771,5 +777,13 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
         }
 
     }
+    
+    @XmlTransient
+    public List<Attachment> getAttachmentList() {
+        return attachmentList;
+    }
 
+    public void setAttachmentList(List<Attachment> attachmentList) {
+        this.attachmentList = attachmentList;
+    }
 }
