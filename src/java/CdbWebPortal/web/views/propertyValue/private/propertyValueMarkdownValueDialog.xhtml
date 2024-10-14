@@ -25,22 +25,54 @@ See LICENSE file.
         </f:facet>
 
         <f:facet name="footer">
-            <p:outputPanel id="propertyValueMarkdownValueDialogFooter">
+            <p:outputPanel id="propertyValueMarkdownValueDialogFooter"
+                           style="display: inline-block">                
+                <p:panelGrid columns="2"
+                             rendered="#{propertyValueObject.editMode}">
+                    <p:outputLabel value="Upload File"/>
+                    <p:fileUpload listener="#{propertyValueMarkdownzDocumentUploadBean.handleFileUpload}"       
+                                  id="markdownAttachmentFileUpload"
+                                  widgetVar="markdownAttachmentFileUploadWidget"    
+                                  oncomplete="completePastedImage()"                              
+                                  mode="simple"
+                                  auto="true"
+                                  fileLimit="1"                              
+                                  fileLimitMessage="Only one attachment can be added per upload."/>
+                    
+                    
+                    <p:outputPanel style="display: none">
+                        <p:remoteCommand name="completePastedImage"
+                                         onstart="PF('loadingDialog').show();"
+                                         process="@this"
+                                         update="lastFileReference"
+                                         oncomplete="PF('loadingDialog').hide(); pasteLatestFileReference();" />                        
+
+                        <h:outputText id="lastFileReference" value="#{propertyValueMarkdownzDocumentUploadBean.lastFileReference}" /> 
+                    </p:outputPanel>
+
+                    <p:remoteCommand autoRun="true"
+                                     action="#{propertyValueMarkdownzDocumentUploadBean.setPropertyValue(propertyValueObject)}"/>
+                </p:panelGrid>                            
+
                 <p:commandButton value="Close" 
                                  icon="fa fa-close"
-                                 onclick="PF('propertyValueMarkdownValueDialogWidget').hide()"/>
+                                 onclick="PF('commonMarkdownHelpDialogWidget').hide();
+                                          PF('propertyValueMarkdownValueDialogWidget').hide()"/>
 
                 <p:commandButton value="#{propertyValueObject.editMode ? 'Save' : 'Edit'}" 
                                  icon="#{propertyValueObject.editMode ? 'fa fa-save' : 'fa fa-pencil'}"                             
-                                 oncomplete="#{propertyValueObject.editMode ? 'propertyValueMarkdownValueUpdateItem()' : ''}"
+                                 oncomplete="#{propertyValueObject.editMode ? 'propertyValueMarkdownValueUpdateItem()' : 'propertyValueMarkdownValueDialogWidgetInitPosition()'}"
                                  rendered="#{isEntityWriteable}"
                                  update="propertyValueMarkdownValueDialogFooter propertyValueMarkdownValueDialogContent">
                     <f:setPropertyActionListener target="#{propertyValueObject.editMode}"
                                                  value="#{true}" /> 
                 </p:commandButton>
-                
+
                 <p:remoteCommand name="propertyValueMarkdownValueUpdateItem"
                                  action="#{entityController.update()}" /> 
+
+                <p:remoteCommand name="propertyValueMarkdownValueDialogWidgetInitPosition"
+                                 onstart="PF('propertyValueMarkdownValueDialogWidget').initPosition();" /> 
             </p:outputPanel>
         </f:facet>
 
@@ -49,14 +81,22 @@ See LICENSE file.
                           value="#{propertyValueObject.generatedHTMLText}" styleClass="markdownGeneratedContent"
                           rendered="#{!propertyValueObject.editMode}"/> 
 
-            <p:inputTextarea  value="#{propertyValueObject.text}"
+            <p:inputTextarea  id="markdownPropertyTextareaEdit"
+                              value="#{propertyValueObject.text}"
                               style="width: 100%"
                               rows="25"
                               rendered="#{propertyValueObject.editMode}" /> 
+            
+            <p:commandLink value="Markdown Help"
+                               rendered="#{propertyValueObject.editMode}"
+                               onclick="PF('commonMarkdownHelpDialogWidget').hide();
+                                        PF('commonMarkdownHelpDialogWidget').show()" /> 
         </p:outputPanel>
 
 
     </p:dialog>
+    
+    <ui:include src="../../common/private/commonMarkdownHelpDialog.xhtml"/> 
 
 
 </ui:composition>
