@@ -237,6 +237,11 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
         return false; 
     }
     
+    public void setCurrentAndEditNewMarkdown(PropertyValue propertyValue) {        
+        propertyValue.setEditMode(true);
+        setCurrent(propertyValue);
+    }
+    
     public void setCurrentAndUpdateGeneratedHTML(PropertyValue propertyValue) {
         // Fetch latest text before generating html. 
         PropertyValue latestProperty = findById(propertyValue.getId()); 
@@ -246,9 +251,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
         
         String text = propertyValue.getText();
         String html = MarkdownParser.parseMarkdownAsHTML(text);
-        propertyValue.setGeneratedHTMLText(html);
-        
-        
+        propertyValue.setGeneratedHTMLText(html);                
         
         setCurrent(propertyValue); 
     }
