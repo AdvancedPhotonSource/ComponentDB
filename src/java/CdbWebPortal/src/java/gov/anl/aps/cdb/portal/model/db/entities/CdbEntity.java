@@ -282,6 +282,10 @@ public class CdbEntity implements Serializable, Cloneable {
 
         return cableEndDesignationPropertyValue;
     }
+    
+    public void setCableEndDesignation(String endDesignation) {
+        setCableEndDesignation(endDesignation, null);
+    }
 
     public void setCableEndDesignation(String endDesignation, UserInfo user) {
         PropertyValue propertyValue = getCableEndDesignationPropertyValue(user);
