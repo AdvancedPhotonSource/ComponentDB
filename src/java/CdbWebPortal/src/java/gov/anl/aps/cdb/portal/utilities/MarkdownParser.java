@@ -36,7 +36,7 @@ import javax.validation.constraints.NotNull;
  * @author djarosz
  */
 public class MarkdownParser {
-    
+
     private final static String markdownExample = "### Bullet List\n"
             + "\n\n"
             + "- Bullet list item\n"
@@ -70,14 +70,32 @@ public class MarkdownParser {
             + "### Level 3 Heading\n"
             + "#### Level 4 Heading\n"
             + "##### Level 5 Heading\n"
-            + "###### Level 6 Heading\n";                
+            + "###### Level 6 Heading\n";
+
+    private final static String markdownPlaceholderText = "# Add your markdown here \n"
+            + "\n"
+            + "Here are some tips to get started: \n"
+            + "\n"
+            + "# Heading \n"
+            + "\n"
+            + "- Bulleted list Item\n"
+            + "  - Sub item\n"
+            + "\n"
+            + "1. Numbered item 1\n"
+            + "1. Numbered item 2\n"
+            + "\n"
+            + "```\n"
+            + "monospaced code block content \n"
+            + "```\n"
+            + "\n"
+            + "See \"Markdown Help\" below for more tips. ";
 
     private static String markdownExampleAsHtml = null;
-        
-    private static String contextRoot = null;                
-    
-    private static final String MD_PROPERTY_APPLICATION_PATH = String.format("%s/", StorageUtility.getPropertyValueMarkdownDocumentsDirectory());   
-    
+
+    private static String contextRoot = null;
+
+    private static final String MD_PROPERTY_APPLICATION_PATH = String.format("%s/", StorageUtility.getPropertyValueMarkdownDocumentsDirectory());
+
     private static MutableDataHolder options = new MutableDataSet()
             .set(Parser.EXTENSIONS, Arrays.asList(
                     new Extension[]{
@@ -86,13 +104,13 @@ public class MarkdownParser {
             ));
     private static Parser parser = Parser.builder(options).build();
     private static HtmlRenderer renderer = HtmlRenderer.builder(options).build();
-    
+
     public static String parseMarkdownAsHTML(String text) {
-        Node document = parser.parse(text); 
-        String html = renderer.render(document); 
-        
+        Node document = parser.parse(text);
+        String html = renderer.render(document);
+
         return html;
-    }  
+    }
 
     public static String getMarkdownExampleText() {
         return markdownExample;
@@ -104,6 +122,10 @@ public class MarkdownParser {
         }
 
         return markdownExampleAsHtml;
+    }
+
+    public static String getMarkdownPlaceholderText() {
+        return markdownPlaceholderText;
     }
 
     static class CDBFlexmarkExtension implements HtmlRenderer.HtmlRendererExtension {
@@ -144,34 +166,34 @@ public class MarkdownParser {
             }
             return contextRoot;
         }
-        
-        private String getAttachmentEndpoint(String url, boolean scaled) {            
-            if (url.startsWith(PropertyValueMarkdownDocumentUploadBean.MARKDOWN_ATTACHMENT_PREFIX)) { 
-                url = url.replace(PropertyValueMarkdownDocumentUploadBean.MARKDOWN_ATTACHMENT_PREFIX, MD_PROPERTY_APPLICATION_PATH); 
 
-                url = getContextRoot() + url; 
-                
+        private String getAttachmentEndpoint(String url, boolean scaled) {
+            if (url.startsWith(PropertyValueMarkdownDocumentUploadBean.MARKDOWN_ATTACHMENT_PREFIX)) {
+                url = url.replace(PropertyValueMarkdownDocumentUploadBean.MARKDOWN_ATTACHMENT_PREFIX, MD_PROPERTY_APPLICATION_PATH);
+
+                url = getContextRoot() + url;
+
                 if (scaled) {
                     // TODO use arg for API 
                     // url = url + '/' + CdbPropertyValue.SCALED_IMAGE_EXTENSION; 
-                    url = url + CdbPropertyValue.SCALED_IMAGE_EXTENSION; 
-                } 
+                    url = url + CdbPropertyValue.SCALED_IMAGE_EXTENSION;
+                }
             }
-            
-            return url; 
+
+            return url;
         }
 
         private void render(Image node, NodeRendererContext context, HtmlWriter html) {
             BasedSequence nodeUrl = node.getUrl();
             ResolvedLink aLink = context.resolveLink(LinkType.LINK, node.getUrl().unescape(), null, null);
             ResolvedLink imgLink = context.resolveLink(LinkType.IMAGE, node.getUrl().unescape(), null, null);
-            
+
             String fullResUrl = aLink.getUrl();
             String scaledUrl = imgLink.getUrl();
 
             if (nodeUrl.startsWith("/")) {
-                fullResUrl = getAttachmentEndpoint(fullResUrl, false); 
-                scaledUrl = getAttachmentEndpoint(scaledUrl, true); 
+                fullResUrl = getAttachmentEndpoint(fullResUrl, false);
+                scaledUrl = getAttachmentEndpoint(scaledUrl, true);
             }
 
             // Create a link to full size image. 
@@ -211,7 +233,7 @@ public class MarkdownParser {
 
             // Close a tag after adding image 
             html.tag("/a");
-        }                
+        }
 
         //See https://github.com/vsch/flexmark-java/blob/cc3a2f59ba6e532833f4805f8134b4dc966ff837/flexmark/src/main/java/com/vladsch/flexmark/html/renderer/CoreNodeRenderer.java#L642
         void render(Link node, NodeRendererContext context, HtmlWriter html) {
@@ -247,6 +269,5 @@ public class MarkdownParser {
             }
         }
     }
-    
-        
+
 }

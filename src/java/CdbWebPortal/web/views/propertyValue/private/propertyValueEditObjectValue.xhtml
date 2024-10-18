@@ -32,16 +32,34 @@ See LICENSE file.
 
                 <p:outputPanel rendered="#{propertyValueController.displayMarkdownValue(propertyValueObject)}">
                     <p:panelGrid columns="3">
-                        <p:outputLabel value="Title" />
-                        <h:inputText id="mdTitle" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"/>
-                        <p:tooltip for="mdTitle" value="Enter link value."/>                                                           
-                        <p:outputLabel value="Markdown" /> 
-                        <p:commandLink value="Update Value" 
-                                       action="#{propertyValueController.setCurrentAndEditNewMarkdown(propertyValueObject)}"
-                                       update="@form:propertyValueMarkdownValueDialog"
-                                       oncomplete="PF('propertyValueMarkdownValueDialogWidget').initPosition();
-                                       PF('propertyValueMarkdownValueDialogWidget').show()"
-                                       />
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Title" />
+                            </p:column>
+                            <p:column>
+                                <h:inputText id="mdTitle" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"/>
+                            </p:column>
+                            <p:column>
+                                <p:tooltip for="mdTitle" value="Enter markdown title."/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column style="vertical-align: middle;">
+                                <p:outputLabel style="vertical-align: middle;" value="Markdown" /> 
+                            </p:column>
+                            <p:column>
+                                <p:commandButton id="addMdContentButton"
+                                                 value="Add Content" 
+                                                 action="#{propertyValueController.setCurrentAndEditNewMarkdown(propertyValueObject)}"
+                                                 update="@form:propertyValueMarkdownValueDialog"
+                                                 oncomplete="PF('propertyValueMarkdownValueDialogWidget').initPosition();
+                                                 PF('propertyValueMarkdownValueDialogWidget').show()"
+                                                 />
+                            </p:column>
+                            <p:column>
+                                <p:tooltip for="addMdContentButton" value="Enter markdown content."/>
+                            </p:column>
+                        </p:row>
                     </p:panelGrid>                           
                 </p:outputPanel>
 
