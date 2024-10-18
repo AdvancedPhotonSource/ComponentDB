@@ -13,11 +13,11 @@ let formId = '';
 
 document.addEventListener('paste', pasteMarkdownTextArea);
 
-function pasteMarkdownTextArea(event) {
+function pasteMarkdownTextArea(event) {    
     loadFormId(); 
     // Ignore non text area 
     let srcElement = event.srcElement;
-    if (srcElement.id !== formId + ':markdownPropertyTextareaEdit') {        
+    if (srcElement.id !== formId + ':propertyValueMarkdownValueDialogEditTabView:markdownPropertyTextareaEdit') {        
         return;
     }
 
@@ -64,7 +64,7 @@ function pasteLatestFileReference() {
 function addCustomDataToLogEntryValue(newData) {
     loadFormId(); 
     
-    let textArea = document.getElementById(formId + ':markdownPropertyTextareaEdit');
+    let textArea = document.getElementById(formId + ':propertyValueMarkdownValueDialogEditTabView:markdownPropertyTextareaEdit');
 
     let exitingValue = $(textArea).val();
     let curPos = textArea.selectionStart;

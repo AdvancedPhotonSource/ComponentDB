@@ -38,6 +38,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.StreamedContent;
 
 @Named("propertyValueController")
@@ -50,9 +51,11 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
     @EJB
     private PropertyMetadataFacade propertyMetadataFacade;
 
-    private PropertyValueMetadata currentPropertyMetadata;        
+    private PropertyValueMetadata currentPropertyMetadata;
 
     private static final Logger logger = LogManager.getLogger(PropertyValueController.class.getName());
+
+    private static final String markdownPreviewTabIdName = "markdownEditPreviewTab";
 
     public PropertyValueController() {
         super();
@@ -122,10 +125,10 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
             try {
                 PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
                 StreamedContent fileDownloadActionCommand = propertyTypeHandler.fileDownloadActionCommand(propertyValue);
-                String fileName = fileDownloadActionCommand.getName();              
+                String fileName = fileDownloadActionCommand.getName();
                 Supplier<InputStream> streamSupplier = fileDownloadActionCommand.getStream();
                 InputStream stream = streamSupplier.get();
-                
+
                 return GalleryUtility.convertExcelToPDF(stream, fileName);
             } catch (ExternalServiceError ex) {
                 logger.error(ex);
@@ -138,8 +141,8 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
                 SessionUtility.addErrorMessage("Error", ex.getMessage());
             }
         }
-        
-        return null; 
+
+        return null;
     }
 
     public String getPropertyEditPage(PropertyValue propertyValue) {
@@ -224,38 +227,60 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
     public boolean displayDownloadActionValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.FILE_DOWNLOAD);
     }
-    
+
     public boolean displayMarkdownValue(PropertyValue propertyValue) {
-        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.MARKDOWN); 
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.MARKDOWN);
     }
-    
+
     public boolean displayDownloadActionExcelPDFValue(PropertyValue propertyValue) {
         if (displayDownloadActionValue(propertyValue)) {
             String fileName = propertyValue.getValue();
-            return GalleryUtility.isFileNameExcel(fileName); 
+            return GalleryUtility.isFileNameExcel(fileName);
         }
-        return false; 
+        return false;
     }
-    
-    public void setCurrentAndEditNewMarkdown(PropertyValue propertyValue) {        
+
+    public void reloadMarkdownPreview() {
+        PropertyValue current = getCurrent();
+
+        if (current != null) {            
+            String text = current.getText();
+            String html = MarkdownParser.parseMarkdownAsHTML(text);
+            current.setGeneratedHTMLText(html);
+        }
+    }
+
+    public void markdownEditorTabChange(TabChangeEvent event) {
+        PropertyValue current = getCurrent(); 
+        if (current == null) {
+            return;
+        }
+        if (event.getTab().getId().equals(markdownPreviewTabIdName)) {            
+            current.setEditModeWidgets(false);
+        } else {
+            current.setEditModeWidgets(true);
+        }
+    }
+
+    public void setCurrentAndEditNewMarkdown(PropertyValue propertyValue) {
         propertyValue.setEditMode(true);
         setCurrent(propertyValue);
     }
-    
+
     public void setCurrentAndUpdateGeneratedHTML(PropertyValue propertyValue) {
         // Fetch latest text before generating html. 
-        PropertyValue latestProperty = findById(propertyValue.getId()); 
-        
+        PropertyValue latestProperty = findById(propertyValue.getId());
+
         propertyValue.setText(latestProperty.getText());
         propertyValue.setEditMode(false);
-        
+
         String text = propertyValue.getText();
         String html = MarkdownParser.parseMarkdownAsHTML(text);
-        propertyValue.setGeneratedHTMLText(html);                
-        
-        setCurrent(propertyValue); 
+        propertyValue.setGeneratedHTMLText(html);
+
+        setCurrent(propertyValue);
     }
-    
+
     public static String getAPIDownloadPath(PropertyValue propertyValue) {
         Integer id = propertyValue.getId();
         return StorageUtility.getApiDownloadByPropertyValueIdPath(id);
@@ -337,7 +362,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
 
     @Override
     protected PropertyValueControllerUtility createControllerUtilityInstance() {
-        return new PropertyValueControllerUtility(); 
+        return new PropertyValueControllerUtility();
     }
 
     /**

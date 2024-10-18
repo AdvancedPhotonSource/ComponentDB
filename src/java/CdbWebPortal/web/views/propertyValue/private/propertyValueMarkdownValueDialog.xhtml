@@ -27,19 +27,20 @@ See LICENSE file.
         <f:facet name="footer">
             <p:outputPanel id="propertyValueMarkdownValueDialogFooter"
                            style="display: inline-block">                
-                <p:panelGrid columns="2"
-                             rendered="#{propertyValueObject.editMode}">
+                <p:panelGrid id="markdownEditFileUploadPanelGrid"
+                             columns="2"
+                             rendered="#{propertyValueObject.editMode and propertyValueObject.editModeWidgets}">
                     <p:outputLabel value="Upload File"/>
                     <p:fileUpload listener="#{propertyValueMarkdownzDocumentUploadBean.handleFileUpload}"       
                                   id="markdownAttachmentFileUpload"
                                   widgetVar="markdownAttachmentFileUploadWidget"    
-                                  oncomplete="completePastedImage()"                              
+                                  oncomplete="completePastedImage()"
                                   mode="simple"
                                   auto="true"
                                   fileLimit="1"                              
                                   fileLimitMessage="Only one attachment can be added per upload."/>
-                    
-                    
+
+
                     <p:outputPanel style="display: none">
                         <p:remoteCommand name="completePastedImage"
                                          onstart="PF('loadingDialog').show();"
@@ -60,8 +61,9 @@ See LICENSE file.
                                           PF('propertyValueMarkdownValueDialogWidget').hide()"/>
 
                 <p:commandButton value="#{propertyValueObject.editMode ? 'Save' : 'Edit'}" 
-                                 icon="#{propertyValueObject.editMode ? 'fa fa-save' : 'fa fa-pencil'}"                             
-                                 oncomplete="#{propertyValueObject.editMode ? 'propertyValueMarkdownValueUpdateItem()' : 'propertyValueMarkdownValueDialogWidgetInitPosition()'}"
+                                 icon="#{propertyValueObject.editMode ? 'fa fa-save' : 'fa fa-pencil'}"      
+                                 onclick="PF('loadingDialog').show();"
+                                 oncomplete="PF('loadingDialog').hide(); #{propertyValueObject.editMode ? 'propertyValueMarkdownValueUpdateItem()' : 'propertyValueMarkdownValuePrepareEdit()'}"
                                  rendered="#{isEntityWriteable}"
                                  update="propertyValueMarkdownValueDialogFooter propertyValueMarkdownValueDialogContent">
                     <f:setPropertyActionListener target="#{propertyValueObject.editMode}"
@@ -71,31 +73,60 @@ See LICENSE file.
                 <p:remoteCommand name="propertyValueMarkdownValueUpdateItem"
                                  action="#{entityController.update()}" /> 
 
-                <p:remoteCommand name="propertyValueMarkdownValueDialogWidgetInitPosition"
-                                 onstart="PF('propertyValueMarkdownValueDialogWidget').initPosition();" /> 
+                <p:remoteCommand name="propertyValueMarkdownValuePrepareEdit"
+                                 onstart="PF('propertyValueMarkdownValueDialogWidget').initPosition(); PF('loadingDialog').hide(); " /> 
             </p:outputPanel>
         </f:facet>
 
-        <p:outputPanel id="propertyValueMarkdownValueDialogContent">
+        <p:outputPanel id="propertyValueMarkdownValueDialogContent">                                    
             <h:outputText escape="false" 
                           value="#{propertyValueObject.generatedHTMLText}" styleClass="markdownGeneratedContent"
                           rendered="#{!propertyValueObject.editMode}"/> 
+                                                            
+            <p:tabView id="propertyValueMarkdownValueDialogEditTabView"
+                       widgetVar="propertyValueMarkdownValueDialogEditTabViewWidget"
+                       dynamic="true"
+                       rendered="#{propertyValueObject.editMode}">                                
+                
+                <p:ajax event="tabChange" 
+                        listener="#{propertyValueController.markdownEditorTabChange}"
+                        update="@form:propertyValueMarkdownValueDialogFooter"
+                        onstart="submitCurrentMarkdownPropertyTextareaEdit()"
+                        oncomplete="reloadPropertyMarkdownEditPreviewTab()"/>
 
-            <p:inputTextarea  id="markdownPropertyTextareaEdit"
-                              value="#{propertyValueObject.text}"
-                              style="width: 100%"
-                              rows="25"
-                              rendered="#{propertyValueObject.editMode}" /> 
-            
-            <p:commandLink value="Markdown Help"
-                               rendered="#{propertyValueObject.editMode}"
-                               onclick="PF('commonMarkdownHelpDialogWidget').hide();
-                                        PF('commonMarkdownHelpDialogWidget').show()" /> 
+                <p:tab title="Edit">
+                    <p:inputTextarea  id="markdownPropertyTextareaEdit"
+                                      value="#{propertyValueObject.text}"
+                                      style="width: 100%"
+                                      rows="25" /> 
+
+                    <p:commandLink value="Markdown Help"
+                                   onclick="PF('commonMarkdownHelpDialogWidget').hide();
+                                       PF('commonMarkdownHelpDialogWidget').show()" /> 
+                    
+                    <p:remoteCommand name="submitCurrentMarkdownPropertyTextareaEdit"
+                                     update="markdownPropertyTextareaEdit"
+                                     process="markdownPropertyTextareaEdit"/> 
+                </p:tab>
+                
+                <p:tab title="Preview"
+                       id="markdownEditPreviewTab">
+                    
+                    <h:outputText id="markdownEditPreviewTabOutputText"
+                                  escape="false" 
+                                  value="#{propertyValueObject.generatedHTMLText}" 
+                                  styleClass="markdownGeneratedContent"/>       
+                    
+                    <p:remoteCommand name="reloadPropertyMarkdownEditPreviewTab"                                                  
+                                     action="#{propertyValueController.reloadMarkdownPreview()}"
+                                     update="markdownEditPreviewTabOutputText"/> 
+                </p:tab>
+            </p:tabView>
         </p:outputPanel>
 
 
     </p:dialog>
-    
+
     <ui:include src="../../common/private/commonMarkdownHelpDialog.xhtml"/> 
 
 

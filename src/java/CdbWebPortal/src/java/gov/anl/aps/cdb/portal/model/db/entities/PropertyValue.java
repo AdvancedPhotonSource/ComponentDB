@@ -170,6 +170,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     // Generated HTML for the markdown property type handler. 
     private transient String generatedHTMLText; 
     private transient boolean editMode = false; 
+    private transient boolean editModeWidgets = false; 
 
     public PropertyValue() {
     }
@@ -533,6 +534,15 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
 
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
+        this.editModeWidgets = editMode; 
+    }
+
+    public boolean isEditModeWidgets() {
+        return editModeWidgets;
+    }
+
+    public void setEditModeWidgets(boolean editModeWidgets) {
+        this.editModeWidgets = editModeWidgets;
     }
 
     public List<PropertyValueMetadata> getPropertyValueMetadataList() {
