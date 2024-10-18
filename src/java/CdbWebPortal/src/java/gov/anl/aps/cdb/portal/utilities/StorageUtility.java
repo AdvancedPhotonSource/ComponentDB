@@ -20,6 +20,7 @@ public class StorageUtility {
     
     private static final String PropertyValueImagesDirectory = "/propertyValue/images";
     private static final String PropertyValueDocumentsDirectory = "/propertyValue/documents";
+    private static final String PropertyValueMarkdownDocumentsDirectory = "/propertyValue/markdownDocuments";
     private static final String LogAttachmentsDirectory = "/log/attachments";
     private static final String MAARCPreviewsDirectory = "/propertyValue/maarc";
     private static final String API_DOWNLOAD_GET_PATH = "/api/Downloads/PropertyValue/";
@@ -68,13 +69,33 @@ public class StorageUtility {
     public static String getApplicationPropertyValueDocumentPath(String documentName) {
         return SessionUtility.getContextRoot() + getPropertyValueDocumentPath(documentName);
     }
-
+    
     public static String getFileSystemPropertyValueDocumentsDirectory() {
         return STORAGE_DIRECTORY + getPropertyValueDocumentsDirectory();
     }
 
     public static String getFileSystemPropertyValueDocumentPath(String documentName) {
         return getFullFilePath(getFileSystemPropertyValueDocumentsDirectory(), documentName);
+    }
+
+    public static String getPropertyValueMarkdownDocumentsDirectory() {
+        return PropertyValueMarkdownDocumentsDirectory;
+    }
+    
+    public static String getPropertyValueMarkdownDocumentPath(String documentName) {
+        return getFullFilePath(getPropertyValueMarkdownDocumentsDirectory(), documentName);
+    }
+    
+    public static String getApplicationPropertyValueMarkdownDocumentPath(String documentName) {
+        return SessionUtility.getContextRoot() + getPropertyValueMarkdownDocumentPath(documentName);
+    }
+    
+    public static String getFileSystemPropertyValueMarkdownDocumentsDirectory() {
+        return STORAGE_DIRECTORY + getPropertyValueMarkdownDocumentsDirectory();
+    }
+
+    public static String getFileSystemPropertyValueMarkdownDocumentPath(String documentName) {
+        return getFullFilePath(getFileSystemPropertyValueMarkdownDocumentsDirectory(), documentName);
     }
 
     //

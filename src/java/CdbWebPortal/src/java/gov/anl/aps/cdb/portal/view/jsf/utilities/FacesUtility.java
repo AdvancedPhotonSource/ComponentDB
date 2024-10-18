@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.view.jsf.utilities;
 
 import gov.anl.aps.cdb.common.constants.CdbProperty;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
+import gov.anl.aps.cdb.portal.utilities.MarkdownParser;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.Date;
@@ -162,7 +163,7 @@ public class FacesUtility {
 
     public String jumpToItemQrId(String failRemoteCommand) {
         // Remove any spaces 
-        jumpToQrIdEntry = jumpToQrIdEntry.replace(" ", "");       
+        jumpToQrIdEntry = jumpToQrIdEntry.replace(" ", "");
 
         return "/views/item/view?" + jumpToQrIdEntry + "&faces-redirect=true";
     }
@@ -174,14 +175,26 @@ public class FacesUtility {
     public void setJumpToQrIdEntry(String jumpToQrIdEntry) {
         this.jumpToQrIdEntry = jumpToQrIdEntry;
     }
-    
+
     public List<String> getJumpToQrIdEntryCompleteText(String query) {
         List<String> results = new ArrayList<>();
-        
-        results.add("qrId=" + query); 
+
+        results.add("qrId=" + query);
         results.add("id=" + query);
-         
+
         return results;
+    }
+
+    public String getMarkdownPlaceholderText() {
+        return MarkdownParser.getMarkdownPlaceholderText(); 
+    }
+
+    public String getMarkdownExampleText() {
+        return MarkdownParser.getMarkdownExampleText();
+    }
+
+    public String getMarkdownExampleHtml() {
+        return MarkdownParser.getMarkdownExampleHtml();
     }
 
     @FacesConverter("genericSelectOneMenuObjectConverter")

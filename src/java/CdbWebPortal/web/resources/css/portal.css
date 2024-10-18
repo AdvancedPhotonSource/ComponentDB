@@ -1568,3 +1568,45 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
 body .ui-inplace .ui-inplace-display {
     padding: 0;
 }
+
+.markdownGeneratedContent {
+    text-align: left; 
+}
+
+.markdownGeneratedContent h1 {
+    color: #495057;     
+    padding: 0; 
+    margin: 0px; 
+}
+
+.markdownGeneratedContent h2 {
+    color: #495057;     
+    padding: 0; 
+    margin: 0px; 
+}
+
+.markdownGeneratedContent h3 {    
+    padding: 0; 
+    margin: 0px; 
+}
+
+.markdownGeneratedContent p, li {    
+    font-size: 15px;
+}
+
+.markdownGeneratedContent img {
+    max-width: 450px; 
+}
+
+.markdownGeneratedContent pre:has(code) {
+    overflow: auto;
+    font-family: 'Monaco', monospace;
+    padding: 1em;
+    border: 1px solid #cfcfcf;
+}
+
+.markdownGeneratedContent pre:has([class^="language-"]) {
+    border: none; 
+    background: #273647;
+    color: white;
+}

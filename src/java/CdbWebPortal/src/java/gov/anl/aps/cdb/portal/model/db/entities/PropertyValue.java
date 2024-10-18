@@ -21,6 +21,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -82,7 +84,7 @@ import javax.xml.bind.annotation.XmlTransient;
     ),
 })
 public class PropertyValue extends PropertyValueBase implements Serializable {
-
+        
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -92,6 +94,9 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     private String tag;
     @Size(max = 512)
     private String value;
+    @Lob
+    @Size(max = 65535)
+    private String text;
     @Size(max = 16)
     private String units;
     @Size(max = 256)
@@ -133,7 +138,12 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValue")
     private List<PropertyValueHistory> propertyValueHistoryList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValue")    
-    private List<PropertyMetadata> propertyMetadataList;
+    private List<PropertyMetadata> propertyMetadataList;    
+    @JoinTable(name = "property_attachment", joinColumns = {
+        @JoinColumn(name = "property_value_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "attachment_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<Attachment> attachmentList;
 
     public static final transient SimpleDateFormat InputDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
     
@@ -156,6 +166,11 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     private transient AllowedPropertyValue selectedAllowedPropertyValue = null; 
     
     private transient List<Item> itemList = null; 
+    
+    // Generated HTML for the markdown property type handler. 
+    private transient String generatedHTMLText; 
+    private transient boolean editMode = false; 
+    private transient boolean editModeWidgets = false; 
 
     public PropertyValue() {
     }
@@ -194,6 +209,14 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     public void setValue(String value) {
         this.booleanValue = null;
         this.value = value;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public String getUnits() {
@@ -497,6 +520,31 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
         this.targetValue = value;
     }
 
+    public String getGeneratedHTMLText() {
+        return generatedHTMLText;
+    }
+
+    public void setGeneratedHTMLText(String generatedHTMLText) {
+        this.generatedHTMLText = generatedHTMLText;
+    }
+
+    public boolean isEditMode() {
+        return editMode;
+    }
+
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
+        this.editModeWidgets = editMode; 
+    }
+
+    public boolean isEditModeWidgets() {
+        return editModeWidgets;
+    }
+
+    public void setEditModeWidgets(boolean editModeWidgets) {
+        this.editModeWidgets = editModeWidgets;
+    }
+
     public List<PropertyValueMetadata> getPropertyValueMetadataList() {
         if (propertyValueMetadataList == null) {
             if (propertyType != null) {
@@ -739,5 +787,13 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
         }
 
     }
+    
+    @XmlTransient
+    public List<Attachment> getAttachmentList() {
+        return attachmentList;
+    }
 
+    public void setAttachmentList(List<Attachment> attachmentList) {
+        this.attachmentList = attachmentList;
+    }
 }
