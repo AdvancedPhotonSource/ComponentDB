@@ -50,7 +50,8 @@ public class LogAttachmentUploadBean implements Serializable {
         Path uploadDirPath;
         try {
             if (uploadedFile != null && !uploadedFile.getFileName().isEmpty()) {
-                String uploadedExtension = FileUtility.getFileExtension(uploadedFile.getFileName());
+                String fileName = uploadedFile.getFileName();
+                String uploadedExtension = FileUtility.getFileExtension(fileName);
 
                 uploadDirPath = Paths.get(StorageUtility.getFileSystemLogAttachmentsDirectory());
                 logger.debug("Using log attachments directory: " + uploadDirPath.toString());
@@ -66,13 +67,14 @@ public class LogAttachmentUploadBean implements Serializable {
                 logger.debug("Saved file: " + originalFile.toPath());
                 Attachment attachment = new Attachment();
                 attachment.setName(originalFile.getName());
+                attachment.setOriginalFilename(fileName);
                 List<Attachment> attachmentList = logEntry.getAttachmentList();
                 if (attachmentList == null) {
                     attachmentList = new ArrayList<>();
                     logEntry.setAttachmentList(attachmentList);
                 }
                 attachmentList.add(attachment);
-                SessionUtility.addInfoMessage("Success", "Uploaded file " + uploadedFile.getFileName() + ".");
+                SessionUtility.addInfoMessage("Success", "Uploaded file " + fileName + ".");
             }
         } catch (IOException ex) {
             logger.error(ex);
