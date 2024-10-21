@@ -16,7 +16,7 @@ from setuptools import setup
 from setuptools import find_packages
 
 setup(name='ComponentDB-CLI',
-      version='3.15.9',
+      version='3.16.0',
       packages=['cdbCli',
                 'cdbCli.common',
                 'cdbCli.common.cli',
@@ -32,7 +32,7 @@ setup(name='ComponentDB-CLI',
                         'pandas',
                         'rich',
                         'InquirerPy',
-                        'ComponentDB-API==3.15.8'],
+                        'ComponentDB-API==3.16.0'],
       license='Copyright (c) UChicago Argonne, LLC. All rights reserved.',
       description='Python APIs used to communicate with java hosted ComponentDB API.',
       maintainer='Dariusz Jarosz',
