@@ -1080,7 +1080,7 @@ CREATE TABLE `property_metadata_history` (
 --
 
 DROP TABLE IF EXISTS `property_attachment`;
-CREATE TABLE `log_attachment` (
+CREATE TABLE `property_attachment` (
   `property_value_id` int(11) unsigned NOT NULL,
   `attachment_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`property_value_id`, `attachment_id`),
