@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
+import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
@@ -54,7 +55,7 @@ public class CableWizard implements Serializable {
     private static final String tabReview = "CableReviewTab";
 
     public static final String CONTROLLER_NAMED = "cableWizard";
-    
+
     protected CableWizardClient client;
     protected ItemDomainMachineDesignTreeNode machineDesignTreeEndpoint1 = null;
     protected ItemDomainMachineDesignTreeNode machineDesignTreeEndpoint2 = null;
@@ -73,10 +74,10 @@ public class CableWizard implements Serializable {
     protected String redirectSuccess = "";
     protected List<ItemCategory> availableTechnicalSystems = null;
     private ItemDomainCableDesign cableItem = null;
-    
+
     private String selectionCableType = null;
     private ItemDomainCableCatalog selectionCableCatalogItem = null;
-    
+
     protected ItemConnector portEnd1 = null;
     protected ItemConnector connectorEnd1 = null;
     protected ItemConnector portEnd2 = null;
@@ -84,13 +85,13 @@ public class CableWizard implements Serializable {
 
     private String selectedConnectorNameEnd1 = null;
     private String selectedConnectorNameEnd2 = null;
-    
+
     private Map<String, ItemConnector> connectorMap = new HashMap<>();
-    
+
     public static CableWizard getInstance() {
         return (CableWizard) SessionUtility.findBean(CableWizard.CONTROLLER_NAMED);
-    } 
-    
+    }
+
     public void registerClient(CableWizardClient client, String redirectSuccess) {
         this.client = client;
         this.redirectSuccess = redirectSuccess;
@@ -209,11 +210,11 @@ public class CableWizard implements Serializable {
     public void setSelectionEndpoint1(TreeNode selectionEndpoint1) {
         this.selectionEndpoint1 = selectionEndpoint1;
     }
-    
+
     public void setEndpoint1(Item itemEnd1) {
         this.itemEnd1 = itemEnd1;
     }
-    
+
     public Item getEndpoint1() {
         return itemEnd1;
     }
@@ -229,13 +230,13 @@ public class CableWizard implements Serializable {
             return itemEnd1.toString();
         }
     }
-    
+
     public void expandEndpoint1TreeAndSelectNode() {
         ItemDomainMachineDesignTreeNode endpoint1Tree = getMachineDesignTreeEndpoint1();
         selectionEndpoint1 = ItemDomainMachineDesignController.expandToItemOrPort(
                 endpoint1Tree, (ItemDomainMachineDesign) getEndpoint1(), getEnd1Port());
     }
-    
+
     /**
      * Returns the cable's second endpoint. This is set by the wizard's endpoint
      * selection tab, and is the selection model for the machine design tree
@@ -389,7 +390,7 @@ public class CableWizard implements Serializable {
     public void setEnablementForCurrentTab() {
         setEnablement(currentTab);
     }
-    
+
     protected void handleTabStep(String currStep, String nextStep) {
         ItemDomainCableDesignController controller = ItemDomainCableDesignController.getInstance();
 
@@ -467,22 +468,22 @@ public class CableWizard implements Serializable {
     }
 
     /**
-     * Returns custom tab navigation based on wizard state.  Subclass should
+     * Returns custom tab navigation based on wizard state. Subclass should
      * override for custom behavior.
      */
     public String nextTab(String currStep, String nextStep) {
-        
+
         String nextTab = nextStep;
-        
+
         // skip details tab for unspecified cable type
         if ((nextStep.endsWith(tabDetails)) && (isTypeUnspecified())) {
             if (currStep.endsWith(tabType)) {
-                nextTab = CONTROLLER_NAMED+tabReview;
+                nextTab = CONTROLLER_NAMED + tabReview;
             } else if (currStep.endsWith(tabReview)) {
-                nextTab = CONTROLLER_NAMED+tabType;
+                nextTab = CONTROLLER_NAMED + tabType;
             }
         }
-        
+
         return nextTab;
     }
 
@@ -498,7 +499,7 @@ public class CableWizard implements Serializable {
         String currStep = event.getOldStep();
 
         nextStep = nextTab(currStep, nextStep);
-        
+
         if (!nextStep.equals(currStep)) {
             handleTabStep(currStep, nextStep);
         }
@@ -567,7 +568,7 @@ public class CableWizard implements Serializable {
     }
 
     /**
-     * Returns whether to specify cable type (e.g., unspecified or catalog). 
+     * Returns whether to specify cable type (e.g., unspecified or catalog).
      * This is the model for radio buttons on the wizard's cable type tab.
      */
     public String getSelectionCableType() {
@@ -580,7 +581,7 @@ public class CableWizard implements Serializable {
     public void setSelectionCableType(String selectionCableType) {
         this.selectionCableType = selectionCableType;
     }
-    
+
     /**
      * Returns true if the cable type is unspecified.
      */
@@ -617,7 +618,6 @@ public class CableWizard implements Serializable {
         this.selectionCableCatalogItem = selectionCableCatalogItem;
     }
 
-
     /**
      * Handles click events for the selectionCableType selectOneRadio component.
      */
@@ -631,15 +631,15 @@ public class CableWizard implements Serializable {
     public void selectListenerCableCatalogItem() {
         setEnablementForCurrentTab();
     }
-    
+
     public void setEnd1Port(ItemConnector port) {
         this.portEnd1 = port;
     }
-    
+
     public ItemConnector getEnd1Port() {
         return portEnd1;
     }
-    
+
     public String getEnd1PortString() {
         if (portEnd1 == null) {
             return "";
@@ -647,15 +647,15 @@ public class CableWizard implements Serializable {
             return portEnd1.getConnector().getName();
         }
     }
-    
+
     public ItemConnector getEnd1Connector() {
         return connectorEnd1;
     }
-    
+
     public void setEnd1Connector(ItemConnector connector) {
         connectorEnd1 = connector;
     }
-    
+
     public String getEnd1ConnectorString() {
         if (connectorEnd1 == null) {
             return "";
@@ -671,15 +671,15 @@ public class CableWizard implements Serializable {
             return portEnd2.getConnector().getName();
         }
     }
-    
+
     public ItemConnector getEnd2Connector() {
         return connectorEnd2;
     }
-    
+
     public void setEnd2Connector(ItemConnector connector) {
         connectorEnd2 = connector;
     }
-    
+
     public String getEnd2ConnectorString() {
         if (connectorEnd2 == null) {
             return "";
@@ -717,7 +717,7 @@ public class CableWizard implements Serializable {
         portEnd1 = null;
         setEnablementForCurrentTab();
     }
-    
+
     /**
      * Handles select events generated by the machine design tree table
      * component. Must call client side remoteCommand to update button state
@@ -762,7 +762,7 @@ public class CableWizard implements Serializable {
         }
         return connectorNames;
     }
-    
+
     public List<String> getUnmappedConnectorsEnd1() {
         List<ItemConnector> connectors = ItemDomainCableDesignController.getInstance().getUnmappedConnectorsForCableItem(
                 cableItem, VALUE_CABLE_END_1);
@@ -790,7 +790,7 @@ public class CableWizard implements Serializable {
     public void setSelectedConnectorNameEnd2(String selectedConnectorNameEnd2) {
         this.selectedConnectorNameEnd2 = selectedConnectorNameEnd2;
     }
-    
+
     public void selectListenerConnectorEnd1() {
         String connectorName = getSelectedConnectorNameEnd1();
         if (connectorName != null) {
@@ -799,7 +799,7 @@ public class CableWizard implements Serializable {
             connectorEnd1 = null;
         }
     }
-    
+
     public void selectListenerConnectorEnd2() {
         String connectorName = getSelectedConnectorNameEnd2();
         if (connectorName != null) {
@@ -808,7 +808,7 @@ public class CableWizard implements Serializable {
             connectorEnd2 = null;
         }
     }
-    
+
     /**
      * Implements the save operation, invoked by the wizard's "Save" navigation
      * button.
@@ -830,8 +830,11 @@ public class CableWizard implements Serializable {
         }
 
         ItemDomainCableDesignController controller = ItemDomainCableDesignController.getInstance();
-        cableItem.setPrimaryEndpoint(itemEnd1, portEnd1, connectorEnd1, VALUE_CABLE_END_1);
-        cableItem.setPrimaryEndpoint(itemEnd2, portEnd2, connectorEnd2, VALUE_CABLE_END_2);
+        try {
+            cableItem.setPrimaryEndpoint(itemEnd1, portEnd1, connectorEnd1, VALUE_CABLE_END_1);
+            cableItem.setPrimaryEndpoint(itemEnd2, portEnd2, connectorEnd2, VALUE_CABLE_END_2);
+        } catch (InvalidArgument ex) {
+        }
 
         String result = "";
         result = controller.create();
