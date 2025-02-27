@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.rest.routes;
 
+import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
@@ -27,6 +28,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.rest.entities.ItemDomainCableDesignIdListRequest;
+import gov.anl.aps.cdb.rest.entities.ItemDomainCableDesignMetadata;
 import gov.anl.aps.cdb.rest.entities.UpdateCableDesignAssignedItemInformation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -524,10 +526,10 @@ public class CableDesignItemRoute extends ItemBaseRoute {
             throw new InvalidObjectState("Required field cable endpoint 2 has not been defined.");
         }
         if (cableDesignItem.getItemProjectList().isEmpty()) {
-            throw new InvalidObjectState("Required field cable design needs a project assignment.");
+            throw new InvalidObjectState("Required field project has no assignment.");
         }
         if (cableDesignItem.getItemCategoryList().isEmpty()) {
-            throw new InvalidObjectState("Required field cable design needs a technical system assignment.");
+            throw new InvalidObjectState("Required field technical system has no assignment.");
         }
 
         if (id == null) {
@@ -537,6 +539,141 @@ public class CableDesignItemRoute extends ItemBaseRoute {
         }
 
         return cableDesignItem;
+    }
+
+    @POST
+    @Path("/CableDesignMetadataUpdate")
+    @Produces(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemDomainCableDesignMetadata updateCableDesignMetadata(@Parameter(description = "Only specified metadata fields will be set. "
+            + "Object from fetching existing metadata can also be used as input.") @RequestBody(required = true) ItemDomainCableDesignMetadata cableDesignMetadata) throws InvalidArgument, ObjectNotFound, AuthorizationError, CdbException {
+        // Check if all parameters are null
+        if (cableDesignMetadata.isEmpty()) {
+            throw new InvalidArgument("No metadata value was specified. There is nothing to update.");
+        }
+
+        Integer id = cableDesignMetadata.getCableDesignId();
+        if (id == null) {
+            throw new InvalidArgument("Cable design id is required to perform this update.");
+        }
+
+        ItemDomainCableDesign cableDesignItem = getCableDesignItemById(id);
+        UserInfo currentUser = verifyCurrentUserPermissionForItem(cableDesignItem);
+        ItemDomainCableDesignControllerUtility utility = new ItemDomainCableDesignControllerUtility();
+
+        String externalCableName = cableDesignMetadata.getExternalCableName();
+        String importCableId = cableDesignMetadata.getImportCableId();
+        String alternateCableId = cableDesignMetadata.getAlternateCableId();
+        String laying = cableDesignMetadata.getLaying();
+        String voltage = cableDesignMetadata.getVoltage();
+        String routedLength = cableDesignMetadata.getRoutedLength();
+        String route = cableDesignMetadata.getRoute();
+        String totalReqLength = cableDesignMetadata.getTotalReqLength();
+        String notes = cableDesignMetadata.getNotes();
+
+        String endpoint1Description = cableDesignMetadata.getEndpoint1Description();
+        String endpoint1Route = cableDesignMetadata.getEndpoint1Route();
+        String endpoint1EndLength = cableDesignMetadata.getEndpoint1EndLength();
+        String endpoint1Termination = cableDesignMetadata.getEndpoint1Termination();
+        String endpoint1Pinlist = cableDesignMetadata.getEndpoint1Pinlist();
+        String endpoint1Notes = cableDesignMetadata.getEndpoint1Notes();
+        String endpoint1Drawing = cableDesignMetadata.getEndpoint1Drawing();
+
+        String endpoint2Description = cableDesignMetadata.getEndpoint2Description();
+        String endpoint2Route = cableDesignMetadata.getEndpoint2Route();
+        String endpoint2EndLength = cableDesignMetadata.getEndpoint2EndLength();
+        String endpoint2Termination = cableDesignMetadata.getEndpoint2Termination();
+        String endpoint2Pinlist = cableDesignMetadata.getEndpoint2Pinlist();
+        String endpoint2Notes = cableDesignMetadata.getEndpoint2Notes();
+        String endpoint2Drawing = cableDesignMetadata.getEndpoint2Drawing();
+
+        // Update cable metadata when provided 
+        if (externalCableName != null) {
+            cableDesignItem.setExternalCableName(externalCableName);
+        }
+        if (importCableId != null) {
+            cableDesignItem.setImportCableId(importCableId);
+        }
+        if (alternateCableId != null) {
+            cableDesignItem.setAlternateCableId(alternateCableId);
+        }
+        if (laying != null) {
+            cableDesignItem.setLaying(laying);
+        }
+        if (voltage != null) {
+            cableDesignItem.setVoltage(voltage);
+        }
+        if (routedLength != null) {
+            cableDesignItem.setRoutedLength(routedLength);
+        }
+        if (route != null) {
+            cableDesignItem.setRoute(route);
+        }
+        if (totalReqLength != null) {
+            cableDesignItem.setTotalReqLength(totalReqLength);
+        }
+        if (notes != null) {
+            cableDesignItem.setNotes(notes);
+        }
+
+        // Update endpoint 2 metadata when provided 
+        if (endpoint1Description != null) {
+            cableDesignItem.setEndpoint1Description(endpoint1Description);
+        }
+        if (endpoint1Route != null) {
+            cableDesignItem.setEndpoint1Route(endpoint1Route);
+        }
+        if (endpoint1EndLength != null) {
+            cableDesignItem.setEndpoint1EndLength(endpoint1EndLength);
+        }
+        if (endpoint1Termination != null) {
+            cableDesignItem.setEndpoint1Termination(endpoint1Termination);
+        }
+        if (endpoint1Pinlist != null) {
+            cableDesignItem.setEndpoint1Pinlist(endpoint1Pinlist);
+        }
+        if (endpoint1Notes != null) {
+            cableDesignItem.setEndpoint1Notes(endpoint1Notes);
+        }
+        if (endpoint1Drawing != null) {
+            cableDesignItem.setEndpoint1Drawing(endpoint1Drawing);
+        }
+
+        // Update endpoint 2 metadata when provided 
+        if (endpoint2Description != null) {
+            cableDesignItem.setEndpoint2Description(endpoint2Description);
+        }
+        if (endpoint2Route != null) {
+            cableDesignItem.setEndpoint2Route(endpoint2Route);
+        }
+        if (endpoint2EndLength != null) {
+            cableDesignItem.setEndpoint2EndLength(endpoint2EndLength);
+        }
+        if (endpoint2Termination != null) {
+            cableDesignItem.setEndpoint2Termination(endpoint2Termination);
+        }
+        if (endpoint2Pinlist != null) {
+            cableDesignItem.setEndpoint2Pinlist(endpoint2Pinlist);
+        }
+        if (endpoint2Notes != null) {
+            cableDesignItem.setEndpoint2Notes(endpoint2Notes);
+        }
+        if (endpoint2Drawing != null) {
+            cableDesignItem.setEndpoint2Drawing(endpoint2Drawing);
+        }
+
+        utility.update(cableDesignItem, currentUser);
+
+        return getCableDesignMetadata(id);
+    }
+
+    @GET
+    @Path("/CableDesignMetadata/{cableDesignId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ItemDomainCableDesignMetadata getCableDesignMetadata(@PathParam("cableDesignId") int cableDesignId) throws CdbException {
+        ItemDomainCableDesign cableDesignItem = getCableDesignItemById(cableDesignId);
+        return new ItemDomainCableDesignMetadata(cableDesignItem);
     }
 
     @GET
