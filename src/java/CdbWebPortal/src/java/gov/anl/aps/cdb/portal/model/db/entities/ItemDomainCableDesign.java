@@ -16,6 +16,8 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
+import gov.anl.aps.cdb.rest.entities.CableDesignConnectionListSummaryObject;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -107,6 +109,8 @@ public class ItemDomainCableDesign extends Item {
     private transient List<ItemElementRelationship> deletedIerList = null;
     private transient List<ItemConnector> newItemConnectorList = null;
 
+    private transient List<CableDesignConnectionListSummaryObject> connectionList;
+
     public final static String CABLE_DESIGN_INTERNAL_PROPERTY_TYPE = "cable_design_internal_property_type";
     public final static String CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY = "externalCableName";
     public final static String CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY = "importCableId";
@@ -167,6 +171,14 @@ public class ItemDomainCableDesign extends Item {
         if (deletedIerList != null) {
             deletedIerList.clear();
         }
+    }
+
+    public List<CableDesignConnectionListSummaryObject> getConnectionList() {
+        return connectionList;
+    }
+
+    public void setConnectionList(List<CableDesignConnectionListSummaryObject> connectionList) {
+        this.connectionList = connectionList;
     }
 
     @JsonIgnore

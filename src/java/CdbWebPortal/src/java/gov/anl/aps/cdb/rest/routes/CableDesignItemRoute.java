@@ -27,6 +27,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
+import gov.anl.aps.cdb.rest.entities.CableDesignConnectionListSummaryObject;
 import gov.anl.aps.cdb.rest.entities.ItemDomainCableDesignIdListRequest;
 import gov.anl.aps.cdb.rest.entities.ItemDomainCableDesignMetadata;
 import gov.anl.aps.cdb.rest.entities.UpdateCableDesignAssignedItemInformation;
@@ -71,9 +72,20 @@ public class CableDesignItemRoute extends ItemBaseRoute {
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ItemDomainCableDesign> getCableDesignItemList() {
-        LOGGER.debug("Fetching cable design list");
-        return facade.findAll();
+    public List<ItemDomainCableDesign> getCableDesignItemList(@Parameter(description = "Optional bool to specify if connections should be included. "
+            + "Can be accessed by `connectionList` of the cable design item.") @QueryParam("includeConnections") boolean includeConnections) {
+        LOGGER.debug("Fetching cable design list.");
+        List<ItemDomainCableDesign> cableDesigns = facade.findAll();
+
+        if (includeConnections) {
+            for (ItemDomainCableDesign cableDesign : cableDesigns) {
+                List<CableDesignConnectionListSummaryObject> connectionList
+                        = CableDesignConnectionListSummaryObject.getConnectionSummaryList(cableDesign);
+                cableDesign.setConnectionList(connectionList);
+            }
+        }
+
+        return cableDesigns;
     }
 
     @GET
