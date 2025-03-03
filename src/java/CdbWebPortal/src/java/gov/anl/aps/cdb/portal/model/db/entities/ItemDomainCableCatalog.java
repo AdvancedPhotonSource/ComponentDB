@@ -23,9 +23,9 @@ import org.apache.logging.log4j.Logger;
  * @author djarosz
  */
 @Entity
-@DiscriminatorValue(value = ItemDomainName.CABLE_CATALOG_ID + "")   
+@DiscriminatorValue(value = ItemDomainName.CABLE_CATALOG_ID + "")
 public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCableInventory> {
-    
+
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainCableCatalog.class.getName());
 
     private transient String url = null;
@@ -48,37 +48,39 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     private transient String reelQuantity = null;
     private transient String leadTime = null;
     private transient String procurementStatus = null;
-    
-    public final static String CABLE_CATALOG_INTERNAL_PROPERTY_TYPE = "cable_catalog_internal_property_type"; 
-    public final static String CABLE_PROPERTY_URL_KEY = "url"; 
-    public final static String CABLE_PROPERTY_ALT_PART_NUM_KEY = "altPartNumber"; 
-    public final static String CABLE_PROPERTY_IMAGE_URL_KEY = "imageUrl"; 
-    public final static String CABLE_PROPERTY_WEIGHT_KEY = "weight"; 
-    public final static String CABLE_PROPERTY_DIAMETER_KEY = "diameter"; 
-    public final static String CABLE_PROPERTY_CONDUCTORS_KEY = "conductors"; 
-    public final static String CABLE_PROPERTY_INSULATION_KEY = "insulation"; 
-    public final static String CABLE_PROPERTY_JACKET_COLOR_KEY = "jacketColor"; 
-    public final static String CABLE_PROPERTY_VOLTAGE_RATING_KEY = "voltageRating"; 
-    public final static String CABLE_PROPERTY_FIRE_LOAD_KEY = "fireLoad"; 
-    public final static String CABLE_PROPERTY_HEAT_LIMIT_KEY = "heatLimit"; 
-    public final static String CABLE_PROPERTY_BEND_RADIUS_KEY = "bendRadius"; 
-    public final static String CABLE_PROPERTY_RAD_TOLERANCE_KEY = "radTolerance"; 
-    public final static String CABLE_PROPERTY_TOTAL_LENGTH_KEY = "totalLength"; 
-    public final static String CABLE_PROPERTY_REEL_LENGTH_KEY = "reelLength"; 
-    public final static String CABLE_PROPERTY_REEL_QUANTITY_KEY = "reelQuantity"; 
-    public final static String CABLE_PROPERTY_LEAD_TIME_KEY = "leadTime"; 
-    public final static String CABLE_PROPERTY_PROCUREMENT_STATUS_KEY = "procurementStatus"; 
-    
+
+    public final static String CABLE_CATALOG_INTERNAL_PROPERTY_TYPE = "cable_catalog_internal_property_type";
+    public final static String CABLE_PROPERTY_URL_KEY = "url";
+    public final static String CABLE_PROPERTY_ALT_PART_NUM_KEY = "altPartNumber";
+    public final static String CABLE_PROPERTY_IMAGE_URL_KEY = "imageUrl";
+    public final static String CABLE_PROPERTY_WEIGHT_KEY = "weight";
+    public final static String CABLE_PROPERTY_DIAMETER_KEY = "diameter";
+    public final static String CABLE_PROPERTY_CONDUCTORS_KEY = "conductors";
+    public final static String CABLE_PROPERTY_INSULATION_KEY = "insulation";
+    public final static String CABLE_PROPERTY_JACKET_COLOR_KEY = "jacketColor";
+    public final static String CABLE_PROPERTY_VOLTAGE_RATING_KEY = "voltageRating";
+    public final static String CABLE_PROPERTY_FIRE_LOAD_KEY = "fireLoad";
+    public final static String CABLE_PROPERTY_HEAT_LIMIT_KEY = "heatLimit";
+    public final static String CABLE_PROPERTY_BEND_RADIUS_KEY = "bendRadius";
+    public final static String CABLE_PROPERTY_RAD_TOLERANCE_KEY = "radTolerance";
+    public final static String CABLE_PROPERTY_TOTAL_LENGTH_KEY = "totalLength";
+    public final static String CABLE_PROPERTY_REEL_LENGTH_KEY = "reelLength";
+    public final static String CABLE_PROPERTY_REEL_QUANTITY_KEY = "reelQuantity";
+    public final static String CABLE_PROPERTY_LEAD_TIME_KEY = "leadTime";
+    public final static String CABLE_PROPERTY_PROCUREMENT_STATUS_KEY = "procurementStatus";
+
+    private transient List<ItemConnector> connectorList = null;
+
     @Override
     public Item createInstance() {
-        return new ItemDomainCableCatalog(); 
-    } 
+        return new ItemDomainCableCatalog();
+    }
 
     @Override
     public ItemDomainCableCatalogControllerUtility getItemControllerUtility() {
-        return new ItemDomainCableCatalogControllerUtility(); 
+        return new ItemDomainCableCatalogControllerUtility();
     }
-    
+
     @Override
     public List<Item> getDerivedFromItemList() {
         List<Item> itemList = super.getDerivedFromItemList();
@@ -90,14 +92,14 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
                 return o1.getName().compareTo(o2.getName());
             }
         });
-        return itemListCopy;        
+        return itemListCopy;
     }
-    
+
     @JsonIgnore
     public List<ItemDomainCableInventory> getCableInventoryItemList() {
-        return (List<ItemDomainCableInventory>)(List<?>) super.getDerivedFromItemList();
+        return (List<ItemDomainCableInventory>) (List<?>) super.getDerivedFromItemList();
     }
-    
+
     @JsonIgnore
     public String getUrl() throws CdbException {
         if (url == null) {
@@ -105,12 +107,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return url;
     }
-    
+
     public void setUrl(String w) throws CdbException {
         url = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_URL_KEY, w);
     }
-    
+
     @JsonIgnore
     public String getImageUrl() throws CdbException {
         if (imageUrl == null) {
@@ -118,12 +120,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return imageUrl;
     }
-    
+
     public void setImageUrl(String w) throws CdbException {
         imageUrl = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_IMAGE_URL_KEY, w);
     }
-    
+
     @JsonIgnore
     public String getAltPartNumber() throws CdbException {
         if (altPartNumber == null) {
@@ -131,12 +133,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return altPartNumber;
     }
-    
+
     public void setAltPartNumber(String n) throws CdbException {
         altPartNumber = n;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_ALT_PART_NUM_KEY, n);
     }
-    
+
     @JsonIgnore
     public String getWeight() throws CdbException {
         if (weight == null) {
@@ -144,12 +146,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return weight;
     }
-    
+
     public void setWeight(String w) throws CdbException {
         weight = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_WEIGHT_KEY, w);
     }
-    
+
     @JsonIgnore
     public String getDiameter() throws CdbException {
         if (diameter == null) {
@@ -157,12 +159,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return diameter;
     }
-    
+
     public void setDiameter(String d) throws CdbException {
         diameter = d;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_DIAMETER_KEY, d);
     }
-    
+
     @JsonIgnore
     public String getConductors() throws CdbException {
         if (conductors == null) {
@@ -170,12 +172,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return conductors;
     }
-    
+
     public void setConductors(String w) throws CdbException {
         conductors = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_CONDUCTORS_KEY, w);
     }
-    
+
     @JsonIgnore
     public String getInsulation() throws CdbException {
         if (insulation == null) {
@@ -183,12 +185,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return insulation;
     }
-    
+
     public void setInsulation(String w) throws CdbException {
         insulation = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_INSULATION_KEY, w);
     }
-    
+
     @JsonIgnore
     public String getJacketColor() throws CdbException {
         if (jacketColor == null) {
@@ -196,12 +198,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return jacketColor;
     }
-    
+
     public void setJacketColor(String w) throws CdbException {
         jacketColor = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_JACKET_COLOR_KEY, w);
     }
-    
+
     @JsonIgnore
     public String getVoltageRating() throws CdbException {
         if (voltageRating == null) {
@@ -209,12 +211,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return voltageRating;
     }
-    
+
     public void setVoltageRating(String w) throws CdbException {
         voltageRating = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_VOLTAGE_RATING_KEY, w);
     }
-    
+
     @JsonIgnore
     public String getFireLoad() throws CdbException {
         if (fireLoad == null) {
@@ -222,12 +224,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return fireLoad;
     }
-    
+
     public void setFireLoad(String w) throws CdbException {
         fireLoad = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_FIRE_LOAD_KEY, w);
     }
-    
+
     @JsonIgnore
     public String getHeatLimit() throws CdbException {
         if (heatLimit == null) {
@@ -235,12 +237,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return heatLimit;
     }
-    
+
     public void setHeatLimit(String w) throws CdbException {
         heatLimit = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_HEAT_LIMIT_KEY, w);
     }
-    
+
     @JsonIgnore
     public String getBendRadius() throws CdbException {
         if (bendRadius == null) {
@@ -248,12 +250,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return bendRadius;
     }
-    
+
     public void setBendRadius(String w) throws CdbException {
         bendRadius = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_BEND_RADIUS_KEY, w);
     }
-    
+
     @JsonIgnore
     public String getRadTolerance() throws CdbException {
         if (radTolerance == null) {
@@ -261,12 +263,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return radTolerance;
     }
-    
+
     public void setRadTolerance(String w) throws CdbException {
         radTolerance = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_RAD_TOLERANCE_KEY, w);
     }
-    
+
     @JsonIgnore
     public String getTotalLength() throws CdbException {
         if (totalLength == null) {
@@ -274,12 +276,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return totalLength;
     }
-    
+
     public void setTotalLength(String w) throws CdbException {
         totalLength = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_TOTAL_LENGTH_KEY, w);
     }
-    
+
     @JsonIgnore
     public String getReelLength() throws CdbException {
         if (reelLength == null) {
@@ -287,12 +289,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return reelLength;
     }
-    
+
     public void setReelLength(String w) throws CdbException {
         reelLength = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_REEL_LENGTH_KEY, w);
     }
-    
+
     @JsonIgnore
     public String getReelQuantity() throws CdbException {
         if (reelQuantity == null) {
@@ -300,12 +302,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return reelQuantity;
     }
-    
+
     public void setReelQuantity(String w) throws CdbException {
         reelQuantity = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_REEL_QUANTITY_KEY, w);
     }
-    
+
     @JsonIgnore
     public String getLeadTime() throws CdbException {
         if (leadTime == null) {
@@ -313,12 +315,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return leadTime;
     }
-    
+
     public void setLeadTime(String w) throws CdbException {
         leadTime = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_LEAD_TIME_KEY, w);
     }
-    
+
     @JsonIgnore
     public String getProcurementStatus() throws CdbException {
         if (procurementStatus == null) {
@@ -326,9 +328,17 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
         return procurementStatus;
     }
-    
+
     public void setProcurementStatus(String w) throws CdbException {
         procurementStatus = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_PROCUREMENT_STATUS_KEY, w);
+    }
+
+    public List<ItemConnector> getConnectorList() {
+        return connectorList;
+    }
+
+    public void setConnectorList(List<ItemConnector> connectorList) {
+        this.connectorList = connectorList;
     }
 }

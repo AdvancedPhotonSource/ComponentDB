@@ -6,8 +6,6 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
-import gov.anl.aps.cdb.common.utilities.StringUtility;
-import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemConnectorControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import java.io.Serializable;
@@ -75,18 +73,18 @@ public class ItemConnector extends CdbEntity implements Serializable {
     private List<ItemElementRelationship> itemElementRelationshipList;
     @OneToMany(mappedBy = "secondItemConnector") // removed cascade = CascadeType.ALL because it causes deleting item connector from cable design update to delete metadata property values for the ItemElementRelationship
     private List<ItemElementRelationship> itemElementRelationshipList1;
-    
-    private transient ItemConnector itemConnectorOfItemConnectedTo; 
-    private transient Item itemConnectedVia; 
-    
+
+    private transient ItemConnector itemConnectorOfItemConnectedTo;
+    private transient Item itemConnectedVia;
+
     private transient String importConnectorName = null;
     private transient String importCableEnd = null;
     private transient String importConnectorDescription = null;
     private transient ConnectorType importConnectorType = null;
-    
+
     private transient List<Connector> connectorsToUpdate = null;
     private transient List<Connector> connectorsToRemove = null;
-        
+
     public ItemConnector() {
     }
 
@@ -118,6 +116,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
         this.quantity = quantity;
     }
 
+    @JsonIgnore
     @XmlTransient
     public List<PropertyValue> getPropertyValueList() {
         return propertyValueList;
@@ -127,6 +126,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
         this.propertyValueList = propertyValueList;
     }
 
+    @JsonIgnore
     public Item getItem() {
         return item;
     }
@@ -143,6 +143,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
         this.connector = connector;
     }
 
+    @JsonIgnore
     @XmlTransient
     public List<ItemElementRelationshipHistory> getItemElementRelationshipHistoryList() {
         return itemElementRelationshipHistoryList;
@@ -152,6 +153,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
         this.itemElementRelationshipHistoryList = itemElementRelationshipHistoryList;
     }
 
+    @JsonIgnore
     @XmlTransient
     public List<ItemElementRelationshipHistory> getItemElementRelationshipHistoryList1() {
         return itemElementRelationshipHistoryList1;
@@ -161,6 +163,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
         this.itemElementRelationshipHistoryList1 = itemElementRelationshipHistoryList1;
     }
 
+    @JsonIgnore
     @XmlTransient
     public List<ItemResource> getItemResourceList() {
         return itemResourceList;
@@ -170,6 +173,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
         this.itemResourceList = itemResourceList;
     }
 
+    @JsonIgnore
     @XmlTransient
     public List<ItemElementRelationship> getItemElementRelationshipList() {
         return itemElementRelationshipList;
@@ -179,6 +183,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
         this.itemElementRelationshipList = itemElementRelationshipList;
     }
 
+    @JsonIgnore
     @XmlTransient
     public List<ItemElementRelationship> getItemElementRelationshipList1() {
         return itemElementRelationshipList1;
@@ -187,7 +192,8 @@ public class ItemConnector extends CdbEntity implements Serializable {
     public void setItemElementRelationshipList1(List<ItemElementRelationship> itemElementRelationshipList1) {
         this.itemElementRelationshipList1 = itemElementRelationshipList1;
     }
-    
+
+    @JsonIgnore
     @XmlTransient
     public List<Connector> getConnectorsToUpdate() {
         if (connectorsToUpdate == null) {
@@ -195,11 +201,12 @@ public class ItemConnector extends CdbEntity implements Serializable {
         }
         return connectorsToUpdate;
     }
-    
+
     public void clearConnectorsToUpdate() {
         connectorsToUpdate = null;
     }
 
+    @JsonIgnore
     @XmlTransient
     public List<Connector> getConnectorsToRemove() {
         if (connectorsToRemove == null) {
@@ -207,11 +214,11 @@ public class ItemConnector extends CdbEntity implements Serializable {
         }
         return connectorsToRemove;
     }
-    
+
     public void clearConnectorsToRemove() {
         connectorsToRemove = null;
     }
-    
+
     public void addConnectorToRemove(Connector connector) {
         getConnectorsToRemove().add(connector);
     }
@@ -247,6 +254,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
         return true;
     }
 
+    @JsonIgnore
     public ItemConnector getItemConnectorOfItemConnectedTo() {
         return itemConnectorOfItemConnectedTo;
     }
@@ -255,6 +263,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
         this.itemConnectorOfItemConnectedTo = itemConnectorOfItemConnectedTo;
     }
 
+    @JsonIgnore
     public Item getItemConnectedVia() {
         return itemConnectedVia;
     }
@@ -262,24 +271,24 @@ public class ItemConnector extends CdbEntity implements Serializable {
     public void setItemConnectedVia(Item itemConnectedVia) {
         this.itemConnectedVia = itemConnectedVia;
     }
-    
+
     @Override
     public String toString() {
         if (item != null) {
             if (label != null) {
-                return label + " Connector for item: " + item; 
+                return label + " Connector for item: " + item;
             }
-            return "Connector for item: " + item; 
+            return "Connector for item: " + item;
         }
-        
+
         return "gov.anl.aps.cdb.portal.model.db.entities.ItemConnector[ id=" + id + " ]";
     }
-    
+
     @Override
     public ItemConnectorControllerUtility getControllerUtility() {
-        return new ItemConnectorControllerUtility(); 
+        return new ItemConnectorControllerUtility();
     }
-    
+
     @Override
     public void addPropertyValueToPropertyValueList(PropertyValue propertyValue) {
         if (propertyValueList == null) {
@@ -288,6 +297,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
         propertyValueList.add(0, propertyValue);
     }
 
+    @JsonIgnore
     public boolean isConnected() {
         List<ItemElementRelationship> relationshipList = getItemElementRelationshipList();
         if ((relationshipList != null) && (!relationshipList.isEmpty())) {
@@ -302,14 +312,14 @@ public class ItemConnector extends CdbEntity implements Serializable {
 
     @JsonIgnore
     @Override
-    public String getCableEndDesignation() {        
+    public String getCableEndDesignation() {
         return getConnector().getCableEndDesignation();
     }
-    
+
     public void setCableEndDesignation(String cableEnd, UserInfo ownerUser) {
         getConnector().setCableEndDesignation(cableEnd, ownerUser);
     }
-    
+
     @JsonIgnore
     public String getImportConnectorName() {
         if (importConnectorName == null) {
@@ -353,7 +363,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
         }
         return importConnectorType;
     }
-    
+
     @JsonIgnore
     public String getImportConnectorTypeString() {
         if (getImportConnectorType() != null) {
@@ -373,22 +383,22 @@ public class ItemConnector extends CdbEntity implements Serializable {
             String cableEnd,
             String connectorDesc,
             ConnectorType connectorType) {
-        
+
         Connector conn;
         if (isUpdate) {
             conn = getConnector();
             getConnectorsToUpdate().add(conn);
         } else {
             conn = new Connector();
-            this.setConnector(conn);        
+            this.setConnector(conn);
         }
-        
+
         conn.setName(connectorName);
         conn.setCableEndDesignation(cableEnd, this.getItem().getOwnerUser());
         conn.setDescription(connectorDesc);
-        conn.setConnectorType(connectorType);        
+        conn.setConnectorType(connectorType);
     }
-    
+
     // convenience method for comparator sorting
     @JsonIgnore
     public String getConnectorCableEndDesignation() {
@@ -398,7 +408,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
             return "";
         }
     }
-    
+
     // convenience method for comparator sorting
     @JsonIgnore
     public String getConnectorName() {
@@ -408,7 +418,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
             return "";
         }
     }
-    
+
     @JsonIgnore
     public String getConnectorDescription() {
         if ((connector != null) && (connector.getDescription() != null)) {
@@ -417,7 +427,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
             return "";
         }
     }
-    
+
     @JsonIgnore
     public ConnectorType getConnectorType() {
         if ((connector != null) && (connector.getConnectorType() != null)) {
@@ -426,12 +436,12 @@ public class ItemConnector extends CdbEntity implements Serializable {
             return null;
         }
     }
-    
+
     @JsonIgnore
     public List<Item> otherItemsUsingConnector() {
         return this.otherItemsUsingConnector(this.getItem());
     }
-    
+
     @JsonIgnore
     public List<Item> otherItemsUsingConnector(Item item) {
         if (getConnector() == null) {
@@ -439,33 +449,32 @@ public class ItemConnector extends CdbEntity implements Serializable {
         }
         return getConnector().otherItemsUsingConnector(item);
     }
-    
+
     @JsonIgnore
     public String getDisplayItemConnectorName() {
         Item owningItem = getItem();
         return owningItem.getControllerUtility().getDisplayItemConnectorName();
     }
-    
+
     @JsonIgnore
     public String getDisplayItemConnectorLabel() {
         Item owningItem = getItem();
         return owningItem.getControllerUtility().getDisplayItemConnectorLabel();
     }
-    
+
     @JsonIgnore
     public String getDisplayItemConnectorsLabel() {
         Item owningItem = getItem();
         return owningItem.getControllerUtility().getDisplayItemConnectorsLabel();
     }
-    
+
     @JsonIgnore
     @Override
     public ValidInfo isDeleteAllowed() {
-        
+
         boolean isValid = true;
         String validStr = "";
-        
-        
+
         List<Item> itemsUsingConnector = otherItemsUsingConnector(getItem());
         if (!itemsUsingConnector.isEmpty()) {
             String itemString = "";
@@ -488,7 +497,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
             isValid = false;
             validStr = getDisplayItemConnectorLabel() + " is inherited and used in cable connections by design items: " + itemString;
         }
-        
+
         return new ValidInfo(isValid, validStr);
     }
 
