@@ -1,6 +1,6 @@
 import unittest
 from cdbApi.exceptions import OpenApiException
-from cdbApi.models.new_catalog_element_information import (
+from cdbApi.models import (
     NewCatalogElementInformation,
     NewCatalogInformation,
     NewInventoryInformation,
