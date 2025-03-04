@@ -34,5 +34,6 @@ class SearchTest(CdbTestBase):
         self.assertNotEqual(None, result.item_domain_cable_design_results)
         self.assertEqual(None, result.item_type_results)
 
+
 if __name__ == "__main__":
     unittest.main()
