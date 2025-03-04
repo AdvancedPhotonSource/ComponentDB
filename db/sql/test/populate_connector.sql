@@ -1,4 +1,7 @@
 LOCK TABLES `connector` WRITE;
 /*!40000 ALTER TABLE `connector` DISABLE KEYS */;
+INSERT INTO `connector` VALUES
+(1,'End-1',NULL,0,1,NULL),
+(2,'End-2',NULL,0,1,NULL);
 /*!40000 ALTER TABLE `connector` ENABLE KEYS */;
 UNLOCK TABLES;
