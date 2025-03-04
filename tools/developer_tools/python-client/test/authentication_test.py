@@ -31,16 +31,13 @@ class AuthenticationTest(CdbTestBase):
         """
         self.loginAsAdmin()
         self.factory.logOutUser()
-
-        failed = False
-
-        try:
-            self.factory.testAuthenticated()
-        except OpenApiException as ex:
-            failed = True
-
         self.loggedIn = False
-        self.assertTrue(failed, "The user was not logged out. Auth function passes.")
+
+        with self.assertRaises(OpenApiException) as context:
+            self.factory.testAuthenticated()
+        self.assertIsNotNone(
+            context.exception, "The user was not logged out. Auth function passes."
+        )
 
     def test_invalid_login(self):
         """
@@ -48,14 +45,13 @@ class AuthenticationTest(CdbTestBase):
         """
         invalid_username = "invalidUser"
         invalid_password = "invalidPassword"
-        failed = False
 
-        try:
+        with self.assertRaises(OpenApiException) as context:
             self.factory.authenticateUser(invalid_username, invalid_password)
-        except OpenApiException:
-            failed = True
 
-        self.assertTrue(failed, msg="Invalid login should raise an exception.")
+        self.assertIsNotNone(
+            context.exception, msg="Invalid login should raise an exception."
+        )
 
 
 if __name__ == "__main__":
