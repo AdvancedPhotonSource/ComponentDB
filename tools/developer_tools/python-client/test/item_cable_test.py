@@ -161,6 +161,27 @@ class ItemCableTest(CdbTestBase):
 
         self.verify_connection_list(connection_list)
 
+    def test_fetch_cable_design_by_id_name_with_connections(self):
+        cable_design = self.cableDesignApi.get_cable_design_item_by_id(
+            self.CABLE_DESIGN_WITH_ENDPOINTS_METADATA_ITEM_ID
+        )
+
+        self.assertIsNotNone(cable_design, msg="Cable design was not returned")
+
+        cable_design_by_name = self.cableDesignApi.get_cable_design_item_by_name(
+            cable_design.name
+        )
+
+        self.assertIsNotNone(
+            cable_design_by_name, msg="Cable design by name was not returned"
+        )
+
+        # Verify included connection list
+        self.verify_connection_list(cable_design.connection_list, is_summary=True)
+        self.verify_connection_list(
+            cable_design_by_name.connection_list, is_summary=True
+        )
+
     def test_update_cable_design_metadata(self):
         self.loginAsUser()
         cable_design = self.create_minimal_cable_design(
