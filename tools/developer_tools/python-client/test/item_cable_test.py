@@ -1,6 +1,6 @@
 import unittest
 from cdbApi.exceptions import OpenApiException
-from cdbApi.models import CableDesignConnectionListObject
+from cdbApi.models import CableDesignConnectionListObject, ItemDomainCableDesignMetadata
 from test.cdb_test_base import CdbTestBase
 
 
@@ -36,6 +36,12 @@ class ItemCableTest(CdbTestBase):
         121: {"cable_connector": "End-1", "md_connector": "Eth0"},
         122: {"cable_connector": "End-2", "md_connector": "Eth1"},
     }
+
+    MD_WITH_ETH_CONNECTOR_ITEM_ID_1 = 121
+    MD_WITH_ETH_CONNECTOR_ITEM_ID_2 = 122
+
+    ETH_CONNECTOR_NAMES = ["Eth0", "Eth1"]
+    CABLE_CONNECTOR_END_NAMES = ["End-1", "End-2"]
 
     def test_cable_api(self):
         self.cableCatalogApi.get_cable_catalog_item_list()
@@ -136,12 +142,7 @@ class ItemCableTest(CdbTestBase):
             metadata, msg="No metadata returned for cable design with metadata."
         )
 
-        for key, value in self.CABLE_WITH_METADATA_VALUES.items():
-            self.assertEqual(
-                getattr(metadata, key),
-                value,
-                msg=f"{key} in the fetched metadata does not match expected value.",
-            )
+        self.verify_metadata(metadata, self.CABLE_WITH_METADATA_VALUES)
 
     def test_fetch_cable_design_endpoints(self):
         connection_list = self.cableDesignApi.get_cable_design_connection_list(
@@ -160,14 +161,200 @@ class ItemCableTest(CdbTestBase):
 
         self.verify_connection_list(connection_list)
 
-    def verify_connection_list(self, connection_list, is_summary=False):
+    def test_update_cable_design_metadata(self):
+        self.loginAsUser()
+        cable_design = self.create_minimal_cable_design(
+            name_prefix="update_cable_metadata_test-"
+        )
+
+        self.assertIsNotNone(cable_design, msg="Minimal cable failed to create")
+
+        # Generate metadata
+        metadata_dict = {}
+        metadata_keys = ItemDomainCableDesignMetadata.attribute_map.keys()
+        for metadata_key in metadata_keys:
+            if metadata_key == "cable_design_id":
+                continue
+
+            metadata_dict[metadata_key] = self.gen_unique_name()
+
+        metadata_to_update = ItemDomainCableDesignMetadata(
+            cable_design_id=cable_design.id, **metadata_dict
+        )
+
+        returned_results = self.cableDesignApi.update_cable_design_metadata(
+            item_domain_cable_design_metadata=metadata_to_update
+        )
+        feetched_results = self.cableDesignApi.get_cable_design_metadata(
+            cable_design_id=cable_design.id
+        )
+
+        self.assertIsNotNone(
+            returned_results, msg="Nothing returned from update command."
+        )
+        self.verify_metadata(
+            metadata=returned_results,
+            expected_values_dict=metadata_dict,
+            msg="Returned results invalid.",
+        )
+
+        self.assertIsNotNone(
+            feetched_results, msg="Nothing returned from fetch command."
+        )
+
+        self.verify_metadata(
+            metadata=feetched_results,
+            expected_values_dict=metadata_dict,
+            msg="Fetched results invalid.",
+        )
+
+    def test_add_cable_design(self):
+        self.loginAsUser()
+
+        endpoints_def = self.CABLE_DESIGN_WITH_ENDPOINTS
+
+        new_cable_design = self.cableDesignApi.add_or_update_cable_design(
+            name=f"add_cable_design_test-{self.gen_unique_name()}",
+            item_project_ids=[3],
+            technical_system_ids=[44],
+            cable_type_id=self.CABLE_TYPE_WITH_CONNECTORS_ITEM_ID,
+            end1_machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_1,
+            end1_device_port_name=endpoints_def[self.MD_WITH_ETH_CONNECTOR_ITEM_ID_1][
+                "md_connector"
+            ],
+            end1_connector_name=endpoints_def[self.MD_WITH_ETH_CONNECTOR_ITEM_ID_1][
+                "cable_connector"
+            ],
+            end2_machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_2,
+            end2_device_port_name=endpoints_def[self.MD_WITH_ETH_CONNECTOR_ITEM_ID_2][
+                "md_connector"
+            ],
+            end2_connector_name=endpoints_def[self.MD_WITH_ETH_CONNECTOR_ITEM_ID_2][
+                "cable_connector"
+            ],
+        )
+
+        self.assertIsNotNone(
+            new_cable_design, msg="New cable design has not been created"
+        )
+        self.assertIsNotNone(
+            new_cable_design.id, msg="New cable design has not been assigned an id"
+        )
+
+        fetched_cable = self.cableDesignApi.get_cable_design_item_by_id(
+            new_cable_design.id
+        )
+        self.assertIsNotNone(new_cable_design, msg="New cable design cannot be fetched")
+
+        # Verify updated endpoints
+        connections = self.cableDesignApi.get_cable_design_connection_list(
+            cable_design_id=new_cable_design.id
+        )
+
+        self.verify_connection_list(connections)
+
+    def test_update_cable_design(self):
+        self.loginAsUser()
+        cable_design = self.create_minimal_cable_design(
+            name_prefix="update_cable_design_test-"
+        )
+
+        self.assertIsNotNone(cable_design, msg="Minimal cable failed to create")
+
+        name = f"update_cable_design_test-{self.gen_unique_name()}"
+        description = self.gen_unique_name()
+        alternate_name = self.gen_unique_name()
+        project_id = 2
+        tech_sys = 43
+        cable_type = self.CABLE_TYPE_WITH_CONNECTORS_ITEM_ID
+
+        endpoints_def = {
+            self.MD_WITH_ETH_CONNECTOR_ITEM_ID_1: {
+                "cable_connector": "End-1",
+                "md_connector": "Eth1",
+            },
+            self.MD_WITH_ETH_CONNECTOR_ITEM_ID_2: {
+                "cable_connector": "End-2",
+                "md_connector": "Eth1",
+            },
+        }
+
+        updated_cable_design = self.cableDesignApi.add_or_update_cable_design(
+            id=cable_design.id,
+            name=name,
+            alternate_name=alternate_name,
+            description=description,
+            item_project_ids=[project_id],
+            technical_system_ids=[tech_sys],
+            cable_type_id=cable_type,
+            end1_machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_1,
+            end1_device_port_name=endpoints_def[self.MD_WITH_ETH_CONNECTOR_ITEM_ID_1][
+                "md_connector"
+            ],
+            end1_connector_name=endpoints_def[self.MD_WITH_ETH_CONNECTOR_ITEM_ID_1][
+                "cable_connector"
+            ],
+            end2_machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_2,
+            end2_device_port_name=endpoints_def[self.MD_WITH_ETH_CONNECTOR_ITEM_ID_2][
+                "md_connector"
+            ],
+            end2_connector_name=endpoints_def[self.MD_WITH_ETH_CONNECTOR_ITEM_ID_2][
+                "cable_connector"
+            ],
+        )
+        fetched_cable = self.cableDesignApi.get_cable_design_item_by_id(cable_design.id)
+
+        # Verify that details were updated in the returned and fetched cable.
+        cable_returns = [updated_cable_design, fetched_cable]
+
+        for updated_cable in cable_returns:
+            self.assertEqual(updated_cable.name, name, msg="Name does not match.")
+            self.assertEqual(
+                updated_cable.description, description, msg="Name does not match."
+            )
+            self.assertEqual(
+                updated_cable.alternate_name, alternate_name, msg="Name does not match."
+            )
+
+            item_project_list = updated_cable.item_project_list
+
+            self.assertEqual(
+                len(item_project_list),
+                1,
+                msg="Item project list should only have 1 item",
+            )
+            self.assertEqual(item_project_list[0].id, project_id)
+
+            item_category_list = updated_cable.item_category_list
+            self.assertEqual(
+                len(item_category_list),
+                1,
+                msg="Technical system list should only have 1 item.",
+            )
+            self.assertEqual(item_category_list[0].id, tech_sys)
+
+            self.assertEqual(updated_cable.catalog_item.id, cable_type)
+
+        # Verify updated endpoints
+        connections = self.cableDesignApi.get_cable_design_connection_list(
+            cable_design_id=cable_design.id
+        )
+
+        self.verify_connection_list(connections, endpoints_dict=endpoints_def)
+
+    def verify_connection_list(
+        self,
+        connection_list,
+        endpoints_dict=CABLE_DESIGN_WITH_ENDPOINTS,
+        is_summary=False,
+    ):
         for connection in connection_list:
             if is_summary:
                 md_item_id = connection.md_item_id
             else:
                 md_item_id = connection.md_item.id
 
-            expected_vals = self.CABLE_DESIGN_WITH_ENDPOINTS[md_item_id]
+            expected_vals = endpoints_dict[md_item_id]
 
             self.assertEqual(
                 connection.md_connector_name,
@@ -181,14 +368,22 @@ class ItemCableTest(CdbTestBase):
                 msg=f"Item connector is invalid for {md_item_id}",
             )
 
-    def test_update_cable_design_metadata(self):
-        self.skipTest("Not implemented")
+    def verify_metadata(self, metadata, expected_values_dict: dict, msg=""):
+        for key, value in expected_values_dict.items():
+            self.assertEqual(
+                getattr(metadata, key),
+                value,
+                msg=f"{key} in the metadata does not match expected value. {msg}",
+            )
 
-    def test_add_cable_design(self):
-        self.skipTest("Not implemented")
-
-    def test_update_cable_design(self):
-        self.skipTest("Not implemented")
+    def create_minimal_cable_design(self, name_prefix):
+        return self.cableDesignApi.add_or_update_cable_design(
+            name=f"{name_prefix}{self.gen_unique_name()}",
+            item_project_ids=[3],
+            technical_system_ids=[44],
+            end1_machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_2,
+            end2_machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_1,
+        )
 
 
 if __name__ == "__main__":

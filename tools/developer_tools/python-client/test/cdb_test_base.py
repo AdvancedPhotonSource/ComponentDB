@@ -1,4 +1,5 @@
 import unittest
+import uuid
 
 from CdbApiFactory import CdbApiFactory
 
@@ -89,6 +90,9 @@ class CdbTestBase(unittest.TestCase):
             self.factory.logOutUser()
         self.loggedIn = True
         self.factory.authenticateUser(self.TEST_USER_USERNAME, self.TEST_USER_PASSWORD)
+
+    def gen_unique_name(self):
+        return uuid.uuid4().hex[:10]
 
     def is_item_parent(self, parent, child):
         """
