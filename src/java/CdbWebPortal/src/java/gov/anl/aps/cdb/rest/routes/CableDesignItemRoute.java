@@ -79,9 +79,7 @@ public class CableDesignItemRoute extends ItemBaseRoute {
 
         if (includeConnections) {
             for (ItemDomainCableDesign cableDesign : cableDesigns) {
-                List<CableDesignConnectionListSummaryObject> connectionList
-                        = CableDesignConnectionListSummaryObject.getConnectionSummaryList(cableDesign);
-                cableDesign.setConnectionList(connectionList);
+                loadConnectionInformation(cableDesign);
             }
         }
 
@@ -99,6 +97,7 @@ public class CableDesignItemRoute extends ItemBaseRoute {
             LOGGER.error(ex);
             throw ex;
         }
+        loadConnectionInformation(item);
         return item;
     }
 
@@ -117,7 +116,9 @@ public class CableDesignItemRoute extends ItemBaseRoute {
             LOGGER.error(ex);
             throw ex;
         }
-        return itemList.get(0);
+        ItemDomainCableDesign item = itemList.get(0);
+        loadConnectionInformation(item);
+        return item;
     }
 
     @POST
@@ -731,6 +732,12 @@ public class CableDesignItemRoute extends ItemBaseRoute {
         }
 
         return machine;
+    }
+
+    private void loadConnectionInformation(ItemDomainCableDesign cableDesign) {
+        List<CableDesignConnectionListSummaryObject> connectionList
+                = CableDesignConnectionListSummaryObject.getConnectionSummaryList(cableDesign);
+        cableDesign.setConnectionList(connectionList);
     }
 
 }
