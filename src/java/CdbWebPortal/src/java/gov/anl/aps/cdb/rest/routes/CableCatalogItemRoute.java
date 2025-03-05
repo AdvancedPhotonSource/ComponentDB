@@ -37,18 +37,15 @@ public class CableCatalogItemRoute extends BaseRoute {
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ItemDomainCableCatalog> getCableCatalogItemList(@Parameter(description = "Optional bool to specify if connectors should be included. "
-            + "Can be accessed by `connectorList` of the cable catalog item.") @QueryParam("includeConnectors") boolean includeConnectors) {
+    public List<ItemDomainCableCatalog> getCableCatalogItemList() {
         LOGGER.debug("Fetching cable catalog list");
 
         List<ItemDomainCableCatalog> cableCatalogItems = facade.findAll();
-
-        if (includeConnectors) {
-            for (ItemDomainCableCatalog cableCatalogItem : cableCatalogItems) {
-                List<ItemConnector> itemConnectorList = cableCatalogItem.getItemConnectorList();
-                cableCatalogItem.setConnectorList(itemConnectorList);
-            }
-        }
+        
+        for (ItemDomainCableCatalog cableCatalogItem : cableCatalogItems) {
+            List<ItemConnector> itemConnectorList = cableCatalogItem.getItemConnectorList();
+            cableCatalogItem.setConnectorList(itemConnectorList);
+        }       
 
         return cableCatalogItems;
     }
