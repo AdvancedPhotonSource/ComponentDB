@@ -2,6 +2,12 @@ LOCK TABLES `connector` WRITE;
 /*!40000 ALTER TABLE `connector` DISABLE KEYS */;
 INSERT INTO `connector` VALUES
 (1,'End-1',NULL,0,1,NULL),
-(2,'End-2',NULL,0,1,NULL);
+(2,'End-2',NULL,0,1,NULL),
+(3,'Eth0',NULL,0,1,NULL),
+(4,'Eth1',NULL,0,1,NULL),
+(5,'Eth0',NULL,0,1,NULL),
+(6,'Eth1',NULL,0,1,NULL),
+(7,'Eth1',NULL,0,1,NULL),
+(8,'Eth0',NULL,0,1,NULL);
 /*!40000 ALTER TABLE `connector` ENABLE KEYS */;
 UNLOCK TABLES;

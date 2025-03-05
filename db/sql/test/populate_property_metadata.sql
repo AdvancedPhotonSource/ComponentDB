@@ -295,6 +295,16 @@ INSERT INTO `property_metadata` VALUES
 (292,33,'externalCableName',''),
 (293,33,'alternateCableId',''),
 (294,33,'voltage',''),
-(295,33,'endpoint1Route','');
+(295,33,'endpoint1Route',''),
+(296,42,'voltage',''),
+(297,42,'legacyQrId',''),
+(298,42,'endpoint1Route',''),
+(299,42,'endpoint1Description',''),
+(300,42,'importCableId',''),
+(301,42,'laying',''),
+(302,42,'externalCableName',''),
+(303,42,'alternateCableId',''),
+(304,42,'endpoint2Description',''),
+(305,42,'endpoint2Route','');
 /*!40000 ALTER TABLE `property_metadata` ENABLE KEYS */;
 UNLOCK TABLES;
