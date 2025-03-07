@@ -34,9 +34,9 @@ def publish_api(setup_file):
 
     for line in setupFile.readlines():
         if 'name=' in line:
-            projectName = line.split("'")[1]
+            projectName = line.split('"')[1]
         if 'version=' in line:
-            versionLineSplit = line.split("'")
+            versionLineSplit = line.split('"')
             versionNumber = versionLineSplit[1]
 
         '''Code commented out aides in automatically generating the next dev version... Will handle manually for now.'''
