@@ -16,8 +16,8 @@ from setuptools import setup
 from setuptools import find_packages
 
 setup(
-    name="ComponentDB_API",
-    version="3.16.1.dev3",
+    name="componentdb_api",
+    version="3.16.1.dev4",
     packages=["cdbApi", "cdbApi.api", "cdbApi.models"],
     py_modules=["CdbApiFactory"],
     install_requires=["python-dateutil", "urllib3", "certifi", "six"],
