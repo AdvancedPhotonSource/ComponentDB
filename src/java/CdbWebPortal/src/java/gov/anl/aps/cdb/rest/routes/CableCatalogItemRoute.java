@@ -39,11 +39,10 @@ public class CableCatalogItemRoute extends BaseRoute {
         LOGGER.debug("Fetching cable catalog list");
 
         List<ItemDomainCableCatalog> cableCatalogItems = facade.findAll();
-        
+
         for (ItemDomainCableCatalog cableCatalogItem : cableCatalogItems) {
-            List<ItemConnector> itemConnectorList = cableCatalogItem.getItemConnectorList();
-            cableCatalogItem.setConnectorList(itemConnectorList);
-        }       
+            loadConnectorInformation(cableCatalogItem);
+        }
 
         return cableCatalogItems;
     }
@@ -59,6 +58,7 @@ public class CableCatalogItemRoute extends BaseRoute {
             LOGGER.error(ex);
             throw ex;
         }
+        loadConnectorInformation(item);
         return item;
     }
 
@@ -77,7 +77,14 @@ public class CableCatalogItemRoute extends BaseRoute {
             LOGGER.error(ex);
             throw ex;
         }
-        return itemList.get(0);
+        ItemDomainCableCatalog item = itemList.get(0);
+        loadConnectorInformation(item);
+        return item;
+    }
+
+    private void loadConnectorInformation(ItemDomainCableCatalog cableCatalogItem) {
+        List<ItemConnector> itemConnectorList = cableCatalogItem.getItemConnectorList();
+        cableCatalogItem.setConnectorList(itemConnectorList);
     }
 
 }
