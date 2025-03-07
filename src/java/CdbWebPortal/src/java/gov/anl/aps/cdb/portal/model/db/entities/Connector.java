@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorControllerUtility;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -40,7 +41,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Connector.findById", query = "SELECT c FROM Connector c WHERE c.id = :id"),
     @NamedQuery(name = "Connector.findByName", query = "SELECT c FROM Connector c WHERE c.name = :name"),
     @NamedQuery(name = "Connector.findByDescription", query = "SELECT c FROM Connector c WHERE c.description = :description")})
-
 
 public class Connector extends CdbEntity implements Serializable {
 
@@ -116,6 +116,7 @@ public class Connector extends CdbEntity implements Serializable {
         this.isMale = isMale;
     }
 
+    @JsonIgnore
     @XmlTransient
     public List<PropertyValue> getPropertyValueList() {
         return propertyValueList;
@@ -125,6 +126,7 @@ public class Connector extends CdbEntity implements Serializable {
         this.propertyValueList = propertyValueList;
     }
 
+    @JsonIgnore
     @XmlTransient
     public List<ItemConnector> getItemConnectorList() {
         return itemConnectorList;
@@ -163,18 +165,18 @@ public class Connector extends CdbEntity implements Serializable {
         if (!(object instanceof Connector)) {
             return false;
         }
-        
+
         Connector other = (Connector) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
-        
+
         if (this.id == null && other.id == null) {
             if ((this.name == null && other.name != null) || (this.name != null && !this.name.equals(other.name))) {
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -193,20 +195,20 @@ public class Connector extends CdbEntity implements Serializable {
         return result;
 
     }
-    
+
     @Override
     public ConnectorControllerUtility getControllerUtility() {
-        return new ConnectorControllerUtility(); 
+        return new ConnectorControllerUtility();
     }
-    
+
     public void addPropertyValueToPropertyValueList(PropertyValue propertyValue) {
         if (propertyValueList == null) {
             propertyValueList = new ArrayList<>();
         }
         propertyValueList.add(0, propertyValue);
     }
-    
-    public List<Item> otherItemsUsingConnector(Item item) {        
+
+    public List<Item> otherItemsUsingConnector(Item item) {
         List<Item> result = new ArrayList<>();
         List<ItemConnector> itemConnectorList = getItemConnectorList();
         if (itemConnectorList != null && (!itemConnectorList.isEmpty())) {
@@ -219,5 +221,5 @@ public class Connector extends CdbEntity implements Serializable {
         }
         return result;
     }
-    
+
 }

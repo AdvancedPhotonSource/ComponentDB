@@ -27,7 +27,7 @@ public class CableDesignConnectionListObject {
     private ItemElementRelationship cableRelationship;
     private ItemDomainMachineDesign mdItem;
     private ItemConnector mdConnector;
-    
+
     public CableDesignConnectionListObject(ItemDomainCableDesign cableDesign) {
         this.cableDesign = cableDesign;
     }
@@ -43,7 +43,7 @@ public class CableDesignConnectionListObject {
     public ItemConnector getItemConnector() {
         return itemConnector;
     }
-    
+
     public String getItemConnectorName() {
         ItemConnector connector = getItemConnector();
         if (connector != null) {
@@ -56,16 +56,15 @@ public class CableDesignConnectionListObject {
     private void setItemConnector(ItemConnector itemConnector) {
         this.itemConnector = itemConnector;
     }
-    
 
     public ItemElementRelationship getCableRelationship() {
         return cableRelationship;
     }
-        
-    private void setCableRelationship(
-            ItemElementRelationship cableRelationship, 
+
+    protected void setCableRelationship(
+            ItemElementRelationship cableRelationship,
             ItemDomainCableDesign currentItem) {
-        
+
         this.cableRelationship = cableRelationship;
         ItemConnector itemConnector = cableRelationship.getSecondItemConnector();
         this.itemConnector = itemConnector;
@@ -80,7 +79,7 @@ public class CableDesignConnectionListObject {
     public ItemDomainMachineDesign getMdItem() {
         return mdItem;
     }
-    
+
     public String getMdItemName() {
         ItemDomainMachineDesign item = getMdItem();
         if (item != null) {
@@ -93,7 +92,7 @@ public class CableDesignConnectionListObject {
     public ItemConnector getMdConnector() {
         return mdConnector;
     }
-    
+
     public String getMdConnectorName() {
         ItemConnector connector = getMdConnector();
         if (connector != null) {
@@ -104,26 +103,33 @@ public class CableDesignConnectionListObject {
     }
 
     public static List<CableDesignConnectionListObject> getConnectionList(ItemDomainCableDesign item) {
-        
+
         List<CableDesignConnectionListObject> connList = new ArrayList<>();
 
         // add entries for each cable relationship (connection to MD item)
-        List<ItemElementRelationship> cableRelationshipList;
-        cableRelationshipList = 
-                ItemUtility.getItemRelationshipList(
-                        item, 
-                        ItemElementRelationshipTypeNames.itemCableConnection.getValue(), 
-                        false);
+        List<ItemElementRelationship> cableRelationshipList = getCableRelationshipList(item);
+
         for (ItemElementRelationship cableRelationship : cableRelationshipList) {
             CableDesignConnectionListObject connection = new CableDesignConnectionListObject(item);
             connection.setCableRelationship(cableRelationship, item);
             connList.add(connection);
         }
-        
+
+        return sortConnectionList(connList);
+    }
+
+    protected static List<ItemElementRelationship> getCableRelationshipList(ItemDomainCableDesign item) {
+        return ItemUtility.getItemRelationshipList(
+                item,
+                ItemElementRelationshipTypeNames.itemCableConnection.getValue(),
+                false);
+    }
+
+    protected static <T extends CableDesignConnectionListObject> List<T> sortConnectionList(List<T> connList) {
         // sort by end, device name, device port name, cable connector name
-        Comparator<CableDesignConnectionListObject> comparator = 
-                Comparator
-                        .comparing((CableDesignConnectionListObject o) 
+        Comparator<CableDesignConnectionListObject> comparator
+                = Comparator
+                        .comparing((CableDesignConnectionListObject o)
                                 -> o.getCableRelationship().getCableEndDesignation())
                         .thenComparing(o -> o.getCableRelationship().getCableEndPrimarySortValue())
                         .thenComparing(o -> o.getMdItemName().toLowerCase())
@@ -137,5 +143,5 @@ public class CableDesignConnectionListObject {
 
         return connList;
     }
-    
+
 }
