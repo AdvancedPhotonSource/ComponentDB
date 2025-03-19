@@ -35,6 +35,10 @@ curl -O $OPEN_API_GENERATOR_JAR_URL
 
 java -jar $OPEN_API_GENERATOR_JAR  generate -i "$CDB_OPENAPI_YML_URL" -g python -o $GEN_OUT_DIR -c $GEN_CONFIG_FILE_PATH
 
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
 # Clean up
 rm cdbApi -rv
 rm $OPEN_API_GENERATOR_JAR

@@ -1,22 +1,22 @@
 {% set name = "ComponentDB-CLI" %}
-{% set version = "3.15.4" %}
+{% set version = "3.16.1" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 0043323080c2012df4ad3c6f36e83011c6888dff0e28005653c2b3aa6b0a6820
+  path: ..
+
 build:
   number: 0
-  noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  noarch: python  
+  script: python setup.py install
 
 requirements:
   build:
-   - python
-   - pip
+    - python>=3.10
+    - setuptools
   run:
     - python
     - python-dateutil
