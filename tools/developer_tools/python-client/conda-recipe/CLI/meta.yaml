@@ -9,14 +9,15 @@ source:
   path: ..
 
 build:
-  number: 0
+  number: 1
   noarch: python  
-  script: python setup.py install
+  script: {{ PYTHON }} -m pip install . --no-deps
 
 requirements:
   build:
     - python>=3.10
     - setuptools
+    - pip
   run:
     - python
     - python-dateutil
