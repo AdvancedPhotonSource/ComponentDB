@@ -53,6 +53,10 @@ public class CableDesignConnectionListObject {
         }
     }
 
+    public String getCableEndDesignation() {
+        return cableRelationship.getCableEndDesignation();
+    }
+
     private void setItemConnector(ItemConnector itemConnector) {
         this.itemConnector = itemConnector;
     }
