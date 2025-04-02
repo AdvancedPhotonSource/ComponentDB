@@ -94,6 +94,10 @@ class CdbTestBase(unittest.TestCase):
     def gen_unique_name(self):
         return uuid.uuid4().hex[:10]
 
+    def assert_exception_message(self, exception, message):
+        parsedException = self.factory.parseApiException(exception)
+        self.assertEqual(parsedException.message, message)
+
     def is_item_parent(self, parent, child):
         """
         Looks for parent in first level of location hierarchy, verifies if child is part of that parent.
