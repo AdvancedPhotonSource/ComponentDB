@@ -412,7 +412,10 @@ public class ItemDomainCableDesign extends Item {
         return null;
     }
 
-    public void deleteCableRelationship(ItemElementRelationship cableRelationship) {
+    public void deleteCableRelationship(ItemElementRelationship cableRelationship) throws CdbException {
+        if (cableRelationship.isPrimaryCableConnection()) {
+            throw new CdbException("Primary connection cannot be deleted.");
+        }
 
         // remove relationship from cable design
         getSelfElement().getItemElementRelationshipList1().remove(cableRelationship);

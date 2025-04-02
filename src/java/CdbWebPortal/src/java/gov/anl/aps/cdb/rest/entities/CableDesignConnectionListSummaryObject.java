@@ -27,6 +27,10 @@ public class CableDesignConnectionListSummaryObject extends CableDesignConnectio
         return getMdItem().getId();
     }
 
+    public Integer getCableRelationshipId() {
+        return getCableRelationship().getId();
+    }
+
     @JsonIgnore
     @Override
     public ItemDomainCableDesign getCableDesign() {

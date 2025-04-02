@@ -116,6 +116,8 @@ INSERT INTO `item_item_project` VALUES
 (122,3),
 (123,3),
 (124,3),
-(125,3);
+(125,3),
+(126,3),
+(127,3);
 /*!40000 ALTER TABLE `item_item_project` ENABLE KEYS */;
 UNLOCK TABLES;

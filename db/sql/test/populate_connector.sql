@@ -8,6 +8,10 @@ INSERT INTO `connector` VALUES
 (5,'Eth0',NULL,0,1,NULL),
 (6,'Eth1',NULL,0,1,NULL),
 (7,'Eth1',NULL,0,1,NULL),
-(8,'Eth0',NULL,0,1,NULL);
+(8,'Eth0',NULL,0,1,NULL),
+(9,'Eth0',NULL,0,1,NULL),
+(10,'Eth1',NULL,0,1,NULL),
+(11,'Eth2',NULL,0,1,NULL),
+(12,'Eth3',NULL,0,1,NULL);
 /*!40000 ALTER TABLE `connector` ENABLE KEYS */;
 UNLOCK TABLES;

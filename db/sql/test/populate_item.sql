@@ -124,6 +124,8 @@ INSERT INTO `item` VALUES
 (122,6,'Item with Ports 2',NULL,NULL,NULL,NULL),
 (123,2,'Item With Connectors 1',NULL,'','',NULL),
 (124,2,'Item With Connectors 2',NULL,'','',NULL),
-(125,9,'TEST CABLE 2',NULL,'KABEL',NULL,NULL);
+(125,9,'TEST CABLE 2',NULL,'KABEL',NULL,NULL),
+(126,6,'Item with Ports 3',NULL,NULL,NULL,NULL),
+(127,2,'Item With Connectors 3',NULL,'','',NULL);
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;
