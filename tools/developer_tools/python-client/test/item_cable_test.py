@@ -485,7 +485,6 @@ class ItemCableTest(CdbTestBase):
         cable_design = self.cableDesignApi.add_or_update_cable_design_endpoint(
             cable_design_id=cable_design.id,
             endpoint_relationship_id=mod_connection.cable_relationship_id,
-            cable_end=2,
             machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_3,
             device_port_name=endpoint_def["md_connector"],
             connector_name=endpoint_def["cable_connector"],

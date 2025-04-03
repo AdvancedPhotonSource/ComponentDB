@@ -463,7 +463,7 @@ public class CableDesignItemRoute extends ItemBaseRoute {
             @Parameter(description = "DB ID of the cable.") @QueryParam("cableDesignId") Integer cableDesignId,
             @Parameter(description = "DB ID of the cable relationship. "
                     + "Update when provided or create.") @QueryParam("endpointRelationshipId") Integer endpointRelationshipId,
-            @Parameter(description = "Cable End - 1 or 2 ") @QueryParam("cableEnd") Integer cableEnd,
+            @Parameter(description = "Cable End - 1 or 2. Required for new endpoints.") @QueryParam("cableEnd") Integer cableEnd,
             @Parameter(description = "Endpoint Machine design id") @QueryParam("machineDesignId") Integer machineDesignId,
             @Parameter(description = "Device port name") @QueryParam("devicePortName") String devicePortName,
             @Parameter(description = "Connector name") @QueryParam("connectorName") String connectorName) throws CdbException {
@@ -475,14 +475,14 @@ public class CableDesignItemRoute extends ItemBaseRoute {
             throw new InvalidArgument("Machine Design id is required");
         }
 
-        if (cableEnd == null) {
-            throw new InvalidArgument("Cable end (1 or 2) is is required");
-        }
+        String cableEndString = null;
 
-        String cableEndString = String.valueOf(cableEnd);
-        boolean validCableEnd = VALUE_CABLE_END_1.equals(cableEndString) || VALUE_CABLE_END_2.equals(cableEndString);
-        if (!validCableEnd) {
-            throw new InvalidArgument("Invalid cable end (1 or 2) provided.");
+        if (cableEnd != null) {
+            cableEndString = String.valueOf(cableEnd);
+            boolean validCableEnd = VALUE_CABLE_END_1.equals(cableEndString) || VALUE_CABLE_END_2.equals(cableEndString);
+            if (!validCableEnd) {
+                throw new InvalidArgument("Invalid cable end (1 or 2) provided.");
+            }
         }
 
         ItemDomainCableDesign cableDesignItem = getCableDesignItemById(cableDesignId);
@@ -496,11 +496,18 @@ public class CableDesignItemRoute extends ItemBaseRoute {
         if (endpointRelationshipId != null) {
             ItemElementRelationship endpointRelationship = findEndpointConnectionRelationship(cableDesignItem, endpointRelationshipId);
 
+            if (cableEndString == null) {
+                cableEndString = endpointRelationship.getCableEndDesignation();
+            }
+
             ValidInfo result = cableDesignItem.updateCableRelationship(endpointRelationship, md, endpointConnector, cableConnector, cableEndString);
             if (!result.isValid()) {
                 throw new InvalidObjectState(result.getValidString());
             }
         } else {
+            if (cableEnd == null) {
+                throw new InvalidArgument("Cable end (1 or 2) is is required");
+            }
             // New connection
             cableDesignItem.addCableRelationship(md, endpointConnector, cableConnector, cableEndString, false);
         }
