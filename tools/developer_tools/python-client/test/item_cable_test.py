@@ -272,7 +272,7 @@ class ItemCableTest(CdbTestBase):
         fetched_cable = self.cableDesignApi.get_cable_design_item_by_id(
             new_cable_design.id
         )
-        self.assertIsNotNone(new_cable_design, msg="New cable design cannot be fetched")
+        self.assertIsNotNone(fetched_cable, msg="New cable design cannot be fetched")
 
         # Verify updated endpoints
         connections = self.cableDesignApi.get_cable_design_connection_list(
@@ -309,6 +309,7 @@ class ItemCableTest(CdbTestBase):
 
         updated_cable_design = self.cableDesignApi.add_or_update_cable_design(
             id=cable_design.id,
+            qr_id=cable_design.id,
             name=name,
             alternate_name=alternate_name,
             description=description,
