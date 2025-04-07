@@ -528,6 +528,7 @@ public class CableDesignItemRoute extends ItemBaseRoute {
     public ItemDomainCableDesign addOrUpdateCableDesign(
             @Parameter(description = "DB ID of the cable. When none specified, item will be created.") @QueryParam("id") Integer id,
             @Parameter(description = "Cable design name") @QueryParam("name") String name,
+            @Parameter(description = "Cable design qrId (-1 to clear)") @QueryParam("qrId") Integer qrId,
             @Parameter(description = "Cable design alternate name") @QueryParam("alternateName") String alternateName,
             @Parameter(description = "Description of the cable design") @QueryParam("description") String description,
             @Parameter(description = "Project Ids") @QueryParam("itemProjectIds") List<Integer> itemProjectIds,
@@ -559,6 +560,10 @@ public class CableDesignItemRoute extends ItemBaseRoute {
 
         if (name != null) {
             cableDesignItem.setName(name);
+        }
+
+        if (qrId != null) {
+            cableDesignItem.setQrId(qrId);
         }
 
         if (alternateName != null) {

@@ -39,7 +39,7 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
 
     @Override
     public boolean isEntityHasQrId() {
-        return false;
+        return true;
     }
 
     @Override
