@@ -21,6 +21,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     private static final String DisplayLocationDetailsSettingTypeKey = "ItemDomainCableDesign.List.Display.LocationDetails";
     private static final String DisplayProjectSettingTypeKey = "ItemDomainCableDesign.List.Display.ItemProject";
     private static final String DisplayIdSettingTypeKey = "ItemDomainCableDesign.List.Display.Id";
+    private static final String DisplayQrIdSettingTypeKey = "ItemDomainCableDesign.List.Display.QrId";
     private static final String DisplayOwnerUserSettingTypeKey = "ItemDomainCableDesign.List.Display.OwnerUser";
     private static final String DisplayOwnerGroupSettingTypeKey = "ItemDomainCableDesign.List.Display.OwnerGroup";
     private static final String DisplayCreatedByUserSettingTypeKey = "ItemDomainCableDesign.List.Display.CreatedByUser";
@@ -847,6 +848,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         setDisplayLocation((Boolean) Boolean.parseBoolean(settingTypeMap.get(DisplayLocationSettingTypeKey).getDefaultValue()));
         setDisplayLocationDetails((Boolean) Boolean.parseBoolean(settingTypeMap.get(DisplayLocationDetailsSettingTypeKey).getDefaultValue()));
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayQrId = Boolean.parseBoolean(settingTypeMap.get(DisplayQrIdSettingTypeKey).getDefaultValue());
         displayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerUserSettingTypeKey).getDefaultValue());
         displayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerGroupSettingTypeKey).getDefaultValue());
         displayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedByUserSettingTypeKey).getDefaultValue());
@@ -951,6 +953,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         displayLocation = settingEntity.getSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
         displayLocationDetails = settingEntity.getSettingValueAsBoolean(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
         displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayQrId = settingEntity.getSettingValueAsBoolean(DisplayQrIdSettingTypeKey, displayQrId);
         displayOwnerUser = settingEntity.getSettingValueAsBoolean(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
         displayOwnerGroup = settingEntity.getSettingValueAsBoolean(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
         displayCreatedByUser = settingEntity.getSettingValueAsBoolean(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
@@ -1055,6 +1058,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         settingEntity.setSettingValue(DisplayLocationSettingTypeKey, displayLocation);
         settingEntity.setSettingValue(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
         settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayQrIdSettingTypeKey, displayQrId);
         settingEntity.setSettingValue(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
         settingEntity.setSettingValue(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
         settingEntity.setSettingValue(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
