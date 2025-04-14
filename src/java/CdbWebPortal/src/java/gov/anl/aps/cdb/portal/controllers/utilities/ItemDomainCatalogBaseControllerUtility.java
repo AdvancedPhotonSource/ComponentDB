@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -16,6 +17,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -23,13 +26,15 @@ import java.util.List;
  * @param <ItemDomainEntity>
  * @param <ItemDomainEntityFacade>
  */
-public abstract class ItemDomainCatalogBaseControllerUtility<ItemCatalogBaseDomainEntity extends ItemDomainCatalogBase, ItemDomainEntityFacade extends ItemFacadeBase<ItemCatalogBaseDomainEntity>> 
-        extends ItemControllerUtility<ItemCatalogBaseDomainEntity, ItemDomainEntityFacade> {   
+public abstract class ItemDomainCatalogBaseControllerUtility<ItemCatalogBaseDomainEntity extends ItemDomainCatalogBase, ItemDomainEntityFacade extends ItemFacadeBase<ItemCatalogBaseDomainEntity>>
+        extends ItemControllerUtility<ItemCatalogBaseDomainEntity, ItemDomainEntityFacade> {
+
+    private static final Logger LOGGER = LogManager.getLogger(ItemController.class.getName());
 
     @Override
-    public void prepareEntityUpdate(ItemCatalogBaseDomainEntity item,  UserInfo updatedByUser) throws CdbException {
-        super.prepareEntityUpdate(item, updatedByUser); 
-        
+    public void prepareEntityUpdate(ItemCatalogBaseDomainEntity item, UserInfo updatedByUser) throws CdbException {
+        super.prepareEntityUpdate(item, updatedByUser);
+
         for (ItemElement itemElement : item.getFullItemElementList()) {
             if (itemElement.getId() == null) {
                 // New item
@@ -41,117 +46,134 @@ public abstract class ItemDomainCatalogBaseControllerUtility<ItemCatalogBaseDoma
             }
         }
     }
-    
+
     @Override
     public ItemElement createItemElement(ItemCatalogBaseDomainEntity item, UserInfo userInfo) {
         ItemElement itemElement = super.createItemElement(item, userInfo);
         itemElement.setIsRequired(true);
         itemElement.setDerivedFromItemElementList(new ArrayList<>());
-               
-        return itemElement; 
-    }      
-    
+
+        return itemElement;
+    }
+
     protected void addInventoryElementsForEachInventoryItem(ItemElement catalogItemElement, UserInfo userInfo) {
         // Get fresh db representation of parent item. 
-        ItemCatalogBaseDomainEntity parentItem = findById(catalogItemElement.getParentItem().getId()); 
-        
-        
+        ItemCatalogBaseDomainEntity parentItem = findById(catalogItemElement.getParentItem().getId());
+
         List<ItemDomainInventoryBase> inventoryItems = parentItem.getInventoryItemList();
         for (ItemDomainInventoryBase inventoryItem : inventoryItems) {
             // verify item element for the particular element needs to be created. 
             if (inventoryItemContainsItemElementForCatalogElement(catalogItemElement, inventoryItem)) {
-                continue; 
-            } 
-            
-            ItemControllerUtility itemControllerUtility = inventoryItem.getItemControllerUtility();                        
-            
-            ItemElement inventoryItemElement = itemControllerUtility.createItemElement(inventoryItem, userInfo); 
-            
+                continue;
+            }
+
+            ItemControllerUtility itemControllerUtility = inventoryItem.getItemControllerUtility();
+
+            ItemElement inventoryItemElement = itemControllerUtility.createItemElement(inventoryItem, userInfo);
+
             inventoryItemElement.setDerivedFromItemElement(catalogItemElement);
-            EntityInfo inventoryItemEntityInfo = inventoryItem.getEntityInfo(); 
-            UserInfo inventoryItemOwner = inventoryItemEntityInfo.getOwnerUser(); 
-            UserGroup inventoryOwnerGroup = inventoryItemEntityInfo.getOwnerUserGroup(); 
+            EntityInfo inventoryItemEntityInfo = inventoryItem.getEntityInfo();
+            UserInfo inventoryItemOwner = inventoryItemEntityInfo.getOwnerUser();
+            UserGroup inventoryOwnerGroup = inventoryItemEntityInfo.getOwnerUserGroup();
             inventoryItemElement.getEntityInfo().setOwnerUser(inventoryItemOwner);
             inventoryItemElement.getEntityInfo().setOwnerUserGroup(inventoryOwnerGroup);
-            catalogItemElement.getDerivedFromItemElementList().add(inventoryItemElement); 
-        }       
+            catalogItemElement.getDerivedFromItemElementList().add(inventoryItemElement);
+        }
     }
-    
+
     private boolean inventoryItemContainsItemElementForCatalogElement(ItemElement catalogElement, ItemDomainInventoryBase inventoryItem) {
         for (ItemElement inventoryElement : inventoryItem.getItemElementDisplayList()) {
             if (inventoryElement.getDerivedFromItemElement().getId().equals(catalogElement.getId())) {
-                return true; 
+                return true;
             }
         }
-        return false; 
+        return false;
     }
-    
+
     @Override
     public ItemElement finalizeItemElementRequiredStatusChanged(ItemElement itemElement, UserInfo userInfo) throws CdbException {
-        itemElement = super.finalizeItemElementRequiredStatusChanged(itemElement, userInfo); 
-        
-        if (itemElement.getIsRequired() == false) {            
-            ItemElementControllerUtility itemElementCUtility = new ItemElementControllerUtility(); 
-            
-            List<ItemElement> derivedItemElementList = new ArrayList<>(); 
+        itemElement = super.finalizeItemElementRequiredStatusChanged(itemElement, userInfo);
+
+        if (itemElement.getIsRequired() == false) {
+            ItemElementControllerUtility itemElementCUtility = new ItemElementControllerUtility();
+
+            List<ItemElement> derivedItemElementList = new ArrayList<>();
             derivedItemElementList.addAll(itemElement.getDerivedFromItemElementList());
-            
+
             for (ItemElement inventoryItemElement : derivedItemElementList) {
                 // Verify safe to remove
-                ItemElementConstraintInformation ieci; 
-                ieci = itemElementCUtility.getItemElementConstraintInformation(inventoryItemElement); 
+                ItemElementConstraintInformation ieci;
+                ieci = itemElementCUtility.getItemElementConstraintInformation(inventoryItemElement);
                 if (ieci.isSafeToRemove()) {
                     itemElementCUtility.destroy(inventoryItemElement, userInfo);
                     // Will need to perform destroy on each inventory element. 
-                    itemElement.getDerivedFromItemElementList().remove(inventoryItemElement); 
+                    itemElement.getDerivedFromItemElementList().remove(inventoryItemElement);
                 }
-            }            
+            }
         } else {
             // Item is required therefore should be part of each inventory item. 
             addInventoryElementsForEachInventoryItem(itemElement, userInfo);
         }
         return itemElement;
-    }   
-    
+    }
+
     @Override
-    public List<Item> getParentItemList(ItemCatalogBaseDomainEntity itemEntity) {        
+    public List<Item> getParentItemList(ItemCatalogBaseDomainEntity itemEntity) {
         List<Item> parentItemList = itemEntity.getParentItemList();
-        if (parentItemList == null) {    
+        if (parentItemList == null) {
             parentItemList = getFullCatalogParentItemList(itemEntity);
             itemEntity.setParentItemList(parentItemList);
         }
 
         return parentItemList;
     }
-    
+
     private List<Item> getFullCatalogParentItemList(ItemCatalogBaseDomainEntity item) {
         List<Item> parentItems = super.getParentItemList(item);
-        
+
         List<Item> inventoryItemList = item.getInventoryItemList();
-        
-        for  (Item inventory : inventoryItemList) {
-            List<Item> inventoryParents = ItemControllerUtility.getStandardParentItemList(inventory); 
+
+        List<Integer> parentIds = new ArrayList<>();
+
+        for (Item inventory : inventoryItemList) {
+            List<Item> inventoryParents = ItemControllerUtility.getStandardParentItemList(inventory);
             for (Item inventoryParent : inventoryParents) {
+                Integer parentId = inventoryParent.getId();
+                if (parentIds.contains(parentId)) {
+                    // Multiple memberships to the same parent. 
+                    // Avoid by reference setting of membership by resulting in duplicate membership by same inventory item.
+                    String parentName = inventoryParent.getName();
+                    UserInfo ownerUser = inventoryParent.getOwnerUser();
+                    try {
+                        inventoryParent = inventoryParent.clone(ownerUser);
+                    } catch (CloneNotSupportedException ex) {
+                        LOGGER.warn("Multiple Membership of same parent clone failed. " + ex);
+                    }
+                    inventoryParent.setId(parentId);
+                    inventoryParent.setName(parentName);
+                } else {
+                    parentIds.add(parentId);
+                }
                 inventoryParent.setMembershipByItem(inventory);
-                
+                parentItems.add(inventoryParent);
+
             }
-            parentItems.addAll(inventoryParents);             
         }
-        
-        return parentItems; 
+
+        return parentItems;
     }
-    
+
     @Override
     public void checkItemElementsForItem(ItemCatalogBaseDomainEntity item) throws CdbException {
         super.checkItemElementsForItem(item);
-        
+
         // Item element name check occurs prior to this check. 
         for (ItemElement itemElement : item.getItemElementDisplayList()) {
             if (itemElement.getContainedItem() == null) {
                 throw new CdbException("No item specified for element: " + itemElement.getName());
             }
         }
-    }    
+    }
 
     @Override
     public boolean isEntityHasName() {
@@ -165,14 +187,14 @@ public abstract class ItemDomainCatalogBaseControllerUtility<ItemCatalogBaseDoma
 
     @Override
     public boolean isEntityHasProject() {
-        return true; 
-    }    
-    
+        return true;
+    }
+
     @Override
     public String getDerivedFromItemTitle() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     @Override
     public String getEntityTypeName() {
         return "component";
