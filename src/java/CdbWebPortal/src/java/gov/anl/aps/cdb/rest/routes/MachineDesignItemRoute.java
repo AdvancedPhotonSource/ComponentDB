@@ -13,12 +13,14 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.LocatableItemControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemDomainMachineDesignQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
@@ -36,6 +38,7 @@ import gov.anl.aps.cdb.rest.entities.PromoteMachineElementInformation;
 import gov.anl.aps.cdb.rest.entities.RepresentingAssemblyElementForMachineInformation;
 import gov.anl.aps.cdb.rest.entities.UpdateMachineAssignedItemInformation;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,6 +55,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,7 +74,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @EJB
     ItemDomainMachineDesignFacade facade;
     @EJB
-    ItemElementFacade itemElementFacade; 
+    ItemElementFacade itemElementFacade;
 
     @GET
     @Path("/all")
@@ -80,10 +84,16 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         return facade.findAll();
     }
 
+    public ItemDomainMachineDesign getMachineDesignItemById(int id) throws ObjectNotFound {
+        return getMachineDesignItemById(id, false);
+    }
+
     @GET
     @Path("/ById/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ItemDomainMachineDesign getMachineDesignItemById(@PathParam("id") int id) throws ObjectNotFound {
+    public ItemDomainMachineDesign getMachineDesignItemById(@PathParam("id") int id,
+            @Parameter(description = "Optional bool to specify if location should be loaded. See item.locationItem.")
+            @QueryParam("includeLocation") boolean includeLocation) throws ObjectNotFound {
         LOGGER.debug("Fetching item with id: " + id);
         ItemDomainMachineDesign item = facade.find(id);
         if (item == null) {
@@ -91,13 +101,23 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
             LOGGER.error(ex);
             throw ex;
         }
+
+        if (includeLocation) {
+            LocatableItemControllerUtility controller = new LocatableItemControllerUtility();
+            controller.setItemLocationInfo(item);
+            ItemDomainLocation activeInheritedLocation = item.getActiveInheritedLocation();
+            item.setLocation(activeInheritedLocation);
+        }
+
         return item;
     }
 
     @GET
     @Path("/ByName/{name}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ItemDomainMachineDesign> getMachineDesignItemsByName(@PathParam("name") String name) throws ObjectNotFound {
+    public List<ItemDomainMachineDesign> getMachineDesignItemsByName(@PathParam("name") String name,
+            @Parameter(description = "Optional bool to specify if location should be loaded. See item.locationItem.")
+            @QueryParam("includeLocation") boolean includeLocation) throws ObjectNotFound {
         LOGGER.debug("Fetching items with name: " + name);
         List<ItemDomainMachineDesign> itemList = facade.findByName(name);
         if (itemList == null || itemList.isEmpty()) {
@@ -105,47 +125,57 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
             LOGGER.error(ex);
             throw ex;
         }
+
+        if (includeLocation) {
+            LocatableItemControllerUtility controller = new LocatableItemControllerUtility();
+            for (ItemDomainMachineDesign md : itemList) {
+                controller.setItemLocationInfo(md);
+                ItemDomainLocation activeInheritedLocation = md.getActiveInheritedLocation();
+                md.setLocation(activeInheritedLocation);
+            }
+        }
+
         return itemList;
     }
-    
+
     @GET
     @Path("/ByNamePattern/{namePattern}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemDomainMachineDesign> getMachineDesignItemsByNamePattern(@PathParam("namePattern") String namePattern) throws ObjectNotFound {
         LOGGER.debug("Fetching items with name pattern: " + namePattern);
-        Map<String, String> filterMap = new HashMap<>(); 
-        filterMap.put(ItemQueryBuilder.QueryTranslator.name.getValue(), namePattern); 
+        Map<String, String> filterMap = new HashMap<>();
+        filterMap.put(ItemQueryBuilder.QueryTranslator.name.getValue(), namePattern);
         ItemQueryBuilder queryBuilder = new ItemDomainMachineDesignQueryBuilder(ItemDomainName.MACHINE_DESIGN_ID, filterMap);
         List<ItemDomainMachineDesign> itemList = facade.findByDataTableFilterQueryBuilder(queryBuilder);
-        
+
         return itemList;
     }
-    
+
     @GET
     @Path("/ById/{itemId}/HousingHierarchy")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Fetch an item by its id.")
     public ItemHierarchy getHousingHierarchyById(@PathParam("itemId") int id) throws ObjectNotFound {
-        ItemDomainMachineDesign currentItem = getMachineDesignItemById(id); 
-        
-        ItemHierarchy ih = new ItemHierarchy(); 
+        ItemDomainMachineDesign currentItem = getMachineDesignItemById(id);
+
+        ItemHierarchy ih = new ItemHierarchy();
         ih.setItem(currentItem);
-                
+
         ItemDomainMachineDesign parentMachine = currentItem.getParentMachineDesign();
-        
-        while (parentMachine != null) {            
-            ItemHierarchy parentHierarchy = new ItemHierarchy(); 
+
+        while (parentMachine != null) {
+            ItemHierarchy parentHierarchy = new ItemHierarchy();
             parentHierarchy.setItem(parentMachine);
-            
+
             List<ItemHierarchy> children = new ArrayList<>();
             children.add(ih);
             parentHierarchy.setChildItems(children);
-            
-            ih = parentHierarchy; 
-            parentMachine = parentMachine.getParentMachineDesign(); 
-        }             
-                        
-        return ih; 
+
+            ih = parentHierarchy;
+            parentMachine = parentMachine.getParentMachineDesign();
+        }
+
+        return ih;
     }
 
     @GET
@@ -167,34 +197,34 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
 
         return itemHierarchy;
     }
-    
+
     @POST
     @Path("/PromoteMachineElement")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Create a machine design that represents an assembly element that is assigned to machine hierarchy.")
     @SecurityRequirement(name = "cdbAuth")
-    @Secured    
+    @Secured
     public ItemDomainMachineDesign promoteAssemblyElementToMachine(@RequestBody(required = true) PromoteMachineElementInformation info) throws CdbException {
-        ItemDomainMachineDesignControllerUtility machineUtility = new ItemDomainMachineDesignControllerUtility(); 
-        
+        ItemDomainMachineDesignControllerUtility machineUtility = new ItemDomainMachineDesignControllerUtility();
+
         int parentMdItemId = info.getParentMdItemId();
-        ItemDomainMachineDesign parentMachine = getMachineDesignItemById(parentMdItemId);        
+        ItemDomainMachineDesign parentMachine = getMachineDesignItemById(parentMdItemId);
         UserInfo creatorUser = verifyCurrentUserPermissionForItem(parentMachine);
-        ItemElement assyElement = itemElementFacade.find(info.getAssemblyElementId()); 
-                
+        ItemElement assyElement = itemElementFacade.find(info.getAssemblyElementId());
+
         ItemDomainMachineDesign promotedMachine = machineUtility.createRepresentingMachineForAssemblyElement(parentMachine, assyElement, creatorUser);
-        
+
         String newName = info.getNewName();
         if (newName != null) {
             promotedMachine.setName(newName);
         }
-        
-        promotedMachine = machineUtility.create(promotedMachine, creatorUser); 
-        
-        return promotedMachine; 
+
+        promotedMachine = machineUtility.create(promotedMachine, creatorUser);
+
+        return promotedMachine;
     }
-    
+
     @POST
     @Path("/UpdateRepresentingAssemblyElementForMachine")
     @Produces(MediaType.APPLICATION_JSON)
@@ -203,69 +233,68 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public ItemDomainMachineDesign updateRepresentingAssemblyElementForMachine(@RequestBody(required = true) RepresentingAssemblyElementForMachineInformation info) throws InvalidArgument, ObjectNotFound, InvalidObjectState, CdbException {
-        ItemDomainMachineDesignControllerUtility machineUtility = new ItemDomainMachineDesignControllerUtility(); 
-        
+        ItemDomainMachineDesignControllerUtility machineUtility = new ItemDomainMachineDesignControllerUtility();
+
         int machineId = info.getMachineId();
         Integer assemblyElementId = info.getAssemblyElementId();
         boolean templateMatchByNameForCustomBuild = info.isTemplateMatchByNameForCustomBuild();
-         
+
         ItemDomainMachineDesign machine = getMachineDesignItemById(machineId);
         if (!machine.getIsItemTemplate() && templateMatchByNameForCustomBuild) {
-            throw new InvalidArgument("Template match by name for custom build can only be provided when updating a template machine element."); 
+            throw new InvalidArgument("Template match by name for custom build can only be provided when updating a template machine element.");
         }
-        UserInfo updateUser = verifyCurrentUserPermissionForItem(machine);        
+        UserInfo updateUser = verifyCurrentUserPermissionForItem(machine);
         ItemElement assyElement;
         if (assemblyElementId != null) {
             assyElement = itemElementFacade.find(assemblyElementId);
         } else {
             // Cearing the assigned item. 
-            assyElement = null; 
+            assyElement = null;
         }
-        
-        machineUtility.updateRepresentingAssemblyElementForMachine(machine, assyElement, templateMatchByNameForCustomBuild);               
-        machine = machineUtility.update(machine, updateUser); 
-        
-        return machine;                 
-    }  
-    
-    
+
+        machineUtility.updateRepresentingAssemblyElementForMachine(machine, assyElement, templateMatchByNameForCustomBuild);
+        machine = machineUtility.update(machine, updateUser);
+
+        return machine;
+    }
+
     @POST
     @Path("/unassignTemplateFromMachineElement/{machineId}")
-    @Produces(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Unassign template from a machine element.")
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public ItemDomainMachineDesign unassignTemplateFromMachineElement(@PathParam("machineId") int machineId) throws InvalidArgument, ObjectNotFound, CdbException {
         ItemDomainMachineDesign machineItem = getMachineDesignItemById(machineId);
-                        
+
         UserInfo updateUser = verifyCurrentUserPermissionForItem(machineItem);
-        
-        ItemDomainMachineDesignControllerUtility machineUtility = new ItemDomainMachineDesignControllerUtility(); 
-        ItemElement machineElement = machineItem.getParentMachineElement();  
-        
-        List<ItemElement> itemElementList = new ArrayList<>(); 
+
+        ItemDomainMachineDesignControllerUtility machineUtility = new ItemDomainMachineDesignControllerUtility();
+        ItemElement machineElement = machineItem.getParentMachineElement();
+
+        List<ItemElement> itemElementList = new ArrayList<>();
         itemElementList.add(machineElement);
-        
+
         machineUtility.unassignMachineTemplate(itemElementList, updateUser);
-        
+
         machineItem = getMachineDesignItemById(machineId);
-        return machineItem; 
+        return machineItem;
     }
-    
+
     @POST
     @Path("/UpdateAssignedItem")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Update assigned item in a machine design item.")
     @SecurityRequirement(name = "cdbAuth")
-    @Secured    
+    @Secured
     public ItemDomainMachineDesign updateAssignedItem(@RequestBody(required = true) UpdateMachineAssignedItemInformation info) throws CdbException {
         int mdItemId = info.getMdItemId();
         Integer assignedItemId = info.getAssignedItemId();
         Boolean isInstalled = info.getIsInstalled();
-        
-        return updateAssignedItemForMd(mdItemId, assignedItemId, isInstalled); 
-    }            
+
+        return updateAssignedItemForMd(mdItemId, assignedItemId, isInstalled);
+    }
 
     @POST
     @Path("/UpdateAssignedItem/{mdItemId}/{assignedItemId}")
@@ -277,11 +306,11 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     public ItemDomainMachineDesign updateAssignedItemDeprecated(@PathParam("mdItemId") int mdItemId, @PathParam("assignedItemId") Integer assignedItemId) throws ObjectNotFound, CdbException {
         return updateAssignedItemForMd(mdItemId, assignedItemId);
     }
-    
+
     private ItemDomainMachineDesign updateAssignedItemForMd(int mdItemId, Integer assignedItemId) throws ObjectNotFound, CdbException {
-        return updateAssignedItemForMd(mdItemId, assignedItemId, null); 
+        return updateAssignedItemForMd(mdItemId, assignedItemId, null);
     }
-    
+
     private ItemDomainMachineDesign updateAssignedItemForMd(int mdItemId, Integer assignedItemId, Boolean isInstalled) throws ObjectNotFound, CdbException {
         Item currentItem = getItemByIdBase(mdItemId);
         Item assignedItem = null;
@@ -295,11 +324,11 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
 
         UserInfo currentUser = verifyCurrentUserPermissionForItem(currentItem);
         ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) currentItem;
-      
+
         ItemDomainMachineDesignBaseControllerUtility itemControllerUtility = mdItem.getItemControllerUtility();
-        
+
         itemControllerUtility.updateAssignedItem(mdItem, assignedItem, currentUser, isInstalled);
-        
+
         itemControllerUtility.update(mdItem, currentUser);
 
         return getMachineDesignItemById(mdItemId);
@@ -312,7 +341,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public ItemDomainMachineDesign clearAssignedItem(@PathParam("mdItemId") int mdItemId) throws CdbException {
-        return updateAssignedItemForMd(mdItemId, null); 
+        return updateAssignedItemForMd(mdItemId, null);
     }
 
     @PUT
@@ -339,7 +368,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         ItemDomainMachineDesign newMachine = (ItemDomainMachineDesign) machinePlaceholder.getContainedItem();
 
         assignDataToMachineElement(newMachine, newMachinePlaceholderOptions);
-        
+
         itemControllerUtility.saveNewItemElement(machinePlaceholder, currentUser);
 
         return newMachine;
@@ -364,10 +393,10 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
             Integer projectId = options.getProjectId();
             ItemProjectFacade projectFacade = ItemProjectFacade.getInstance();
             ItemProject project = projectFacade.find(projectId);
-            
+
             List<ItemProject> itemProjectList = newMachine.getItemProjectList();
             if (itemProjectList == null) {
-                itemProjectList = new ArrayList<>(); 
+                itemProjectList = new ArrayList<>();
                 newMachine.setItemProjectList(itemProjectList);
             }
 
@@ -414,14 +443,14 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         ItemDomainMachineDesignControlControllerUtility utility = new ItemDomainMachineDesignControlControllerUtility();
         UserInfo sessionUser = getCurrentRequestUserInfo();
 
-        ItemDomainMachineDesign newMachine = utility.createEntityInstance(sessionUser);        
+        ItemDomainMachineDesign newMachine = utility.createEntityInstance(sessionUser);
         assignDataToMachineElement(newMachine, controlElementOptions);
 
         newMachine = utility.create(newMachine, sessionUser);
-        
+
         return newMachine;
-    }  
-    
+    }
+
     @PUT
     @Path("/createControlRelationship")
     @Produces(MediaType.APPLICATION_JSON)
@@ -429,127 +458,125 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public ItemElementRelationship createControlRelationship(
-            @RequestBody(required = true) NewControlRelationshipInformation controlRelationshipInformation) throws InvalidArgument, CdbException {        
+            @RequestBody(required = true) NewControlRelationshipInformation controlRelationshipInformation) throws InvalidArgument, CdbException {
         ItemDomainMachineDesignControlControllerUtility utility = new ItemDomainMachineDesignControlControllerUtility();
-        
+
         int controllingMachineId = controlRelationshipInformation.getControllingMachineId();
         int controlledMachineId = controlRelationshipInformation.getControlledMachineId();
-        
-        ItemDomainMachineDesign controllingMachineElement = facade.find(controllingMachineId);         
+
+        ItemDomainMachineDesign controllingMachineElement = facade.find(controllingMachineId);
         if (controllingMachineElement == null) {
-            throw new InvalidArgument("Invalid controlling machine id entered."); 
+            throw new InvalidArgument("Invalid controlling machine id entered.");
         }
-        UserInfo currentRequestUserInfo = verifyCurrentUserPermissionForItem(controllingMachineElement); 
+        UserInfo currentRequestUserInfo = verifyCurrentUserPermissionForItem(controllingMachineElement);
         ItemDomainMachineDesign controlledMachineElement = facade.find(controlledMachineId);
-        
+
         if (controlledMachineElement == null) {
-            throw new InvalidArgument("Invalid controlled machine id entered."); 
+            throw new InvalidArgument("Invalid controlled machine id entered.");
         }
-                
-        Integer linkedParentMachineRelationshipId = controlRelationshipInformation.getLinkedParentMachineRelationshipId();         
-        
+
+        Integer linkedParentMachineRelationshipId = controlRelationshipInformation.getLinkedParentMachineRelationshipId();
+
         String controlInterfaceToParent = controlRelationshipInformation.getControlInterfaceToParent();
-        
-        ItemElementRelationship relationship = utility.applyRelationship(controlledMachineElement, controllingMachineElement, linkedParentMachineRelationshipId, controlInterfaceToParent, currentRequestUserInfo); 
-        
+
+        ItemElementRelationship relationship = utility.applyRelationship(controlledMachineElement, controllingMachineElement, linkedParentMachineRelationshipId, controlInterfaceToParent, currentRequestUserInfo);
+
         ItemDomainMachineDesign updatedItem = utility.update(controllingMachineElement, currentRequestUserInfo);
-        
+
         List<ItemElementRelationship> relationshipList = updatedItem.getItemElementRelationshipList1();
         for (ItemElementRelationship ier : relationshipList) {
             Item firstItem = ier.getFirstItem();
-            
+
             if (firstItem.equals(controlledMachineElement)) {
-                if (linkedParentMachineRelationshipId != null) { 
+                if (linkedParentMachineRelationshipId != null) {
                     ItemElementRelationship rfp = ier.getRelationshipForParent();
                     if (rfp == null) {
                         // Should not be possible because this would mean a global and non-global relationship was created. 
                         continue;
                     }
                     if (!Objects.equals(rfp.getId(), linkedParentMachineRelationshipId)) {
-                        continue; 
+                        continue;
                     }
                 }
                 relationship = ier;
-                break; 
+                break;
             }
-            
+
         }
-        
-        return relationship;        
+
+        return relationship;
     }
-    
+
     @GET
     @Path("/controlRelationshipHierarchyForMachine/{machineId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ControlRelationshipHierarchy> getControlHierarchyForMachineElement(@PathParam("machineId") int machineId) throws ObjectNotFound {        
-        ItemDomainMachineDesign machine = getMachineDesignItemById(machineId);                 
-        ItemDomainMachineDesignControlControllerUtility utility = new ItemDomainMachineDesignControlControllerUtility(); 
-        
-        List<ControlRelationshipHierarchy> controlHierarchyList = new ArrayList<>(); 
-        createControlHierarchyList(controlHierarchyList, utility, machine); 
-        
+    public List<ControlRelationshipHierarchy> getControlHierarchyForMachineElement(@PathParam("machineId") int machineId) throws ObjectNotFound {
+        ItemDomainMachineDesign machine = getMachineDesignItemById(machineId);
+        ItemDomainMachineDesignControlControllerUtility utility = new ItemDomainMachineDesignControlControllerUtility();
+
+        List<ControlRelationshipHierarchy> controlHierarchyList = new ArrayList<>();
+        createControlHierarchyList(controlHierarchyList, utility, machine);
+
         controlHierarchyList.sort((o1, o2) -> {
             ItemDomainMachineDesign machineItem = o1.getMachineItem();
             ItemDomainMachineDesign machineItem1 = o2.getMachineItem();
-                        
-            return machineItem.getId() - machineItem1.getId();            
+
+            return machineItem.getId() - machineItem1.getId();
         });
-        
-        
-        return controlHierarchyList; 
+
+        return controlHierarchyList;
     }
-    
+
     private void createControlHierarchyList(List<ControlRelationshipHierarchy> controlHierarchyList, ItemDomainMachineDesignControlControllerUtility utility, ItemDomainMachineDesign machine) {
-        ControlRelationshipHierarchy activeRelationshipHierarchy = null; 
-        
+        ControlRelationshipHierarchy activeRelationshipHierarchy = null;
+
         List<ItemDomainMachineDesign> controlChildItems = utility.getControlChildItems(machine);
-        
+
         if (controlChildItems.size() == 1) {
-            ItemDomainMachineDesign child = controlChildItems.get(0); 
-            PropertyValue interfaceToParent = utility.getControlInterfaceToParentForItem(child, machine); 
+            ItemDomainMachineDesign child = controlChildItems.get(0);
+            PropertyValue interfaceToParent = utility.getControlInterfaceToParentForItem(child, machine);
             activeRelationshipHierarchy = new ControlRelationshipHierarchy(child, interfaceToParent);
         }
-        
 
         createControlHierarchyList(controlHierarchyList, utility, machine, activeRelationshipHierarchy);
     }
-    
-    private void createControlHierarchyList(List<ControlRelationshipHierarchy> controlHierarchyList, ItemDomainMachineDesignControlControllerUtility utility, ItemDomainMachineDesign machine, ControlRelationshipHierarchy activeRelationshipHierarchy) {        
-        List<ItemDomainMachineDesign> controlParentItems = utility.getControlParentItems(machine);               
-        ControlRelationshipHierarchy newRelationshipHierarchy = null; 
-        
+
+    private void createControlHierarchyList(List<ControlRelationshipHierarchy> controlHierarchyList, ItemDomainMachineDesignControlControllerUtility utility, ItemDomainMachineDesign machine, ControlRelationshipHierarchy activeRelationshipHierarchy) {
+        List<ItemDomainMachineDesign> controlParentItems = utility.getControlParentItems(machine);
+        ControlRelationshipHierarchy newRelationshipHierarchy = null;
+
         if (controlParentItems.size() == 0) {
             if (activeRelationshipHierarchy != null) {
                 activeRelationshipHierarchy = new ControlRelationshipHierarchy(activeRelationshipHierarchy, machine, null);
-                controlHierarchyList.add(activeRelationshipHierarchy); 
+                controlHierarchyList.add(activeRelationshipHierarchy);
             }
-        } else {        
+        } else {
             for (ItemDomainMachineDesign parentItem : controlParentItems) {
-                PropertyValue interfaceToParent = utility.getControlInterfaceToParentForItem(machine, parentItem);             
+                PropertyValue interfaceToParent = utility.getControlInterfaceToParentForItem(machine, parentItem);
 
                 if (activeRelationshipHierarchy == null) {
                     // Leaf most node
                     newRelationshipHierarchy = new ControlRelationshipHierarchy(machine, interfaceToParent);
                 } else {
                     if (newRelationshipHierarchy != null) {
-                    // Copy over active for a new branch. 
-                        activeRelationshipHierarchy = activeRelationshipHierarchy.thisOnlyClone(); 
+                        // Copy over active for a new branch. 
+                        activeRelationshipHierarchy = activeRelationshipHierarchy.thisOnlyClone();
                     }
-                    newRelationshipHierarchy = new ControlRelationshipHierarchy(activeRelationshipHierarchy, machine, interfaceToParent); 
+                    newRelationshipHierarchy = new ControlRelationshipHierarchy(activeRelationshipHierarchy, machine, interfaceToParent);
                 }
 
                 createControlHierarchyList(controlHierarchyList, utility, parentItem, newRelationshipHierarchy);
             }
         }
     }
-    
+
     @GET
     @Path("/ConnectorListForMachine/{machineId}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<MachineDesignConnectorListObject> getMachineDesignConnectorList(@PathParam("machineId") int machineId) throws ObjectNotFound {
-        ItemDomainMachineDesign machine = getMachineDesignItemById(machineId);        
+        ItemDomainMachineDesign machine = getMachineDesignItemById(machineId);
         List<MachineDesignConnectorListObject> connList = MachineDesignConnectorListObject.createMachineDesignConnectorList(machine);
-        
-        return connList; 
+
+        return connList;
     }
 }
