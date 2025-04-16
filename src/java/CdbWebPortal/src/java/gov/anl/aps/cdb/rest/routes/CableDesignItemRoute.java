@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.LocatableItemControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
@@ -79,13 +80,18 @@ public class CableDesignItemRoute extends ItemBaseRoute {
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemDomainCableDesign> getCableDesignItemList(@Parameter(description = "Optional bool to specify if connections should be included. "
-            + "Can be accessed by `connectionList` of the cable design item.") @QueryParam("includeConnections") boolean includeConnections) {
+            + "Can be accessed by `connectionList` of the cable design item.") @QueryParam("includeConnections") boolean includeConnections,
+            @Parameter(description = "Optional bool to specify if connection endpoints should include locations. If true, connections will be automatically included.") @QueryParam("includeMdLocations") boolean includeMdLocations) {
         LOGGER.debug("Fetching cable design list.");
         List<ItemDomainCableDesign> cableDesigns = facade.findAll();
 
+        if (includeMdLocations) {
+            includeConnections = true;
+        }
+
         if (includeConnections) {
             for (ItemDomainCableDesign cableDesign : cableDesigns) {
-                loadConnectionInformation(cableDesign);
+                loadConnectionInformation(cableDesign, includeMdLocations);
             }
         }
 
@@ -103,7 +109,7 @@ public class CableDesignItemRoute extends ItemBaseRoute {
             LOGGER.error(ex);
             throw ex;
         }
-        loadConnectionInformation(item);
+        loadConnectionInformation(item, true);
         return item;
     }
 
@@ -123,7 +129,7 @@ public class CableDesignItemRoute extends ItemBaseRoute {
             throw ex;
         }
         ItemDomainCableDesign item = itemList.get(0);
-        loadConnectionInformation(item);
+        loadConnectionInformation(item, true);
         return item;
     }
 
@@ -450,7 +456,7 @@ public class CableDesignItemRoute extends ItemBaseRoute {
         UserInfo user = getCurrentRequestUserInfo();
         cableDesignItem = utility.update(cableDesignItem, user);
 
-        loadConnectionInformation(cableDesignItem);
+        loadConnectionInformation(cableDesignItem, false);
         return cableDesignItem;
     }
 
@@ -516,7 +522,7 @@ public class CableDesignItemRoute extends ItemBaseRoute {
         UserInfo user = getCurrentRequestUserInfo();
         cableDesignItem = utility.update(cableDesignItem, user);
 
-        loadConnectionInformation(cableDesignItem);
+        loadConnectionInformation(cableDesignItem, false);
         return cableDesignItem;
     }
 
@@ -651,7 +657,7 @@ public class CableDesignItemRoute extends ItemBaseRoute {
             cableDesignItem = utility.update(cableDesignItem, user);
         }
 
-        loadConnectionInformation(cableDesignItem);
+        loadConnectionInformation(cableDesignItem, false);
         return cableDesignItem;
     }
 
@@ -857,10 +863,20 @@ public class CableDesignItemRoute extends ItemBaseRoute {
         return machine;
     }
 
-    private void loadConnectionInformation(ItemDomainCableDesign cableDesign) {
+    private void loadConnectionInformation(ItemDomainCableDesign cableDesign, boolean includeLocation) {
         List<CableDesignConnectionListSummaryObject> connectionList
                 = CableDesignConnectionListSummaryObject.getConnectionSummaryList(cableDesign);
         cableDesign.setConnectionList(connectionList);
+
+        if (!includeLocation) {
+            return;
+        }
+
+        LocatableItemControllerUtility controller = new LocatableItemControllerUtility();
+        for (CableDesignConnectionListSummaryObject obj : connectionList) {
+            ItemDomainMachineDesign mdItem = obj.getMdItem();
+            controller.setItemLocationInfo(mdItem);
+        }
     }
 
 }

@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.rest.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -21,6 +22,22 @@ public class CableDesignConnectionListSummaryObject extends CableDesignConnectio
 
     public CableDesignConnectionListSummaryObject(ItemDomainCableDesign cableDesign) {
         super(cableDesign);
+    }
+
+    public Integer getMdItemLocationId() {
+        Item mdItemLocation = getMdItem().getActiveInheritedLocation();
+        if (mdItemLocation != null) {
+            return mdItemLocation.getId();
+        }
+        return null;
+    }
+
+    public String getMdItemLocationName() {
+        Item mdItemLocation = getMdItem().getActiveInheritedLocation();
+        if (mdItemLocation != null) {
+            return mdItemLocation.getName();
+        }
+        return null;
     }
 
     public Integer getMdItemId() {
