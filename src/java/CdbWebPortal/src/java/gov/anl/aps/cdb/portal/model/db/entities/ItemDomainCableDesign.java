@@ -16,7 +16,6 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
-import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.rest.entities.CableDesignConnectionListSummaryObject;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -329,39 +328,12 @@ public class ItemDomainCableDesign extends Item {
             String cableEnd,
             CdbEntity connectorPersistenceOwner) {
 
-        boolean isValid = true;
-        String validStr = "";
-        String methodName = "updateCableRelationship() ";
-
-        String origCableEnd = cableRelationship.getCableEndDesignation();
-
-        if (cableEnd == null) {
-            // cable end cannot be null
-            isValid = false;
-            String msg = "Cable End cannot be null.";
-            LOGGER.error(methodName + msg);
-            return new ValidInfo(isValid, msg);
-
-        } else if (!cableEnd.equals(origCableEnd)) {
-            // can't change cable end for primary connection
-            if (cableRelationship.isPrimaryCableConnection()) {
-                isValid = false;
-                String msg = "Cannot change cable end for primary connection.";
-                LOGGER.error(methodName + msg);
-                return new ValidInfo(isValid, msg);
-
-            } else {
-                cableRelationship.setCableEndDesignation(cableEnd, this.getOwnerUser());
-            }
+        ValidInfo verifyCableRelationship = verifyCableEndpointRelationship(cableRelationship, cableConnector, cableEnd);
+        if (!verifyCableRelationship.isValid()) {
+            return verifyCableRelationship;
         }
 
-        if (cableConnector != null) {
-            String cableEndDesignation = cableConnector.getCableEndDesignation();
-            if (!cableEndDesignation.equals(cableEnd)) {
-                return new ValidInfo(false, "Cable end for cable connector does not match for connector " + cableConnector.getConnectorName());
-            }
-        }
-
+        cableRelationship.setCableEndDesignation(cableEnd, this.getOwnerUser());
         ItemElement origItemElement = cableRelationship.getFirstItemElement();
         ItemElement newItemElement = itemEndpoint.getSelfElement();
 
@@ -388,7 +360,50 @@ public class ItemDomainCableDesign extends Item {
         // update cable connector
         cableRelationship.setSecondItemConnector(cableConnector);
 
-        return new ValidInfo(isValid, validStr);
+        return new ValidInfo(true, "");
+    }
+
+    public static ValidInfo verifyCableEndpointRelationship(ItemElementRelationship cableRelationship) {
+        ItemConnector cableConnector = cableRelationship.getSecondItemConnector();
+        String cableEndDesignation = cableRelationship.getCableEndDesignation();
+
+        return verifyCableEndpointRelationship(cableRelationship, cableConnector, cableEndDesignation);
+
+    }
+
+    public static ValidInfo verifyCableEndpointRelationship(
+            ItemElementRelationship cableRelationship,
+            ItemConnector cableConnector,
+            String cableEnd) {
+        String methodName = "verifyCableRelationship() ";
+
+        String origCableEnd = cableRelationship.getCableEndDesignation();
+
+        if (cableEnd == null) {
+            // cable end cannot be null
+            String msg = "Cable End cannot be null.";
+            LOGGER.error(methodName + msg);
+            return new ValidInfo(false, msg);
+
+        } else if (!cableEnd.equals(origCableEnd)) {
+            // can't change cable end for primary connection
+            if (cableRelationship.isPrimaryCableConnection()) {
+                String msg = "Cannot change cable end for primary connection.";
+                LOGGER.error(methodName + msg);
+                return new ValidInfo(false, msg);
+
+            }
+        }
+
+        if (cableConnector != null) {
+            String cableEndDesignation = cableConnector.getCableEndDesignation();
+            if (!cableEndDesignation.equals(cableEnd)) {
+                return new ValidInfo(false, "Cable end for cable connector does not match for connector " + cableConnector.getConnectorName());
+            }
+        }
+
+        return new ValidInfo(true, "");
+
     }
 
     @JsonIgnore
