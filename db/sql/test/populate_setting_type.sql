@@ -514,6 +514,7 @@ INSERT INTO `setting_type` VALUES
 (23087,'ItemDomainCableDesign.List.FilterBy.InstallationStatus','Filter for components by installation status.',NULL),
 (23088,'ItemDomainCableDesign.List.Display.TotalReqLengthDisplay','Display total required cable length.','false'),
 (23089,'ItemDomainCableDesign.List.FilterBy.TotalReqLengthDisplay','Filter for total required cable length.',NULL),
+(23090,'ItemDomainCableDesign.List.Display.QrId','Display component qrId.','false'),
 (24000,'ItemDomainCableCatalog.List.AutoLoad.FilterBy.Properties','Automatically load component list with display properties for filtering.','true'),
 (24001,'ItemDomainCableCatalog.List.Display.ItemCategory','Display catalog item category.','true'),
 (24002,'ItemDomainCableCatalog.List.Display.CreatedByUser','Display created by username.','false'),
