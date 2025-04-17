@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.constants.ItemMetadataFieldType;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
@@ -98,6 +99,12 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 throw new CdbException("Cannot use the same connector more than once: " + connector.getConnectorName());
             }
             connectorUsed.add(connector);
+
+            // Perform additional validations on the cable endpoint relationship. 
+            ValidInfo verifyCableRelationship = ItemDomainCableDesign.verifyCableEndpointRelationship(ier);
+            if (!verifyCableRelationship.isValid()) {
+                throw new CdbException(verifyCableRelationship.getValidString());
+            }
         }
     }
 
