@@ -189,6 +189,36 @@ class ItemCableTest(CdbTestBase):
             cable_design_by_name.connection_list, is_summary=True
         )
 
+    def test_fetch_cable_design_by_id_with_connection_locations(self):
+        cable_design = self.cableDesignApi.get_cable_design_item_by_id(
+            self.CABLE_DESIGN_ITEM_ID
+        )
+
+        self.assertIsNotNone(cable_design, msg="Cable design was not returned")
+
+        end1 = cable_design.connection_list[0]
+        end2 = cable_design.connection_list[1]
+        self.assertIsNotNone(end1.md_item_location_name)
+        self.assertIsNotNone(end2.md_item_location_name)
+        self.assertEqual(end1.md_item_location_id, self.LOC_BUILDING_1_ID)
+        self.assertEqual(end2.md_item_location_id, self.LOC_ROOM_104_ID)
+
+    def test_fetch_cable_design_by_name_with_connection_locations(self):
+        cable_design_by_name = self.cableDesignApi.get_cable_design_item_by_name(
+            self.CABLE_DESIGN_ITEM_NAME
+        )
+
+        self.assertIsNotNone(
+            cable_design_by_name, msg="Cable design by name was not returned"
+        )
+
+        end1 = cable_design_by_name.connection_list[0]
+        end2 = cable_design_by_name.connection_list[1]
+        self.assertIsNotNone(end1.md_item_location_name)
+        self.assertIsNotNone(end2.md_item_location_name)
+        self.assertEqual(end1.md_item_location_id, self.LOC_BUILDING_1_ID)
+        self.assertEqual(end2.md_item_location_id, self.LOC_ROOM_104_ID)
+
     def test_update_cable_design_metadata(self):
         self.loginAsUser()
         cable_design = self.create_minimal_cable_design(
