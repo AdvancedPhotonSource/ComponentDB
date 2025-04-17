@@ -417,7 +417,7 @@ class ItemCableTest(CdbTestBase):
 
         cable_design = self.cableDesignApi.add_or_update_cable_design_endpoint(
             cable_design_id=cable_design.id,
-            cable_end=1,
+            cable_end=2,
             machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_3,
             device_port_name=endpoint_def["md_connector"],
             connector_name=endpoint_def["cable_connector"],
@@ -551,7 +551,29 @@ class ItemCableTest(CdbTestBase):
             "Cannot change cable end for primary connection.",
         )
 
-    def test_fail_invalid_cable_end_connector(self):
+    def test_fail_add_invalid_cable_end_connector(self):
+        self.loginAsUser()
+        cable_design = self.create_minimal_cable_design(
+            name_prefix="fail_change_primary_cable_end_change-",
+            cable_type_id=self.CABLE_TYPE_WITH_CONNECTORS_ITEM_ID,
+        )
+
+        # Invalid cable end for connector
+        mod_connection = cable_design.connection_list[0]
+        with self.assertRaises(OpenApiException) as context:
+            cable_design = self.cableDesignApi.add_or_update_cable_design_endpoint(
+                cable_design_id=cable_design.id,
+                cable_end=1,
+                machine_design_id=mod_connection.md_item_id,
+                connector_name="End-2",
+            )
+
+        self.assert_exception_message(
+            context.exception,
+            "Cable end for cable connector does not match for connector End-2",
+        )
+
+    def test_fail_update_invalid_cable_end_connector(self):
         self.loginAsUser()
         cable_design = self.create_minimal_cable_design(
             name_prefix="fail_change_primary_cable_end_change-",
