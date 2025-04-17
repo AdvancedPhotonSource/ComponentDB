@@ -22,6 +22,44 @@ class ItemMdTest(CdbTestBase):
         md_item_by_id = self.machineDesignApi.get_machine_design_item_by_id(md_id)
         self.assertNotEqual(md_item_by_id, None)
 
+    def test_fetch_md_machine_item_by_id_with_location(self):
+        md = self.machineDesignApi.get_machine_design_item_by_id(
+            self.MACHINE_DESIGN_ID, include_location=False
+        )
+
+        self.assertIsNotNone(md)
+        self.assertIsNone(md.location_item)
+
+        md = self.machineDesignApi.get_machine_design_item_by_id(
+            self.MACHINE_DESIGN_ID, include_location=True
+        )
+
+        self.assertEqual(md.location_item.id, self.LOC_BUILDING_1_ID)
+
+    def test_fetch_md_machine_item_by_name_id_with_inherited_location(self):
+        mds = self.machineDesignApi.get_machine_design_items_by_name(
+            "Component 1", include_location=False
+        )
+
+        md = mds[0]
+
+        self.assertIsNotNone(md)
+        self.assertIsNone(md.location_item)
+
+        mds = self.machineDesignApi.get_machine_design_items_by_name(
+            "Component 1", include_location=True
+        )
+
+        md = mds[0]
+
+        self.assertEqual(md.location_item.id, self.LOC_BUILDING_1_ID)
+
+        md = self.machineDesignApi.get_machine_design_item_by_id(
+            md.id, include_location=True
+        )
+
+        self.assertEqual(md.location_item.id, self.LOC_BUILDING_1_ID)
+
     def test_md_update_assigned_item(self):
         self.loginAsAdmin()
 
