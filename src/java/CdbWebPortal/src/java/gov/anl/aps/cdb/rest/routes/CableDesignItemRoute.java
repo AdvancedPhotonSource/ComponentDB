@@ -9,7 +9,10 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.LocatableItemControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableInventoryFacade;
@@ -23,8 +26,10 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.rest.entities.CableDesignConnectionListSummaryObject;
@@ -38,8 +43,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -73,13 +80,18 @@ public class CableDesignItemRoute extends ItemBaseRoute {
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemDomainCableDesign> getCableDesignItemList(@Parameter(description = "Optional bool to specify if connections should be included. "
-            + "Can be accessed by `connectionList` of the cable design item.") @QueryParam("includeConnections") boolean includeConnections) {
+            + "Can be accessed by `connectionList` of the cable design item.") @QueryParam("includeConnections") boolean includeConnections,
+            @Parameter(description = "Optional bool to specify if connection endpoints should include locations. If true, connections will be automatically included.") @QueryParam("includeMdLocations") boolean includeMdLocations) {
         LOGGER.debug("Fetching cable design list.");
         List<ItemDomainCableDesign> cableDesigns = facade.findAll();
 
+        if (includeMdLocations) {
+            includeConnections = true;
+        }
+
         if (includeConnections) {
             for (ItemDomainCableDesign cableDesign : cableDesigns) {
-                loadConnectionInformation(cableDesign);
+                loadConnectionInformation(cableDesign, includeMdLocations);
             }
         }
 
@@ -97,7 +109,7 @@ public class CableDesignItemRoute extends ItemBaseRoute {
             LOGGER.error(ex);
             throw ex;
         }
-        loadConnectionInformation(item);
+        loadConnectionInformation(item, true);
         return item;
     }
 
@@ -117,7 +129,7 @@ public class CableDesignItemRoute extends ItemBaseRoute {
             throw ex;
         }
         ItemDomainCableDesign item = itemList.get(0);
-        loadConnectionInformation(item);
+        loadConnectionInformation(item, true);
         return item;
     }
 
@@ -425,6 +437,95 @@ public class CableDesignItemRoute extends ItemBaseRoute {
         return getCableDesignItemById(cableDesignId);
     }
 
+    @DELETE
+    @Path("/CableDesignEndpoint")
+    @Produces(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemDomainCableDesign deleteCableDesignEndpoint(
+            @Parameter(description = "DB ID of the cable.") @QueryParam("cableDesignId") Integer cableDesignId,
+            @Parameter(description = "DB ID of the cable relationship") @QueryParam("endpointRelationshipId") Integer endpointRelationshipId) throws CdbException {
+        ItemDomainCableDesign cableDesignItem = getCableDesignItemById(cableDesignId);
+        verifyCurrentUserPermissionForItem(cableDesignItem);
+
+        ItemElementRelationship endpointRelationship = findEndpointConnectionRelationship(cableDesignItem, endpointRelationshipId);
+
+        cableDesignItem.deleteCableRelationship(endpointRelationship);
+
+        ItemDomainCableDesignControllerUtility utility = cableDesignItem.getItemControllerUtility();
+        UserInfo user = getCurrentRequestUserInfo();
+        cableDesignItem = utility.update(cableDesignItem, user);
+
+        loadConnectionInformation(cableDesignItem, false);
+        return cableDesignItem;
+    }
+
+    @POST
+    @Path("/CableDesignEndpointAddUpdate")
+    @Produces(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemDomainCableDesign addOrUpdateCableDesignEndpoint(
+            @Parameter(description = "DB ID of the cable.") @QueryParam("cableDesignId") Integer cableDesignId,
+            @Parameter(description = "DB ID of the cable relationship. "
+                    + "Update when provided or create.") @QueryParam("endpointRelationshipId") Integer endpointRelationshipId,
+            @Parameter(description = "Cable End - 1 or 2. Required for new endpoints.") @QueryParam("cableEnd") Integer cableEnd,
+            @Parameter(description = "Endpoint Machine design id") @QueryParam("machineDesignId") Integer machineDesignId,
+            @Parameter(description = "Device port name") @QueryParam("devicePortName") String devicePortName,
+            @Parameter(description = "Connector name") @QueryParam("connectorName") String connectorName) throws CdbException {
+
+        if (cableDesignId == null) {
+            throw new InvalidArgument("Cable Design id is required");
+        }
+        if (machineDesignId == null) {
+            throw new InvalidArgument("Machine Design id is required");
+        }
+
+        String cableEndString = null;
+
+        if (cableEnd != null) {
+            cableEndString = String.valueOf(cableEnd);
+            boolean validCableEnd = VALUE_CABLE_END_1.equals(cableEndString) || VALUE_CABLE_END_2.equals(cableEndString);
+            if (!validCableEnd) {
+                throw new InvalidArgument("Invalid cable end (1 or 2) provided.");
+            }
+        }
+
+        ItemDomainCableDesign cableDesignItem = getCableDesignItemById(cableDesignId);
+        verifyCurrentUserPermissionForItem(cableDesignItem);
+
+        ItemDomainMachineDesign md = getMachineDesignById(machineDesignId);
+        ItemConnector endpointConnector = findConnectorByName(md, devicePortName);
+        ItemConnector cableConnector = findConnectorByName(cableDesignItem, connectorName);
+
+        // Load Cable Connections 
+        if (endpointRelationshipId != null) {
+            ItemElementRelationship endpointRelationship = findEndpointConnectionRelationship(cableDesignItem, endpointRelationshipId);
+
+            if (cableEndString == null) {
+                cableEndString = endpointRelationship.getCableEndDesignation();
+            }
+
+            ValidInfo result = cableDesignItem.updateCableRelationship(endpointRelationship, md, endpointConnector, cableConnector, cableEndString);
+            if (!result.isValid()) {
+                throw new InvalidObjectState(result.getValidString());
+            }
+        } else {
+            if (cableEnd == null) {
+                throw new InvalidArgument("Cable end (1 or 2) is is required");
+            }
+            // New connection
+            cableDesignItem.addCableRelationship(md, endpointConnector, cableConnector, cableEndString, false);
+        }
+
+        ItemDomainCableDesignControllerUtility utility = cableDesignItem.getItemControllerUtility();
+        UserInfo user = getCurrentRequestUserInfo();
+        cableDesignItem = utility.update(cableDesignItem, user);
+
+        loadConnectionInformation(cableDesignItem, false);
+        return cableDesignItem;
+    }
+
     @POST
     @Path("/CableDesignAddUpdate")
     @Produces(MediaType.APPLICATION_JSON)
@@ -433,6 +534,7 @@ public class CableDesignItemRoute extends ItemBaseRoute {
     public ItemDomainCableDesign addOrUpdateCableDesign(
             @Parameter(description = "DB ID of the cable. When none specified, item will be created.") @QueryParam("id") Integer id,
             @Parameter(description = "Cable design name") @QueryParam("name") String name,
+            @Parameter(description = "Cable design qrId (-1 to clear)") @QueryParam("qrId") Integer qrId,
             @Parameter(description = "Cable design alternate name") @QueryParam("alternateName") String alternateName,
             @Parameter(description = "Description of the cable design") @QueryParam("description") String description,
             @Parameter(description = "Project Ids") @QueryParam("itemProjectIds") List<Integer> itemProjectIds,
@@ -464,6 +566,10 @@ public class CableDesignItemRoute extends ItemBaseRoute {
 
         if (name != null) {
             cableDesignItem.setName(name);
+        }
+
+        if (qrId != null) {
+            cableDesignItem.setQrId(qrId);
         }
 
         if (alternateName != null) {
@@ -551,6 +657,7 @@ public class CableDesignItemRoute extends ItemBaseRoute {
             cableDesignItem = utility.update(cableDesignItem, user);
         }
 
+        loadConnectionInformation(cableDesignItem, false);
         return cableDesignItem;
     }
 
@@ -699,6 +806,28 @@ public class CableDesignItemRoute extends ItemBaseRoute {
         return connectionList;
     }
 
+    private ItemElementRelationship findEndpointConnectionRelationship(ItemDomainCableDesign cableDesignItem, Integer endpointRelationshipId) throws InvalidArgument {
+        List<ItemElementRelationship> endpointRelationships = ItemUtility.getItemRelationshipList(
+                cableDesignItem,
+                ItemElementRelationshipTypeNames.itemCableConnection.getValue(),
+                false);
+
+        ItemElementRelationship endpointRelationship = null;
+
+        for (ItemElementRelationship ier : endpointRelationships) {
+            if (Objects.equals(ier.getId(), endpointRelationshipId)) {
+                endpointRelationship = ier;
+                break;
+            }
+        }
+
+        if (endpointRelationship == null) {
+            throw new InvalidArgument("Cannot find endpoint relationship id.");
+        }
+
+        return endpointRelationship;
+    }
+
     private ItemConnector findConnectorByName(Item itemWithConnector, String connectorName) throws ObjectNotFound {
         if (connectorName == null) {
             return null;
@@ -734,10 +863,20 @@ public class CableDesignItemRoute extends ItemBaseRoute {
         return machine;
     }
 
-    private void loadConnectionInformation(ItemDomainCableDesign cableDesign) {
+    private void loadConnectionInformation(ItemDomainCableDesign cableDesign, boolean includeLocation) {
         List<CableDesignConnectionListSummaryObject> connectionList
                 = CableDesignConnectionListSummaryObject.getConnectionSummaryList(cableDesign);
         cableDesign.setConnectionList(connectionList);
+
+        if (!includeLocation) {
+            return;
+        }
+
+        LocatableItemControllerUtility controller = new LocatableItemControllerUtility();
+        for (CableDesignConnectionListSummaryObject obj : connectionList) {
+            ItemDomainMachineDesign mdItem = obj.getMdItem();
+            controller.setItemLocationInfo(mdItem);
+        }
     }
 
 }

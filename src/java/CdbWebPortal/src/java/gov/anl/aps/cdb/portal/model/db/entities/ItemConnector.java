@@ -245,7 +245,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
                 // this probably indicates some other problem, but return false since they are not equal
                 return false;
             }
-            if (this.getItem().getId().equals(other.getItem().getId())) {
+            if (this.getItem().equals(other.getItem())) {
                 return ObjectUtility.equals(this.connector, other.connector);
             } else {
                 return false;

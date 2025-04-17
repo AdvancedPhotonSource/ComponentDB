@@ -1,3 +1,4 @@
+import copy
 import unittest
 from cdbApi.exceptions import OpenApiException
 from cdbApi.models import CableDesignConnectionListObject, ItemDomainCableDesignMetadata
@@ -37,8 +38,14 @@ class ItemCableTest(CdbTestBase):
         122: {"cable_connector": "End-2", "md_connector": "Eth1"},
     }
 
+    MINIMAL_CABLE_DESIGN_WITH_ENDPOINTS = {
+        121: {"cable_connector": "", "md_connector": ""},
+        122: {"cable_connector": "", "md_connector": ""},
+    }
+
     MD_WITH_ETH_CONNECTOR_ITEM_ID_1 = 121
     MD_WITH_ETH_CONNECTOR_ITEM_ID_2 = 122
+    MD_WITH_ETH_CONNECTOR_ITEM_ID_3 = 126
 
     ETH_CONNECTOR_NAMES = ["Eth0", "Eth1"]
     CABLE_CONNECTOR_END_NAMES = ["End-1", "End-2"]
@@ -182,6 +189,36 @@ class ItemCableTest(CdbTestBase):
             cable_design_by_name.connection_list, is_summary=True
         )
 
+    def test_fetch_cable_design_by_id_with_connection_locations(self):
+        cable_design = self.cableDesignApi.get_cable_design_item_by_id(
+            self.CABLE_DESIGN_ITEM_ID
+        )
+
+        self.assertIsNotNone(cable_design, msg="Cable design was not returned")
+
+        end1 = cable_design.connection_list[0]
+        end2 = cable_design.connection_list[1]
+        self.assertIsNotNone(end1.md_item_location_name)
+        self.assertIsNotNone(end2.md_item_location_name)
+        self.assertEqual(end1.md_item_location_id, self.LOC_BUILDING_1_ID)
+        self.assertEqual(end2.md_item_location_id, self.LOC_ROOM_104_ID)
+
+    def test_fetch_cable_design_by_name_with_connection_locations(self):
+        cable_design_by_name = self.cableDesignApi.get_cable_design_item_by_name(
+            self.CABLE_DESIGN_ITEM_NAME
+        )
+
+        self.assertIsNotNone(
+            cable_design_by_name, msg="Cable design by name was not returned"
+        )
+
+        end1 = cable_design_by_name.connection_list[0]
+        end2 = cable_design_by_name.connection_list[1]
+        self.assertIsNotNone(end1.md_item_location_name)
+        self.assertIsNotNone(end2.md_item_location_name)
+        self.assertEqual(end1.md_item_location_id, self.LOC_BUILDING_1_ID)
+        self.assertEqual(end2.md_item_location_id, self.LOC_ROOM_104_ID)
+
     def test_update_cable_design_metadata(self):
         self.loginAsUser()
         cable_design = self.create_minimal_cable_design(
@@ -265,7 +302,7 @@ class ItemCableTest(CdbTestBase):
         fetched_cable = self.cableDesignApi.get_cable_design_item_by_id(
             new_cable_design.id
         )
-        self.assertIsNotNone(new_cable_design, msg="New cable design cannot be fetched")
+        self.assertIsNotNone(fetched_cable, msg="New cable design cannot be fetched")
 
         # Verify updated endpoints
         connections = self.cableDesignApi.get_cable_design_connection_list(
@@ -302,6 +339,7 @@ class ItemCableTest(CdbTestBase):
 
         updated_cable_design = self.cableDesignApi.add_or_update_cable_design(
             id=cable_design.id,
+            qr_id=cable_design.id,
             name=name,
             alternate_name=alternate_name,
             description=description,
@@ -363,6 +401,304 @@ class ItemCableTest(CdbTestBase):
 
         self.verify_connection_list(connections, endpoints_dict=endpoints_def)
 
+    def test_add_cable_endpoint(self):
+        self.loginAsUser()
+        cable_design = self.create_minimal_cable_design(
+            name_prefix="add_cable_endpoint_test-",
+            cable_type_id=self.CABLE_TYPE_WITH_CONNECTORS_ITEM_ID,
+        )
+
+        self.assertIsNotNone(cable_design, msg="Minimal cable failed to create")
+
+        endpoint_def = {
+            "cable_connector": "End-2",
+            "md_connector": "Eth1",
+        }
+
+        cable_design = self.cableDesignApi.add_or_update_cable_design_endpoint(
+            cable_design_id=cable_design.id,
+            cable_end=2,
+            machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_3,
+            device_port_name=endpoint_def["md_connector"],
+            connector_name=endpoint_def["cable_connector"],
+        )
+
+        self.assertEqual(
+            len(cable_design.connection_list),
+            3,
+            msg="New cable endpoint has not been created",
+        )
+
+        connections = copy.deepcopy(self.MINIMAL_CABLE_DESIGN_WITH_ENDPOINTS)
+        connections[self.MD_WITH_ETH_CONNECTOR_ITEM_ID_3] = endpoint_def
+
+        self.verify_connection_list(
+            cable_design.connection_list,
+            endpoints_dict=connections,
+            is_summary=True,
+        )
+
+    def test_modify_primary_cable_endpoint(self):
+        self.loginAsUser()
+        cable_design = self.create_minimal_cable_design(
+            name_prefix="add_modify_endpoint_test-",
+            cable_type_id=self.CABLE_TYPE_WITH_CONNECTORS_ITEM_ID,
+        )
+
+        self.assertIsNotNone(cable_design, msg="Minimal cable failed to create")
+
+        connections = copy.deepcopy(self.MINIMAL_CABLE_DESIGN_WITH_ENDPOINTS)
+
+        # Update an existing primary connection
+        mod_connection = cable_design.connection_list[0]
+        endpoint_def = {
+            "cable_connector": "End-1",
+            "md_connector": "Eth0",
+        }
+        cable_design = self.cableDesignApi.add_or_update_cable_design_endpoint(
+            cable_design_id=cable_design.id,
+            endpoint_relationship_id=mod_connection.cable_relationship_id,
+            cable_end=1,
+            machine_design_id=mod_connection.md_item_id,
+            device_port_name=endpoint_def["md_connector"],
+            connector_name=endpoint_def["cable_connector"],
+        )
+        connections[mod_connection.md_item_id] = endpoint_def
+
+        self.verify_connection_list(
+            cable_design.connection_list,
+            endpoints_dict=connections,
+            is_summary=True,
+        )
+
+    def test_modify_new_cable_endpoint(self):
+        self.loginAsUser()
+        cable_design = self.create_minimal_cable_design(
+            name_prefix="add_modify_endpoint_test-",
+            cable_type_id=self.CABLE_TYPE_WITH_CONNECTORS_ITEM_ID,
+        )
+
+        self.assertIsNotNone(cable_design, msg="Minimal cable failed to create")
+
+        connections = copy.deepcopy(self.MINIMAL_CABLE_DESIGN_WITH_ENDPOINTS)
+
+        endpoint_def = {
+            "cable_connector": "",
+            "md_connector": "",
+        }
+        cable_design = self.cableDesignApi.add_or_update_cable_design_endpoint(
+            cable_design_id=cable_design.id,
+            cable_end=2,
+            machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_3,
+        )
+        connections[self.MD_WITH_ETH_CONNECTOR_ITEM_ID_3] = endpoint_def
+
+        self.verify_connection_list(
+            cable_design.connection_list,
+            endpoints_dict=connections,
+            is_summary=True,
+        )
+
+        endpoint_def = {
+            "cable_connector": "End-2",
+            "md_connector": "Eth1",
+        }
+
+        mod_connection = None
+
+        for connection in cable_design.connection_list:
+            if connection.md_item_id == self.MD_WITH_ETH_CONNECTOR_ITEM_ID_3:
+                mod_connection = connection
+                break
+
+        self.assertIsNotNone(cable_design, msg="Connection to modify cannot be found")
+
+        cable_design = self.cableDesignApi.add_or_update_cable_design_endpoint(
+            cable_design_id=cable_design.id,
+            endpoint_relationship_id=mod_connection.cable_relationship_id,
+            machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_3,
+            device_port_name=endpoint_def["md_connector"],
+            connector_name=endpoint_def["cable_connector"],
+        )
+        connections[self.MD_WITH_ETH_CONNECTOR_ITEM_ID_3] = endpoint_def
+
+        connections[self.MD_WITH_ETH_CONNECTOR_ITEM_ID_3] = endpoint_def
+        self.verify_connection_list(
+            cable_design.connection_list,
+            endpoints_dict=connections,
+            is_summary=True,
+        )
+
+    def test_fail_change_primary_cable_end_change(self):
+        self.loginAsUser()
+        cable_design = self.create_minimal_cable_design(
+            name_prefix="fail_change_primary_cable_end_change-",
+            cable_type_id=self.CABLE_TYPE_WITH_CONNECTORS_ITEM_ID,
+        )
+
+        # Change cable end for primary cable.
+        mod_connection = cable_design.connection_list[0]
+        with self.assertRaises(OpenApiException) as context:
+            cable_design = self.cableDesignApi.add_or_update_cable_design_endpoint(
+                cable_design_id=cable_design.id,
+                endpoint_relationship_id=mod_connection.cable_relationship_id,
+                cable_end=2,
+                machine_design_id=mod_connection.md_item_id,
+            )
+
+        self.assert_exception_message(
+            context.exception,
+            "Cannot change cable end for primary connection.",
+        )
+
+    def test_fail_add_invalid_cable_end_connector(self):
+        self.loginAsUser()
+        cable_design = self.create_minimal_cable_design(
+            name_prefix="fail_change_primary_cable_end_change-",
+            cable_type_id=self.CABLE_TYPE_WITH_CONNECTORS_ITEM_ID,
+        )
+
+        # Invalid cable end for connector
+        mod_connection = cable_design.connection_list[0]
+        with self.assertRaises(OpenApiException) as context:
+            cable_design = self.cableDesignApi.add_or_update_cable_design_endpoint(
+                cable_design_id=cable_design.id,
+                cable_end=1,
+                machine_design_id=mod_connection.md_item_id,
+                connector_name="End-2",
+            )
+
+        self.assert_exception_message(
+            context.exception,
+            "Cable end for cable connector does not match for connector End-2",
+        )
+
+    def test_fail_update_invalid_cable_end_connector(self):
+        self.loginAsUser()
+        cable_design = self.create_minimal_cable_design(
+            name_prefix="fail_change_primary_cable_end_change-",
+            cable_type_id=self.CABLE_TYPE_WITH_CONNECTORS_ITEM_ID,
+        )
+
+        # Invalid cable end for connector
+        mod_connection = cable_design.connection_list[0]
+        with self.assertRaises(OpenApiException) as context:
+            cable_design = self.cableDesignApi.add_or_update_cable_design_endpoint(
+                cable_design_id=cable_design.id,
+                endpoint_relationship_id=mod_connection.cable_relationship_id,
+                cable_end=1,
+                machine_design_id=mod_connection.md_item_id,
+                connector_name="End-2",
+            )
+
+        self.assert_exception_message(
+            context.exception,
+            "Cable end for cable connector does not match for connector End-2",
+        )
+
+    def test_fail_use_same_connector_twice(self):
+        self.loginAsUser()
+        cable_design = self.create_minimal_cable_design(
+            name_prefix="fail_use_same_connector_twice-",
+            cable_type_id=self.CABLE_TYPE_WITH_CONNECTORS_ITEM_ID,
+        )
+
+        connection = cable_design.connection_list[0]
+        connector_name = "End-1"
+
+        # Add cable endpoint with the same connectors.
+        with self.assertRaises(OpenApiException) as context:
+            cable_design = self.cableDesignApi.add_or_update_cable_design_endpoint(
+                cable_design_id=cable_design.id,
+                cable_end=1,
+                machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_2,
+                connector_name=connector_name,
+            )
+            cable_design = self.cableDesignApi.add_or_update_cable_design_endpoint(
+                cable_design_id=cable_design.id,
+                cable_end=1,
+                machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_2,
+                connector_name=connector_name,
+            )
+
+        self.assert_exception_message(
+            context.exception,
+            f"Cannot use the same connector more than once: {connector_name}",
+        )
+
+        # Modify existing connections with same connector
+        with self.assertRaises(OpenApiException) as context:
+            cable_design = self.cableDesignApi.add_or_update_cable_design_endpoint(
+                cable_design_id=cable_design.id,
+                endpoint_relationship_id=connection.cable_relationship_id,
+                cable_end=1,
+                machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_1,
+                connector_name=connector_name,
+            )
+
+        self.assert_exception_message(
+            context.exception,
+            f"Cannot use the same connector more than once: {connector_name}",
+        )
+
+    def test_delete_cable_endpoint(self):
+        self.loginAsUser()
+        cable_design = self.create_minimal_cable_design(
+            name_prefix="fail_use_same_connector_twice-",
+            cable_type_id=self.CABLE_TYPE_WITH_CONNECTORS_ITEM_ID,
+        )
+
+        # Add cable endpoint with the same connectors.
+        cable_design = self.cableDesignApi.add_or_update_cable_design_endpoint(
+            cable_design_id=cable_design.id,
+            cable_end=1,
+            machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_3,
+            connector_name="End-1",
+        )
+
+        new_connection = None
+
+        for connection in cable_design.connection_list:
+            if connection.md_item_id == self.MD_WITH_ETH_CONNECTOR_ITEM_ID_3:
+                new_connection = connection
+                break
+
+        self.assertIsNotNone(new_connection, msg="New connection cannot be found")
+
+        cable_design = self.cableDesignApi.delete_cable_design_endpoint(
+            cable_design_id=cable_design.id,
+            endpoint_relationship_id=new_connection.cable_relationship_id,
+        )
+
+        connection_found = any(
+            connection.md_item_id == self.MD_WITH_ETH_CONNECTOR_ITEM_ID_3
+            for connection in cable_design.connection_list
+        )
+
+        self.assertFalse(
+            connection_found, msg="Connection should not be found after deletion"
+        )
+
+    def test_delete_primary_cable_endpoint(self):
+        self.loginAsUser()
+        cable_design = self.create_minimal_cable_design(
+            name_prefix="delete-primary-connection-",
+            cable_type_id=self.CABLE_TYPE_WITH_CONNECTORS_ITEM_ID,
+        )
+
+        connection = cable_design.connection_list[0]
+
+        with self.assertRaises(OpenApiException) as context:
+            cable_design = self.cableDesignApi.delete_cable_design_endpoint(
+                cable_design_id=cable_design.id,
+                endpoint_relationship_id=connection.cable_relationship_id,
+            )
+
+        self.assert_exception_message(
+            context.exception,
+            f"Primary connection cannot be deleted.",
+        )
+
     def verify_connection_list(
         self,
         connection_list,
@@ -397,11 +733,12 @@ class ItemCableTest(CdbTestBase):
                 msg=f"{key} in the metadata does not match expected value. {msg}",
             )
 
-    def create_minimal_cable_design(self, name_prefix):
+    def create_minimal_cable_design(self, name_prefix, cable_type_id=None):
         return self.cableDesignApi.add_or_update_cable_design(
             name=f"{name_prefix}{self.gen_unique_name()}",
             item_project_ids=[3],
             technical_system_ids=[44],
+            cable_type_id=cable_type_id,
             end1_machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_2,
             end2_machine_design_id=self.MD_WITH_ETH_CONNECTOR_ITEM_ID_1,
         )

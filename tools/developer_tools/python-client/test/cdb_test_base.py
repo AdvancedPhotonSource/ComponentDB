@@ -20,11 +20,14 @@ class CdbTestBase(unittest.TestCase):
     INVENTORY_FIRST_CONTAINED_NEW_ITEM_ID = 41
     INVENTORY_FIRST_CONTAINED_INVALID_ITEM_ID = 97
     LOCATION_WITH_INVENTORY_ID = "89"
+    LOC_BUILDING_1_ID = 89
+    LOC_ROOM_104_ID = 91
     MACHINE_DESIGN_ID = 93
     MACHINE_DESIGN_PARENT_ID = 94
     MACHINE_DESIGN_CHILD_ID = 95
     MACHINE_TO_REPRESENT_ID = 112
     CABLE_DESIGN_ITEM_ID = 110
+    CABLE_DESIGN_ITEM_NAME = "Test Cable Design"
     CABLE_DESIGN_WITH_ENDPOINTS_METADATA_ITEM_ID = 125
     CABLE_DESIGN_ENDPOINT_IDS = [
         MACHINE_DESIGN_PARENT_ID,
@@ -93,6 +96,10 @@ class CdbTestBase(unittest.TestCase):
 
     def gen_unique_name(self):
         return uuid.uuid4().hex[:10]
+
+    def assert_exception_message(self, exception, message):
+        parsedException = self.factory.parseApiException(exception)
+        self.assertEqual(parsedException.message, message)
 
     def is_item_parent(self, parent, child):
         """

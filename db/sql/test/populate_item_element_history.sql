@@ -199,6 +199,10 @@ INSERT INTO `item_element_history` VALUES
 (196,NULL,182,'Item With Connectors 2',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,'',NULL,'2025-03-05 08:50:31',1),
 (197,NULL,177,'Item with Ports 1',NULL,NULL,NULL,'Item With Connectors 1',123,NULL,NULL,0,1,'',NULL,'2025-03-05 08:51:25',1),
 (198,NULL,179,'Item with Ports 2',NULL,NULL,NULL,'Item With Connectors 2',124,NULL,NULL,0,1,'',NULL,'2025-03-05 08:51:30',1),
-(199,NULL,183,'TEST CABLE 2',NULL,NULL,NULL,'CAT-11',71,NULL,NULL,0,1,'Cable with metadata and endpoints with ports defined',NULL,'2025-03-05 08:52:22',1);
+(199,NULL,183,'TEST CABLE 2',NULL,NULL,NULL,'CAT-11',71,NULL,NULL,0,1,'Cable with metadata and endpoints with ports defined',NULL,'2025-03-05 08:52:22',1),
+(200,'E3',184,'Machine2',120,'Item with Ports 3',126,NULL,NULL,NULL,NULL,0,1,NULL,2.00,'2025-04-02 08:43:21',1),
+(201,NULL,185,'Item with Ports 3',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,'',NULL,'2025-04-02 08:43:21',1),
+(202,NULL,186,'Item With Connectors 3',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,'',NULL,'2025-04-02 08:43:31',1),
+(203,NULL,185,'Item with Ports 3',NULL,NULL,NULL,'Item With Connectors 3',127,NULL,NULL,0,1,'',NULL,'2025-04-02 08:44:46',1);
 /*!40000 ALTER TABLE `item_element_history` ENABLE KEYS */;
 UNLOCK TABLES;

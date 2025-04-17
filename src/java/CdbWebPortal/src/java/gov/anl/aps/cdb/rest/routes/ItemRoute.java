@@ -31,6 +31,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
@@ -145,6 +146,21 @@ public class ItemRoute extends ItemBaseRoute {
     }
 
     @GET
+    @Path("/ById/{itemId}/Connectors")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Fetch item connectors by its id.")
+    public List<ItemConnector> getItemConnectorsById(@PathParam("itemId") int id) throws ObjectNotFound {
+        Item itemByIdBase = getItemByIdBase(id);
+
+        List<ItemConnector> itemConnectorList = itemByIdBase.getItemConnectorList();
+        List<ItemConnector> syncedConnectorList = itemByIdBase.getSyncedConnectorList();
+
+        itemConnectorList.addAll(syncedConnectorList);
+
+        return itemConnectorList;
+    }
+
+    @GET
     @Path("/HierarchyById/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Fetch an item by its id.")
@@ -152,16 +168,16 @@ public class ItemRoute extends ItemBaseRoute {
     public ItemHierarchy getItemHierarchyByIdDeprecated(@PathParam("id") int id) throws ObjectNotFound {
         return getItemHierarchyById(id);
     }
-    
+
     @GET
     @Path("/ById/{itemId}/ItemElementCount")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Fetch count of item elements for item id.")
     public Integer getItemElementCount(@PathParam("itemId") int id) throws ObjectNotFound {
-        Item itemByIdBase = getItemByIdBase(id);       
+        Item itemByIdBase = getItemByIdBase(id);
         List<ItemElement> itemElementDisplayList = itemByIdBase.getItemElementDisplayList();
-        
-        return itemElementDisplayList.size(); 
+
+        return itemElementDisplayList.size();
     }
 
     @POST
@@ -339,11 +355,11 @@ public class ItemRoute extends ItemBaseRoute {
     public List<ItemMembership> getItemMemberships(@PathParam("itemId") int id) throws ObjectNotFound {
         LOGGER.debug("Fetching memberships for item with id: " + id);
         Item itemById = getItemByIdBase(id);
-        
+
         ItemControllerUtility itemControllerUtility = itemById.getItemControllerUtility();
-        
-        List<Item> parentItemList = itemControllerUtility.getParentItemList(itemById); 
-        
+
+        List<Item> parentItemList = itemControllerUtility.getParentItemList(itemById);
+
         List<ItemMembership> itemMemberships = new ArrayList<>();
         for (Item parentItem : parentItemList) {
             ItemMembership itemMembership = new ItemMembership(parentItem);
@@ -960,19 +976,19 @@ public class ItemRoute extends ItemBaseRoute {
         Item itemById = getItemByIdBase(itemId);
         return itemById.getLogList();
     }
-    
+
     @GET
     @Path("/ById/{itemid}/CreatedFromTemplate")
-    @Produces(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get created from template for item id.")
     public Item getCreatedFromTemplate(@PathParam("itemid") int itemId) throws ObjectNotFound {
         Item itemById = getItemById(itemId);
         Item createdFromTemplate = itemById.getCreatedFromTemplate();
-        
+
         if (createdFromTemplate == null) {
             throw new ObjectNotFound("Item " + itemById.toString() + " does not have a template association.");
         }
-        
+
         return createdFromTemplate;
     }
 
@@ -1240,18 +1256,18 @@ public class ItemRoute extends ItemBaseRoute {
         LinkedList<SearchResult> catalogResults = catalogControllerUtility.performEntitySearch(searchText, true);
         LinkedList<SearchResult> inventoryResults = inventoryInstance.performEntitySearch(searchText, true);
         LinkedList<SearchResult> mdResults = mdInstance.performEntitySearch(searchText, true);
-        
-        SearchEntitiesResults results = new SearchEntitiesResults(); 
+
+        SearchEntitiesResults results = new SearchEntitiesResults();
         results.setItemDomainCatalogResults(catalogResults);
         results.setItemDomainInventoryResults(inventoryResults);
         results.setItemDomainMachineDesignResults(mdResults);
-        
-        return results; 
+
+        return results;
     }
 
     @GET
     @Path("/DetailedCatalogSearch/{searchText}")
-    @Produces(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)
     public List<ItemDomainCatalogSearchResult> getDetailedCatalogSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
         LOGGER.debug("Performing a detailed catalog item search for search query: " + searchText);
 

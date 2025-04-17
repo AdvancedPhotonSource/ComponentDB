@@ -1,5 +1,5 @@
 {% set name = "ComponentDB-CLI" %}
-{% set version = "3.16.1" %}
+{% set version = "3.16.2.dev3" %}
 
 package:
   name: "{{ name|lower }}"
