@@ -729,14 +729,6 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
                 throw new InvalidObjectState(errMessage);
             }
         }
-        
-        ItemDomainMachineDesign parentMachineDesign = node.getParentMachineDesign();
-        if (representedElement != null && parentMachineDesign.getRepresentsCatalogElement() != null) {
-            String errMessage = node.getName();
-            errMessage += " has a parent " + parentMachineDesign.getName();
-            errMessage += " with represented element reference.";
-            throw new InvalidObjectState(errMessage);
-        }
 
         List<ItemElement> elements = fetchElementsAvaiableForNodeRepresentation(node);
 
