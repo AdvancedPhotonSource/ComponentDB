@@ -81,6 +81,8 @@ See LICENSE file.
                          rendered="#{cableWizard.isTypeCatalog()}">
 
                     <ui:decorate template="../../../itemDomainCableCatalog/private/templates/itemDomainCableCatalogDataTableTemplate.xhtml">
+                        <ui:param name="displayItemNameColumnLink"
+                                  value="#{false}"/>
 
                         <ui:param name="cableCatalogDataTableSelectionModel" 
                                   value="#{cableWizard.selectionCableCatalogItem}" /> 
