@@ -81,6 +81,7 @@ See LICENSE file.
                          rendered="#{cableWizard.isTypeCatalog()}">
 
                     <ui:decorate template="../../../itemDomainCableCatalog/private/templates/itemDomainCableCatalogDataTableTemplate.xhtml">
+                        
                         <ui:param name="displayItemNameColumnLink"
                                   value="#{false}"/>
 
@@ -90,7 +91,8 @@ See LICENSE file.
                                   value="cableWizardDetailsTab" />
 
                         <ui:define name="cableCatalogDataTableEvents">
-                            <p:ajax event="rowSelectRadio"
+                            <p:ajax event="rowSelect"
+                                    update="@parent"
                                     listener="#{cableWizard.selectListenerCableCatalogItem}"
                                     oncomplete="update#{rootViewId}WizardButtons();"/>
                         </ui:define>
