@@ -256,10 +256,12 @@ See LICENSE file.
               rendered="#{hideOptionalColumns 
                           and hideSearchColumns
                           and settingObject.displayItemProject}">
-        <h:outputText value="#{itemListObject.itemProjectString}" />            
+        <h:outputText value="#{itemListObject.itemProjectString}" />
     </p:column>
 
-    <ui:include src="../../../propertyValue/private/propertyValueDomainEntityListColumnObject.xhtml">
+    <ui:include src="#{hideSearchColumns
+                       ? '../../../propertyValue/private/propertyValueDomainEntityListColumnObject.xhtml'
+                       : '../../../common/private/commonEmptyPage.xhtml'}">
         <ui:param name="cdbDomainEntityObject" value="#{itemListObject}"/>
     </ui:include>
 
