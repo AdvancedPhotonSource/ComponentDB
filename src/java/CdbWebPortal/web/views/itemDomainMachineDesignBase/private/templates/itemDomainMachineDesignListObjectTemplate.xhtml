@@ -67,9 +67,9 @@ See LICENSE file.
             Machine Element Name
             <ui:fragment>
                 <br/>
-                <p:inputText id="nameMdFilter#{viewId}"                             
-                             value="#{valueModel.nameFilter}" 
-                             onchange="onChangeNameMdFilter()"
+                <p:inputText id="nameMdFilter#{viewId}"
+                             value="#{valueModel.nameFilter}"
+                             onchange="onChangeNameMdFilter#{viewId}()"
                              rendered="#{includeSearchFields}"
                              onkeyup="if (event.keyCode === 13) { this.blur(); PF('loadingDialog').show(); onChangeNameMdFilter#{viewId}() }"/>                
                 
