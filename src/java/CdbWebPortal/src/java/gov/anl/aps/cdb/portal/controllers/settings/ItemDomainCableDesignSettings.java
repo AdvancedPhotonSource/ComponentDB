@@ -4,10 +4,11 @@
  */
 package gov.anl.aps.cdb.portal.controllers.settings;
 
+import java.util.Map;
+
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import java.util.Map;
 
 /**
  *
@@ -15,6 +16,9 @@ import java.util.Map;
  */
 public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableDesignController> {
     
+    private static final String DefaultCablePrefixSettingTypeKey = "ItemDomainCableDesign.Default.CablePrefix";
+    private static final String DefaultProjectSettingTypeKey = "ItemDomainCableDesign.Default.Project";
+    private static final String DefaultTechnicalSystemSettingTypeKey = "ItemDomainCableDesign.Default.TechnicalSystem";
     private static final String DisplayAlternateNameSettingTypeKey = "ItemDomainCableDesign.List.Display.ItemIdentifier1";
     private static final String DisplayDesignDescriptionSettingTypeKey = "ItemDomainCableDesign.List.Display.Description";
     private static final String DisplayLocationSettingTypeKey = "ItemDomainCableDesign.List.Display.Location";
@@ -117,6 +121,11 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     private static final String FilterLocationEndpoint1SettingTypeKey = "ItemDomainCableDesign.List.FilterBy.LocationEndpoint1";
     private static final String DisplayLocationEndpoint2SettingTypeKey = "ItemDomainCableDesign.List.Display.LocationEndpoint2";
     private static final String FilterLocationEndpoint2SettingTypeKey = "ItemDomainCableDesign.List.FilterBy.LocationEndpoint2";
+    
+    // Add defaults for cable designs. 
+    protected String defaultCablePrefix = null;
+    protected String defaultProject = null;
+    protected String defaultTechnicalSystem = null;
 
     protected Boolean displayEndpoints = null;
     protected Boolean displayCatalogItem = null;
@@ -942,6 +951,10 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         connectedDevicesEndpoint2Filter = settingTypeMap.get(FilterConnectedDevicesEndpoint2SettingTypeKey).getDefaultValue();
 
         autoLoadListFilterValues = Boolean.parseBoolean(settingTypeMap.get(AutoLoadListFilterValuesSettingTypeKey).getDefaultValue()); 
+
+        defaultCablePrefix = settingTypeMap.get(DefaultCablePrefixSettingTypeKey).getDefaultValue();
+        defaultProject = settingTypeMap.get(DefaultProjectSettingTypeKey).getDefaultValue();
+        defaultTechnicalSystem = settingTypeMap.get(DefaultTechnicalSystemSettingTypeKey).getDefaultValue();
     }
 
     @Override
@@ -1047,6 +1060,10 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         connectedDevicesEndpoint2Filter = settingEntity.getSettingValueAsString(FilterConnectedDevicesEndpoint2SettingTypeKey, connectedDevicesEndpoint2Filter);
 
         autoLoadListFilterValues = settingEntity.getSettingValueAsBoolean(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues); 
+
+        defaultCablePrefix = settingEntity.getSettingValueAsString(DefaultCablePrefixSettingTypeKey, defaultCablePrefix);
+        defaultProject = settingEntity.getSettingValueAsString(DefaultProjectSettingTypeKey, defaultProject);
+        defaultTechnicalSystem = settingEntity.getSettingValueAsString(DefaultTechnicalSystemSettingTypeKey, defaultTechnicalSystem);
     }
     
     @Override
@@ -1152,5 +1169,9 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         settingEntity.setSettingValue(FilterConnectedDevicesEndpoint2SettingTypeKey, connectedDevicesEndpoint2Filter);
 
         settingEntity.setSettingValue(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);
+
+        settingEntity.setSettingValue(DefaultCablePrefixSettingTypeKey, defaultCablePrefix);
+        settingEntity.setSettingValue(DefaultProjectSettingTypeKey, defaultProject);
+        settingEntity.setSettingValue(DefaultTechnicalSystemSettingTypeKey, defaultTechnicalSystem);
     }
 }
