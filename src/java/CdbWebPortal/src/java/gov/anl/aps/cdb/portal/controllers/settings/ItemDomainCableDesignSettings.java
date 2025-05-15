@@ -7,15 +7,18 @@ package gov.anl.aps.cdb.portal.controllers.settings;
 import java.util.Map;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import java.util.List;
 
 /**
  *
  * @author djarosz
  */
 public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableDesignController> {
-    
+
     private static final String DefaultCablePrefixSettingTypeKey = "ItemDomainCableDesign.Default.CablePrefix";
     private static final String DefaultProjectSettingTypeKey = "ItemDomainCableDesign.Default.Project";
     private static final String DefaultTechnicalSystemSettingTypeKey = "ItemDomainCableDesign.Default.TechnicalSystem";
@@ -55,20 +58,20 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     private static final String FilterVoltageSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Voltage";
     private static final String FilterLayingSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Laying";
 
-    private static final String AutoLoadListFilterValuesSettingTypeKey = "ItemDomainCableDesign.List.Load.FilterDataTable"; 
+    private static final String AutoLoadListFilterValuesSettingTypeKey = "ItemDomainCableDesign.List.Load.FilterDataTable";
 
     private static final String DisplayRoutedLengthSettingTypeKey = "ItemDomainCableDesign.List.Display.RoutedLength";
     private static final String FilterRoutedLengthSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.RoutedLength";
 
     private static final String DisplayRouteSettingTypeKey = "ItemDomainCableDesign.List.Display.Route";
     private static final String FilterRouteSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Route";
-        
+
     private static final String DisplayTotalReqLengthSettingTypeKey = "ItemDomainCableDesign.List.Display.TotalReqLengthDisplay";
     private static final String FilterTotalReqLengthSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.TotalReqLengthDisplay";
 
     private static final String DisplayNotesSettingTypeKey = "ItemDomainCableDesign.List.Display.Notes";
     private static final String FilterNotesSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Notes";
-    
+
     private static final String DisplayDescriptionEndpoint1SettingTypeKey = "ItemDomainCableDesign.List.Display.DescriptionEndpoint1";
     private static final String FilterDescriptionEndpoint1SettingTypeKey = "ItemDomainCableDesign.List.FilterBy.DescriptionEndpoint1";
     private static final String DisplayRouteEndpoint1SettingTypeKey = "ItemDomainCableDesign.List.Display.RouteEndpoint1";
@@ -121,11 +124,14 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     private static final String FilterLocationEndpoint1SettingTypeKey = "ItemDomainCableDesign.List.FilterBy.LocationEndpoint1";
     private static final String DisplayLocationEndpoint2SettingTypeKey = "ItemDomainCableDesign.List.Display.LocationEndpoint2";
     private static final String FilterLocationEndpoint2SettingTypeKey = "ItemDomainCableDesign.List.FilterBy.LocationEndpoint2";
-    
+
     // Add defaults for cable designs. 
     protected String defaultCablePrefix = null;
     protected String defaultProject = null;
     protected String defaultTechnicalSystem = null;
+
+    protected List<ItemProject> defaultProjectList;
+    protected List<ItemCategory> defaultCategoryList;
 
     protected Boolean displayEndpoints = null;
     protected Boolean displayCatalogItem = null;
@@ -133,7 +139,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     protected Boolean displayInstallationStatus = null;
     protected Boolean displayLocation = null;
     protected Boolean displayLocationDetails = null;
-    
+
     // cable metadata fields
     protected Boolean voltageDisplay = null;
     protected Boolean layingDisplay = null;
@@ -142,7 +148,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     protected Boolean alternateCableIdDisplay = null;
     protected Boolean legacyQrIdDisplay = null;
     protected Boolean endpoint1DescriptionDisplay = null;
-    protected Boolean endpoint2DescriptionDisplay = null;    
+    protected Boolean endpoint2DescriptionDisplay = null;
     protected String filterEndpoints = null;
     protected String filterCatalogItem = null;
     protected String filterAssignedInventory = null;
@@ -157,11 +163,11 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     protected String routedLengthFilter = null;
     protected Boolean routeDisplay = null;
     protected String routeFilter = null;
-    protected Boolean totalReqLengthDisplay = null; 
-    protected String totalReqLengthFilter = null; 
+    protected Boolean totalReqLengthDisplay = null;
+    protected String totalReqLengthFilter = null;
     protected Boolean notesDisplay = null;
     protected String notesFilter = null;
-    
+
     // connection metadata fields
     protected Boolean descriptionEndpoint1Display = null;
     protected String descriptionEndpoint1Filter = null;
@@ -191,7 +197,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     protected String notesEndpoint2Filter = null;
     protected Boolean drawingEndpoint2Display = null;
     protected String drawingEndpoint2Filter = null;
-    
+
     // endpoint connection details
     protected Boolean deviceEndpoint1Display = null;
     protected String deviceEndpoint1Filter = null;
@@ -218,6 +224,56 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     public ItemDomainCableDesignSettings(ItemDomainCableDesignController parentController) {
         super(parentController);
         displayNumberOfItemsPerPage = 25;
+    }
+
+    public String getDefaultCablePrefix() {
+        return defaultCablePrefix;
+    }
+
+    public void setDefaultCablePrefix(String defaultCablePrefix) {
+        this.defaultCablePrefix = defaultCablePrefix;
+    }
+
+    public List<ItemProject> getDefaultProjectList() {
+        return defaultProjectList;
+    }
+
+    public void setDefaultProjectList(List<ItemProject> defaultProjectList) {
+        if (defaultProjectList != null) {
+            defaultProject = "";
+            for (ItemProject itemProject : defaultProjectList) {
+                if (defaultProject.length() > 0) {
+                    defaultProject += ",";
+                }
+                defaultProject += itemProject.getId();
+            }
+        }
+        this.defaultProjectList = defaultProjectList;
+    }
+
+    public List<ItemCategory> getDefaultCategoryList() {
+        return defaultCategoryList;
+    }
+
+    public void setDefaultCategoryList(List<ItemCategory> defaultCategoryList) {
+        if (defaultCategoryList != null) {
+            defaultTechnicalSystem = "";
+            for (ItemCategory itemCategory : defaultCategoryList) {
+                if (defaultTechnicalSystem.length() > 0) {
+                    defaultTechnicalSystem += ",";
+                }
+                defaultTechnicalSystem += itemCategory.getId();
+            }
+        }
+        this.defaultCategoryList = defaultCategoryList;
+    }
+
+    public String getDefaultProject() {
+        return defaultProject;
+    }
+
+    public String getDefaultTechnicalSystem() {
+        return defaultTechnicalSystem;
     }
 
     public Boolean getDisplayEndpoints() {
@@ -267,7 +323,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     public void setDisplayLocationDetails(Boolean displayLocationDetails) {
         this.displayLocationDetails = displayLocationDetails;
     }
-    
+
     public boolean isVoltageDisplay() {
         return voltageDisplay;
     }
@@ -865,7 +921,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
         displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
         setDisplayItemCategory((Boolean) Boolean.parseBoolean(settingTypeMap.get(DisplayTechnicalSystemSettingTypeKey).getDefaultValue()));
-        
+
         displayEndpoints = Boolean.parseBoolean(settingTypeMap.get(DisplayEndpointsSettingTypeKey).getDefaultValue());
         displayCatalogItem = Boolean.parseBoolean(settingTypeMap.get(DisplayCatalogItemSettingTypeKey).getDefaultValue());
         displayAssignedInventory = Boolean.parseBoolean(settingTypeMap.get(DisplayAssignedInventorySettingTypeKey).getDefaultValue());
@@ -893,7 +949,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         routeDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayRouteSettingTypeKey).getDefaultValue());
         routeFilter = settingTypeMap.get(FilterRouteSettingTypeKey).getDefaultValue();
         totalReqLengthDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayTotalReqLengthSettingTypeKey).getDefaultValue());
-        totalReqLengthFilter = settingTypeMap.get(FilterTotalReqLengthSettingTypeKey).getDefaultValue(); 
+        totalReqLengthFilter = settingTypeMap.get(FilterTotalReqLengthSettingTypeKey).getDefaultValue();
         notesDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayNotesSettingTypeKey).getDefaultValue());
         notesFilter = settingTypeMap.get(FilterNotesSettingTypeKey).getDefaultValue();
 
@@ -911,7 +967,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         notesEndpoint1Filter = settingTypeMap.get(FilterNotesEndpoint1SettingTypeKey).getDefaultValue();
         drawingEndpoint1Display = Boolean.parseBoolean(settingTypeMap.get(DisplayDrawingEndpoint1SettingTypeKey).getDefaultValue());
         drawingEndpoint1Filter = settingTypeMap.get(FilterDrawingEndpoint1SettingTypeKey).getDefaultValue();
-        
+
         descriptionEndpoint2Display = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionEndpoint2SettingTypeKey).getDefaultValue());
         descriptionEndpoint2Filter = settingTypeMap.get(FilterDescriptionEndpoint2SettingTypeKey).getDefaultValue();
         routeEndpoint2Display = Boolean.parseBoolean(settingTypeMap.get(DisplayRouteEndpoint2SettingTypeKey).getDefaultValue());
@@ -926,7 +982,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         notesEndpoint2Filter = settingTypeMap.get(FilterNotesEndpoint2SettingTypeKey).getDefaultValue();
         drawingEndpoint2Display = Boolean.parseBoolean(settingTypeMap.get(DisplayDrawingEndpoint2SettingTypeKey).getDefaultValue());
         drawingEndpoint2Filter = settingTypeMap.get(FilterDrawingEndpoint2SettingTypeKey).getDefaultValue();
-        
+
         deviceEndpoint1Display = Boolean.parseBoolean(settingTypeMap.get(DisplayDeviceEndpoint1SettingTypeKey).getDefaultValue());
         deviceEndpoint1Filter = settingTypeMap.get(FilterDeviceEndpoint1SettingTypeKey).getDefaultValue();
         portEndpoint1Display = Boolean.parseBoolean(settingTypeMap.get(DisplayPortEndpoint1SettingTypeKey).getDefaultValue());
@@ -950,7 +1006,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         connectedDevicesEndpoint2Display = Boolean.parseBoolean(settingTypeMap.get(DisplayConnectedDevicesEndpoint2SettingTypeKey).getDefaultValue());
         connectedDevicesEndpoint2Filter = settingTypeMap.get(FilterConnectedDevicesEndpoint2SettingTypeKey).getDefaultValue();
 
-        autoLoadListFilterValues = Boolean.parseBoolean(settingTypeMap.get(AutoLoadListFilterValuesSettingTypeKey).getDefaultValue()); 
+        autoLoadListFilterValues = Boolean.parseBoolean(settingTypeMap.get(AutoLoadListFilterValuesSettingTypeKey).getDefaultValue());
 
         defaultCablePrefix = settingTypeMap.get(DefaultCablePrefixSettingTypeKey).getDefaultValue();
         defaultProject = settingTypeMap.get(DefaultProjectSettingTypeKey).getDefaultValue();
@@ -960,7 +1016,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     @Override
     protected void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
         super.updateSettingsFromSessionSettingEntity(settingEntity);
-        displayItemIdentifier1 = settingEntity.getSettingValueAsBoolean(DisplayAlternateNameSettingTypeKey, displayItemIdentifier1); 
+        displayItemIdentifier1 = settingEntity.getSettingValueAsBoolean(DisplayAlternateNameSettingTypeKey, displayItemIdentifier1);
         displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDesignDescriptionSettingTypeKey, displayDescription);
         displayItemProject = settingEntity.getSettingValueAsBoolean(DisplayProjectSettingTypeKey, displayItemProject);
         displayLocation = settingEntity.getSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
@@ -1002,7 +1058,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         routeDisplay = settingEntity.getSettingValueAsBoolean(DisplayRouteSettingTypeKey, routeDisplay);
         routeFilter = settingEntity.getSettingValueAsString(FilterRouteSettingTypeKey, routeFilter);
         totalReqLengthDisplay = settingEntity.getSettingValueAsBoolean(DisplayTotalReqLengthSettingTypeKey, totalReqLengthDisplay);
-        totalReqLengthFilter = settingEntity.getSettingValueAsString(FilterTotalReqLengthSettingTypeKey, totalReqLengthFilter); 
+        totalReqLengthFilter = settingEntity.getSettingValueAsString(FilterTotalReqLengthSettingTypeKey, totalReqLengthFilter);
         notesDisplay = settingEntity.getSettingValueAsBoolean(DisplayNotesSettingTypeKey, notesDisplay);
         notesFilter = settingEntity.getSettingValueAsString(FilterNotesSettingTypeKey, notesFilter);
 
@@ -1059,13 +1115,13 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         connectedDevicesEndpoint2Display = settingEntity.getSettingValueAsBoolean(DisplayConnectedDevicesEndpoint2SettingTypeKey, connectedDevicesEndpoint2Display);
         connectedDevicesEndpoint2Filter = settingEntity.getSettingValueAsString(FilterConnectedDevicesEndpoint2SettingTypeKey, connectedDevicesEndpoint2Filter);
 
-        autoLoadListFilterValues = settingEntity.getSettingValueAsBoolean(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues); 
+        autoLoadListFilterValues = settingEntity.getSettingValueAsBoolean(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);
 
         defaultCablePrefix = settingEntity.getSettingValueAsString(DefaultCablePrefixSettingTypeKey, defaultCablePrefix);
         defaultProject = settingEntity.getSettingValueAsString(DefaultProjectSettingTypeKey, defaultProject);
         defaultTechnicalSystem = settingEntity.getSettingValueAsString(DefaultTechnicalSystemSettingTypeKey, defaultTechnicalSystem);
     }
-    
+
     @Override
     protected void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
         super.saveSettingsForSessionSettingEntity(settingEntity);
