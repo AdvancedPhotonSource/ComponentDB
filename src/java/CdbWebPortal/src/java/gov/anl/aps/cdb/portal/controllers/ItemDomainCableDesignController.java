@@ -1198,6 +1198,11 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public void ensureSettingDefaultsLoaded() {
         ItemDomainCableDesignSettings settingObject = getSettingObject();
 
+        String namePrefix = settingObject.getDefaultCablePrefix();
+        if (namePrefix == null) {
+            settingObject.setDefaultCablePrefix("");
+        }
+
         // Load default project
         String defaultProject = settingObject.getDefaultProject();
         List<Integer> projectIds = new ArrayList<>();
