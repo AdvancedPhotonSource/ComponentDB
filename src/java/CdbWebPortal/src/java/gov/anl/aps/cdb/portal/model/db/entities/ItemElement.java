@@ -7,6 +7,8 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
@@ -715,6 +717,11 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         }
 
         return searchResult;
+    }
+
+    @Override
+    public ItemElementControllerUtility getControllerUtility() {
+        return new ItemElementControllerUtility(); 
     }
 
     @Override
