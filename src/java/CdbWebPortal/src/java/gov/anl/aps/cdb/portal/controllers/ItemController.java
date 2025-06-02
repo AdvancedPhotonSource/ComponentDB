@@ -1165,8 +1165,8 @@ public abstract class ItemController<
         }
     }
 
-    public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {
-        return new ItemElementConstraintInformation(itemElement);
+    public final ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {
+        return getControllerUtility().loadItemElementConstraintInformation(itemElement);         
     }
 
     public void completeSucessfulDerivedFromItemCreation() {

@@ -65,12 +65,7 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
     @Override
     protected ItemCatalogBaseDomainEntity cloneCreateItemElements(ItemCatalogBaseDomainEntity clonedItem, ItemCatalogBaseDomainEntity cloningFrom) {
         return cloneCreateItemElements(clonedItem, cloningFrom, true);
-    }
-
-    @Override
-    public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {
-        return new CatalogItemElementConstraintInformation(itemElement);
-    }
+    }  
 
     @Override
     public ItemCatalogBaseDomainEntity createEntityInstance() {
