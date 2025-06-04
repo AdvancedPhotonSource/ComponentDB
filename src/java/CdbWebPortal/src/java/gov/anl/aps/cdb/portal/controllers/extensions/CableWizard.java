@@ -527,7 +527,7 @@ public class CableWizard implements Serializable {
             selectionProjectList = null;
             selectionTechnicalSystemList = null;
             members.clear();
-            selectionCableType = null;
+            selectionCableType = cableTypeCatalog;
             selectionCableCatalogItem = null;
             cableItem = null;
             portEnd1 = null;

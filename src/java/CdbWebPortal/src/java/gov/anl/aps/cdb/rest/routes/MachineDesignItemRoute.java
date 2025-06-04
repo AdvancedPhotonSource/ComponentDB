@@ -10,9 +10,11 @@ import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.LocatableItemControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
@@ -429,6 +431,36 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         ItemElement machineElement = itemControllerUtility.performMachineMoveWithUpdate(newParentMdId, childMd, currentUser);
 
         return machineElement;
+    }
+
+    @POST
+    @Path("/detachMachine/{mdId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Move machine to a new parent.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemDomainMachineDesign detachMachineFromHierarchy(@PathParam("mdId") int machineId) throws AuthorizationError, CdbException {
+        ItemDomainMachineDesign machine = facade.find(machineId);
+
+        UserInfo currentUser = verifyCurrentUserPermissionForItem(machine);
+
+        if (machine.getIsItemTemplate()) {
+            throw new CdbException("Templates not supported to detach from API.");
+        }
+
+        ItemElement parentMachineElement = machine.getParentMachineElement();
+
+        if (parentMachineElement == null) {
+            throw new CdbException("Machine has no parent.");
+        }
+
+        ItemElementControllerUtility controllerUtility = parentMachineElement.getControllerUtility();
+
+        controllerUtility.destroy(parentMachineElement, currentUser);
+
+        machine = facade.find(machineId);
+
+        return machine;
     }
 
     @PUT

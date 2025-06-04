@@ -711,7 +711,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @Override
-    public CdbEntityControllerUtility getControllerUtility() {
+    public ItemControllerUtility getControllerUtility() {
         return getItemControllerUtility();
     }
 

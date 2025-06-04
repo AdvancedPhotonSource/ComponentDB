@@ -11,9 +11,9 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">   
 
     <!-- Must provide params "viewId", "wizardController"-->
-    
+
     <ui:param name="rootViewId" value="#{viewId}"/>
-    
+
     <p:tab id="#{rootViewId}CableBasicsTab">
         <p:panel header="Enter cable name and select project(s)">
             <p:outputPanel id="#{rootViewId}CableBasicsPanel">
@@ -25,7 +25,7 @@ See LICENSE file.
                         <p:ajax event="keyup" 
                                 listener="#{wizardController.keyupListenerName}"
                                 oncomplete="update#{rootViewId}WizardButtons();"/>
-                    </p:inputText>
+                    </p:inputText>                                   
 
                     <h:outputLabel for="#{rootViewId}SelectCheckboxProject"
                                    value="Project"
@@ -41,7 +41,7 @@ See LICENSE file.
                         <p:ajax listener="#{wizardController.selectListenerProjectList}" 
                                 oncomplete="update#{rootViewId}WizardButtons();" />
                     </p:selectCheckboxMenu>   
-                    
+
                     <h:outputLabel for="#{rootViewId}SelectCheckboxTechnicalSystem"
                                    value="Technical System"
                                    styleClass="entityDataLabel"/>
@@ -56,8 +56,21 @@ See LICENSE file.
                         <p:ajax listener="#{wizardController.selectListenerTechnicalSystemList}" 
                                 oncomplete="update#{rootViewId}WizardButtons();" />
                     </p:selectCheckboxMenu>   
-                    
+
                 </p:panelGrid>
+
+                <p:commandLink onclick="prepareNewCableDesignDefaultsDialog()">Update defaults to new cable
+                    <p:tooltip for="@parent" value="Set defaults to get autopopulated for this step."/>
+                </p:commandLink>
+
+                <ui:include src="../../newCableDesignDefaultsDialog.xhtml">                  
+                    <ui:param name="newCableDesignDefaultsOnComplete"
+                              value="populateDefaultsForWizard()" /> 
+                </ui:include>
+
+                <p:remoteCommand name="populateDefaultsForWizard"
+                                 action="#{itemDomainCableDesignController.populateEmptyDefaultWizardValues(cableWizard)}"
+                                 update="@form" /> 
             </p:outputPanel>
         </p:panel>
     </p:tab>

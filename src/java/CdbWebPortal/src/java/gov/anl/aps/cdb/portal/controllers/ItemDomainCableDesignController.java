@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDes
 import gov.anl.aps.cdb.portal.model.ItemDomainCableDesignLazyDataModel;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
@@ -32,8 +33,10 @@ import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,6 +59,9 @@ import org.primefaces.model.TreeNode;
 @Named(ItemDomainCableDesignController.CONTROLLER_NAMED)
 @SessionScoped
 public class ItemDomainCableDesignController extends ItemController<ItemDomainCableDesignControllerUtility, ItemDomainCableDesign, ItemDomainCableDesignFacade, ItemDomainCableDesignSettings, ItemDomainCableDesignLazyDataModel> {
+
+    @EJB
+    ItemProjectFacade itemProjectFacade;
 
     @Override
     protected ItemDomainCableDesignControllerUtility createControllerUtilityInstance() {
@@ -968,8 +974,29 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
      * Prepares cable wizard.
      */
     public String prepareWizardCable() {
-        CableWizard.getInstance().reset();
+        CableWizard wizard = CableWizard.getInstance();
+        wizard.reset();
+        ensureSettingDefaultsLoaded();
+
+        populateEmptyDefaultWizardValues(wizard);
+
         return "/views/itemDomainCableDesign/create?faces-redirect=true";
+    }
+
+    public void populateEmptyDefaultWizardValues(CableWizard wizard) {
+        if (wizard.getInputValueName() == null || wizard.getInputValueName().isEmpty()) {
+            wizard.setInputValueName(settingObject.getDefaultCablePrefix());
+        }
+
+        if (wizard.getSelectionProjectList() == null || wizard.getSelectionProjectList().isEmpty()) {
+            List<ItemProject> defaultProjectList = settingObject.getDefaultProjectList();
+            wizard.setSelectionProjectList(new ArrayList<>(defaultProjectList));
+        }
+
+        if (wizard.getSelectionTechnicalSystemList() == null || wizard.getSelectionTechnicalSystemList().isEmpty()) {
+            List<ItemCategory> defaultCategoryList = settingObject.getDefaultCategoryList();
+            wizard.setSelectionTechnicalSystemList(new ArrayList<>(defaultCategoryList));
+        }
     }
 
     @Override
@@ -1166,6 +1193,75 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         String updateResult = update();
         refreshConnectionListForCurrent(true);
         connectionToDelete = null;
+    }
+
+    public void ensureSettingDefaultsLoaded() {
+        ItemDomainCableDesignSettings settingObject = getSettingObject();
+
+        String namePrefix = settingObject.getDefaultCablePrefix();
+        if (namePrefix == null) {
+            settingObject.setDefaultCablePrefix("");
+        }
+
+        // Load default project
+        String defaultProject = settingObject.getDefaultProject();
+        List<Integer> projectIds = new ArrayList<>();
+        if (defaultProject != null && !defaultProject.trim().isEmpty()) {
+            projectIds = Arrays.stream(defaultProject.split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+        }
+        List<ItemProject> defaultProjectList = settingObject.getDefaultProjectList();
+        if (defaultProjectList == null) {
+            defaultProjectList = new ArrayList<>();
+        }
+
+        Iterator<ItemProject> projectIterator = defaultProjectList.iterator();
+        while (projectIterator.hasNext()) {
+            ItemProject itemProject = projectIterator.next();
+            Integer id = itemProject.getId();
+            if (projectIds.contains(id)) {
+                projectIds.remove(id);
+            } else {
+                projectIterator.remove();
+            }
+        }
+
+        for (Integer projectId : projectIds) {
+            ItemProject project = itemProjectFacade.find(projectId);
+            defaultProjectList.add(project);
+        }
+        settingObject.setDefaultProjectList(defaultProjectList);
+
+        // Load default category list
+        String defaultTechnicalSystem = settingObject.getDefaultTechnicalSystem();
+        List<Integer> categoryIds = new ArrayList<>();
+        if (defaultTechnicalSystem != null && !defaultTechnicalSystem.trim().isEmpty()) {
+            categoryIds = Arrays.stream(defaultTechnicalSystem.split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+        }
+        List<ItemCategory> defaultTechnicalSystemList = settingObject.getDefaultCategoryList();
+        if (defaultTechnicalSystemList == null) {
+            defaultTechnicalSystemList = new ArrayList<>();
+        }
+
+        Iterator<ItemCategory> categoryIterator = defaultTechnicalSystemList.iterator();
+        while (categoryIterator.hasNext()) {
+            ItemCategory itemCategory = categoryIterator.next();
+            Integer id = itemCategory.getId();
+            if (categoryIds.contains(id)) {
+                categoryIds.remove(id);
+            } else {
+                categoryIterator.remove();
+            }
+        }
+
+        for (Integer categoryId : categoryIds) {
+            ItemCategory category = itemCategoryFacade.find(categoryId);
+            defaultTechnicalSystemList.add(category);
+        }
+        settingObject.setDefaultCategoryList(defaultTechnicalSystemList);
     }
 
     // <editor-fold defaultstate="collapsed" desc="import/export support">   

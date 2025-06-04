@@ -37,6 +37,7 @@ import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
+import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import java.util.ArrayList;
@@ -918,6 +919,10 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         }
 
         return parentItemList;
+    }
+    
+    public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {
+        return new ItemElementConstraintInformation(itemElement);
     }
 
     public static List<Item> getStandardParentItemList(Item itemEntity) {

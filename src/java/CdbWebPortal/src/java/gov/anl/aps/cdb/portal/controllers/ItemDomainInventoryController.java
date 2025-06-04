@@ -26,8 +26,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
-import gov.anl.aps.cdb.portal.view.objects.InventoryItemElementConstraintInformation;
-import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -178,11 +176,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         cloneCreateItemElementPlaceholders = true;
 
         return super.prepareCloneForItemToClone();
-    }
-
-    @Override
-    public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {
-        return new InventoryItemElementConstraintInformation(itemElement);
     }
 
     @Override
