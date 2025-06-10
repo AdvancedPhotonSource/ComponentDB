@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignRelat
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignBaseTreeNode;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignRelationshipTreeNode;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
+import gov.anl.aps.cdb.portal.model.ItemGenericLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -24,7 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.NodeSelectEvent;
 
-public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineRelationshipControllerUtility extends ItemDomainMachineDesignRelationshipBaseControllerUtility> extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignRelationshipTreeNode, MachineRelationshipControllerUtility> {
+public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineRelationshipControllerUtility extends ItemDomainMachineDesignRelationshipBaseControllerUtility> extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignRelationshipTreeNode, MachineRelationshipControllerUtility, ItemGenericLazyDataModel> {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignRelationshipBaseController.class.getName());
 
@@ -37,6 +38,11 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
     private ItemDomainMachineDesignRelationshipTreeNode removeMachineDesignRootTreeNode;
 
     protected abstract EntityTypeName getRelationshipMachineEntityType();
+    
+    @Override
+    public ItemGenericLazyDataModel createItemLazyDataModel() {
+        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain(), settingObject);
+    }
 
     public List<ItemDomainMachineDesign> getMachineElementsRelatedToCurrent() {
         ItemDomainMachineDesign current = getCurrent();
