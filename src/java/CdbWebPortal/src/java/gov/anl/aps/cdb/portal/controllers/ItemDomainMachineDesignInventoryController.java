@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettin
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineInventory;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
+import gov.anl.aps.cdb.portal.model.ItemGenericLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -39,13 +40,18 @@ import org.primefaces.event.NodeSelectEvent;
 
 @Named(ItemDomainMachineDesignInventoryController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignInventoryController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignInventoryControllerUtility> implements IItemStatusController {
+public class ItemDomainMachineDesignInventoryController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignInventoryControllerUtility, ItemGenericLazyDataModel> implements IItemStatusController {
 
     public final static String controllerNamed = "itemDomainMachineDesignInventoryController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignInventoryController.class.getName());
 
     private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignInventoryDetailsViewSections";
 
+    @Override
+    public ItemGenericLazyDataModel createItemLazyDataModel() {
+        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain(), settingObject);
+    }
+    
     @Override
     public void createListDataModel() {
         List<ItemDomainMachineDesign> itemList = getAllObjectList();
