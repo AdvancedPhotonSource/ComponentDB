@@ -19,6 +19,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseC
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignDeletedControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignIOCControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignPowerControllerUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -266,6 +267,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         if (isItemInventory(this)) {
             return new ItemDomainMachineDesignInventoryControllerUtility();
         }
+        if (isItemIOC(this)) {
+            return new ItemDomainMachineDesignIOCControllerUtility(); 
+        }
         return new ItemDomainMachineDesignControllerUtility();
     }
 
@@ -301,6 +305,10 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public static boolean isItemInventory(Item item) {
         return isItemEntityType(item, EntityTypeName.inventory.getValue());
+    }
+    
+    public static boolean isItemIOC(Item item) {
+        return isItemEntityType(item, EntityTypeName.ioc.getValue());
     }
 
     @Override
