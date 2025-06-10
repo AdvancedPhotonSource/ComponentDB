@@ -53,6 +53,13 @@ public class ItemDomainMachineDesignFacade extends ItemFacadeBase<ItemDomainMach
         
         return result;
     } 
+    
+    public List<ItemDomainMachineDesign> getIOCItems() {
+        return findByDomainAndEntityType(
+                ItemDomainName.machineDesign.getValue(),
+                EntityTypeName.ioc.getValue()
+        ); 
+    }
 
     public List<ItemDomainMachineDesign> getMachineDesignTemplates() {
         return findByDomainAndEntityType(
