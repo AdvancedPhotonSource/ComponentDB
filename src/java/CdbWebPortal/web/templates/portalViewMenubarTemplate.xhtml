@@ -94,6 +94,11 @@ See LICENSE file.
                             icon="ui-icon-cable-design"
                             url="#{request.contextPath}/views/itemDomainCableDesign/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableDesign/list') ? 'activeMenuItem' : ''} "/>
+                <p:menuitem value="IOC"
+                            id="machineIOCMenubarButton"
+                            icon="ui-icon-control"
+                            url="#{request.contextPath}/views/itemDomainMachineDesignIOC/list"
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesignControl/list') ? 'activeMenuItem' : ''} "/>
                 <p:menuitem value="Control"
                             id="machineControlMenubarButton"
                             icon="ui-icon-control"
