@@ -11,8 +11,6 @@ from rich.console import Console
 from CdbApiFactory import CdbApiFactory
 from cdbApi import ApiException
 
-from InquirerPy import inquirer
-from InquirerPy.base.control import Choice
 from cdbApi.api.search_api import SearchApi
 from cdbApi.models.search_entities_options import SearchEntitiesOptions
 from cdbApi.models.search_entities_results import SearchEntitiesResults
@@ -20,6 +18,7 @@ from cdbCli.common.cli import cliBase
 from cdbCli.service.cli.cdbCliCmnds.info import cdbInfo_helper
 
 from cdbCli.common.cli.cliBase import CliBase
+
 
 CMD_HELP_MESSAGE="Seraches CDB for a list of matching components with options for domains and interacitve mode that automatically can fetch cdbInfo."
 
@@ -172,21 +171,17 @@ def cdb_search(cli: CliBase, search_string, search_domain, pager, interactive, f
     factory = cli.require_api()
 
     if search_string is None:        
-        search_string = inquirer.text("Search String:").execute()
+        search_string = click.prompt("Search String")
 
     proceed = None
     search_res = None
 
     while interactive:
         if search_domain is None:
-            search_domain = inquirer.select(
-                message="Select search domain:",
-                choices=DOMAIN_OPTS + [                    
-                    Choice(value=None, name="Exit"),
-                ],
-                default=DOMAIN_ALL_OPT,
-            ).execute()
-            if search_domain is None: 
+            search_domain = select_item([(domain, domain) for domain in DOMAIN_OPTS + ["Exit"]], console)
+            if search_domain is None:
+                search_domain = DOMAIN_ALL_OPT
+            if search_domain == "Exit":
                 exit()        
 
         if search_res is None:
@@ -197,12 +192,8 @@ def cdb_search(cli: CliBase, search_string, search_domain, pager, interactive, f
             exit(1)
 
         if proceed is None:
-            proceed = inquirer.select(
-                message="Continue:",
-                choices=RESULT_OPTS + [Choice(value=None, name="Exit")],
-                default="Select Item for Details",
-            ).execute()
-            if proceed is None:
+            proceed = select_item([(opt, opt) for opt in RESULT_OPTS + ["Exit"]], console)
+            if proceed == "Exit":
                 exit()
         
         if proceed == RESULT_BACK_OPT:
@@ -245,8 +236,7 @@ def cdb_search(cli: CliBase, search_string, search_domain, pager, interactive, f
                     
         item_choices = []
         for item in searched_items:
-            choice = Choice(name=str(item.object_id) + "- " + item.object_name, 
-                            value=item)
+            choice = (str(item.object_id) + "- " + item.object_name, item)
             item_choices.append(choice)
 
         prev_inx = 0
@@ -258,20 +248,18 @@ def cdb_search(cli: CliBase, search_string, search_domain, pager, interactive, f
                 next_inx = prev_inx + 8
                 itr_choices = item_choices[prev_inx:next_inx]
                 prev_inx = next_inx
-                if next_inx >= item_choices.__len__():
-                    itr_choices.append(Choice(value=None, name="Start Over"))
+                if next_inx >= len(item_choices):
+                    itr_choices.append(("Start Over", None))
                     prev_inx = 0
                     next_inx = 0                    
                 else:
-                    itr_choices.append(Choice(value=None, name="Next Page"))
-
-            item_selection = inquirer.rawlist(
-                message="Select Item:",
-                choices=itr_choices    
-            ).execute()
+                    itr_choices.append(("Next Page", None))
+        
+            item_selection = select_item(itr_choices, console)
 
             if item_selection is not None:                
-                cdbInfo_result = cdbInfo_helper(cli=cli, console=console, item_id=item_selection.object_id, all=all_opt, pager=pager, format=format)
+                (cdbInfo_result, cdbInfo_header) = cdbInfo_helper(factory=factory, item_id=item_selection.object_id, all=all_opt, format=format)
+                cliBase.print_results(console, cdbInfo_result, format, pager, header_style=cdbInfo_header)
                 if isinstance(cdbInfo_result, Exception):
                     # Standard CLI exception handled and displayed to user. 
                     exit(1)
@@ -279,6 +267,19 @@ def cdb_search(cli: CliBase, search_string, search_domain, pager, interactive, f
         if search_domain == None:
             search_domain = DOMAIN_ALL_OPT
         search_helper(factory=factory, console=console, search_string=search_string, search_domain=search_domain, format=format, pager=pager)    
+
+def select_item(itr_choices, console):
+    for index, (name, _) in enumerate(itr_choices):
+        console.print(f"[bold]{index}[/bold]: [default]{name}[/default]")
+    item_index = click.prompt(
+        "Select Item by Index",
+        type=int,
+        show_choices=False
+    )
+
+    item_selection = itr_choices[item_index][0] if 0 <= item_index < len(itr_choices) else None     
+
+    return next((value for name, value in itr_choices if name == item_selection), None)
 
 def create_search_results_printout(result_list, factory):   
     result_obj = []
