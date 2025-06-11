@@ -35,7 +35,6 @@ setup(
         "click",
         "pandas",
         "rich",
-        "InquirerPy",
         "ComponentDB-API==3.16.2",
     ],
     license="Copyright (c) UChicago Argonne, LLC. All rights reserved.",
