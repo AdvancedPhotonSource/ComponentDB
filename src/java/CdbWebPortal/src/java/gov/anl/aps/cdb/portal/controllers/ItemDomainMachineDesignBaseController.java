@@ -236,6 +236,10 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
         return false;
     }
+    
+    public boolean isItemMachineDesignAndIOC(Item item) {
+        return isMachineDesignAndEntityType(item, EntityTypeName.ioc);
+    }
 
     public boolean isItemMachineDesignAndPower(Item item) {
         return isMachineDesignAndEntityType(item, EntityTypeName.power);
@@ -277,7 +281,9 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             return PortalStyles.machineDesignControlIcon.getValue();
         } else if (isItemMachineDesignAndPower(item)) {
             return PortalStyles.machineDesignPowerIcon.getValue();
-        } else {
+        } else if (isItemMachineDesignAndIOC(item)) {
+            return PortalStyles.machineDesignIOCIcon.getValue(); 
+        }else {
             return item.getDomain().getDomainRepIcon();
         }
     }
