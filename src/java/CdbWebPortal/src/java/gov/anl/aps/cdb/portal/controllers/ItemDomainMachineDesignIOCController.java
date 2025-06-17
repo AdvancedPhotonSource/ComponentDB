@@ -54,4 +54,9 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
         return new ItemDomainMachineDesignIOCLazyDataModel(getEntityDbFacade(), getDefaultDomain(), settingObject);
     }
 
+    @Override
+    public boolean getEntityDisplayDeletedItems() {
+        return false;
+    }
+
 }
