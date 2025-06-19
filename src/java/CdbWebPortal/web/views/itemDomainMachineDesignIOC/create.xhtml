@@ -7,7 +7,8 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
-                template="../item/private/templates/itemCreateTemplate.xhtml">
+                template="../item/private/templates/itemCreateTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui">
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
@@ -15,7 +16,24 @@ See LICENSE file.
         <f:viewAction action="#{logController.processPreRender()}"/>        
     </f:metadata>
 
-    <ui:param name="entityController" value="#{itemDomainMachineDesignIOCController}"/>        
+    <ui:param name="entityController" value="#{itemDomainMachineDesignIOCController}"/>
+
+    <ui:define name="additionalItemInformation" >
+        <ui:fragment>
+            <p:outputLabel value="Machine Design Parent"/>
+        </ui:fragment>
+
+        <ui:fragment>
+            <ui:param name="parentMachineDesign" value="#{itemObject.parentMachineDesign}"/>
+            <p:outputLabel value="#{parentMachineDesign == null ? 'Select Parent' : parentMachineDesign.name}"/>
+            <p:commandLink styleClass="fa fa-link-icon fa-search" onclick="PF('createIocMachineParentSelectionDialogWidget').show()"/>
+        </ui:fragment>
+    </ui:define>
+
+    <ui:define name="additionPanelGridContent">
+        <ui:include src="private/createIocMachineParentSelectionDialog.xhtml"/>
+
+    </ui:define>
 
 
 </ui:composition>
