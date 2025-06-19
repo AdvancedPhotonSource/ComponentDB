@@ -232,6 +232,23 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
         return parentMachineElement;
     }
+    
+    @JsonIgnore
+    public void setParentMachineElement(ItemElement itemElement) throws CdbException {
+        parentMachineElement = null;
+        getParentMachineElement();
+        if (parentMachineElement != null) {
+            throw new CdbException("Already part of machine design hieararchy. Cannot create parent element.");
+        }
+        
+        List<ItemElement> itemElementMemberList = getItemElementMemberList();
+        if (itemElementMemberList == null) {
+            itemElementMemberList = new ArrayList<>();
+            setItemElementMemberList(itemElementMemberList);
+        }
+        itemElementMemberList.add(itemElement);        
+        parentMachineElement = itemElement; 
+    }
 
     @Override
     @JsonIgnore
@@ -829,7 +846,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             newItem = utility.createMachineDesignFromTemplateHierachically(
                     itemElement, templateItem, user, group, nameVars);
             setImportChildParentRelationship(newItem, parentItem, itemElement);
-            
+             
         } catch (CdbException | CloneNotSupportedException ex) {
             LOGGER.error(logMethodName + "failed to instantiate template "
                     + templateItem.getName() + ": " + ex.toString());
