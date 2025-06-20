@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignDelete
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignDeletedControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
+import gov.anl.aps.cdb.portal.model.ItemGenericLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -33,7 +34,7 @@ import org.primefaces.model.TreeNode;
  */
 @Named(ItemDomainMachineDesignDeletedItemsController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignDeletedControllerUtility> {
+public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignDeletedControllerUtility, ItemGenericLazyDataModel, ItemDomainMachineDesignDeletedItemSettings> {
 
     public final static String CONTROLLER_NAMED = "itemDomainMachineDesignDeletedItemsController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignDeletedItemsController.class.getName());
@@ -46,6 +47,11 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     private TreeNode permanentlyRemoveNode = new DefaultTreeNode();
     private String permanentlyRemoveDisplayName = null;
     private String permanentlyRemoveMessage = null;
+    
+    @Override
+    public ItemGenericLazyDataModel createItemLazyDataModel() {
+        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain(), settingObject);
+    }
 
     @Override
     public String getItemListPageTitle() {
@@ -66,7 +72,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     }
 
     @Override
-    protected ItemDomainMachineDesignSettings createNewSettingObject() {
+    protected ItemDomainMachineDesignDeletedItemSettings createNewSettingObject() {
         return new ItemDomainMachineDesignDeletedItemSettings(this);
     }
 
