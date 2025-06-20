@@ -72,7 +72,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     }
 
     @Override
-    protected ItemDomainMachineDesignDeletedSettings createNewSettingObject() {
+    protected ItemDomainMachineDesignDeletedItemSettings createNewSettingObject() {
         return new ItemDomainMachineDesignDeletedItemSettings(this);
     }
 
