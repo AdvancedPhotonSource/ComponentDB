@@ -34,7 +34,7 @@ import org.primefaces.model.TreeNode;
  */
 @Named(ItemDomainMachineDesignDeletedItemsController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignDeletedControllerUtility, ItemGenericLazyDataModel> {
+public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignDeletedControllerUtility, ItemGenericLazyDataModel, ItemDomainMachineDesignDeletedItemSettings> {
 
     public final static String CONTROLLER_NAMED = "itemDomainMachineDesignDeletedItemsController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignDeletedItemsController.class.getName());
@@ -72,7 +72,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     }
 
     @Override
-    protected ItemDomainMachineDesignSettings createNewSettingObject() {
+    protected ItemDomainMachineDesignDeletedSettings createNewSettingObject() {
         return new ItemDomainMachineDesignDeletedItemSettings(this);
     }
 

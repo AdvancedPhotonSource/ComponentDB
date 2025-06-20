@@ -40,7 +40,7 @@ import org.primefaces.event.NodeSelectEvent;
 
 @Named(ItemDomainMachineDesignInventoryController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignInventoryController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignInventoryControllerUtility, ItemGenericLazyDataModel> implements IItemStatusController {
+public class ItemDomainMachineDesignInventoryController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignInventoryControllerUtility, ItemGenericLazyDataModel, ItemDomainMachineDesignInventorySettings> implements IItemStatusController {
 
     public final static String controllerNamed = "itemDomainMachineDesignInventoryController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignInventoryController.class.getName());
@@ -249,7 +249,7 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     }
 
     @Override
-    protected ItemDomainMachineDesignSettings createNewSettingObject() {
+    protected ItemDomainMachineDesignInventorySettings createNewSettingObject() {
         return new ItemDomainMachineDesignInventorySettings(this);
     }
 

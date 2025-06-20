@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignRelationshipBaseControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignBaseTreeNode;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignRelationshipTreeNode;
@@ -25,7 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.NodeSelectEvent;
 
-public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineRelationshipControllerUtility extends ItemDomainMachineDesignRelationshipBaseControllerUtility> extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignRelationshipTreeNode, MachineRelationshipControllerUtility, ItemGenericLazyDataModel> {
+public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineRelationshipControllerUtility extends ItemDomainMachineDesignRelationshipBaseControllerUtility> extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignRelationshipTreeNode, MachineRelationshipControllerUtility, ItemGenericLazyDataModel, ItemDomainMachineDesignSettings> {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignRelationshipBaseController.class.getName());
 

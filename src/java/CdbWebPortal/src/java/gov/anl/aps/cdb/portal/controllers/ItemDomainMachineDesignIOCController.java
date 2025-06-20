@@ -7,7 +7,6 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignIOCSettings;
-import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignIOCControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignIOCLazyDataModel;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
@@ -30,7 +29,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Named(ItemDomainMachineDesignIOCController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignIOCControllerUtility, ItemDomainMachineDesignIOCLazyDataModel> {
+public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignIOCControllerUtility, ItemDomainMachineDesignIOCLazyDataModel, ItemDomainMachineDesignIOCSettings> {
 
     public final static String CONTROLLER_NAMED = "itemDomainMachineDesignIOCController";
 
@@ -55,7 +54,7 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
     }
 
     @Override
-    protected ItemDomainMachineDesignSettings createNewSettingObject() {
+    protected ItemDomainMachineDesignIOCSettings createNewSettingObject() {
         return new ItemDomainMachineDesignIOCSettings(this);
     }
 

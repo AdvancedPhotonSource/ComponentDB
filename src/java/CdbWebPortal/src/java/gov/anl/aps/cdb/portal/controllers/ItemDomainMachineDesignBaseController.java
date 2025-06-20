@@ -11,7 +11,6 @@ import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
-import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineAssignTemplate;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineHierarchy;
@@ -63,6 +62,7 @@ import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizardClient;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidWarningInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.WarningInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
@@ -76,9 +76,8 @@ import java.io.IOException;
 /**
  *
  * @author djarosz
- * @param <ItemDomainMachineTreeNode>
  */
-public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode extends ItemDomainMachineDesignBaseTreeNode, controllerUtility extends ItemDomainMachineDesignBaseControllerUtility, LazyDataModel extends ItemLazyDataModel>
+public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode extends ItemDomainMachineDesignBaseTreeNode, controllerUtility extends ItemDomainMachineDesignBaseControllerUtility, LazyDataModel extends ItemLazyDataModel, ItemDomainMachineDesignSettings extends ItemSettings>
         extends ItemController<controllerUtility, ItemDomainMachineDesign, ItemDomainMachineDesignFacade, ItemDomainMachineDesignSettings, LazyDataModel>
         implements CableWizardClient {
 

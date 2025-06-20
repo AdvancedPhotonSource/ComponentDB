@@ -30,7 +30,7 @@ import gov.anl.aps.cdb.portal.model.ItemGenericLazyDataModel;
  */
 @Named(ItemDomainMachineDesignController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignControllerUtility, ItemGenericLazyDataModel> implements CableWizardClient {
+public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignControllerUtility, ItemGenericLazyDataModel, ItemDomainMachineDesignSettings> implements CableWizardClient {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignController.class.getName());
 
