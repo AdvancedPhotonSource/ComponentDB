@@ -391,7 +391,6 @@ description.','true'),
 (21417,'ItemDomainMachineDesignControl.List.Display.PropertyTypeId3','Display property value for property type id #3.',''),
 (21418,'ItemDomainMachineDesignControl.List.Display.PropertyTypeId4','Display property value for property type id #4.',''),
 (21419,'ItemDomainMachineDesignControl.List.Display.PropertyTypeId5','Display property value for property type id #5.',''),
-
 (21500,'ItemDomainMachineDesignIOC.List.Display.AlternateName','Display alternate name.','false'),
 (21501,'ItemDomainMachineDesignIOC.List.Display.Description','Display design description.','true'),
 (21502,'ItemDomainMachineDesignIOC.List.Display.ItemProject','Display project.','false'),
@@ -407,8 +406,7 @@ description.','true'),
 (21512,'ItemDomainMachineDesignIOC.List.Display.PropertyTypeId2','Display property value for property type id #2.',''),
 (21513,'ItemDomainMachineDesignIOC.List.Display.PropertyTypeId3','Display property value for property type id #3.',''),
 (21514,'ItemDomainMachineDesignIOC.List.Display.PropertyTypeId4','Display property value for property type id #4.',''),
-(21515,'ItemDomainMachineDesignIOC.List.Display.PropertyTypeId5','Display property value for property type id #5.','')
-
+(21515,'ItemDomainMachineDesignIOC.List.Display.PropertyTypeId5','Display property value for property type id #5.',''),
 (22000,'ItemDomainMAARC.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.','25'),
 (22001,'ItemDomainMAARC.List.Display.Id','Display component id.','false'),
 (22002,'ItemDomainMAARC.List.Display.EntityTypes','Display Item Entity Types','true'),
