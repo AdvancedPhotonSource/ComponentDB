@@ -38,6 +38,15 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
     private ItemDomainMachineDesignTreeNode parentMachineSelectionTreeNode;
     private ItemDomainMachineDesignTreeNode parentMachineSelectedTreeNode = null;
 
+    public static ItemDomainMachineDesignIOCController getInstance() {
+        return (ItemDomainMachineDesignIOCController) SessionUtility.findBean(CONTROLLER_NAMED);
+    }
+
+    @Override
+    protected String getViewPath() {
+        return "/views/itemDomainMachineDesignIOC/view.xhtml";
+    }
+
     @Override
     public ItemDomainMachineDesignTreeNode loadMachineDesignRootTreeNode(List<ItemDomainMachineDesign> itemsWithoutParents) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
@@ -80,6 +89,16 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
 
     @Override
     public boolean getEntityDisplayExportButton() {
+        return false;
+    }
+
+    @Override
+    public boolean getEntityDisplayItemConnectors() {
+        return false;
+    }
+
+    @Override
+    public boolean getEntityDisplayItemElements() {
         return false;
     }
 

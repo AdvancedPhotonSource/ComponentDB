@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignControlController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignDeletedItemsController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignIOCController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignPowerController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
@@ -269,6 +270,8 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             return ItemDomainMachineDesignControlController.getInstance();
         } else if (isItemPower(this)) {
             return ItemDomainMachineDesignPowerController.getInstance();
+        } else if (isItemIOC(this)) {
+            return ItemDomainMachineDesignIOCController.getInstance(); 
         }
         return ItemDomainMachineDesignController.getInstance();
     }

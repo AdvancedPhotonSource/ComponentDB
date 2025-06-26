@@ -9,13 +9,11 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="private/templates/itemViewTemplate.xhtml">
     
-    <ui:param name="entityController" value="#{itemGenericViewController}" />
-    
-    <ui:param name="pageRendered" value="#{loginController.loggedInAsAdmin}" />
+    <ui:param name="entityController" value="#{itemDomainMachineDesignIOCController}" />       
     
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
-        <f:viewAction action="#{itemGenericViewController.processViewRequestParams}"/>
+        <f:viewAction action="#{itemDomainMachineDesignIOCController.processViewRequestParams}"/>
         <f:viewAction action="#{propertyValueController.processPreRender()}"/>
         <f:viewAction action="#{logController.processPreRender()}"/>
         <f:viewAction action="#{itemElementController.processPreRender()}"/>
