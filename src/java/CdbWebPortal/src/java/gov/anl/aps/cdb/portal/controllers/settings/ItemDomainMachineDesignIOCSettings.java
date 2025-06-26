@@ -33,10 +33,19 @@ public class ItemDomainMachineDesignIOCSettings extends ItemSettings<ItemDomainM
     private static final String DISPLAY_PROPERTY_TYPE_ID_3_SETTING_TYPE_KEY = "ItemDomainMachineDesignIOC.List.Display.PropertyTypeId3";
     private static final String DISPLAY_PROPERTY_TYPE_ID_4_SETTING_TYPE_KEY = "ItemDomainMachineDesignIOC.List.Display.PropertyTypeId4";
     private static final String DISPLAY_PROPERTY_TYPE_ID_5_SETTING_TYPE_KEY = "ItemDomainMachineDesignIOC.List.Display.PropertyTypeId5";
+    
+    private boolean machineTagDisplay; 
+    private boolean functionTagDisplay; 
+    
+    private String machineTagFilter; 
+    private String functionTagFilter; 
 
     public ItemDomainMachineDesignIOCSettings(ItemDomainMachineDesignIOCController parentController) {
         super(parentController);
         displayNumberOfItemsPerPage = 25;
+        
+        machineTagDisplay = true; 
+        functionTagDisplay = true;
     }
 
     @Override
@@ -109,6 +118,38 @@ public class ItemDomainMachineDesignIOCSettings extends ItemSettings<ItemDomainM
         settingEntity.setSettingValue(DISPLAY_PROPERTY_TYPE_ID_3_SETTING_TYPE_KEY, displayPropertyTypeId3);
         settingEntity.setSettingValue(DISPLAY_PROPERTY_TYPE_ID_4_SETTING_TYPE_KEY, displayPropertyTypeId4);
         settingEntity.setSettingValue(DISPLAY_PROPERTY_TYPE_ID_5_SETTING_TYPE_KEY, displayPropertyTypeId5);
+    }
+
+    public boolean isMachineTagDisplay() {
+        return machineTagDisplay;
+    }
+
+    public void setMachineTagDisplay(boolean machineTagDisplay) {
+        this.machineTagDisplay = machineTagDisplay;
+    }
+
+    public boolean isFunctionTagDisplay() {
+        return functionTagDisplay;
+    }
+
+    public void setFunctionTagDisplay(boolean functionTagDisplay) {
+        this.functionTagDisplay = functionTagDisplay;
+    }
+
+    public String getMachineTagFilter() {
+        return machineTagFilter;
+    }
+
+    public void setMachineTagFilter(String machineTagFilter) {
+        this.machineTagFilter = machineTagFilter;
+    }
+
+    public String getFunctionTagFilter() {
+        return functionTagFilter;
+    }
+
+    public void setFunctionTagFilter(String functionTagFilter) {
+        this.functionTagFilter = functionTagFilter;
     }
 
 }
