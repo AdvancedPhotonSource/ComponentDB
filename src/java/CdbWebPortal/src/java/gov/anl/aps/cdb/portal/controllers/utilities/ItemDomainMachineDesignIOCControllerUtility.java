@@ -4,12 +4,13 @@
  */
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
+import java.util.List;
+
 import gov.anl.aps.cdb.common.constants.ItemMetadataFieldType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemMetadataIOC;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemMetadataIOC.IOC_ITEM_INTERNAL_PROPERTY_TYPE;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
-import java.util.List;
 
 /**
  *
@@ -49,6 +50,15 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
                 ItemMetadataFieldType.STRING,
                 "",
                 null,
+                "Details");
+
+        info.addField(
+                ItemMetadataIOC.IOC_DEPLOYMENT_STATUS_KEY,
+                "Deployment Status",
+                "IOC Deployment Status",
+                ItemMetadataFieldType.STRING,
+                "",
+                List.of("Production", "Ancillary", "Test Stand", "Development", "Planned", "Inactive"),
                 "Details");
 
         return info;

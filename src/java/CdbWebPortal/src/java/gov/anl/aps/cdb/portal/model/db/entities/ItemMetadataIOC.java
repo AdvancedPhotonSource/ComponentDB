@@ -17,9 +17,11 @@ public class ItemMetadataIOC {
     public final static String IOC_ITEM_INTERNAL_PROPERTY_TYPE = "ioc_info_internal_property_type";
     public final static String IOC_ITEM_MACHINE_TAG_KEY = "machineTag";
     public final static String IOC_ITEM_FUNCTION_TAG_KEY = "functionTag";
+    public final static String IOC_DEPLOYMENT_STATUS_KEY = "deploymentStatus";
 
     private String machineTag;
     private String functionTag;
+    private String deploymentStatus;
 
     public ItemMetadataIOC(ItemDomainMachineDesign iocItem) {
         this.iocItem = iocItem;
@@ -47,6 +49,18 @@ public class ItemMetadataIOC {
     public void setFunctionTag(String functionTag) throws CdbException {
         this.functionTag = functionTag;
         setCoreMetadataPropertyFieldValue(IOC_ITEM_FUNCTION_TAG_KEY, functionTag);
+    }    
+
+    public String getDeploymentStatus() throws CdbException {
+        if (deploymentStatus == null) {
+            deploymentStatus = getCoreMetadataPropertyFieldValue(IOC_DEPLOYMENT_STATUS_KEY);
+        }
+        return deploymentStatus;
+    }
+
+    public void setDeploymentStatus(String deploymentStatus) throws CdbException {
+        this.deploymentStatus = deploymentStatus;
+        setCoreMetadataPropertyFieldValue(IOC_DEPLOYMENT_STATUS_KEY, deploymentStatus);
     }
 
     public String getBootInstructions() {

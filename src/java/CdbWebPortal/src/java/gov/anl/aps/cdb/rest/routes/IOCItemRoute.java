@@ -45,7 +45,8 @@ public class IOCItemRoute extends ItemBaseRoute {
     @Secured
     public ItemDomainMachineDesign convertMachineToIOC(@PathParam("mdId") int machineId,
             @Parameter(description = "Machine Tag") @QueryParam("machineTag") String machineTag,
-            @Parameter(description = "Function Tag") @QueryParam("functionTag") String functionTag) throws AuthorizationError, CdbException {
+            @Parameter(description = "Function Tag") @QueryParam("functionTag") String functionTag,
+            @Parameter(description = "Deployment Status") @QueryParam("deploymentStatus") String deploymentStatus) throws AuthorizationError, CdbException {
         ItemDomainMachineDesign machine = machineFacade.find(machineId);
 
         UserInfo currentUser = verifyCurrentUserPermissionForItem(machine);
@@ -64,6 +65,9 @@ public class IOCItemRoute extends ItemBaseRoute {
         }
         if (functionTag != null) {
             iocInfo.setFunctionTag(functionTag);
+        }
+        if (deploymentStatus != null) {
+            iocInfo.setDeploymentStatus(deploymentStatus);
         }
 
         machine = utility.update(machine, currentUser);

@@ -33,19 +33,22 @@ public class ItemDomainMachineDesignIOCSettings extends ItemSettings<ItemDomainM
     private static final String DISPLAY_PROPERTY_TYPE_ID_3_SETTING_TYPE_KEY = "ItemDomainMachineDesignIOC.List.Display.PropertyTypeId3";
     private static final String DISPLAY_PROPERTY_TYPE_ID_4_SETTING_TYPE_KEY = "ItemDomainMachineDesignIOC.List.Display.PropertyTypeId4";
     private static final String DISPLAY_PROPERTY_TYPE_ID_5_SETTING_TYPE_KEY = "ItemDomainMachineDesignIOC.List.Display.PropertyTypeId5";
-    
-    private boolean machineTagDisplay; 
-    private boolean functionTagDisplay; 
-    
-    private String machineTagFilter; 
-    private String functionTagFilter; 
+
+    private boolean machineTagDisplay;
+    private boolean functionTagDisplay;
+    private boolean deploymentStatusDisplay;
+
+    private String machineTagFilter;
+    private String functionTagFilter;
+    private String deploymentStatusFilter;
 
     public ItemDomainMachineDesignIOCSettings(ItemDomainMachineDesignIOCController parentController) {
         super(parentController);
         displayNumberOfItemsPerPage = 25;
-        
-        machineTagDisplay = true; 
+
+        machineTagDisplay = true;
         functionTagDisplay = true;
+        deploymentStatusDisplay = true;
     }
 
     @Override
@@ -150,6 +153,22 @@ public class ItemDomainMachineDesignIOCSettings extends ItemSettings<ItemDomainM
 
     public void setFunctionTagFilter(String functionTagFilter) {
         this.functionTagFilter = functionTagFilter;
+    }
+
+    public boolean isDeploymentStatusDisplay() {
+        return deploymentStatusDisplay;
+    }
+
+    public void setDeploymentStatusDisplay(boolean deploymentStatusDisplay) {
+        this.deploymentStatusDisplay = deploymentStatusDisplay;
+    }
+
+    public String getDeploymentStatusFilter() {
+        return deploymentStatusFilter;
+    }
+
+    public void setDeploymentStatusFilter(String deploymentStatusFilter) {
+        this.deploymentStatusFilter = deploymentStatusFilter;
     }
 
 }
