@@ -40,7 +40,7 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
                 ItemMetadataFieldType.STRING,
                 "",
                 null,
-                null);
+                "Details");
 
         info.addField(
                 ItemMetadataIOC.IOC_ITEM_FUNCTION_TAG_KEY,
@@ -49,7 +49,7 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
                 ItemMetadataFieldType.STRING,
                 "",
                 null,
-                null);
+                "Details");
 
         return info;
     }
