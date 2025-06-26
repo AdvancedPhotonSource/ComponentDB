@@ -8,7 +8,8 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 template="../item/private/templates/itemCreateTemplate.xhtml"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
@@ -28,6 +29,12 @@ See LICENSE file.
             <p:outputLabel value="#{parentMachineDesign == null ? 'Select Parent' : parentMachineDesign.name}"/>
             <p:commandLink styleClass="fa fa-link-icon fa-search" onclick="PF('createIocMachineParentSelectionDialogWidget').show()"/>
         </ui:fragment>
+        
+        <p:outputLabel value="Machine Tag"/>
+        <h:inputText value="#{itemObject.iocInfo.machineTag}"/> 
+        
+        <p:outputLabel value="Machine Function"/>
+        <h:inputText value="#{itemObject.iocInfo.functionTag}"/> 
     </ui:define>
 
     <ui:define name="additionPanelGridContent">
