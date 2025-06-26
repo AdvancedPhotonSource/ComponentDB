@@ -81,6 +81,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     
     // collection of machine design items to update when updating this machine design item
     private transient List<ItemDomainMachineDesign> itemsToUpdate = null;   
+    
+    // Encapsulated matadata for IOC type machines. 
+    private transient ItemMetadataIOC iocInfo; 
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
@@ -620,6 +623,18 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public Object getItemMetadataObject() {
+        return getIocInfo(); 
+    }
+
+    public ItemMetadataIOC getIocInfo() {
+        if (iocInfo == null && isItemIOC(this)) {
+            iocInfo = new ItemMetadataIOC(this); 
+        }
+        return iocInfo;
     }
 
     @JsonIgnore
