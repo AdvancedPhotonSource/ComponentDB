@@ -1933,6 +1933,9 @@ public class Item extends CdbDomainEntity implements Serializable {
         if (info != null) {
             if (coreMetadataPropertyValue == null) {
                 List<PropertyValue> propertyValueList = getPropertyValueList();
+                if (propertyValueList == null) {
+                    propertyValueList = new ArrayList<>(); 
+                }
                 for (PropertyValue propertyValue : propertyValueList) {
                     if (propertyValue.getPropertyType().getName().equals(info.getPropertyName())) {
                         coreMetadataPropertyValue = propertyValue;
@@ -1998,6 +2001,11 @@ public class Item extends CdbDomainEntity implements Serializable {
             }
         }
         return coreMetadataPropertyType;
+    }
+    
+    @JsonIgnore
+    public Object getItemMetadataObject() {
+        return this; 
     }
 
     protected CdbEntity getEntityById(String id) {

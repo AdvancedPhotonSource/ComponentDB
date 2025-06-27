@@ -22,6 +22,7 @@ import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizardClient;
+import gov.anl.aps.cdb.portal.model.ItemGenericLazyDataModel;
 
 /**
  *
@@ -29,11 +30,16 @@ import gov.anl.aps.cdb.portal.controllers.extensions.CableWizardClient;
  */
 @Named(ItemDomainMachineDesignController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignControllerUtility> implements CableWizardClient {
+public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignControllerUtility, ItemGenericLazyDataModel, ItemDomainMachineDesignSettings> implements CableWizardClient {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignController.class.getName());
 
     public final static String controllerNamed = "itemDomainMachineDesignController";
+    
+    @Override
+    public ItemGenericLazyDataModel createItemLazyDataModel() {
+        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain(), settingObject);
+    }
 
     @Override
     protected ItemDomainMachineDesignSettings createNewSettingObject() {
