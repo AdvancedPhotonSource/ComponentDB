@@ -86,4 +86,8 @@ public class ItemMetadataIOC {
         iocItem.setCoreMetadataPropertyFieldValue(key, value);
     }
 
+    public PropertyTypeMetadata getCorePropertyTypeMetadata(String key) throws CdbException {
+        return iocItem.getCorePropertyTypeMetadata(key); 
+    }
+
 }

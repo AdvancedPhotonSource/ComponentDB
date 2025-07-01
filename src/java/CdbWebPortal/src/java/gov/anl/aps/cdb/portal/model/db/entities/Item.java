@@ -1975,6 +1975,13 @@ public class Item extends CdbDomainEntity implements Serializable {
         propertyValue.setPropertyMetadataValue(key, value);
     }
 
+    public PropertyTypeMetadata getCorePropertyTypeMetadata(String key) throws CdbException {
+        PropertyType propertyType = getCoreMetadataPropertyType();
+        PropertyTypeMetadata ptMetadata = propertyType.getPropertyTypeMetadataForKey(key);
+
+        return ptMetadata; 
+    }
+
     protected String getCoreMetadataPropertyFieldValue(String key) throws CdbException {
 
         validateCoreMetadataKey(key);
