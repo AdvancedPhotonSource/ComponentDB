@@ -34,6 +34,20 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
         ItemMetadataPropertyInfo info
                 = new ItemMetadataPropertyInfo("IOC Metadata", IOC_ITEM_INTERNAL_PROPERTY_TYPE);
 
+        info.setDefaultPropertyValue("IOC Instructions");
+
+        info.setDefaultPropertyText("# Preboot:\n"
+                + "\n"
+                + "<!--Replace comment with preboot instructions here-->\n"
+                + "\n"
+                + "# Postboot:\n"
+                + "\n"
+                + "<!--Replace comment with postboot instructions here-->\n"
+                + "\n"
+                + "# Power Cycle:\n"
+                + "\n"
+                + "<!--Replace comment with power cycle instructions here-->\n");
+
         info.addField(
                 ItemMetadataIOC.IOC_ITEM_MACHINE_TAG_KEY,
                 "Machine Tag",

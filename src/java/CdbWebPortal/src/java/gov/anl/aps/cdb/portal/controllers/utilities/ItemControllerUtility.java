@@ -529,6 +529,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
             ptmList.add(ptm);
         }
         propertyType.setPropertyTypeMetadataList(ptmList);
+        propertyType.setDefaultValue(propInfo.getDefaultPropertyValue());
 
         try {
             propertyTypeControllerUtility.create(propertyType, null);

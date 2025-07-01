@@ -1922,8 +1922,11 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public PropertyValue prepareCoreMetadataPropertyValue() {
         PropertyType propertyType = getCoreMetadataPropertyType();
-        return getItemControllerUtility().preparePropertyTypeValueAdd(
+        ItemMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        PropertyValue pv = getItemControllerUtility().preparePropertyTypeValueAdd(
                 this, propertyType, propertyType.getDefaultValue(), null);
+        pv.setText(info.getDefaultPropertyText());
+        return pv; 
     }
 
     public PropertyValue getCoreMetadataPropertyValue() {
