@@ -7,7 +7,8 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="../item/private/templates/itemViewTemplate.xhtml">
+                template="../item/private/templates/itemViewTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="entityController" value="#{itemDomainMachineDesignIOCController}"/>        
 
@@ -19,6 +20,27 @@ See LICENSE file.
         <f:viewAction action="#{itemElementController.processPreRender()}"/>
         <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
     </f:metadata>
+
+
+    <ui:define name="additionalItemInformation" >
+        <p:outputLabel for="iocInstructions#{viewName}"
+                       value="IOC Instructions"                   
+                       styleClass="entityDataLabel"/>  
+
+        <p:commandLink id="iocInstructions#{viewName}"
+                       onclick="displayIOCInstructions()"
+                       value="View Markdown" /> 
+    </ui:define>
+
+
+    <ui:define name="additionPanelGridContent">        
+        <ui:param name="coreMetadataProperty" value="#{itemObject.coreMetadataPropertyValue}" /> 
+        <p:remoteCommand name="displayIOCInstructions"
+                         action="#{propertyValueController.setCurrentAndUpdateGeneratedHTML(coreMetadataProperty)}"
+                         update="@form:propertyValueMarkdownValueDialog"
+                         oncomplete="PF('propertyValueMarkdownValueDialogWidget').initPosition();
+                         PF('propertyValueMarkdownValueDialogWidget').show()" /> 
+    </ui:define>
 
 </ui:composition>
 
