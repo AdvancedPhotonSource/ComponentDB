@@ -90,26 +90,7 @@ See LICENSE file.
                                 </p:outputPanel>
                             </f:facet>
                             <f:facet name="input">
-                                <ui:param name="propertyTypeMetadata" value="#{itemMetadataListObject.getCorePropertyTypeMetadata(metadataKey)}"/> 
-
-                                <p:selectOneMenu value="#{metadataValue}"
-                                                 rendered="#{propertyTypeMetadata.isHaveAllowedValues}"
-                                                 var="allowedPropertyMetadataValueObject">
-                                    <f:selectItems value="#{propertyTypeMetadata.allowedPropertyMetadataValueList}"
-                                                   var="allowedPropertyMetadataValue"
-                                                   itemValue="#{allowedPropertyMetadataValue}"/>
-                                    <p:column>
-                                        <b>#{allowedPropertyMetadataValueObject.metadataValue}</b>
-                                        <br/>
-                                        <h:outputText rendered="#{allowedPropertyMetadataValueObject.description != null}"
-                                                      value="#{allowedPropertyMetadataValueObject.description}"/>
-                                    </p:column>
-
-                                </p:selectOneMenu>
-                                <h:inputText value="#{metadataValue}"
-                                             title="#{metadataLabel}"
-                                             styleClass="entityDataText"
-                                             rendered="#{!propertyTypeMetadata.isHaveAllowedValues}"/>
+                                <ui:include src="coreMetadataPropertyEditValue.xhtml" /> 
                             </f:facet>
                         </p:inplace>
 

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="propertyTypeMetadata" value="#{itemMetadataListObject.getCorePropertyTypeMetadata(metadataKey)}"/> 
+
+    <p:selectOneMenu value="#{metadataValue}"
+                     rendered="#{propertyTypeMetadata.isHaveAllowedValues}"
+                     var="allowedPropertyMetadataValueObject">
+        <f:selectItems value="#{propertyTypeMetadata.allowedPropertyMetadataValueList}"
+                       var="allowedPropertyMetadataValue"
+                       itemValue="#{allowedPropertyMetadataValue}"/>
+        <p:column>
+            <b>#{allowedPropertyMetadataValueObject.metadataValue}</b>
+            <br/>
+            <h:outputText rendered="#{allowedPropertyMetadataValueObject.description != null}"
+                          value="#{allowedPropertyMetadataValueObject.description}"/>
+        </p:column>
+
+    </p:selectOneMenu>
+    <ui:fragment rendered="#{!propertyTypeMetadata.isHaveAllowedValues}">
+        <p:inputText value="#{itemMetadataListObject[metadataKey]}" 
+                     title="#{metadataLabel}" 
+                     rendered="#{metadataType != 'url'}"
+                     styleClass="entityDataText"/>
+        <p:inputTextarea id="#{metadataKey}ITA#{viewName}"
+                         value="#{itemMetadataListObject[metadataKey]}"
+                         rows="1"
+                         title="#{metadataLabel}"
+                         rendered="#{metadataType == 'url'}"
+                         styleClass="entityDataText">
+            <p:ajax event="blur" 
+                    process="@this"
+                    update="#{metadataKey}#{viewName}" /> 
+        </p:inputTextarea>
+
+        <p:message for="#{metadataKey}ITA#{viewName}" />
+    </ui:fragment>
+
+
+</ui:composition>
