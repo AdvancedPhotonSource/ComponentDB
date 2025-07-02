@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -40,7 +41,7 @@ public class AllowedPropertyMetadataValue extends CdbEntity implements Serializa
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min=1, max = 32)
+    @Size(min=1, max = 255)
     @Column(name = "metadata_value")
     private String metadataValue;
     @Size(max = 256)
@@ -48,6 +49,8 @@ public class AllowedPropertyMetadataValue extends CdbEntity implements Serializa
     @JoinColumn(name = "property_type_metadata_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private PropertyTypeMetadata propertyTypeMetadata;
+    @Column(name = "sort_order")
+    private Float sortOrder;
 
     public AllowedPropertyMetadataValue() {
     }
@@ -80,6 +83,15 @@ public class AllowedPropertyMetadataValue extends CdbEntity implements Serializa
         this.description = description;
     }
 
+    public Float getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Float sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    @JsonIgnore
     @XmlTransient
     public PropertyTypeMetadata getPropertyTypeMetadata() {
         return propertyTypeMetadata;

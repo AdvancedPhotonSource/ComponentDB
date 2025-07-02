@@ -12,7 +12,6 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettin
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignRelationshipTreeNode;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;

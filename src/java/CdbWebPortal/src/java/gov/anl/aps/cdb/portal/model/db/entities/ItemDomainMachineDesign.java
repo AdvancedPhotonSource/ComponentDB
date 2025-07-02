@@ -13,12 +13,14 @@ import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignControlController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignDeletedItemsController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignIOCController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignPowerController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignDeletedControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignIOCControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignPowerControllerUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -80,6 +82,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     
     // collection of machine design items to update when updating this machine design item
     private transient List<ItemDomainMachineDesign> itemsToUpdate = null;   
+    
+    // Encapsulated matadata for IOC type machines. 
+    private transient ItemMetadataIOC iocInfo; 
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
@@ -231,6 +236,23 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
         return parentMachineElement;
     }
+    
+    @JsonIgnore
+    public void setParentMachineElement(ItemElement itemElement) throws CdbException {
+        parentMachineElement = null;
+        getParentMachineElement();
+        if (parentMachineElement != null) {
+            throw new CdbException("Already part of machine design hieararchy. Cannot create parent element.");
+        }
+        
+        List<ItemElement> itemElementMemberList = getItemElementMemberList();
+        if (itemElementMemberList == null) {
+            itemElementMemberList = new ArrayList<>();
+            setItemElementMemberList(itemElementMemberList);
+        }
+        itemElementMemberList.add(itemElement);        
+        parentMachineElement = itemElement; 
+    }
 
     @Override
     @JsonIgnore
@@ -248,6 +270,8 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             return ItemDomainMachineDesignControlController.getInstance();
         } else if (isItemPower(this)) {
             return ItemDomainMachineDesignPowerController.getInstance();
+        } else if (isItemIOC(this)) {
+            return ItemDomainMachineDesignIOCController.getInstance(); 
         }
         return ItemDomainMachineDesignController.getInstance();
     }
@@ -265,6 +289,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         }
         if (isItemInventory(this)) {
             return new ItemDomainMachineDesignInventoryControllerUtility();
+        }
+        if (isItemIOC(this)) {
+            return new ItemDomainMachineDesignIOCControllerUtility(); 
         }
         return new ItemDomainMachineDesignControllerUtility();
     }
@@ -301,6 +328,10 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public static boolean isItemInventory(Item item) {
         return isItemEntityType(item, EntityTypeName.inventory.getValue());
+    }
+    
+    public static boolean isItemIOC(Item item) {
+        return isItemEntityType(item, EntityTypeName.ioc.getValue());
     }
 
     @Override
@@ -597,6 +628,18 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         }
     }
 
+    @Override
+    public Object getItemMetadataObject() {
+        return getIocInfo(); 
+    }
+
+    public ItemMetadataIOC getIocInfo() {
+        if (iocInfo == null && isItemIOC(this)) {
+            iocInfo = new ItemMetadataIOC(this); 
+        }
+        return iocInfo;
+    }
+
     @JsonIgnore
     public List<MachineDesignControlRelationshipListObject> getControlRelationshipList() {        
         return controlRelationshipList;
@@ -821,7 +864,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             newItem = utility.createMachineDesignFromTemplateHierachically(
                     itemElement, templateItem, user, group, nameVars);
             setImportChildParentRelationship(newItem, parentItem, itemElement);
-            
+             
         } catch (CdbException | CloneNotSupportedException ex) {
             LOGGER.error(logMethodName + "failed to instantiate template "
                     + templateItem.getName() + ": " + ex.toString());

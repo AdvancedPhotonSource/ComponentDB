@@ -7,15 +7,13 @@ package gov.anl.aps.cdb.portal.constants;
 public enum PortalStyles {
     favoritesOn("favoriteOn"),
     favoritesOff("favoriteOff"),
-    
-    rowStyleErrorInEntity("errorItemInRow"), 
+    rowStyleErrorInEntity("errorItemInRow"),
     rowStyleNewEntity("newItemInRow"),
-    
-    itemConnectorIcon("ui-icon-item-connector"), 
-    
+    itemConnectorIcon("ui-icon-item-connector"),
     machineDesingTemplateIcon("ui-icon-machine-design-template"),
-    machineDesignControlIcon("fa fa-code"), 
+    machineDesignControlIcon("fa fa-code"),
     machineDesignPowerIcon("fa fa-bolt"),
+    machineDesignIOCIcon("ui-icon-control"),
     machineDesignIcon("ui-icon-machine-design"),
     catalogIcon("ui-icon-catalog"),
     inventoryIcon("ui-icon-inventory"),

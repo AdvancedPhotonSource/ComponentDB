@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -18,6 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -52,6 +54,7 @@ public class PropertyTypeMetadata extends CdbEntity implements Serializable {
     @ManyToOne(optional = false)
     private PropertyType propertyType;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyTypeMetadata")
+    @OrderBy("sortOrder ASC")
     private List<AllowedPropertyMetadataValue> allowedPropertyMetadataValueList; 
 
     public PropertyTypeMetadata() {
@@ -85,6 +88,7 @@ public class PropertyTypeMetadata extends CdbEntity implements Serializable {
         this.description = description;
     }
 
+    @JsonIgnore
     @XmlTransient    
     public PropertyType getPropertyType() {
         return propertyType;
@@ -94,7 +98,6 @@ public class PropertyTypeMetadata extends CdbEntity implements Serializable {
         this.propertyType = propertyType;
     }
 
-    @XmlTransient
     public List<AllowedPropertyMetadataValue> getAllowedPropertyMetadataValueList() {
         return allowedPropertyMetadataValueList;
     }
@@ -103,6 +106,7 @@ public class PropertyTypeMetadata extends CdbEntity implements Serializable {
         this.allowedPropertyMetadataValueList = allowedPropertyMetadataValueList;
     }
     
+    @JsonIgnore
     public boolean getIsHaveAllowedValues() {
         if (allowedPropertyMetadataValueList != null) { 
             return allowedPropertyMetadataValueList.size() > 0; 
@@ -121,6 +125,7 @@ public class PropertyTypeMetadata extends CdbEntity implements Serializable {
         return false;
     }
     
+    @JsonIgnore
     public boolean getIsHaveDescription() {
         return description != null && !description.equals(""); 
     }

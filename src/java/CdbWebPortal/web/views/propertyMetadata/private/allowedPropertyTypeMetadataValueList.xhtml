@@ -22,7 +22,11 @@ See LICENSE file.
         
         <p:column headerText="Description">
             <h:outputText value="#{allowedPropertyMetadataValueObject.description}"/>
-        </p:column>               
+        </p:column>
+
+        <p:column headerText="Sort Order">
+            <h:outputText value="#{allowedPropertyMetadataValueObject.sortOrder}" />
+        </p:column>
         
     </p:dataTable>
 

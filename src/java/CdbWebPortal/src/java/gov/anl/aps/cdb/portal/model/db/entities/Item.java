@@ -22,6 +22,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.comparator.ItemElementRelevantSortOrderComparator;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
@@ -1601,11 +1602,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         if (getItemElementRelationshipList() != null) {
             for (ItemElementRelationship ier : getItemElementRelationshipList()) {
                 if (ier.getRelationshipType().getName().equals(machineDesignTemplateRelationshipTypeName)) {
-                    return ier; 
+                    return ier;
                 }
             }
         }
-        return null; 
+        return null;
     }
 
     public Item getCreatedFromTemplate() {
@@ -1614,7 +1615,7 @@ public class Item extends CdbDomainEntity implements Serializable {
                 ItemElementRelationship ier = getCreatedFromTemplateRelationship();
                 if (ier != null) {
                     createdFromTemplate = ier.getSecondItemElement().getParentItem();
-                }              
+                }
 
                 templateInfoLoaded = true;
             }
@@ -1922,8 +1923,11 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public PropertyValue prepareCoreMetadataPropertyValue() {
         PropertyType propertyType = getCoreMetadataPropertyType();
-        return getItemControllerUtility().preparePropertyTypeValueAdd(
+        ItemMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        PropertyValue pv = getItemControllerUtility().preparePropertyTypeValueAdd(
                 this, propertyType, propertyType.getDefaultValue(), null);
+        pv.setText(info.getDefaultPropertyText());
+        return pv;
     }
 
     public PropertyValue getCoreMetadataPropertyValue() {
@@ -1933,6 +1937,9 @@ public class Item extends CdbDomainEntity implements Serializable {
         if (info != null) {
             if (coreMetadataPropertyValue == null) {
                 List<PropertyValue> propertyValueList = getPropertyValueList();
+                if (propertyValueList == null) {
+                    propertyValueList = new ArrayList<>();
+                }
                 for (PropertyValue propertyValue : propertyValueList) {
                     if (propertyValue.getPropertyType().getName().equals(info.getPropertyName())) {
                         coreMetadataPropertyValue = propertyValue;
@@ -1969,6 +1976,42 @@ public class Item extends CdbDomainEntity implements Serializable {
         propertyValue.setPropertyMetadataValue(key, value);
     }
 
+    public PropertyTypeMetadata getCorePropertyTypeMetadata(String key) throws CdbException {
+        PropertyType propertyType = getCoreMetadataPropertyType();
+        PropertyTypeMetadata ptMetadata = propertyType.getPropertyTypeMetadataForKey(key);
+
+        return ptMetadata;
+    }
+
+    public void verifyAllowedValuesValidForCoreMetadata() throws CdbException {
+        ItemMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+
+        if (info == null) {
+            return;
+        }
+
+        for (ItemMetadataFieldInfo fieldInfo : info.getFields()) {
+            String key = fieldInfo.getKey();
+            PropertyTypeMetadata ptMeta = getCorePropertyTypeMetadata(key);
+            String value = getCoreMetadataPropertyFieldValue(key);
+
+            if (value == null) {
+                continue;
+            }
+
+            boolean valid = true;
+
+            if (ptMeta.getIsHaveAllowedValues()) {
+                valid = ptMeta.hasAllowedPropertyMetadataValue(value);
+            }
+
+            if (!valid) {
+                String label = fieldInfo.getLabel();
+                throw new CdbException("Invalid value for " + label + ". Value: " + value);
+            }
+        }
+    }
+
     protected String getCoreMetadataPropertyFieldValue(String key) throws CdbException {
 
         validateCoreMetadataKey(key);
@@ -1998,6 +2041,11 @@ public class Item extends CdbDomainEntity implements Serializable {
             }
         }
         return coreMetadataPropertyType;
+    }
+
+    @JsonIgnore
+    public Object getItemMetadataObject() {
+        return this;
     }
 
     protected CdbEntity getEntityById(String id) {

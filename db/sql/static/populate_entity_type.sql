@@ -10,6 +10,7 @@ INSERT INTO `entity_type` VALUES
 (7,'Inventory','Entity type used for marking a sub domain of intevntory type items.'),
 (8,'Deleted','Entity type used for marking an item deleted.'),
 (9,'Control','Entity type used for marking a sub domain of control type items.'),
-(10,'Power','Entity type used for marking a sub domain of power type items.');
+(10,'Power','Entity type used for marking a sub domain of power type items.'),
+(11,'IOC','Entity type used for marking a sub domain of ioc type items.');
 /*!40000 ALTER TABLE `entity_type` ENABLE KEYS */;
 UNLOCK TABLES;
