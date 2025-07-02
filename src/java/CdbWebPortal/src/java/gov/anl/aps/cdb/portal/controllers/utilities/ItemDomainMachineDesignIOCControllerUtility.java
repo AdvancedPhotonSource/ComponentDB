@@ -75,6 +75,15 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
                 List.of("Production", "Ancillary", "Test Stand", "Development", "Planned", "Inactive"),
                 "Details");
 
+        info.addField(
+                ItemMetadataIOC.REPO_URL_KEY,
+                "Repo URL",
+                "Code Repo URL",
+                ItemMetadataFieldType.URL,
+                "",
+                null,
+                "Details");
+
         return info;
     }
 

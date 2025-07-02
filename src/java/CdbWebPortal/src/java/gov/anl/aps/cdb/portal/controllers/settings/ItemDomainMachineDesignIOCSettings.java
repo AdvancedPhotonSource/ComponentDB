@@ -37,10 +37,12 @@ public class ItemDomainMachineDesignIOCSettings extends ItemSettings<ItemDomainM
     private boolean machineTagDisplay;
     private boolean functionTagDisplay;
     private boolean deploymentStatusDisplay;
+    private boolean repoUrlDisplay;
 
     private String machineTagFilter;
     private String functionTagFilter;
     private String deploymentStatusFilter;
+    private String repoUrlFilter;
 
     public ItemDomainMachineDesignIOCSettings(ItemDomainMachineDesignIOCController parentController) {
         super(parentController);
@@ -49,6 +51,7 @@ public class ItemDomainMachineDesignIOCSettings extends ItemSettings<ItemDomainM
         machineTagDisplay = true;
         functionTagDisplay = true;
         deploymentStatusDisplay = true;
+        repoUrlDisplay = false;
     }
 
     @Override
@@ -169,6 +172,22 @@ public class ItemDomainMachineDesignIOCSettings extends ItemSettings<ItemDomainM
 
     public void setDeploymentStatusFilter(String deploymentStatusFilter) {
         this.deploymentStatusFilter = deploymentStatusFilter;
+    }
+
+    public boolean isRepoUrlDisplay() {
+        return repoUrlDisplay;
+    }
+
+    public void setRepoUrlDisplay(boolean repoUrlDisplay) {
+        this.repoUrlDisplay = repoUrlDisplay;
+    }
+
+    public String getRepoUrlFilter() {
+        return repoUrlFilter;
+    }
+
+    public void setRepoUrlFilter(String repoUrlFilter) {
+        this.repoUrlFilter = repoUrlFilter;
     }
 
 }

@@ -17,6 +17,8 @@ public class ItemMetadataIOC extends ItemMetadata<ItemDomainMachineDesign> {
     public final static String IOC_ITEM_FUNCTION_TAG_KEY = "functionTag";
     public final static String IOC_DEPLOYMENT_STATUS_KEY = "deploymentStatus";
 
+    public final static String REPO_URL_KEY = "repoUrl";
+
     private String machineTag;
     private String functionTag;
     private String deploymentStatus;
@@ -59,6 +61,14 @@ public class ItemMetadataIOC extends ItemMetadata<ItemDomainMachineDesign> {
     public void setDeploymentStatus(String deploymentStatus) throws CdbException {
         this.deploymentStatus = deploymentStatus;
         setCoreMetadataPropertyFieldValue(IOC_DEPLOYMENT_STATUS_KEY, deploymentStatus);
+    }
+
+    public String getRepoUrl() throws CdbException {
+        return getCoreMetadataPropertyFieldValue(REPO_URL_KEY);
+    }
+
+    public void setRepoUrl(String repoURL) throws CdbException {
+        setCoreMetadataPropertyFieldValue(REPO_URL_KEY, repoURL);
     }
 
     public String getBootInstructions() {
