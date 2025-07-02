@@ -8,14 +8,19 @@ import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.SystemPropertyTypeNames;
 import gov.anl.aps.cdb.portal.controllers.utilities.AllowedPropertyValueControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.PropertyTypeControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import javax.ejb.EJB;
@@ -25,6 +30,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,69 +42,69 @@ import org.apache.logging.log4j.Logger;
 @Path("/PropertyTypes")
 @Tag(name = "PropertyType")
 public class PropertyTypeRoute extends BaseRoute {
-    
+
     private static final Logger LOGGER = LogManager.getLogger(PropertyType.class.getName());
-    
+
     @EJB
     private PropertyTypeFacade propertyTypeFacade;
-    
+
     @GET
-    @Path("/all")    
-    @Produces(MediaType.APPLICATION_JSON)    
-    public List<PropertyType> getAll() {        
+    @Path("/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PropertyType> getAll() {
         LOGGER.debug("Fetching all property types.");
         return propertyTypeFacade.findAll();
     }
-    
+
     @GET
     @Path("/ById/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Fetch an property type by its id.")
     public PropertyType getPropertyTypeById(@PathParam("id") int id) {
-        LOGGER.debug("Fetching property type by id: " + id); 
-        return propertyTypeFacade.findById(id); 
+        LOGGER.debug("Fetching property type by id: " + id);
+        return propertyTypeFacade.findById(id);
     }
-    
+
     @GET
     @Path("/ByName/{name}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Fetch an property type by its name.")
     public PropertyType getPropertyTypeByName(@PathParam("name") String name) {
-        LOGGER.debug("Fetching property type by name: " + name); 
-        return propertyTypeFacade.findByName(name); 
+        LOGGER.debug("Fetching property type by name: " + name);
+        return propertyTypeFacade.findByName(name);
     }
-    
+
     @GET
-    @Path("/inventoryStatusPropertyType")    
-    @Produces(MediaType.APPLICATION_JSON)    
-    public PropertyType getInventoryStatusPropertyType() { 
+    @Path("/inventoryStatusPropertyType")
+    @Produces(MediaType.APPLICATION_JSON)
+    public PropertyType getInventoryStatusPropertyType() {
         LOGGER.debug("Fetching inventory item status property type.");
-        return propertyTypeFacade.findByName(ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME); 
+        return propertyTypeFacade.findByName(ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME);
     }
-    
+
     @GET
-    @Path("/cableInventoryStatusPropertyType")    
-    @Produces(MediaType.APPLICATION_JSON)    
-    public PropertyType getCableInventoryStatusPropertyType() { 
+    @Path("/cableInventoryStatusPropertyType")
+    @Produces(MediaType.APPLICATION_JSON)
+    public PropertyType getCableInventoryStatusPropertyType() {
         LOGGER.debug("Fetching inventory item status property type.");
-        return propertyTypeFacade.findByName(ItemDomainCableInventory.ITEM_DOMAIN_CABLE_INVENTORY_STATUS_PROPERTY_TYPE_NAME); 
+        return propertyTypeFacade.findByName(ItemDomainCableInventory.ITEM_DOMAIN_CABLE_INVENTORY_STATUS_PROPERTY_TYPE_NAME);
     }
-    
+
     @GET
-    @Path("/controlInterfaceToParentPropertyType")    
-    @Produces(MediaType.APPLICATION_JSON)    
-    public PropertyType getControlInterfaceToParentPropertyType() { 
+    @Path("/controlInterfaceToParentPropertyType")
+    @Produces(MediaType.APPLICATION_JSON)
+    public PropertyType getControlInterfaceToParentPropertyType() {
         String propertyTypeName = SystemPropertyTypeNames.cotrolInterface.getValue();
         LOGGER.debug("Fetching operty type: " + propertyTypeName);
-        return propertyTypeFacade.findByName(propertyTypeName); 
+        return propertyTypeFacade.findByName(propertyTypeName);
     }
-    
+
     @PUT
     @Path("/ById/{id}/AllowedValue")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Secured
-    public AllowedPropertyValue addAllowedValue(@PathParam("id") int propertyTypeId, AllowedPropertyValue allowedPropertyValue) throws AuthorizationError, CdbException {
+    public AllowedPropertyValue addAllowedValue(@PathParam("id") int propertyTypeId, @RequestBody(required = true) AllowedPropertyValue allowedPropertyValue) throws AuthorizationError, CdbException {
         boolean currentRequestUserAdmin = isCurrentRequestUserAdmin();
         if (!currentRequestUserAdmin) {
             AuthorizationError ex = new AuthorizationError("Only admins can create new allowed values.");
@@ -106,12 +112,56 @@ public class PropertyTypeRoute extends BaseRoute {
             throw ex;
         }
         UserInfo createdByUserInfo = getCurrentRequestUserInfo();
-        PropertyType propertyType = getPropertyTypeById(propertyTypeId); 
+        PropertyType propertyType = getPropertyTypeById(propertyTypeId);
         AllowedPropertyValueControllerUtility utility = new AllowedPropertyValueControllerUtility();
         allowedPropertyValue.setPropertyType(propertyType);
         AllowedPropertyValue newAllowedValue = utility.create(allowedPropertyValue, createdByUserInfo);
-        return newAllowedValue; 
+        return newAllowedValue;
     }
-    
-    
+
+    @PUT
+    @Path("/ById/{id}/MetadataAllowedValue")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Secured
+    public PropertyType addMetadataAllowedValue(@PathParam("id") int propertyTypeId,
+            @Parameter(description = "Metadata Key", required = true) @QueryParam("metadataKey") String key,
+            @RequestBody(required = true) AllowedPropertyMetadataValue allowedPropertyMetadataValue) throws AuthorizationError, CdbException {
+        boolean currentRequestUserAdmin = isCurrentRequestUserAdmin();
+        if (!currentRequestUserAdmin) {
+            AuthorizationError ex = new AuthorizationError("Only admins can create new allowed values.");
+            LOGGER.error(ex);
+            throw ex;
+        }
+        UserInfo createdByUserInfo = getCurrentRequestUserInfo();
+        PropertyType propertyType = getPropertyTypeById(propertyTypeId);
+
+        PropertyTypeMetadata ptMetadata = propertyType.getPropertyTypeMetadataForKey(key);
+
+        if (ptMetadata == null) {
+            throw new CdbException("The metadata key provided does not exist for this property type.");
+        }
+
+        String newAllowedValue = allowedPropertyMetadataValue.getMetadataValue();
+
+        if (ptMetadata.hasAllowedPropertyMetadataValue(newAllowedValue)) {
+            throw new CdbException("Property type allowed metadata value is already defined.");
+        }
+
+        // Proceed with addition of new value.
+        List<AllowedPropertyMetadataValue> allowedPropertyMetadataValueList = ptMetadata.getAllowedPropertyMetadataValueList();
+        AllowedPropertyMetadataValue newAllowedMetadataValue = new AllowedPropertyMetadataValue();
+        newAllowedMetadataValue.setMetadataValue(allowedPropertyMetadataValue.getMetadataValue());
+        newAllowedMetadataValue.setDescription(allowedPropertyMetadataValue.getDescription());
+        newAllowedMetadataValue.setSortOrder(allowedPropertyMetadataValue.getSortOrder());
+        newAllowedMetadataValue.setPropertyTypeMetadata(ptMetadata);
+
+        allowedPropertyMetadataValueList.add(newAllowedMetadataValue);
+
+        PropertyTypeControllerUtility utility = new PropertyTypeControllerUtility();
+
+        propertyType = utility.update(propertyType, createdByUserInfo);
+        return propertyType;
+    }
+
 }
