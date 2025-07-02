@@ -921,6 +921,7 @@ CREATE TABLE `allowed_property_metadata_value` (
     `property_type_metadata_id` int(11) unsigned NOT NULL,
     `metadata_value` varchar(255) NOT NULL, 
     `description` varchar(256) DEFAULT NULL,
+    `sort_order` float(10,2) unsigned DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `allowed_property_metadata_value_u1` (`property_type_metadata_id`,`metadata_value`), 
     KEY `allowed_property_metadata_value_k1` (`property_type_metadata_id`),

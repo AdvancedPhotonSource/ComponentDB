@@ -26,3 +26,6 @@ INSERT IGNORE INTO `setting_type` VALUES
 (21513,'ItemDomainMachineDesignIOC.List.Display.PropertyTypeId3','Display property value for property type id #3.',''),
 (21514,'ItemDomainMachineDesignIOC.List.Display.PropertyTypeId4','Display property value for property type id #4.',''),
 (21515,'ItemDomainMachineDesignIOC.List.Display.PropertyTypeId5','Display property value for property type id #5.','');
+
+
+ALTER IGNORE TABLE `allowed_property_metadata_value` ADD COLUMN `sort_order` float(10,2) unsigned DEFAULT NULL AFTER `description`;
