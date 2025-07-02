@@ -7,7 +7,6 @@ package gov.anl.aps.cdb.rest.routes;
 import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -18,7 +17,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import javax.ejb.EJB;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -73,6 +74,15 @@ public class IOCItemRoute extends ItemBaseRoute {
         machine = utility.update(machine, currentUser);
 
         return machine;
+    }
+
+    @GET
+    @Path("/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemDomainMachineDesign> getIOCItemList() {
+        List<ItemDomainMachineDesign> iocItems = machineFacade.getIOCItems();
+
+        return iocItems;
     }
 
 }
