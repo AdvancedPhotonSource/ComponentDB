@@ -48,6 +48,8 @@ public class AllowedPropertyMetadataValue extends CdbEntity implements Serializa
     @JoinColumn(name = "property_type_metadata_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private PropertyTypeMetadata propertyTypeMetadata;
+    @Column(name = "sort_order")
+    private Float sortOrder;
 
     public AllowedPropertyMetadataValue() {
     }
@@ -78,6 +80,14 @@ public class AllowedPropertyMetadataValue extends CdbEntity implements Serializa
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Float getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Float sortOrder) {
+        this.sortOrder = sortOrder;
     }
 
     @XmlTransient
