@@ -10,9 +10,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
  *
  * @author djarosz
  */
-public class ItemMetadataIOC {
-
-    private ItemDomainMachineDesign iocItem;
+public class ItemMetadataIOC extends ItemMetadata<ItemDomainMachineDesign> {
 
     public final static String IOC_ITEM_INTERNAL_PROPERTY_TYPE = "ioc_info_internal_property_type";
     public final static String IOC_ITEM_MACHINE_TAG_KEY = "machineTag";
@@ -24,7 +22,7 @@ public class ItemMetadataIOC {
     private String deploymentStatus;
 
     public ItemMetadataIOC(ItemDomainMachineDesign iocItem) {
-        this.iocItem = iocItem;
+        super(iocItem);
     }
 
     public String getMachineTag() throws CdbException {
@@ -49,7 +47,7 @@ public class ItemMetadataIOC {
     public void setFunctionTag(String functionTag) throws CdbException {
         this.functionTag = functionTag;
         setCoreMetadataPropertyFieldValue(IOC_ITEM_FUNCTION_TAG_KEY, functionTag);
-    }    
+    }
 
     public String getDeploymentStatus() throws CdbException {
         if (deploymentStatus == null) {
@@ -64,7 +62,7 @@ public class ItemMetadataIOC {
     }
 
     public String getBootInstructions() {
-        PropertyValue pv = iocItem.getCoreMetadataPropertyValue();
+        PropertyValue pv = getCoreMetadataPropertyValue();
 
         if (pv != null) {
             return pv.getText();
@@ -74,20 +72,8 @@ public class ItemMetadataIOC {
     }
 
     public void setBootInstructions(String bootInstructions) {
-        PropertyValue pv = iocItem.getCoreMetadataPropertyValue();
+        PropertyValue pv = getCoreMetadataPropertyValue();
         pv.setText(bootInstructions);
-    }
-
-    protected String getCoreMetadataPropertyFieldValue(String key) throws CdbException {
-        return iocItem.getCoreMetadataPropertyFieldValue(key);
-    }
-
-    protected void setCoreMetadataPropertyFieldValue(String key, String value) throws CdbException {
-        iocItem.setCoreMetadataPropertyFieldValue(key, value);
-    }
-
-    public PropertyTypeMetadata getCorePropertyTypeMetadata(String key) throws CdbException {
-        return iocItem.getCorePropertyTypeMetadata(key); 
     }
 
 }
