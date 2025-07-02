@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.beans.builder;
 
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemMetadataIOC;
 import java.util.Map;
 import org.primefaces.model.SortOrder;
 
@@ -28,6 +29,11 @@ public class ItemDomainMachineDesignIOCQueryBuilder extends ItemQueryBuilder {
 
         include_etl = true;
         appendRawWhere(defaultFilter);
+    }
+
+    @Override
+    protected String getCoreMetadataPropertyName() {
+        return ItemMetadataIOC.IOC_ITEM_INTERNAL_PROPERTY_TYPE;
     }
 
 }
