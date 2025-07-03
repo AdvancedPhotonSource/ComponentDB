@@ -108,17 +108,7 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
         parentMachineSelectionTreeNode = null;
 
         String createRedirect = super.prepareCreate();
-
-        // Assign IOC type
         ItemDomainMachineDesign current = getCurrent();
-        String iocEntityTypeName = EntityTypeName.ioc.getValue();
-        EntityType iocEntityType = entityTypeFacade.findByName(iocEntityTypeName);
-        try {
-            current.setEntityTypeList(new ArrayList<>());
-        } catch (CdbException ex) {
-            LOGGER.error(ex);
-        }
-        current.getEntityTypeList().add(iocEntityType);
 
         // Create placeholder for machine parent element.
         UserInfo user = SessionUtility.getUser();
