@@ -51,16 +51,47 @@ public class IOCItemRoute extends ItemBaseRoute {
         ItemDomainMachineDesign machine = machineFacade.find(machineId);
 
         UserInfo currentUser = verifyCurrentUserPermissionForItem(machine);
+        verifyItemReady(machine);
 
         machine.addEntityType(EntityTypeName.ioc.getValue());
 
-        if (ItemDomainMachineDesign.isItemDeleted(machine)) {
-            throw new CdbException("The machine id " + machine.getId() + " is a deleted item.");
+        return updateIocInfo(machine, currentUser, machineTag, functionTag, deploymentStatus, null);
+    }
+
+    @POST
+    @Path("/updateIOCInfo/{iocId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Update IOC Info.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemDomainMachineDesign updateIOCInfo(@PathParam("iocId") int iocId,
+            @Parameter(description = "Machine Tag") @QueryParam("machineTag") String machineTag,
+            @Parameter(description = "Function Tag") @QueryParam("functionTag") String functionTag,
+            @Parameter(description = "Deployment Status") @QueryParam("deploymentStatus") String deploymentStatus,
+            @Parameter(description = "Boot Instructions") @QueryParam("bootInstructions") String bootInstructions) throws AuthorizationError, CdbException {
+
+        ItemDomainMachineDesign machine = machineFacade.find(iocId);
+
+        UserInfo currentUser = verifyCurrentUserPermissionForItem(machine);
+        verifyItemReady(machine);
+
+        return updateIocInfo(machine, currentUser, machineTag, functionTag, deploymentStatus, bootInstructions);
+    }
+
+    private void verifyItemReady(ItemDomainMachineDesign item) throws CdbException {
+        if (ItemDomainMachineDesign.isItemDeleted(item)) {
+            throw new CdbException("The machine id " + item.getId() + " is a deleted item.");
+        }
+    }
+
+    private ItemDomainMachineDesign updateIocInfo(ItemDomainMachineDesign iocItem, UserInfo currentUser, String machineTag, String functionTag, String deploymentStatus, String bootInstructions) throws CdbException {
+        ItemDomainMachineDesignBaseControllerUtility utility = iocItem.getItemControllerUtility();
+
+        if (!ItemDomainMachineDesign.isItemIOC(iocItem)) {
+            throw new CdbException("Not and IOC Item");
         }
 
-        ItemDomainMachineDesignBaseControllerUtility utility = machine.getItemControllerUtility();
-
-        ItemMetadataIOC iocInfo = machine.getIocInfo();
+        ItemMetadataIOC iocInfo = iocItem.getIocInfo();
         if (machineTag != null) {
             iocInfo.setMachineTag(machineTag);
         }
@@ -71,9 +102,9 @@ public class IOCItemRoute extends ItemBaseRoute {
             iocInfo.setDeploymentStatus(deploymentStatus);
         }
 
-        machine = utility.update(machine, currentUser);
+        iocItem = utility.update(iocItem, currentUser);
 
-        return machine;
+        return iocItem;
     }
 
     @GET
