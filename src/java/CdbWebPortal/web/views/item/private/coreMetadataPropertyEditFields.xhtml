@@ -14,7 +14,7 @@ See LICENSE file.
 
     <p:accordionPanel multiple="true"
                       activeIndex="">
-        <ui:param name="itemMetadataListObject" value="#{itemObject.itemMetadataObject}" /> 
+        <ui:param name="itemMetadataObject" value="#{itemObject.itemMetadataObject}" /> 
         <c:forEach items="#{entityController.coreMetadataPropertyInfo.groupList}"
                    var="fieldGroup">
             <p:tab title="#{fieldGroup}">
