@@ -12,11 +12,14 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <ui:param name="propertyTypeMetadata" value="#{itemMetadataListObject.getCorePropertyTypeMetadata(metadataKey)}"/> 
+    <ui:param name="propertyTypeMetadata" value="#{itemMetadataObject.getCorePropertyTypeMetadata(metadataKey)}"/> 
+    <ui:param name="metadataValue" value="#{itemMetadataObject[metadataKey]}"/>
 
     <p:selectOneMenu value="#{metadataValue}"
+                     filter="true"
                      rendered="#{propertyTypeMetadata.isHaveAllowedValues}"
                      var="allowedPropertyMetadataValueObject">
+        <f:selectItem noSelectionOption="true" itemLabel="Select One" itemValue="#{null}" />
         <f:selectItems value="#{propertyTypeMetadata.allowedPropertyMetadataValueList}"
                        var="allowedPropertyMetadataValue"
                        itemValue="#{allowedPropertyMetadataValue}"/>
@@ -29,12 +32,12 @@ See LICENSE file.
 
     </p:selectOneMenu>
     <ui:fragment rendered="#{!propertyTypeMetadata.isHaveAllowedValues}">
-        <p:inputText value="#{itemMetadataListObject[metadataKey]}" 
+        <p:inputText value="#{itemMetadataObject[metadataKey]}"
                      title="#{metadataLabel}" 
                      rendered="#{metadataType != 'url'}"
                      styleClass="entityDataText"/>
         <p:inputTextarea id="#{metadataKey}ITA#{viewName}"
-                         value="#{itemMetadataListObject[metadataKey]}"
+                         value="#{itemMetadataObject[metadataKey]}"
                          rows="1"
                          title="#{metadataLabel}"
                          rendered="#{metadataType == 'url'}"

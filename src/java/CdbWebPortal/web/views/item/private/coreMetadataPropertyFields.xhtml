@@ -14,7 +14,7 @@ See LICENSE file.
 
     <p:accordionPanel multiple="true"
                       activeIndex="">
-        <ui:param name="itemMetadataListObject" value="#{itemObject.itemMetadataObject}" /> 
+        <ui:param name="itemMetadataObject" value="#{itemObject.itemMetadataObject}" /> 
 
 
         <c:forEach items="#{entityController.coreMetadataPropertyInfo.groupList}"
@@ -28,7 +28,7 @@ See LICENSE file.
                         <ui:param name="metadataLabel" value="#{metadataField.label}"/>
                         <ui:param name="metadataType" value="#{metadataField.typeString}"/>
                         <ui:param name="metadataDescription" value="#{metadataField.description}"/>
-                        <ui:param name="metadataValue" value="#{itemMetadataListObject[metadataKey]}"/>
+                        <ui:param name="metadataValue" value="#{itemMetadataObject[metadataKey]}"/>
                         <ui:param name="emptyValue" value="#{empty metadataValue}"/>
                         <ui:param name="urlType" value="#{metadataType == 'url'}"/>
                         <ui:param name="urlListType" value="#{metadataType == 'urlList'}"/>
