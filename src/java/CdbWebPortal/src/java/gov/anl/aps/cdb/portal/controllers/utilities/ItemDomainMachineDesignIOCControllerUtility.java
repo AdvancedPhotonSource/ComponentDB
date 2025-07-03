@@ -7,16 +7,24 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 import java.util.List;
 
 import gov.anl.aps.cdb.common.constants.ItemMetadataFieldType;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.EntityTypeName;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemMetadataIOC;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemMetadataIOC.IOC_ITEM_INTERNAL_PROPERTY_TYPE;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
+import java.util.ArrayList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author darek
  */
 public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachineDesignBaseControllerUtility {
+
+    private static final Logger logger = LogManager.getLogger(ItemDomainMachineDesignIOCControllerUtility.class.getName());
 
     @Override
     public List<ItemDomainMachineDesign> getItemList() {
@@ -85,6 +93,19 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
                 "Details");
 
         return info;
+    }
+
+    @Override
+    protected void assignEntityTypeForNewInstance(ItemDomainMachineDesign ioc) {
+        // Assign IOC type
+        String iocEntityTypeName = EntityTypeName.ioc.getValue();
+        EntityType iocEntityType = entityTypeFacade.findByName(iocEntityTypeName);
+        try {
+            ioc.setEntityTypeList(new ArrayList<>());
+        } catch (CdbException ex) {
+            logger.error(ex);
+        }
+        ioc.getEntityTypeList().add(iocEntityType);
     }
 
 }

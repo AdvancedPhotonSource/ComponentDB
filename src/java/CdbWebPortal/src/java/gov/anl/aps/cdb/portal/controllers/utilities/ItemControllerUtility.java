@@ -394,6 +394,9 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
 
     protected abstract ItemDomainEntity instenciateNewItemDomainEntity();
 
+    protected void assignEntityTypeForNewInstance(ItemDomainEntity item) {
+    }
+
     @Override
     public ItemDomainEntity createEntityInstance(UserInfo sessionUser) {
         ItemDomainEntity item = instenciateNewItemDomainEntity();
@@ -405,6 +408,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         } else {
             item.init(ei);
         }
+        assignEntityTypeForNewInstance(item);
 
         // initialize core metadata if subclass uses that facility
         item.initializeCoreMetadataPropertyValue();
