@@ -26,7 +26,7 @@ See LICENSE file.
         </ui:fragment>
 
         <ui:fragment>
-            <ui:param name="parentMachineDesign" value="#{itemObject.parentMachineDesign}"/>
+            <ui:param name="parentMachineDesign" value="#{itemObject.parentMachineDesignPlaceholder}"/>
             <p:outputLabel value="#{parentMachineDesign == null ? 'Select Parent' : parentMachineDesign.name}"/>
             <p:commandLink styleClass="fa fa-link-icon fa-search" onclick="PF('createIocMachineParentSelectionDialogWidget').show()"/>
         </ui:fragment>

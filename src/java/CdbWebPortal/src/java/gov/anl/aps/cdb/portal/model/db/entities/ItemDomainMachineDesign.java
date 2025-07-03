@@ -94,6 +94,10 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     // Relationship machine elements 
     private transient List<ItemDomainMachineDesign> machineElementsRelatedToThis = null;
+
+    // Variable to hold a parent machine design reference pending creation of parent element.
+    private transient ItemDomainMachineDesign parentMachineDesignPlaceholder;
+
     // <editor-fold defaultstate="collapsed" desc="Element edit variables ">
     private transient Item inventoryForElement = null;
     private transient boolean inventoryIsInstalled = true;
@@ -215,6 +219,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         }
 
         return null;
+    }
+
+    @JsonIgnore
+    public ItemDomainMachineDesign getParentMachineDesignPlaceholder() {
+        return parentMachineDesignPlaceholder;
+    }
+
+    public void setParentMachineDesignPlaceholder(ItemDomainMachineDesign parentMachineDesignPlaceholder) {
+        this.parentMachineDesignPlaceholder = parentMachineDesignPlaceholder;
     }
 
     @JsonIgnore

@@ -5,18 +5,14 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignIOCSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignIOCControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignIOCLazyDataModel;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
-import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -107,31 +103,29 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
         // Reset variables
         parentMachineSelectionTreeNode = null;
 
-        String createRedirect = super.prepareCreate();
-        ItemDomainMachineDesign current = getCurrent();
-
-        // Create placeholder for machine parent element.
-        UserInfo user = SessionUtility.getUser();
-        ItemElement parentItemElement = getControllerUtility().createItemElement(current, user);
-        parentItemElement.setParentItem(null);
-        parentItemElement.setContainedItem(current);
-        try {
-            current.setParentMachineElement(parentItemElement);
-        } catch (CdbException ex) {
-            LOGGER.error(ex);
-        }
-
-        return createRedirect;
+        return super.prepareCreate();
     }
 
     @Override
     public String create() {
         ItemDomainMachineDesign current = getCurrent();
-        ItemDomainMachineDesign parentMachineDesign = current.getParentMachineDesign();
+        ItemDomainMachineDesign parentMachineDesign = current.getParentMachineDesignPlaceholder();
 
-        if (parentMachineDesign == null) {
-            SessionUtility.addWarningMessage("Machine Parent", "Machine Parent must be specified");
-            return null;
+        if (parentMachineDesign != null) {
+            UserInfo user = SessionUtility.getUser();
+            ItemElement parentItemElement = getControllerUtility().createItemElement(current, user);
+            parentItemElement.setContainedItem(current);
+
+            // Assign parent
+            String elementName = getControllerUtility().generateUniqueElementNameForItem(parentMachineDesign);
+            parentItemElement.setName(elementName);
+            parentItemElement.setParentItem(parentMachineDesign);
+
+            try {
+                current.setParentMachineElement(parentItemElement);
+            } catch (CdbException ex) {
+                LOGGER.error(ex);
+            }
         }
 
         String createRedirect = super.create();
@@ -163,14 +157,10 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
             }
 
             ItemDomainMachineDesign current = getCurrent();
-            Item parentItem = machineElement.getContainedItem();
+            ItemDomainMachineDesign parentItem = (ItemDomainMachineDesign) machineElement.getContainedItem();
 
-            String elementName = getControllerUtility().generateUniqueElementNameForItem(parentItem);
+            current.setParentMachineDesignPlaceholder(parentItem);
 
-            ItemElement parentMachineElement = current.getParentMachineElement();
-            parentMachineElement.setName(elementName);
-
-            parentMachineElement.setParentItem(parentItem);
         }
     }
 
