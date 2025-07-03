@@ -102,6 +102,10 @@ public class IOCItemRoute extends ItemBaseRoute {
             iocInfo.setDeploymentStatus(deploymentStatus);
         }
 
+        if (bootInstructions != null) {
+            iocInfo.setBootInstructions(bootInstructions);
+        }
+
         iocItem = utility.update(iocItem, currentUser);
 
         return iocItem;
