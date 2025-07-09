@@ -13,11 +13,11 @@ let formId = '';
 
 document.addEventListener('paste', pasteMarkdownTextArea);
 
-function pasteMarkdownTextArea(event) {    
-    loadFormId(); 
+function pasteMarkdownTextArea(event) {
+    loadFormId();
     // Ignore non text area 
     let srcElement = event.srcElement;
-    if (srcElement.id !== formId + ':propertyValueMarkdownValueDialogEditTabView:markdownPropertyTextareaEdit') {        
+    if (!new RegExp(formId + ':propertyValueMarkdownValueDialogEditTabView.+markdownPropertyTextareaEdit').test(srcElement.id)) {
         return;
     }
 
@@ -25,6 +25,10 @@ function pasteMarkdownTextArea(event) {
 
     if (pastedFiles.length > 0) {
         event.preventDefault();
+
+        if (srcElement.id !== formId + ':propertyValueMarkdownValueDialogEditTabView:markdownPropertyTextareaEdit') {
+            return;
+        }
 
         // Clear Upload Ref
         uploadRef = document.getElementById(formId + ':lastFileReference');
@@ -41,14 +45,14 @@ function pasteMarkdownTextArea(event) {
             // Link was pasted. 
             event.preventDefault();
             var newData = " [Link Text](" + pastedText + ") ";
-            addCustomDataToLogEntryValue(newData);
+            addCustomDataToLogEntryValue(newData, srcElement.id);
         }
     }
 }
 
 function pasteLatestFileReference() {
-    loadFormId(); 
-    
+    loadFormId();
+
     let uploadRef = document.getElementById(formId + ':lastFileReference');
     let fileRefMd = uploadRef.innerHTML;
 
@@ -61,11 +65,10 @@ function pasteLatestFileReference() {
     addCustomDataToLogEntryValue(newData);
 }
 
-function addCustomDataToLogEntryValue(newData) {
-    loadFormId(); 
-    
-    let textArea = document.getElementById(formId + ':propertyValueMarkdownValueDialogEditTabView:markdownPropertyTextareaEdit');
+function addCustomDataToLogEntryValue(newData, elementId = formId + ':propertyValueMarkdownValueDialogEditTabView:markdownPropertyTextareaEdit') {
+    loadFormId();
 
+    let textArea = document.getElementById(elementId);
     let exitingValue = $(textArea).val();
     let curPos = textArea.selectionStart;
 
@@ -76,12 +79,12 @@ function addCustomDataToLogEntryValue(newData) {
 function loadFormId() {
     if (formId === '') {
         for (let form of document.getElementsByTagName('form')) {
-            if (form.id.endsWith('ViewForm')) {                
+            if (form.id.endsWith('ViewForm')) {
                 formId = form.id;
                 break;
             }
         }
     }
-    
-    return formId; 
+
+    return formId;
 }
