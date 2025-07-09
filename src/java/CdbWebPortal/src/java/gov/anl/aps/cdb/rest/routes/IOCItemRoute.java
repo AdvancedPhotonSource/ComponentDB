@@ -55,7 +55,7 @@ public class IOCItemRoute extends ItemBaseRoute {
 
         machine.addEntityType(EntityTypeName.ioc.getValue());
 
-        return updateIocInfo(machine, currentUser, machineTag, functionTag, deploymentStatus, null);
+        return updateIocInfo(machine, currentUser, machineTag, functionTag, deploymentStatus, null, null, null, null);
     }
 
     @POST
@@ -68,14 +68,17 @@ public class IOCItemRoute extends ItemBaseRoute {
             @Parameter(description = "Machine Tag") @QueryParam("machineTag") String machineTag,
             @Parameter(description = "Function Tag") @QueryParam("functionTag") String functionTag,
             @Parameter(description = "Deployment Status") @QueryParam("deploymentStatus") String deploymentStatus,
-            @Parameter(description = "Boot Instructions") @QueryParam("bootInstructions") String bootInstructions) throws AuthorizationError, CdbException {
+            @Parameter(description = "Preboot Instructions") @QueryParam("prebootInstructions") String prebootInstructions,
+            @Parameter(description = "Postboot Instructions") @QueryParam("postbootInstructions") String postbootInstructions,
+            @Parameter(description = "Power Cycle Instructions") @QueryParam("powerCycleInstructions") String powerCycleInstructions,
+            @Parameter(description = "Additional Instructions") @QueryParam("additionalInstructions") String additionalInstructions) throws AuthorizationError, CdbException {
 
         ItemDomainMachineDesign machine = machineFacade.find(iocId);
 
         UserInfo currentUser = verifyCurrentUserPermissionForItem(machine);
         verifyItemReady(machine);
 
-        return updateIocInfo(machine, currentUser, machineTag, functionTag, deploymentStatus, bootInstructions);
+        return updateIocInfo(machine, currentUser, machineTag, functionTag, deploymentStatus, prebootInstructions, postbootInstructions, powerCycleInstructions, additionalInstructions);
     }
 
     private void verifyItemReady(ItemDomainMachineDesign item) throws CdbException {
@@ -84,7 +87,7 @@ public class IOCItemRoute extends ItemBaseRoute {
         }
     }
 
-    private ItemDomainMachineDesign updateIocInfo(ItemDomainMachineDesign iocItem, UserInfo currentUser, String machineTag, String functionTag, String deploymentStatus, String bootInstructions) throws CdbException {
+    private ItemDomainMachineDesign updateIocInfo(ItemDomainMachineDesign iocItem, UserInfo currentUser, String machineTag, String functionTag, String deploymentStatus, String prebootInstructions, String postbootInstructions, String powerCycleInstructions, String additionalInstructions) throws CdbException {
         ItemDomainMachineDesignBaseControllerUtility utility = iocItem.getItemControllerUtility();
 
         if (!ItemDomainMachineDesign.isItemIOC(iocItem)) {
@@ -102,8 +105,30 @@ public class IOCItemRoute extends ItemBaseRoute {
             iocInfo.setDeploymentStatus(deploymentStatus);
         }
 
-        if (bootInstructions != null) {
-            iocInfo.setBootInstructions(bootInstructions);
+        boolean instructionsUpdated = false;
+
+        if (prebootInstructions != null) {
+            iocInfo.setPreBoot(prebootInstructions);
+            instructionsUpdated = true;
+        }
+
+        if (postbootInstructions != null) {
+            iocInfo.setPostBoot(postbootInstructions);
+            instructionsUpdated = true;
+        }
+
+        if (powerCycleInstructions != null) {
+            iocInfo.setPowerCycle(powerCycleInstructions);
+            instructionsUpdated = true;
+        }
+
+        if (additionalInstructions != null) {
+            iocInfo.setAdditionalMd(additionalInstructions);
+            instructionsUpdated = true;
+        }
+
+        if (instructionsUpdated) {
+            iocInfo.generateUpdatedInstructionsMarkdown();
         }
 
         iocItem = utility.update(iocItem, currentUser);
