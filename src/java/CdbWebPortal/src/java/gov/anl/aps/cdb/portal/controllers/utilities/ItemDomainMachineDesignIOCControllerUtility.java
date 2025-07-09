@@ -98,4 +98,14 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
         ioc.getEntityTypeList().add(iocEntityType);
     }
 
+    @Override
+    public boolean isEntityHasItemIdentifier1() {
+        return false;
+    }
+
+    @Override
+    public boolean isEntityHasQrId() {
+        return false;
+    }
+
 }
