@@ -22,9 +22,15 @@ See LICENSE file.
 
 
     <ui:define name="additionalItemInformation">
+        <ui:include src="../item/private/coreMetadataPropertyFlatViewObject.xhtml" /> 
+        
         <p:outputLabel for="iocInstructions#{viewName}" value="IOC Instructions" styleClass="entityDataLabel" />
 
         <p:commandLink id="iocInstructions#{viewName}" onclick="displayIOCInstructions()" value="View Markdown" />
+    </ui:define>
+    
+    <ui:define name="coreMetadataPropertyPanel">
+        <!--No need since core metadata displayed in item details panel-->
     </ui:define>
 
 
