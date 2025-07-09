@@ -150,30 +150,30 @@ public class ItemMetadataIOC extends ItemMetadata<ItemDomainMachineDesign> {
     public void generateUpdatedInstructionsMarkdown() {
         StringBuilder bootInstructions = new StringBuilder();
 
-        bootInstructions.append("# Preboot: ");
+        bootInstructions.append("# Preboot:\n");
         if (preBoot != null && !preBoot.isEmpty()) {
-            bootInstructions.append(preBoot);
+            bootInstructions.append(preBoot).append("\n");
         }
-        bootInstructions.append("<!--/Preboot-->");
+        bootInstructions.append("<!--/Preboot-->\n\n");
 
-        bootInstructions.append("# Postboot: ");
+        bootInstructions.append("# Postboot:\n");
         if (postBoot != null && !postBoot.isEmpty()) {
-            bootInstructions.append(postBoot);
+            bootInstructions.append(postBoot).append("\n");
         }
-        bootInstructions.append("<!--/Postboot-->");
+        bootInstructions.append("<!--/Postboot-->\n\n");
 
-        bootInstructions.append("# Power Cycle: ");
+        bootInstructions.append("# Power Cycle:\n");
         if (powerCycle != null && !powerCycle.isEmpty()) {
-            bootInstructions.append(powerCycle);
+            bootInstructions.append(powerCycle).append("\n");
         }
-        bootInstructions.append("<!--/PowerCycle-->");
+        bootInstructions.append("<!--/PowerCycle-->\n\n");
 
-        bootInstructions.append("<!--Additional-->");
+        bootInstructions.append("<!--Additional-->\n");
         if (additionalMd != null && !additionalMd.isEmpty()) {
             if (!additionalMd.startsWith("#")) {
-                bootInstructions.append("# Additional Notes");
+                bootInstructions.append("# Additional Notes\n");
             }
-            bootInstructions.append(additionalMd);
+            bootInstructions.append(additionalMd).append("\n");
         }
         bootInstructions.append("<!--/Additional-->");
         setBootInstructions(bootInstructions.toString().trim());
