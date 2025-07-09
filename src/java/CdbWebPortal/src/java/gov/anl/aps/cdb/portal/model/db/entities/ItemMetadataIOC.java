@@ -23,6 +23,11 @@ public class ItemMetadataIOC extends ItemMetadata<ItemDomainMachineDesign> {
     private String functionTag;
     private String deploymentStatus;
 
+    private String preBoot = null;
+    private String postBoot = null;
+    private String powerCycle = null;
+    private String additionalMd = null;
+
     public ItemMetadataIOC(ItemDomainMachineDesign iocItem) {
         super(iocItem);
     }
@@ -71,6 +76,109 @@ public class ItemMetadataIOC extends ItemMetadata<ItemDomainMachineDesign> {
         setCoreMetadataPropertyFieldValue(REPO_URL_KEY, repoURL);
     }
 
+    public String getPreBoot() {
+        loadInstructions();
+        return preBoot;
+    }
+
+    public void setPreBoot(String preBoot) {
+        this.preBoot = preBoot;
+    }
+
+    public String getPostBoot() {
+        loadInstructions();
+        return postBoot;
+    }
+
+    public void setPostBoot(String postBoot) {
+        this.postBoot = postBoot;
+    }
+
+    public String getPowerCycle() {
+        loadInstructions();
+        return powerCycle;
+    }
+
+    public void setPowerCycle(String powerCycle) {
+        this.powerCycle = powerCycle;
+    }
+
+    public String getAdditionalMd() {
+        loadInstructions();
+        return additionalMd;
+    }
+
+    public void setAdditionalMd(String additionalMd) {
+        this.additionalMd = additionalMd;
+    }
+
+    private void loadInstructions() {
+        if (preBoot != null) {
+            // Loaded
+            return;
+        }
+
+        String bootInstructions = getBootInstructions();
+
+        if (bootInstructions != null) {
+            int preBootStart = bootInstructions.indexOf("# Preboot:");
+            int preBootEnd = bootInstructions.indexOf("<!--/Preboot-->");
+            if (preBootStart != -1 && preBootEnd != -1) {
+                preBoot = bootInstructions.substring(preBootStart + "# Preboot:".length(), preBootEnd).trim();
+            }
+
+            int postBootStart = bootInstructions.indexOf("# Postboot:");
+            int postBootEnd = bootInstructions.indexOf("<!--/Postboot-->");
+            if (postBootStart != -1 && postBootEnd != -1) {
+                postBoot = bootInstructions.substring(postBootStart + "# Postboot:".length(), postBootEnd).trim();
+            }
+
+            int powerCycleStart = bootInstructions.indexOf("# Power Cycle:");
+            int powerCycleEnd = bootInstructions.indexOf("<!--/PowerCycle-->");
+            if (powerCycleStart != -1 && powerCycleEnd != -1) {
+                powerCycle = bootInstructions.substring(powerCycleStart + "# Power Cycle:".length(), powerCycleEnd).trim();
+            }
+
+            int additionalMdStart = bootInstructions.indexOf("<!--Additional-->");
+            int additionalMdEnd = bootInstructions.indexOf("<!--/Additional-->");
+            if (additionalMdStart != -1 && additionalMdEnd != -1) {
+                additionalMd = bootInstructions.substring(additionalMdStart + "<!--Additional-->".length(), additionalMdEnd).trim();
+            }
+        }
+    }
+    
+    public void generateUpdatedInstructionsMarkdown() {
+        StringBuilder bootInstructions = new StringBuilder();
+
+        bootInstructions.append("# Preboot: ");
+        if (preBoot != null && !preBoot.isEmpty()) {
+            bootInstructions.append(preBoot);
+        }
+        bootInstructions.append("<!--/Preboot-->");
+
+        bootInstructions.append("# Postboot: ");
+        if (postBoot != null && !postBoot.isEmpty()) {
+            bootInstructions.append(postBoot);
+        }
+        bootInstructions.append("<!--/Postboot-->");
+
+        bootInstructions.append("# Power Cycle: ");
+        if (powerCycle != null && !powerCycle.isEmpty()) {
+            bootInstructions.append(powerCycle);
+        }
+        bootInstructions.append("<!--/PowerCycle-->");
+
+        bootInstructions.append("<!--Additional-->");
+        if (additionalMd != null && !additionalMd.isEmpty()) {
+            if (!additionalMd.startsWith("#")) {
+                bootInstructions.append("# Additional Notes");
+            }
+            bootInstructions.append(additionalMd);
+        }
+        bootInstructions.append("<!--/Additional-->");
+        setBootInstructions(bootInstructions.toString().trim());
+    }
+
     public String getBootInstructions() {
         PropertyValue pv = getCoreMetadataPropertyValue();
 
@@ -81,7 +189,7 @@ public class ItemMetadataIOC extends ItemMetadata<ItemDomainMachineDesign> {
         return null;
     }
 
-    public void setBootInstructions(String bootInstructions) {
+    private void setBootInstructions(String bootInstructions) {
         PropertyValue pv = getCoreMetadataPropertyValue();
         pv.setText(bootInstructions);
     }
