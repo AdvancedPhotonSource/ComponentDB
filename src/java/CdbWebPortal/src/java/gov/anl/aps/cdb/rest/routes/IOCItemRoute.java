@@ -50,6 +50,9 @@ public class IOCItemRoute extends ItemBaseRoute {
             @Parameter(description = "Deployment Status") @QueryParam("deploymentStatus") String deploymentStatus) throws AuthorizationError, CdbException {
         ItemDomainMachineDesign machine = machineFacade.find(machineId);
 
+        // No uniqueness automation for IOCs.
+        machine.setItemIdentifier2(null);
+
         UserInfo currentUser = verifyCurrentUserPermissionForItem(machine);
         verifyItemReady(machine);
 

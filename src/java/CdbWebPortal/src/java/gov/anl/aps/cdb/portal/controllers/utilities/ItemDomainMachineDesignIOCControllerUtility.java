@@ -90,6 +90,11 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
     }
 
     @Override
+    protected boolean isApplyUniqueness() {
+        return false;
+    }
+
+    @Override
     public boolean isEntityHasItemIdentifier1() {
         return false;
     }
