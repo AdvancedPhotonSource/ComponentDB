@@ -10,11 +10,9 @@ import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignIOCControllerUtility;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemMetadataIOC;
@@ -92,7 +90,83 @@ public class IOCItemRoute extends ItemBaseRoute {
 
         machine.addEntityType(EntityTypeName.ioc.getValue());
 
-        return updateIocInfo(machine, currentUser, machineTag, functionTag, deploymentStatus, null, null, null, null);
+        return updateIocInfo(machine, currentUser, machineTag, functionTag, deploymentStatus, null, null, null, null, true);
+    }
+
+    @POST
+    @Path("/IOCAddUpdate")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Add or update IOC item.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemDomainMachineDesign addOrUpdateIOC(
+            @Parameter(description = "DB ID of the IOC. When none specified, a new item will be created.") @QueryParam("id") Integer id,
+            @Parameter(description = "IOC name (required for new items, optional for updates)") @QueryParam("name") String name,
+            @Parameter(description = "Description of the IOC (optional, updated when specified)") @QueryParam("description") String description,
+            @Parameter(description = "Project IDs to assign (required for new items, replaces existing assignments when specified)") @QueryParam("itemProjectIds") List<Integer> itemProjectIds,
+            @Parameter(description = "Machine Tag (required for new items, updated when specified)") @QueryParam("machineTag") String machineTag,
+            @Parameter(description = "Function Tag (required for new items, updated when specified)") @QueryParam("functionTag") String functionTag,
+            @Parameter(description = "Deployment Status (required for new items, updated when specified)") @QueryParam("deploymentStatus") String deploymentStatus,
+            @Parameter(description = "Preboot Instructions (optional, updated when specified)") @QueryParam("prebootInstructions") String prebootInstructions,
+            @Parameter(description = "Postboot Instructions (optional, updated when specified)") @QueryParam("postbootInstructions") String postbootInstructions,
+            @Parameter(description = "Power Cycle Instructions (optional, updated when specified)") @QueryParam("powerCycleInstructions") String powerCycleInstructions,
+            @Parameter(description = "Additional Instructions (optional, updated when specified)") @QueryParam("additionalInstructions") String additionalInstructions) throws CdbException, AuthorizationError {
+
+        ItemDomainMachineDesignIOCControllerUtility utility = new ItemDomainMachineDesignIOCControllerUtility();
+        ItemDomainMachineDesign iocItem = null;
+        UserInfo user = getCurrentRequestUserInfo();
+
+        if (id != null) {
+            iocItem = machineFacade.find(id);
+            verifyCurrentUserPermissionForItem(iocItem);
+            verifyItemReady(iocItem);
+        } else {
+            iocItem = (ItemDomainMachineDesign) utility.createEntityInstance(user);
+
+            // Initialize lists that will be populated below.
+            iocItem.setItemProjectList(new ArrayList<>());
+
+            // Add IOC entity type
+            iocItem.addEntityType(EntityTypeName.ioc.getValue());
+        }
+
+        // TODO add parent item 
+        if (name != null) {
+            iocItem.setName(name);
+        }
+
+        if (description != null) {
+            iocItem.setDescription(description);
+        }
+
+        if (itemProjectIds != null && !itemProjectIds.isEmpty()) {
+            List<ItemProject> itemProjectList = iocItem.getItemProjectList();
+            itemProjectList.clear();
+            for (int itemProjectId : itemProjectIds) {
+                ItemProject project = getItemProjectById(itemProjectId);
+                itemProjectList.add(project);
+            }
+        }
+
+        // Verify that all required fields have been defined.
+        if (iocItem.getName() == null || iocItem.getName().isEmpty()) {
+            throw new InvalidObjectState("Required field IOC name has not been defined.");
+        }
+        if (iocItem.getItemProjectList().isEmpty()) {
+            throw new InvalidObjectState("Required field project has no assignment.");
+        }
+
+        // Update IOC specific information
+        iocItem = updateIocInfo(iocItem, user, machineTag, functionTag, deploymentStatus,
+                prebootInstructions, postbootInstructions, powerCycleInstructions, additionalInstructions, false);
+
+        if (id == null) {
+            iocItem = (ItemDomainMachineDesign) utility.create(iocItem, user);
+        } else {
+            iocItem = (ItemDomainMachineDesign) utility.update(iocItem, user);
+        }
+
+        return iocItem;
     }
 
     @POST
@@ -115,7 +189,7 @@ public class IOCItemRoute extends ItemBaseRoute {
         UserInfo currentUser = verifyCurrentUserPermissionForItem(machine);
         verifyItemReady(machine);
 
-        return updateIocInfo(machine, currentUser, machineTag, functionTag, deploymentStatus, prebootInstructions, postbootInstructions, powerCycleInstructions, additionalInstructions);
+        return updateIocInfo(machine, currentUser, machineTag, functionTag, deploymentStatus, prebootInstructions, postbootInstructions, powerCycleInstructions, additionalInstructions, true);
     }
 
     private void verifyItemReady(ItemDomainMachineDesign item) throws CdbException {
@@ -124,7 +198,7 @@ public class IOCItemRoute extends ItemBaseRoute {
         }
     }
 
-    private ItemDomainMachineDesign updateIocInfo(ItemDomainMachineDesign iocItem, UserInfo currentUser, String machineTag, String functionTag, String deploymentStatus, String prebootInstructions, String postbootInstructions, String powerCycleInstructions, String additionalInstructions) throws CdbException {
+    private ItemDomainMachineDesign updateIocInfo(ItemDomainMachineDesign iocItem, UserInfo currentUser, String machineTag, String functionTag, String deploymentStatus, String prebootInstructions, String postbootInstructions, String powerCycleInstructions, String additionalInstructions, boolean performUpdate) throws CdbException {
         ItemDomainMachineDesignBaseControllerUtility utility = iocItem.getItemControllerUtility();
 
         if (!ItemDomainMachineDesign.isItemIOC(iocItem)) {
@@ -168,7 +242,9 @@ public class IOCItemRoute extends ItemBaseRoute {
             iocInfo.generateUpdatedInstructionsMarkdown();
         }
 
-        iocItem = utility.update(iocItem, currentUser);
+        if (performUpdate) {
+            iocItem = utility.update(iocItem, currentUser);
+        }
 
         return iocItem;
     }
@@ -204,14 +280,14 @@ public class IOCItemRoute extends ItemBaseRoute {
     }
 
     @GET
-    @Path("/propertyType")
+    @Path("/coreMetadataPropertyType")
     @Produces(MediaType.APPLICATION_JSON)
-    public PropertyType getIOCItemPropertyType() {
+    public PropertyType getIOCItemCorePropertyType() {
         return propertyTypeFacade.findByName(ItemMetadataIOC.IOC_ITEM_INTERNAL_PROPERTY_TYPE);
     }
 
     private List<AllowedPropertyMetadataValue> getIOCPropertyAllowedValues(String keyName) {
-        PropertyType property = getIOCItemPropertyType(); 
+        PropertyType property = getIOCItemCorePropertyType();
 
         PropertyTypeMetadata propertyTypeMetadataForKey = property.getPropertyTypeMetadataForKey(keyName);
         return propertyTypeMetadataForKey.getAllowedPropertyMetadataValueList();
