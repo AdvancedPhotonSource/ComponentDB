@@ -13,7 +13,6 @@ import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
-import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.EntityTypeControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
