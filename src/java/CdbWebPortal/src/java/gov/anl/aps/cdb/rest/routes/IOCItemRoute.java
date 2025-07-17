@@ -211,7 +211,7 @@ public class IOCItemRoute extends ItemBaseRoute {
     }
 
     private List<AllowedPropertyMetadataValue> getIOCPropertyAllowedValues(String keyName) {
-        PropertyType property = propertyTypeFacade.findByName(ItemMetadataIOC.IOC_ITEM_INTERNAL_PROPERTY_TYPE);
+        PropertyType property = getIOCItemPropertyType(); 
 
         PropertyTypeMetadata propertyTypeMetadataForKey = property.getPropertyTypeMetadataForKey(keyName);
         return propertyTypeMetadataForKey.getAllowedPropertyMetadataValueList();
