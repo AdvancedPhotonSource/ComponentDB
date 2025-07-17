@@ -49,6 +49,9 @@ public class IOCItemRoute extends ItemBaseRoute {
     @EJB
     ItemDomainMachineDesignFacade machineFacade;
 
+    @EJB
+    PropertyTypeFacade propertyTypeFacade;
+
     @POST
     @Path("/convertToIOC/{mdId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -177,6 +180,41 @@ public class IOCItemRoute extends ItemBaseRoute {
         List<ItemDomainMachineDesign> iocItems = machineFacade.getIOCItems();
 
         return iocItems;
+    }
+
+    @GET
+    @Path("/allowedValues/machineTag")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<AllowedPropertyMetadataValue> getAllowedMachineTags() {
+        return getIOCPropertyAllowedValues(ItemMetadataIOC.IOC_ITEM_MACHINE_TAG_KEY);
+    }
+
+    @GET
+    @Path("/allowedValues/functionTag")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<AllowedPropertyMetadataValue> getAllowedFunctionTags() {
+        return getIOCPropertyAllowedValues(ItemMetadataIOC.IOC_ITEM_FUNCTION_TAG_KEY);
+    }
+
+    @GET
+    @Path("/allowedValues/deploymentStatus")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<AllowedPropertyMetadataValue> getAllowedDeploymentStatuses() {
+        return getIOCPropertyAllowedValues(ItemMetadataIOC.IOC_DEPLOYMENT_STATUS_KEY);
+    }
+
+    @GET
+    @Path("/propertyType")
+    @Produces(MediaType.APPLICATION_JSON)
+    public PropertyType getIOCItemPropertyType() {
+        return propertyTypeFacade.findByName(ItemMetadataIOC.IOC_ITEM_INTERNAL_PROPERTY_TYPE);
+    }
+
+    private List<AllowedPropertyMetadataValue> getIOCPropertyAllowedValues(String keyName) {
+        PropertyType property = propertyTypeFacade.findByName(ItemMetadataIOC.IOC_ITEM_INTERNAL_PROPERTY_TYPE);
+
+        PropertyTypeMetadata propertyTypeMetadataForKey = property.getPropertyTypeMetadataForKey(keyName);
+        return propertyTypeMetadataForKey.getAllowedPropertyMetadataValueList();
     }
 
 }
