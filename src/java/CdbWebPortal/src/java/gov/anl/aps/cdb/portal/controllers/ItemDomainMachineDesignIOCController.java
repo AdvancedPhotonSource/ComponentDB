@@ -113,16 +113,9 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
 
         if (parentMachineDesign != null) {
             UserInfo user = SessionUtility.getUser();
-            ItemElement parentItemElement = getControllerUtility().createItemElement(current, user);
-            parentItemElement.setContainedItem(current);
-
-            // Assign parent
-            String elementName = getControllerUtility().generateUniqueElementNameForItem(parentMachineDesign);
-            parentItemElement.setName(elementName);
-            parentItemElement.setParentItem(parentMachineDesign);
 
             try {
-                current.setParentMachineElement(parentItemElement);
+                getControllerUtility().updateMachineParent(current, user, parentMachineDesign);
             } catch (CdbException ex) {
                 LOGGER.error(ex);
             }

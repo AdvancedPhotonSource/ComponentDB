@@ -11,8 +11,10 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemMetadataIOC;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemMetadataIOC.IOC_ITEM_INTERNAL_PROPERTY_TYPE;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
@@ -87,6 +89,26 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
             logger.error(ex);
         }
         ioc.getEntityTypeList().add(iocEntityType);
+    }
+
+    public void updateMachineParent(ItemDomainMachineDesign iocItem, UserInfo userInfo, ItemDomainMachineDesign parentMachine) throws CdbException {
+        if (!ItemDomainMachineDesign.isItemIOC(iocItem)) {
+            throw new CdbException("IOC item is not of type ioc");
+        }
+
+        ItemElement parentMachineElement = iocItem.getParentMachineElement();
+        if (parentMachineElement == null) {
+            parentMachineElement = createItemElement(iocItem, userInfo);
+            parentMachineElement.setContainedItem(iocItem);
+
+            String elementName = generateUniqueElementNameForItem(parentMachine);
+            parentMachineElement.setName(elementName);
+
+            iocItem.setParentMachineElement(parentMachineElement);
+        }
+
+        parentMachineElement.setParentItem(parentMachine);
+
     }
 
     @Override

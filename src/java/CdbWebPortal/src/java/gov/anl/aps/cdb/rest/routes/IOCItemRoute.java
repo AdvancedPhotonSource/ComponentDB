@@ -6,10 +6,12 @@ package gov.anl.aps.cdb.rest.routes;
 
 import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignIOCControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
@@ -104,6 +106,7 @@ public class IOCItemRoute extends ItemBaseRoute {
             @Parameter(description = "IOC name (required for new items, optional for updates)") @QueryParam("name") String name,
             @Parameter(description = "Description of the IOC (optional, updated when specified)") @QueryParam("description") String description,
             @Parameter(description = "Project IDs to assign (required for new items, replaces existing assignments when specified)") @QueryParam("itemProjectIds") List<Integer> itemProjectIds,
+            @Parameter(description = "Parent Machine ID (-1 to clear parent, optional)") @QueryParam("parentMachineId") Integer parentMachineId,
             @Parameter(description = "Machine Tag (required for new items, updated when specified)") @QueryParam("machineTag") String machineTag,
             @Parameter(description = "Function Tag (required for new items, updated when specified)") @QueryParam("functionTag") String functionTag,
             @Parameter(description = "Deployment Status (required for new items, updated when specified)") @QueryParam("deploymentStatus") String deploymentStatus,
@@ -145,6 +148,25 @@ public class IOCItemRoute extends ItemBaseRoute {
             for (int itemProjectId : itemProjectIds) {
                 ItemProject project = getItemProjectById(itemProjectId);
                 itemProjectList.add(project);
+            }
+        }
+
+        if (parentMachineId != null) {
+            if (parentMachineId == -1 && iocItem.getId() != null) {
+                // Clear parent
+                ItemElement parentMachineElement = iocItem.getParentMachineElement();
+                if (parentMachineElement != null) {
+                    ItemElementControllerUtility ieUtility = parentMachineElement.getControllerUtility();
+                    ieUtility.destroy(parentMachineElement, user);
+                    iocItem = machineFacade.find(id);
+                }
+            } else {
+                ItemDomainMachineDesign parentMachine = machineFacade.find(parentMachineId);
+
+                if (parentMachine.getEntityTypeList().isEmpty() == false) {
+                    throw new InvalidArgument("Parent machine cannot be of any subtype.");
+                }
+                utility.updateMachineParent(iocItem, user, parentMachine);
             }
         }
 
