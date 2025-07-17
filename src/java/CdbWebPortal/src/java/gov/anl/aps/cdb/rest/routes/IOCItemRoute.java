@@ -6,17 +6,28 @@ package gov.anl.aps.cdb.rest.routes;
 
 import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignIOCControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemMetadataIOC;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.GET;
@@ -48,13 +59,33 @@ public class IOCItemRoute extends ItemBaseRoute {
             @Parameter(description = "Machine Tag") @QueryParam("machineTag") String machineTag,
             @Parameter(description = "Function Tag") @QueryParam("functionTag") String functionTag,
             @Parameter(description = "Deployment Status") @QueryParam("deploymentStatus") String deploymentStatus) throws AuthorizationError, CdbException {
+
+        if (!isCurrentRequestUserAdmin()) {
+            throw new AuthorizationError("IOCs should be created using IOC API. APIs can run this call.");
+        }
+
         ItemDomainMachineDesign machine = machineFacade.find(machineId);
+        UserInfo currentUser = verifyCurrentUserPermissionForItem(machine);
+        verifyItemReady(machine);
+
+        ItemElement machineElement = machine.getParentMachineElement();
+
+        if (machineElement != null) {
+            List<ItemElement> machineElementList = new ArrayList<>();
+            machineElementList.add(machineElement);
+            // Remove template
+            ItemDomainMachineDesignIOCControllerUtility utility = new ItemDomainMachineDesignIOCControllerUtility();
+            utility.unassignMachineTemplate(machineElementList, currentUser);
+
+            // Reload cache after template removal.
+            machine = machineFacade.find(machineId);
+        }
+
+        // Unassign assigned item. 
+        machine.setAssignedItem(null);
 
         // No uniqueness automation for IOCs.
         machine.setItemIdentifier2(null);
-
-        UserInfo currentUser = verifyCurrentUserPermissionForItem(machine);
-        verifyItemReady(machine);
 
         machine.addEntityType(EntityTypeName.ioc.getValue());
 
