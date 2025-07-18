@@ -13,7 +13,7 @@ See LICENSE file.
     <ui:param name="inputStyleClass"
               value="#{inputStyleClass != null ? inputStyleClass : 'cellInput'}"/> 
 
-    <h:inputText id="url#{viewName}" value="#{itemSourceObject.url}" styleClass="#{inputStyleClass}"/>
+    <p:inputText id="url#{viewName}" value="#{itemSourceObject.url}" styleClass="#{inputStyleClass}"/>
     <p:tooltip for="url#{viewName}" value="Enter item source URL."/>
 
 </ui:composition>

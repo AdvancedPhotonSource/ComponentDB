@@ -9,17 +9,17 @@ See LICENSE file.
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets">
     <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
-    <h:inputText id="name" value="#{propertyTypeObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
+    <p:inputText id="name" value="#{propertyTypeObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
     <p:message for="name"/> 
     <p:tooltip for="name" value="Property type name is required."/>
 
     <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
-    <h:inputText id="description" value="#{propertyTypeObject.description}" title="Description" styleClass="entityDataText"/>
+    <p:inputText id="description" value="#{propertyTypeObject.description}" title="Description" styleClass="entityDataText"/>
     <p:message for="description"/> 
     <p:tooltip for="description" value="Description is optional."/>
     
     <h:outputLabel for="promptDescription" value="Prompt Description" styleClass="entityDataLabel"/>
-    <h:inputText id="promptDescription" value="#{propertyTypeObject.promptDescription}" title="Prompt Description" styleClass="entityDataText"/>
+    <p:inputText id="promptDescription" value="#{propertyTypeObject.promptDescription}" title="Prompt Description" styleClass="entityDataText"/>
     <p:message for="promptDescription"/> 
     <p:tooltip for="promptDescription" value="Description written as a question to user wether the property is needed."/>
     
@@ -54,12 +54,12 @@ See LICENSE file.
     <p:tooltip for="handler" value="Handler class specification is optional."/>
 
     <h:outputLabel for="defaultValue" value="Default Value" styleClass="entityDataLabel"/>
-    <h:inputText id="defaultValue" value="#{propertyTypeObject.defaultValue}" title="Default Value" styleClass="entityDataText"/>
+    <p:inputText id="defaultValue" value="#{propertyTypeObject.defaultValue}" title="Default Value" styleClass="entityDataText"/>
     <p:message for="defaultValue"/> 
     <p:tooltip for="defaultValue" value="Default value specification is optional."/>
 
     <h:outputLabel for="defaultUnits" value="Default Units" styleClass="entityDataLabel"/>
-    <h:inputText id="defaultUnits" value="#{propertyTypeObject.defaultUnits}" title="Default Units" styleClass="entityDataText"/>
+    <p:inputText id="defaultUnits" value="#{propertyTypeObject.defaultUnits}" title="Default Units" styleClass="entityDataText"/>
     <p:message for="defaultUnits"/> 
     <p:tooltip for="defaultValue" value="Default units specification is optional."/>
     
