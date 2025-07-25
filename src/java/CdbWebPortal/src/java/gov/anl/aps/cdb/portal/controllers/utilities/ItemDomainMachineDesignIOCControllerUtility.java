@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemMetadataIOC;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemMetadataIOC.IOC_ITEM_INTERNAL_PROPERTY_TYPE;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -124,6 +125,17 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
     @Override
     public boolean isEntityHasQrId() {
         return false;
+    }
+
+    @Override
+    protected void prepareEntityDestroy(ItemDomainMachineDesign item, UserInfo userInfo) throws CdbException {
+        // First destroy parent
+        ItemElement parentMachineElement = item.getParentMachineElement();
+        if (parentMachineElement != null) {
+            parentMachineElement.setMarkedForDeletion(true);
+        }
+
+        super.prepareEntityDestroy(item, userInfo);
     }
 
 }
