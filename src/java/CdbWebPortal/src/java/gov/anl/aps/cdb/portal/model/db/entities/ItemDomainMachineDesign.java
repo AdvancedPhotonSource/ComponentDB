@@ -98,6 +98,8 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     // Variable to hold a parent machine design reference pending creation of parent element.
     private transient ItemDomainMachineDesign parentMachineDesignPlaceholder;
 
+    private transient Boolean isItemIOC;
+
     // <editor-fold defaultstate="collapsed" desc="Element edit variables ">
     private transient Item inventoryForElement = null;
     private transient boolean inventoryIsInstalled = true;
@@ -324,7 +326,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     @Override
     public void setLocationDetails(String locationDetails) {
-        this.locationDetails = locationDetails; 
+        this.locationDetails = locationDetails;
+    }
+
+    public boolean getIsItemIOC() {
+        if (isItemIOC == null) {
+            isItemIOC = isItemIOC(this);
+        }
+
+        return isItemIOC;
     }
 
     public static boolean isItemPower(Item item) {
