@@ -2606,12 +2606,14 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             return;
         }
 
+        ItemDomainMachineDesign current = getCurrent();
+
         if (mode == null || !mode.equals(URL_PARAM_DETAIL_MODE_SWITCHVAL)) {
-            // Check if last page was machine design listView if yes then redirect to list view. 
+            // Check if last page was machine design listView if yes then redirect to list view.
             String referrerViewId = SessionUtility.getReferrerViewId();
             String entityViewsDirectory = getDomainPath();
             String listViewPath = entityViewsDirectory + "/listView";
-            if (referrerViewId != null && referrerViewId.startsWith(listViewPath)) {
+            if (referrerViewId != null && referrerViewId.startsWith(listViewPath) && listViewValidForEntity(current)) {
                 // Retain listView. 
                 String listViewForCurrentEntity = listViewForCurrentEntity();
                 try {
@@ -2624,10 +2626,16 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             }
         }
 
-        ItemDomainMachineDesign current = getCurrent();
         if (current != null) {
             currentViewIsTemplate = isItemMachineDesignAndTemplate(current);
         }
+    }
+
+    protected boolean listViewValidForEntity(ItemDomainMachineDesign item) {
+        if (item == null) {
+            return false;
+        }
+        return item.getEntityTypeList().isEmpty();
     }
 
     /**
@@ -2644,6 +2652,13 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             ItemDomainMachineDesign item = findById(idParam);
             if (item != null) {
                 setCurrent(item);
+
+                if (!listViewValidForEntity(item)) {
+                    SessionUtility.addInfoMessage("Redirect", "Redirected to view. Not supported for " + item.getEntityTypeString());
+                    String redirect = prepareView(item);
+                    SessionUtility.navigateTo(redirect);
+                    return;
+                }
 
                 // Cannot only show favorites when specific node is selected by id.
                 favoritesShown = false;
