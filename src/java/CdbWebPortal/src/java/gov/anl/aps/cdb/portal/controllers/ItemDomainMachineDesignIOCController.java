@@ -31,6 +31,21 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignIOCController.class.getName());
 
+    private final String PRE_BOOT_PLACEHOLDER_TEXT = " ** Pre-Boot Checklist ** \n"
+            + "1. This IOC can be rebooted with stored beam\n"
+            + "2. No special preparations required\n"
+            + "3. Use standard reboot procedure: `caput $iocname:SysReset.PROC 1`";
+
+    private final String POST_BOOT_PLACEHOLDER_TEXT = " ** Post-Boot Recovery ** \n"
+            + "1. Verify IOC communication is restored\n"
+            + "2. Check system status indicators\n"
+            + "3. No additional recovery steps required";
+
+    private final String POWER_CYCLE_PLACEHOLDER_TEXT = " ** Power Cycle Warning ** \n"
+            + "1. This IOC can be rebooted without affecting operations\n"
+            + "2. Power cycling may interrupt system communications temporarily\n"
+            + "3. Verify all dependent systems are in safe state before proceeding";
+
     private ItemDomainMachineDesignTreeNode parentMachineSelectionTreeNode;
     private ItemDomainMachineDesignTreeNode parentMachineSelectedTreeNode = null;
 
@@ -155,6 +170,18 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
             current.setParentMachineDesignPlaceholder(parentItem);
 
         }
+    }
+
+    public String getPRE_BOOT_PLACEHOLDER_TEXT() {
+        return PRE_BOOT_PLACEHOLDER_TEXT;
+    }
+
+    public String getPOST_BOOT_PLACEHOLDER_TEXT() {
+        return POST_BOOT_PLACEHOLDER_TEXT;
+    }
+
+    public String getPOWER_CYCLE_PLACEHOLDER_TEXT() {
+        return POWER_CYCLE_PLACEHOLDER_TEXT;
     }
 
 }
