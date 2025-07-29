@@ -426,6 +426,10 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         UserInfo currentUser = verifyCurrentUserPermissionForItem(childMd);
         verifyCurrentUserPermissionForItem(newParentMdId);
 
+        if (newParentMdId.getIsItemIOC()) {
+            throw new CdbException("IOC type items cannot have children.");
+        }
+
         ItemDomainMachineDesignBaseControllerUtility itemControllerUtility = childMd.getItemControllerUtility();
         ItemElement machineElement = itemControllerUtility.performMachineMoveWithUpdate(newParentMdId, childMd, currentUser);
 
