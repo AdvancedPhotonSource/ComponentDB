@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.common.constants.ItemMetadataFieldType;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
@@ -136,6 +137,16 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
         }
 
         super.prepareEntityDestroy(item, userInfo);
+    }
+
+    @Override
+    public void updateAssignedItem(ItemDomainMachineDesign mdItem, Item newAssignment, UserInfo userInfo, Boolean isInstalled) throws CdbException {
+        throw new CdbException("Not supported for IOC type items.");
+    }
+
+    @Override
+    public ItemElement prepareMachinePlaceholder(ItemDomainMachineDesign parentMachine, UserInfo sessionUser) throws CdbException {
+        throw new CdbException("IOCs cannot have machine design children");
     }
 
 }
