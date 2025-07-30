@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignIOCSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignIOCControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignIOCLazyDataModel;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -114,6 +115,16 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
     }
 
     @Override
+    public boolean getEntityDisplayItemMemberships() {
+        return false;
+    }
+
+    @Override
+    public boolean getDisplayCreatedFromTemplateForCurrent() {
+        return false;
+    }
+
+    @Override
     public String prepareCreate() {
         // Reset variables
         parentMachineSelectionTreeNode = null;
@@ -121,8 +132,43 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
         return super.prepareCreate();
     }
 
+    public String clearMachineParent() {
+        ItemDomainMachineDesign current = getCurrent();
+        UserInfo user = SessionUtility.getUser();
+
+        ItemElement parentMachineElement = current.getParentMachineElement();
+        if (parentMachineElement != null) {
+            ItemElementControllerUtility ieUtility = parentMachineElement.getControllerUtility();
+            try {
+                ieUtility.destroy(parentMachineElement, user);
+            } catch (CdbException ex) {
+                SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+                return viewForCurrentEntity();
+            }
+        }
+
+        reloadCurrent();
+        // Update the modified date. 
+        return update();
+    }
+
+    @Override
+    public String update() {
+        prepareSetParentMachineAttributes();
+
+        return super.update();
+    }
+
     @Override
     public String create() {
+        prepareSetParentMachineAttributes();
+
+        String createRedirect = super.create();
+
+        return createRedirect;
+    }
+
+    private void prepareSetParentMachineAttributes() {
         ItemDomainMachineDesign current = getCurrent();
         ItemDomainMachineDesign parentMachineDesign = current.getParentMachineDesignPlaceholder();
 
@@ -135,10 +181,6 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
                 LOGGER.error(ex);
             }
         }
-
-        String createRedirect = super.create();
-
-        return createRedirect;
     }
 
     public ItemDomainMachineDesignTreeNode getParentMachineSelectionTreeNode() {
