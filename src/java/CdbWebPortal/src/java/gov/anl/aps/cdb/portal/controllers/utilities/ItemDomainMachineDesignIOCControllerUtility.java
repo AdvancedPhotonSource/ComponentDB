@@ -13,7 +13,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemMetadataIOC;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemMetadataIOC.IOC_ITEM_INTERNAL_PROPERTY_TYPE;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -103,11 +102,11 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
             parentMachineElement = createItemElement(iocItem, userInfo);
             parentMachineElement.setContainedItem(iocItem);
 
-            String elementName = generateUniqueElementNameForItem(parentMachine);
-            parentMachineElement.setName(elementName);
-
             iocItem.setParentMachineElement(parentMachineElement);
         }
+
+        String elementName = generateUniqueElementNameForItem(parentMachine);
+        parentMachineElement.setName(elementName);
 
         parentMachineElement.setParentItem(parentMachine);
 
@@ -137,6 +136,17 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
         }
 
         super.prepareEntityDestroy(item, userInfo);
+    }
+
+    @Override
+    public void checkItem(ItemDomainMachineDesign item) throws CdbException {
+        super.checkItem(item);
+
+        ItemDomainMachineDesign parentMachineDesign = item.getParentMachineDesign();
+
+        if (parentMachineDesign != null && parentMachineDesign.getIsItemIOC()) {
+            throw new CdbException("The IOC cannot be housed by another IOC");
+        }
     }
 
     @Override
