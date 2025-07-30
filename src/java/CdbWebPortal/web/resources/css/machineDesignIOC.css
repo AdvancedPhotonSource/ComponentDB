@@ -1,0 +1,20 @@
+/*
+ * Copyright (c) UChicago Argonne, LLC. All rights reserved.
+ * See LICENSE file.
+ */
+@import url("machineDesign.css?v=v3.16.2");
+
+.defaultBackground {
+    background: linear-gradient(to bottom right, #e8f0f7 0%, #a8d0e6 100%);
+}
+
+html, body {
+
+    background: linear-gradient(
+        rgba(255, 255, 255, .85),
+        rgba(173, 216, 230, .88)),
+        /**https://flic.kr/p/a3YwWu**/
+        url(../images/aps-rendering.jpg);
+    background-size: cover;
+    background-attachment: fixed;
+}

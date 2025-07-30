@@ -226,4 +226,9 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
         return POWER_CYCLE_PLACEHOLDER_TEXT;
     }
 
+    @Override
+    public String getStyleName() {
+        return "machineDesignIOC";
+    }
+
 }
