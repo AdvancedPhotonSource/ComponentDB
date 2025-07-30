@@ -15,29 +15,8 @@ See LICENSE file.
               height="500px"
               closable="false"
               modal="true">
-        <p:scrollPanel style="height: 100%"
-                       mode="native">
-            <p:outputPanel>
-                <ui:decorate template="../../itemDomainMachineDesignBase/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
 
-                    <ui:param name="viewId" value="createIocMachineSelectionDialog" />
-                    <!-- false means true for the hideOptionalColumns and hideSearchColumns parameters-->
-                    <ui:param name="hideOptionalColumns" value="#{false}" />
-
-                    <ui:param name="valueModel" value="#{entityController.parentMachineSelectionTreeNode}" />
-                    <ui:param name="selectionModel" value="#{entityController.parentMachineSelectedTreeNode}" />
-
-                    <ui:param name="rendered" value="#{true}" />
-                    <ui:param name="scrollable" value="#{false}" />
-                    <ui:param name="resizableColumns" value="#{false}" />
-                    <ui:param name="liveResize" value="#{false}" />
-                    <ui:param name="rendredHousing" value="#{false}" />
-
-                    <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
-
-                </ui:decorate>
-            </p:outputPanel>
-        </p:scrollPanel>
+        <ui:include src="iocMachineParentSelectionTree.xhtml" />
 
         <f:facet name="footer">
             <p:commandButton value="Select"
