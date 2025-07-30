@@ -192,7 +192,7 @@ See LICENSE file.
 
     <ui:include src="../templateDefaults/itemListObjectColumns/itemInstalledQrId.xhtml" > 
         <ui:param name="rendered"
-                  value="#{entitySettingObject.displayInstalledQrId and !entityController.currentViewIsTemplate}"/> 
+                  value="#{hideOptionalColumns and entitySettingObject.displayInstalledQrId and !entityController.currentViewIsTemplate}"/> 
     </ui:include>
 
     <p:column headerText="Machine Element Description"
