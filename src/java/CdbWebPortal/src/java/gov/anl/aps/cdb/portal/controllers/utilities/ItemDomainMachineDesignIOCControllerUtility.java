@@ -47,7 +47,17 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
 
         info.setDefaultPropertyValue("IOC Instructions");
 
-        info.setDefaultPropertyText("# Preboot: <!--/Preboot--> # Postboot: <!--/Postboot--> # Power Cycle: <!--/PowerCycle--> <!--Additional--> <!--/Additional--> ");
+        info.setDefaultPropertyText("# Preboot:\n"
+                + "<!--/Preboot-->\n"
+                + "\n"
+                + "# Postboot:\n"
+                + "<!--/Postboot-->\n"
+                + "\n"
+                + "# Power Cycle:\n"
+                + "<!--/PowerCycle-->\n"
+                + "\n"
+                + "<!--Additional-->\n"
+                + "<!--/Additional-->");
 
         info.addField(
                 ItemMetadataIOC.IOC_ITEM_MACHINE_TAG_KEY,
