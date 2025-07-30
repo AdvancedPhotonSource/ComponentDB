@@ -34,6 +34,10 @@ public class ItemDomainMachineDesignIOCSettings extends ItemSettings<ItemDomainM
     private static final String DISPLAY_PROPERTY_TYPE_ID_4_SETTING_TYPE_KEY = "ItemDomainMachineDesignIOC.List.Display.PropertyTypeId4";
     private static final String DISPLAY_PROPERTY_TYPE_ID_5_SETTING_TYPE_KEY = "ItemDomainMachineDesignIOC.List.Display.PropertyTypeId5";
 
+    private static final String DISPLAY_MACHINE_TAG_SETTING_TYPE_KEY = "ItemDomainMachineDesignIOC.List.Display.MachineTag";
+    private static final String DISPLAY_FUNCTION_TAG_SETTING_TYPE_KEY = "ItemDomainMachineDesignIOC.List.Display.FunctionTag";
+    private static final String DISPLAY_DEPLOYMENT_STATUS_SETTING_TYPE_KEY = "ItemDomainMachineDesignIOC.List.Display.DeploymentStatus";
+
     private boolean machineTagDisplay;
     private boolean functionTagDisplay;
     private boolean deploymentStatusDisplay;
@@ -45,10 +49,6 @@ public class ItemDomainMachineDesignIOCSettings extends ItemSettings<ItemDomainM
     public ItemDomainMachineDesignIOCSettings(ItemDomainMachineDesignIOCController parentController) {
         super(parentController);
         displayNumberOfItemsPerPage = 25;
-
-        machineTagDisplay = true;
-        functionTagDisplay = true;
-        deploymentStatusDisplay = true;
     }
 
     @Override
@@ -73,6 +73,10 @@ public class ItemDomainMachineDesignIOCSettings extends ItemSettings<ItemDomainM
         displayPropertyTypeId3 = parseSettingValueAsInteger(settingTypeMap.get(DISPLAY_PROPERTY_TYPE_ID_3_SETTING_TYPE_KEY).getDefaultValue());
         displayPropertyTypeId4 = parseSettingValueAsInteger(settingTypeMap.get(DISPLAY_PROPERTY_TYPE_ID_4_SETTING_TYPE_KEY).getDefaultValue());
         displayPropertyTypeId5 = parseSettingValueAsInteger(settingTypeMap.get(DISPLAY_PROPERTY_TYPE_ID_5_SETTING_TYPE_KEY).getDefaultValue());
+
+        machineTagDisplay = Boolean.valueOf(settingTypeMap.get(DISPLAY_MACHINE_TAG_SETTING_TYPE_KEY).getDefaultValue());
+        functionTagDisplay = Boolean.valueOf(settingTypeMap.get(DISPLAY_FUNCTION_TAG_SETTING_TYPE_KEY).getDefaultValue());
+        deploymentStatusDisplay = Boolean.valueOf(settingTypeMap.get(DISPLAY_DEPLOYMENT_STATUS_SETTING_TYPE_KEY).getDefaultValue());
     }
 
     @Override
@@ -97,6 +101,10 @@ public class ItemDomainMachineDesignIOCSettings extends ItemSettings<ItemDomainM
         displayPropertyTypeId3 = settingEntity.getSettingValueAsInteger(DISPLAY_PROPERTY_TYPE_ID_3_SETTING_TYPE_KEY, displayPropertyTypeId3);
         displayPropertyTypeId4 = settingEntity.getSettingValueAsInteger(DISPLAY_PROPERTY_TYPE_ID_4_SETTING_TYPE_KEY, displayPropertyTypeId4);
         displayPropertyTypeId5 = settingEntity.getSettingValueAsInteger(DISPLAY_PROPERTY_TYPE_ID_5_SETTING_TYPE_KEY, displayPropertyTypeId5);
+
+        machineTagDisplay = settingEntity.getSettingValueAsBoolean(DISPLAY_MACHINE_TAG_SETTING_TYPE_KEY, machineTagDisplay);
+        functionTagDisplay = settingEntity.getSettingValueAsBoolean(DISPLAY_FUNCTION_TAG_SETTING_TYPE_KEY, functionTagDisplay);
+        deploymentStatusDisplay = settingEntity.getSettingValueAsBoolean(DISPLAY_DEPLOYMENT_STATUS_SETTING_TYPE_KEY, deploymentStatusDisplay);
     }
 
     @Override
@@ -121,6 +129,10 @@ public class ItemDomainMachineDesignIOCSettings extends ItemSettings<ItemDomainM
         settingEntity.setSettingValue(DISPLAY_PROPERTY_TYPE_ID_3_SETTING_TYPE_KEY, displayPropertyTypeId3);
         settingEntity.setSettingValue(DISPLAY_PROPERTY_TYPE_ID_4_SETTING_TYPE_KEY, displayPropertyTypeId4);
         settingEntity.setSettingValue(DISPLAY_PROPERTY_TYPE_ID_5_SETTING_TYPE_KEY, displayPropertyTypeId5);
+
+        settingEntity.setSettingValue(DISPLAY_MACHINE_TAG_SETTING_TYPE_KEY, machineTagDisplay);
+        settingEntity.setSettingValue(DISPLAY_FUNCTION_TAG_SETTING_TYPE_KEY, functionTagDisplay);
+        settingEntity.setSettingValue(DISPLAY_DEPLOYMENT_STATUS_SETTING_TYPE_KEY, deploymentStatusDisplay);
     }
 
     public boolean isMachineTagDisplay() {

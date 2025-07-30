@@ -25,7 +25,10 @@ INSERT IGNORE INTO `setting_type` VALUES
 (21512,'ItemDomainMachineDesignIOC.List.Display.PropertyTypeId2','Display property value for property type id #2.',''),
 (21513,'ItemDomainMachineDesignIOC.List.Display.PropertyTypeId3','Display property value for property type id #3.',''),
 (21514,'ItemDomainMachineDesignIOC.List.Display.PropertyTypeId4','Display property value for property type id #4.',''),
-(21515,'ItemDomainMachineDesignIOC.List.Display.PropertyTypeId5','Display property value for property type id #5.','');
+(21515,'ItemDomainMachineDesignIOC.List.Display.PropertyTypeId5','Display property value for property type id #5.',''),
+(21516,'ItemDomainMachineDesignIOC.List.Display.MachineTag','Display machine tag.','true'),
+(21517,'ItemDomainMachineDesignIOC.List.Display.FunctionTag','Display function tag.','true'),
+(21518,'ItemDomainMachineDesignIOC.List.Display.DeploymentStatus','Display deployment status.','true');
 
 
 ALTER IGNORE TABLE `allowed_property_metadata_value` ADD COLUMN `sort_order` float(10,2) unsigned DEFAULT NULL AFTER `description`;
