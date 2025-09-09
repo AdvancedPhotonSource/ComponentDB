@@ -56,7 +56,17 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
 
     @Override
     protected String getViewPath() {
-        return "/views/itemDomainMachineDesignIOC/view.xhtml";
+        return getEntityApplicationViewPath() + "/view.xhtml";
+    }
+
+    @Override
+    public String getEntityApplicationViewPath() {
+        return "/views/itemDomainMachineDesignIOC";
+    }
+
+    @Override
+    protected String getCloneCreatePageName() {
+        return "create";
     }
 
     @Override
