@@ -169,4 +169,40 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
         throw new CdbException("IOCs cannot have machine design children");
     }
 
+    @Override
+    public ItemDomainMachineDesign completeClone(ItemDomainMachineDesign clonedItem, Integer cloningFromItemId, UserInfo user, boolean cloneProperties, boolean cloneSources, boolean cloneCreateItemElementPlaceholders) {
+        clonedItem = super.completeClone(clonedItem, cloningFromItemId, user, cloneProperties, cloneSources, cloneCreateItemElementPlaceholders);
+
+        // Ensure IOC info is copied to cloned item.
+        ItemDomainMachineDesign cloningFrom = findById(cloningFromItemId);
+        ItemMetadataIOC iocInfo = cloningFrom.getIocInfo();
+        ItemMetadataIOC clonedIocInfo = clonedItem.getIocInfo();
+
+        ItemDomainMachineDesign parentMachineDesign = cloningFrom.getParentMachineDesign();
+
+        try {
+            // Copy ioc info
+            clonedIocInfo.setMachineTag(iocInfo.getMachineTag());
+            clonedIocInfo.setFunctionTag(iocInfo.getFunctionTag());
+            clonedIocInfo.setDeploymentStatus(iocInfo.getDeploymentStatus());
+            clonedIocInfo.setPreBoot(iocInfo.getPreBoot());
+            clonedIocInfo.setPostBoot(iocInfo.getPostBoot());
+            clonedIocInfo.setPowerCycle(iocInfo.getPowerCycle());
+            clonedIocInfo.setAdditionalMd(iocInfo.getAdditionalMd());
+            clonedIocInfo.generateUpdatedInstructionsMarkdown();
+
+            // Copy over parent machine
+            if (parentMachineDesign != null) {
+                updateMachineParent(clonedItem, user, parentMachineDesign);
+            }
+        } catch (CdbException ex) {
+            logger.error(ex);
+        }
+
+        // Ensure create UI consistent with parent machine. Already set for item in case API clone.
+        clonedItem.setParentMachineDesignPlaceholder(parentMachineDesign);
+
+        return clonedItem;
+    }
+
 }
