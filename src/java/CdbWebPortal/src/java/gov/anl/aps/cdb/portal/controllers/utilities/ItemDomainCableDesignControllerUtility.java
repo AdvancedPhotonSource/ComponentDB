@@ -6,16 +6,20 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.constants.ItemMetadataFieldType;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
+import static gov.anl.aps.cdb.portal.model.db.entities.CdbEntity.VALUE_CABLE_END_1;
+import static gov.anl.aps.cdb.portal.model.db.entities.CdbEntity.VALUE_CABLE_END_2;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign.CABLE_DESIGN_INTERNAL_PROPERTY_TYPE;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -403,6 +407,81 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
 
         cdItem.setAssignedItem(newAssignment);
         cdItem.setIsHoused(isInstalled);
+    }
+
+    @Override
+    public ItemDomainCableDesign completeClone(ItemDomainCableDesign clonedItem, Integer cloningFromItemId, UserInfo user, boolean cloneProperties, boolean cloneSources, boolean cloneCreateItemElementPlaceholders) {
+        clonedItem = super.completeClone(clonedItem, cloningFromItemId, user, cloneProperties, cloneSources, cloneCreateItemElementPlaceholders);
+
+        ItemDomainCableDesign cloningFrom = findById(cloningFromItemId);
+
+        // Clone primary endpoints
+        ItemElementRelationship primaryEnd1 = cloningFrom.getPrimaryRelationshipForCableEnd(VALUE_CABLE_END_1);
+        ItemElementRelationship primaryEnd2 = cloningFrom.getPrimaryRelationshipForCableEnd(VALUE_CABLE_END_2);
+
+        if (primaryEnd1 != null) {
+            ItemDomainMachineDesign end1Machine = (ItemDomainMachineDesign) primaryEnd1.getFirstItem();
+            ItemConnector end1Port = primaryEnd1.getFirstItemConnector();
+            ItemConnector end1CableConnector = primaryEnd1.getSecondItemConnector();
+
+            // Find corresponding connector on cloned item
+            ItemConnector clonedEnd1CableConnector = null;
+            if (end1CableConnector != null) {
+                clonedEnd1CableConnector = clonedItem.getConnectorNamed(end1CableConnector.getConnectorName());
+            }
+
+            try {
+                clonedItem.setPrimaryEndpoint(end1Machine, end1Port, clonedEnd1CableConnector, VALUE_CABLE_END_1);
+            } catch (InvalidArgument ex) {
+                LOGGER.error(ex);
+            }
+        }
+
+        if (primaryEnd2 != null) {
+            ItemDomainMachineDesign end2Machine = (ItemDomainMachineDesign) primaryEnd2.getFirstItem();
+            ItemConnector end2Port = primaryEnd2.getFirstItemConnector();
+            ItemConnector end2CableConnector = primaryEnd2.getSecondItemConnector();
+
+            // Find corresponding connector on cloned item
+            ItemConnector clonedEnd2CableConnector = null;
+            if (end2CableConnector != null) {
+                clonedEnd2CableConnector = clonedItem.getConnectorNamed(end2CableConnector.getConnectorName());
+            }
+
+            try {
+                clonedItem.setPrimaryEndpoint(end2Machine, end2Port, clonedEnd2CableConnector, VALUE_CABLE_END_2);
+            } catch (InvalidArgument ex) {
+                LOGGER.error(ex);
+            }
+        }
+
+        // Clone cable endpoints
+        List<ItemElementRelationship> cableEndpoints = ItemUtility.getItemRelationshipList(
+                cloningFrom,
+                ItemElementRelationshipTypeNames.itemCableConnection.getValue(),
+                false);
+
+        for (ItemElementRelationship originalRelationship : cableEndpoints) {
+            // Skip if this is a primary relationship that was already cloned
+            if ((originalRelationship.equals(primaryEnd1) || originalRelationship.equals(primaryEnd2))) {
+                continue;
+            }
+
+            ItemDomainMachineDesign machineDesign = (ItemDomainMachineDesign) originalRelationship.getFirstItem();
+            ItemConnector endpointConnector = originalRelationship.getFirstItemConnector();
+            ItemConnector cableConnector = originalRelationship.getSecondItemConnector();
+            String cableEndDesignation = originalRelationship.getCableEndDesignation();
+
+            // Find the corresponding cable connector on the cloned item
+            ItemConnector clonedCableConnector = cableConnector;
+            if (cableConnector != null) {
+                clonedCableConnector = clonedItem.getConnectorNamed(cableConnector.getConnectorName());
+            }
+
+            clonedItem.addCableRelationship(machineDesign, endpointConnector, clonedCableConnector, cableEndDesignation, false);
+        }
+
+        return clonedItem;
     }
 
 }
