@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+
+    <ui:param name="metadataKey" value="#{metadataField.key}"/>
+    <ui:param name="metadataLabel" value="#{metadataField.label}"/>
+    <ui:param name="metadataType" value="#{metadataField.typeString}"/>
+    <ui:param name="metadataDescription" value="#{metadataField.description}"/>
+    <ui:param name="metadataValue" value="#{itemMetadataObject[metadataKey]}"/>
+    <ui:param name="emptyValue" value="#{empty metadataValue}"/>
+    <ui:param name="urlType" value="#{metadataType == 'url'}"/>
+    <ui:param name="urlListType" value="#{metadataType == 'urlList'}"/>
+
+    <h:outputLabel for="#{metadataKey}#{viewName}" 
+                   value="#{metadataLabel}" 
+                   styleClass="entityDataLabel"
+                   title="#{metadataDescription}"/>
+
+    <p:inplace id="#{metadataKey}#{viewName}" 
+               widgetVar="#{metadataKey}#{viewName}Widget"
+               editor="#{isEntityWriteable}"                
+               toggleable="false"
+               styleClass="entityDataText">
+        <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
+        <f:facet name="output">
+            <p:outputPanel styleClass="inlineFlexOutputPanel">
+                <p:commandLink id="#{metadataKey}EditShowButton"
+                               styleClass="fa-link-icon fa-icon fa fa-pencil"
+                               onclick="PF('#{metadataKey}#{viewName}Widget').show();"
+                               rendered="#{isEntityWriteable}">
+                    <p:tooltip for="#{metadataKey}EditShowButton"
+                               value="Edit #{metadataLabel}" />
+                </p:commandLink>
+
+                <c:if test="#{not urlListType}">
+                    <h:outputText value="#{metadataValue}" 
+                                  title="#{metadataLabel}" 
+                                  rendered="#{emptyValue or not urlType}"
+                                  styleClass="entityDataText" />
+                    <h:outputLink value="#{metadataValue}"
+                                  target="_blank"
+                                  rendered="#{urlType and not emptyValue}">
+                        "#{entityController.prepareLinkDisplay(metadataValue)}"
+                    </h:outputLink>
+                </c:if>
+
+                <c:if test="#{urlListType}">
+                    <ui:param name="urlList" 
+                              value="#{entityController.getMetadataUrlList(metadataValue)}"/>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <c:forEach items="#{urlList}"
+                                           var="url"
+                                           varStatus="loop">
+                                    <td>
+                                        <h:outputLink value="#{url}"
+                                                      target="_blank">
+                                            "#{entityController.prepareLinkDisplay(url)}"
+                                        </h:outputLink>
+                                    </td>
+                                </c:forEach>
+                            </tr>
+                        </tbody>
+                    </table>
+                </c:if>
+
+            </p:outputPanel>
+        </f:facet>
+        <f:facet name="input">
+            <ui:include src="coreMetadataPropertyEditValue.xhtml" /> 
+        </f:facet>
+    </p:inplace>
+
+</ui:composition>

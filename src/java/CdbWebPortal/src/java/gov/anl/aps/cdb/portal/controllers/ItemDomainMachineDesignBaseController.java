@@ -11,7 +11,6 @@ import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
-import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineAssignTemplate;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineHierarchy;
@@ -19,7 +18,6 @@ import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineI
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineTemplateInstantiation;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignBaseTreeNode;
-import gov.anl.aps.cdb.portal.model.ItemGenericLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
@@ -64,10 +62,12 @@ import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizardClient;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidWarningInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.WarningInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import static gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode.CONNECTOR_NODE_TYPE;
+import gov.anl.aps.cdb.portal.model.ItemLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainApp;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
@@ -76,10 +76,9 @@ import java.io.IOException;
 /**
  *
  * @author djarosz
- * @param <ItemDomainMachineTreeNode>
  */
-public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode extends ItemDomainMachineDesignBaseTreeNode, controllerUtility extends ItemDomainMachineDesignBaseControllerUtility>
-        extends ItemController<controllerUtility, ItemDomainMachineDesign, ItemDomainMachineDesignFacade, ItemDomainMachineDesignSettings, ItemGenericLazyDataModel>
+public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode extends ItemDomainMachineDesignBaseTreeNode, controllerUtility extends ItemDomainMachineDesignBaseControllerUtility, LazyDataModel extends ItemLazyDataModel, ItemDomainMachineDesignSettings extends ItemSettings>
+        extends ItemController<controllerUtility, ItemDomainMachineDesign, ItemDomainMachineDesignFacade, ItemDomainMachineDesignSettings, LazyDataModel>
         implements CableWizardClient {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignBaseController.class.getName());
@@ -87,7 +86,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     private final static String URL_PARAM_DETAIL_MODE = "detail";
     private final static String URL_PARAM_EXPAND_MODE = "expand";
     private final static String URL_PARAM_DETAIL_MODE_SWITCHVAL = "switch";
-    
+
     private final static String ASSIGN_ITEM_DEFAULT_DOMAIN = "catalog";
     private final static String ASSIGN_ITEM_APP_DOMAIN = "app";
 
@@ -97,7 +96,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignDetailsViewSections";
 
     private TreeNode searchResultsTreeNode;
-    
+
     // <editor-fold defaultstate="collapsed" desc="Unassign from template variables">
     private TreeNode unassignMachineTemplateNode = null;
     private List<TreeNode> selectedUnassignTemplateNodes;
@@ -122,14 +121,14 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     private boolean displayAddMDFromTemplateConfigurationPanel = true;
     private boolean displayAddMDMoveExistingConfigurationPanel = true;
     private boolean displayAddCatalogItemListConfigurationPanel = true;
-    private boolean displayAssignCatalogItemListConfigurationPanel = true;    
+    private boolean displayAssignCatalogItemListConfigurationPanel = true;
     private boolean displayAssignInventoryItemListConfigurationPanel = true;
     private boolean displayUpdateInstalledInventoryStateDialogContents = true;
-    private boolean displayUpdateInstalledItemQridDialogContents = true; 
+    private boolean displayUpdateInstalledItemQridDialogContents = true;
     private boolean displayAttachTemplateToMachine = true;
     private boolean displayMachineDesignReorderOverlayPanel = true;
-        
-    private String assignItemDomainSelection = null; 
+
+    private String assignItemDomainSelection = null;
 
     private List<ItemDomainCatalog> catalogItemsDraggedAsChildren = null;
     private TreeNode newCatalogItemsInMachineDesignModel = null;
@@ -205,9 +204,9 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     @EJB
     ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
-    
+
     @EJB
-    ItemFacade itemFacade; 
+    ItemFacade itemFacade;
 
     public boolean isItemInventory(Item item) {
         return item instanceof ItemDomainInventory;
@@ -216,7 +215,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     public boolean isItemCatalog(Item item) {
         return item instanceof ItemDomainCatalog;
     }
-    
+
     public boolean isItemApp(Item item) {
         return item instanceof ItemDomainApp;
     }
@@ -235,6 +234,10 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         }
 
         return false;
+    }
+
+    public boolean isItemMachineDesignAndIOC(Item item) {
+        return isMachineDesignAndEntityType(item, EntityTypeName.ioc);
     }
 
     public boolean isItemMachineDesignAndPower(Item item) {
@@ -277,6 +280,8 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             return PortalStyles.machineDesignControlIcon.getValue();
         } else if (isItemMachineDesignAndPower(item)) {
             return PortalStyles.machineDesignPowerIcon.getValue();
+        } else if (isItemMachineDesignAndIOC(item)) {
+            return PortalStyles.machineDesignIOCIcon.getValue();
         } else {
             return item.getDomain().getDomainRepIcon();
         }
@@ -298,24 +303,19 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     }
 
     @Override
-    public ItemGenericLazyDataModel createItemLazyDataModel() {
-        return new ItemGenericLazyDataModel(getEntityDbFacade(), getDefaultDomain(), settingObject);
-    }
-
-    @Override
     public void resetListDataModel() {
         super.resetListDataModel();
         currentMachineDesignListRootTreeNode = null;
         machineDesignTemplateRootTreeNode = null;
         machineDesignTreeRootTreeNode = null;
-        favoriteMachineDesignTreeRootTreeNode = null;        
-        unassignMachineTemplateNode = null; 
-        selectedUnassignTemplateNodes = null; 
+        favoriteMachineDesignTreeRootTreeNode = null;
+        unassignMachineTemplateNode = null;
+        selectedUnassignTemplateNodes = null;
     }
     // </editor-fold>   
-    
+
     // <editor-fold defaultstate="collapsed" desc="Unassign from template implementation">   
-        public void prepareUnassignMachineTemplate() {
+    public void prepareUnassignMachineTemplate() {
         ItemElement selectedItemElement = getItemElementFromSelectedItemInTreeTable();
         unassignMachineTemplateNode = new DefaultTreeNode();
         TreeNode child = new DefaultTreeNode(selectedItemElement);
@@ -325,29 +325,29 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         generateUnassignTree(child);
     }
 
-    public void unassignMachineTemplateForSelection() {                
+    public void unassignMachineTemplateForSelection() {
         UserInfo user = SessionUtility.getUser();
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
-        List<ItemElement> machineElements = new ArrayList<>(); 
+        List<ItemElement> machineElements = new ArrayList<>();
         boolean proceedWithUpdate = true;
 
         for (TreeNode selectedNode : selectedUnassignTemplateNodes) {
             ItemElement element = (ItemElement) selectedNode.getData();
-            ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) element.getContainedItem();            
-            
-            if (sessionRole != CdbRole.ADMIN) { 
+            ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) element.getContainedItem();
+
+            if (sessionRole != CdbRole.ADMIN) {
                 if (!AuthorizationUtility.isEntityWriteableByUser(containedItem, user)) {
                     proceedWithUpdate = false;
                     SessionUtility.addErrorMessage("Error", "Cannot proceed with update. User does not have permission to item %s " + containedItem.toString());
-                    break; 
+                    break;
                 }
-            }    
-            machineElements.add(element); 
+            }
+            machineElements.add(element);
         }
-                
+
         if (proceedWithUpdate) {
             try {
-                getControllerUtility().unassignMachineTemplate(machineElements, user);                
+                getControllerUtility().unassignMachineTemplate(machineElements, user);
             } catch (CdbException ex) {
                 SessionUtility.addErrorMessage("Error", "Could not delete item relationships: " + ex.getMessage());
             }
@@ -391,6 +391,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     public void setSelectedUnassignTemplateNodes(List<TreeNode> selectedUnassignTemplateNodes) {
         this.selectedUnassignTemplateNodes = selectedUnassignTemplateNodes;
     }
+
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Dual list view configuration implementation ">   
     public MachineTreeNode getCurrentMachineDesignListRootTreeNode() {
@@ -639,9 +640,9 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
      */
     public String listForCurrentEntity() {
         ItemDomainMachineDesign current = getCurrent();
-        return listForEntity(current); 
+        return listForEntity(current);
     }
-    
+
     public static String listForEntity(ItemDomainMachineDesign machine) {
         return "list?id=" + machine.getId() + "&faces-redirect=true";
     }
@@ -703,14 +704,14 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         displayAssignCatalogItemListConfigurationPanel = false;
         displayAssignInventoryItemListConfigurationPanel = false;
         displayUpdateInstalledInventoryStateDialogContents = false;
-        displayUpdateInstalledItemQridDialogContents = false; 
+        displayUpdateInstalledItemQridDialogContents = false;
         displayAttachTemplateToMachine = false;
         displayMachineDesignReorderOverlayPanel = false;
         catalogItemsDraggedAsChildren = null;
         newCatalogItemsInMachineDesignModel = null;
         currentMachineDesignListRootTreeNode = null;
-        
-        assignItemDomainSelection = ASSIGN_ITEM_DEFAULT_DOMAIN; 
+
+        assignItemDomainSelection = ASSIGN_ITEM_DEFAULT_DOMAIN;
     }
 
     public void prepareAddPlaceholder() {
@@ -1020,123 +1021,123 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         resetListConfigurationVariables();
         expandToSelectedTreeNodeAndSelect();
     }
-    
+
     public void preapreUpdateInstalledQrId(ItemDomainMachineDesign machine, String onSuccess) {
         // Verify permission to item 
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        if (sessionRole != CdbRole.ADMIN) { 
-            if (!AuthorizationUtility.isEntityWriteableByUser(machine, sessionUser)) {                
+        if (sessionRole != CdbRole.ADMIN) {
+            if (!AuthorizationUtility.isEntityWriteableByUser(machine, sessionUser)) {
                 SessionUtility.addErrorMessage("Error", "Cannot proceed with update. User does not have permission to item " + machine.toString());
-                return; 
-            }                
+                return;
+            }
         }
-        
-        displayUpdateInstalledItemQridDialogContents = true; 
+
+        displayUpdateInstalledItemQridDialogContents = true;
         machine.setQrIdForAssignedItem(null);
         setCurrent(machine);
         SessionUtility.executeRemoteCommand(onSuccess);
     }
-    
+
     public String updateInstalledQrId(String failRemoteCommand) {
         ItemDomainMachineDesign current = getCurrent();
-        String qrIdForAssignedItem = current.getQrIdForAssignedItem();                
-        
-        Item newAssignedItem = null; 
-        boolean update = false; 
-        
+        String qrIdForAssignedItem = current.getQrIdForAssignedItem();
+
+        Item newAssignedItem = null;
+        boolean update = false;
+
         // Blank input
         if (qrIdForAssignedItem == null || qrIdForAssignedItem.isEmpty()) {
             Item assignedItem = current.getAssignedItem();
             if (assignedItem instanceof ItemDomainInventory) {
-                newAssignedItem = assignedItem.getDerivedFromItem(); 
-                update = true; 
+                newAssignedItem = assignedItem.getDerivedFromItem();
+                update = true;
             }
         } else {
             // QRID entered 
-            Integer qrid = null; 
-            qrIdForAssignedItem = qrIdForAssignedItem.toLowerCase(); 
+            Integer qrid = null;
+            qrIdForAssignedItem = qrIdForAssignedItem.toLowerCase();
             if (qrIdForAssignedItem.contains("qrid=")) {
-                qrIdForAssignedItem = qrIdForAssignedItem.split("qrid=")[1]; 
-            } 
+                qrIdForAssignedItem = qrIdForAssignedItem.split("qrid=")[1];
+            }
             try {
-                qrid = Integer.valueOf(qrIdForAssignedItem); 
+                qrid = Integer.valueOf(qrIdForAssignedItem);
             } catch (NumberFormatException ex) {
                 SessionUtility.addErrorMessage("Parse Error", "Cannot extract qrid from '" + qrIdForAssignedItem + "'");
                 SessionUtility.executeRemoteCommand(failRemoteCommand);
-                return null; 
+                return null;
             }
-            
+
             if (qrid != null) {
                 Item scannedItem = itemFacade.findByQrId(qrid);
                 if (scannedItem instanceof ItemDomainInventory) {
                     Item assignedItem = current.getAssignedItem();
                     if (assignedItem == null) {
-                        newAssignedItem = scannedItem; 
-                        update = true; 
+                        newAssignedItem = scannedItem;
+                        update = true;
                     } else {
-                        Item catalogItem = null; 
+                        Item catalogItem = null;
                         if (assignedItem instanceof ItemDomainInventory) {
-                            catalogItem = assignedItem.getDerivedFromItem(); 
+                            catalogItem = assignedItem.getDerivedFromItem();
                         } else if (assignedItem instanceof ItemDomainCatalog) {
-                            catalogItem = assignedItem; 
+                            catalogItem = assignedItem;
                         }
-                        
+
                         if (catalogItem != null) {
-                             Item qridCatalog = scannedItem.getDerivedFromItem();
-                             if (!qridCatalog.equals(catalogItem)) {
+                            Item qridCatalog = scannedItem.getDerivedFromItem();
+                            if (!qridCatalog.equals(catalogItem)) {
                                 SessionUtility.addErrorMessage("Cannot update", "Inventory must be of type " + catalogItem.toString());
                                 SessionUtility.executeRemoteCommand(failRemoteCommand);
-                                return null; 
-                             } else {
-                                 newAssignedItem = scannedItem; 
-                                 update = true; 
-                             }
+                                return null;
+                            } else {
+                                newAssignedItem = scannedItem;
+                                update = true;
+                            }
                         } else {
                             SessionUtility.addErrorMessage("Cannot update", "Only inventory qrids are supported.");
                             SessionUtility.executeRemoteCommand(failRemoteCommand);
-                            return null; 
-                        }                        
+                            return null;
+                        }
                     }
                 } else {
                     SessionUtility.addErrorMessage("Cannot update", "Only inventory qrids are supported.");
                     SessionUtility.executeRemoteCommand(failRemoteCommand);
-                    return null; 
-                }                                
-            }            
+                    return null;
+                }
+            }
         }
-        
+
         if (update) {
             UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
             controllerUtility cu = getControllerUtility();
             try {
                 cu.updateAssignedItem(current, newAssignedItem, sessionUser);
-                update(); 
+                update();
             } catch (CdbException ex) {
                 SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
-            }            
-        }                
-        
-        displayUpdateInstalledItemQridDialogContents = false;     
-        
+            }
+        }
+
+        displayUpdateInstalledItemQridDialogContents = false;
+
         if (isCurrentViewIdView()) {
-            return viewForCurrentEntity(); 
+            return viewForCurrentEntity();
         }
         if (isCurrentViewIdListView()) {
-            return listViewForCurrentEntity(); 
+            return listViewForCurrentEntity();
         }
-        
+
         return listForCurrentEntity();
     }
-    
-    private boolean isCurrentViewIdView() {        
-        String currentViewId = SessionUtility.getCurrentViewId();        
-        return currentViewId.contains("/view.xhtml");        
+
+    private boolean isCurrentViewIdView() {
+        String currentViewId = SessionUtility.getCurrentViewId();
+        return currentViewId.contains("/view.xhtml");
     }
-    
-    private boolean isCurrentViewIdListView() {        
-        String currentViewId = SessionUtility.getCurrentViewId();        
-        return currentViewId.contains("/listView.xhtml");        
+
+    private boolean isCurrentViewIdListView() {
+        String currentViewId = SessionUtility.getCurrentViewId();
+        return currentViewId.contains("/listView.xhtml");
     }
 
     public void prepareAssignInventoryMachineDesignListConfiguration() {
@@ -1543,9 +1544,9 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         displayListConfigurationView = true;
         displayAssignCatalogItemListConfigurationPanel = true;
     }
-    
+
     public boolean isAssignApp() {
-        return assignItemDomainSelection.equals(ASSIGN_ITEM_APP_DOMAIN); 
+        return assignItemDomainSelection.equals(ASSIGN_ITEM_APP_DOMAIN);
     }
 
     public String completeAssignCatalogListConfiguration() {
@@ -2293,7 +2294,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             reassignTemplateVarsForSelectedMdCreatedFromTemplateRecursivelly(containedItem, itemsToUpdate);
         }
     }
-        
+
     public void generateTemplateVarsForSelectedMdCreatedFromTemplate() {
         ItemDomainMachineDesign selectedItem = getItemFromSelectedItemInTreeTable();
 
@@ -2605,12 +2606,14 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             return;
         }
 
+        ItemDomainMachineDesign current = getCurrent();
+
         if (mode == null || !mode.equals(URL_PARAM_DETAIL_MODE_SWITCHVAL)) {
-            // Check if last page was machine design listView if yes then redirect to list view. 
+            // Check if last page was machine design listView if yes then redirect to list view.
             String referrerViewId = SessionUtility.getReferrerViewId();
             String entityViewsDirectory = getDomainPath();
             String listViewPath = entityViewsDirectory + "/listView";
-            if (referrerViewId != null && referrerViewId.startsWith(listViewPath)) {
+            if (referrerViewId != null && referrerViewId.startsWith(listViewPath) && listViewValidForEntity(current)) {
                 // Retain listView. 
                 String listViewForCurrentEntity = listViewForCurrentEntity();
                 try {
@@ -2623,10 +2626,16 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             }
         }
 
-        ItemDomainMachineDesign current = getCurrent();
         if (current != null) {
             currentViewIsTemplate = isItemMachineDesignAndTemplate(current);
         }
+    }
+
+    protected boolean listViewValidForEntity(ItemDomainMachineDesign item) {
+        if (item == null) {
+            return false;
+        }
+        return item.getEntityTypeList().isEmpty();
     }
 
     /**
@@ -2643,6 +2652,13 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             ItemDomainMachineDesign item = findById(idParam);
             if (item != null) {
                 setCurrent(item);
+
+                if (!listViewValidForEntity(item)) {
+                    SessionUtility.addInfoMessage("Redirect", "Redirected to view. Not supported for " + item.getEntityTypeString());
+                    String redirect = prepareView(item);
+                    SessionUtility.navigateTo(redirect);
+                    return;
+                }
 
                 // Cannot only show favorites when specific node is selected by id.
                 favoritesShown = false;
@@ -3480,9 +3496,9 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
                 SessionUtility.addErrorMessage("Represented Parent", "Parent item is represented by another assembly part, cannot link another level of representation.");
                 return;
             }
-            
+
             Item assignedItem = parentMachineDesign.getAssignedItem();
-                        
+
             if (assignedItem != null && assignedItem.getItemElementDisplayList().size() != 0) {
                 elementsAvaiableForNodeRepresentation = controllerUtility.fetchElementsAvaiableForNodeRepresentation(current);
             } else {

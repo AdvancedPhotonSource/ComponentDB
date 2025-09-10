@@ -15,7 +15,6 @@ import gov.anl.aps.cdb.portal.model.ItemGenericLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;

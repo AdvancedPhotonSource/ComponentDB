@@ -121,7 +121,7 @@ See LICENSE file.
                 <h:outputText value="#{logObject.text}"/>
             </f:facet>
             <f:facet name="input">
-                <h:inputTextarea id="logEntry" value="#{logObject.text}"/>
+                <p:inputTextarea id="logEntry" value="#{logObject.text}" autoResize="false"/>
                 <p:tooltip for="logEntry" value="Enter log entry text."/>
             </f:facet>
         </p:cellEditor>

@@ -11,39 +11,7 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <h:outputLabel for="ownerUserInplace" value="Owner User" styleClass="entityDataLabel"/>
-    <p:inplace id="ownerUserInplace" 
-               widgetVar="ownerUserWidget"
-               editor="#{isEntityWriteable}" 
-               toggleable="false">
-        <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
-        <p:ajax event="cancel" oncomplete="reloadEntityInfoOwnerUser()"/>
-
-        <f:facet name="output">
-            <p:outputPanel>
-                <p:commandLink id="ownerUserEditShowButton"
-                               styleClass="fa-link-icon fa-icon fa fa-pencil"
-                               onclick="PF('ownerUserWidget').show();"
-                               rendered="#{isEntityWriteable}"/>
-                <h:outputText value="#{entityInfoObject.ownerUserDisplayName}" title="Owner User" styleClass="entityDataText" />
-            </p:outputPanel>
-        </f:facet>
-
-        <f:facet name="input">
-            <p:remoteCommand name="reloadEntityInfoOwnerUser"
-                             action="#{entityController.reloadCurrent()}"
-                             update="ownerUserInplace"
-                             />
-            <p:selectOneMenu rendered="#{entityInfoObject != null}" 
-                             value="#{entityInfoObject.ownerUser}" 
-                             converter="userInfoConverter"
-                             styleClass="entityDataText">
-                <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-                <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
-            </p:selectOneMenu>
-            <p:message for="ownerUserInplace"/>
-            <p:tooltip for="ownerUserInplace" value="Owner user has the ability to modify this entity."/>
-        </f:facet>
-    </p:inplace>
+    <ui:include src="templateDefaults/entityInfoFieldViewValues/ownerUserViewObject.xhtml" /> 
 
     <h:outputLabel for="ownerGroupInplace" value="Owner Group" styleClass="entityDataLabel"/>
     <p:inplace id="ownerGroupInplace" 
@@ -55,7 +23,7 @@ See LICENSE file.
         <p:ajax event="cancel" oncomplete="reloadEntityInfoOwnerGroup()"/>
 
         <f:facet name="output">
-            <p:outputPanel>
+            <p:outputPanel styleClass="inlineFlexOutputPanel">
                 <p:commandLink id="ownerGroupEditShowButton"
                                styleClass="fa-link-icon fa-icon fa fa-pencil"
                                onclick="PF('ownerGroupWidget').show();"
@@ -105,7 +73,7 @@ See LICENSE file.
         <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
 
         <f:facet name="output">
-            <p:outputPanel>
+            <p:outputPanel styleClass="inlineFlexOutputPanel">
                 <p:commandLink id="groupWriteableEditShowButton"
                                styleClass="fa-link-icon fa-icon fa fa-pencil"
                                onclick="PF('groupWriteableWidget').show();"

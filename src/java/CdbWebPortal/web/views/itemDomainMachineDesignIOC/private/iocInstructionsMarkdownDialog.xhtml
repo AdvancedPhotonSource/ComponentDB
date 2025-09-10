@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="../../propertyValue/private/template/propertyValueMarkdownValueDialogTemplate.xhtml">
+
+    <ui:define name="propertyValueMarkdownValueDialogUiParams">
+        <ui:param name="propertyValueMarkdownValueDialogId" value="iocBootInstructionsMarkdownDialog" />
+        <ui:param name="propertyValueMarkdownValueDialogWidgetVar"
+                  value="#{propertyValueMarkdownValueDialogId}Widget" />
+        <ui:param name="viewId" value="ioc" />
+
+        <ui:param name="dialogTitle" value="IOC Dialog" />
+    </ui:define>
+
+    <ui:define name="editTabContents">
+        <ui:param name="itemMetadataObject" value="#{itemObject.itemMetadataObject}" />
+
+        <h3>Preboot</h3>
+        <p:inputTextarea id="markdownPropertyTextareaEditPrebootMarkdown" value="#{itemMetadataObject.preBoot}"
+                         style="width: 100%" placeholder="#{itemDomainMachineDesignIOCController.PRE_BOOT_PLACEHOLDER_TEXT}" rows="5" />
+
+        <h3>Postboot</h3>
+        <p:inputTextarea id="markdownPropertyTextareaEditPostBootMarkdown" value="#{itemMetadataObject.postBoot}"
+                         style="width: 100%" placeholder="#{itemDomainMachineDesignIOCController.POST_BOOT_PLACEHOLDER_TEXT}" rows="5" />
+
+        <h3>Powercycle</h3>
+        <p:inputTextarea id="markdownPropertyTextareaEditPowercycleMarkdown" value="#{itemMetadataObject.powerCycle}"
+                         style="width: 100%" placeholder="#{itemDomainMachineDesignIOCController.POWER_CYCLE_PLACEHOLDER_TEXT}" rows="5" />
+
+        <h3>Additional Markdown</h3>
+        <p:inputTextarea id="markdownPropertyTextareaEditAdditionalIocMarkdown"
+                         value="#{itemMetadataObject.additionalMd}" style="width: 100%"
+                         placeholder="#{facesUtility.markdownPlaceholderText}" rows="15" />
+
+        <p:commandLink value="Markdown Help" onclick="PF('commonMarkdownHelpDialogWidget').hide();
+                PF('commonMarkdownHelpDialogWidget').show()" />
+
+        <p:remoteCommand name="submitCurrentMarkdownPropertyTextareaEdit"
+                         update="markdownPropertyTextareaEditPrebootMarkdown markdownPropertyTextareaEditPostBootMarkdown markdownPropertyTextareaEditPowercycleMarkdown markdownPropertyTextareaEditAdditionalIocMarkdown"
+                         process="markdownPropertyTextareaEditPrebootMarkdown markdownPropertyTextareaEditPostBootMarkdown markdownPropertyTextareaEditPowercycleMarkdown markdownPropertyTextareaEditAdditionalIocMarkdown"
+                         oncomplete="generateUpdatedInstructionsMarkdown()" />
+
+        <p:remoteCommand name="propertyValueMarkdownValueUpdateItemPrepare"
+                         action="#{itemMetadataObject.generateUpdatedInstructionsMarkdown()}"
+                         oncomplete="propertyValueMarkdownValueUpdateItem()" />
+
+        <p:remoteCommand name="generateUpdatedInstructionsMarkdown"
+                         action="#{itemMetadataObject.generateUpdatedInstructionsMarkdown()}"
+                         oncomplete="reloadPropertyMarkdownEditPreviewTab()" />
+    </ui:define>
+
+    <ui:define name="uploadFileToMarkdown" />
+
+</ui:composition>

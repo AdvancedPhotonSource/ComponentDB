@@ -51,4 +51,11 @@ See LICENSE file.
         <ui:include src="../itemDerivedEditList.xhtml" />
     </ui:define>
 
+    <ui:define name="additionalEditItemContentTemplateUse">
+        <ui:include src="../../../propertyValue/private/propertyValueMarkdownValueDialog.xhtml">
+            <ui:param name="isEntityWriteable" value="#{true}" />
+        </ui:include>
+    </ui:define>
+
+
 </ui:composition>
