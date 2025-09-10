@@ -1451,6 +1451,7 @@ public abstract class ItemController<
             clonedItem = (ItemDomainEntity) (entity.clone(user, firstGroup, cloneProperties, cloneSources, cloneCreateItemElementPlaceholders));
         } catch (CloneNotSupportedException ex) {
             LOGGER.error("Object cannot be cloned: " + ex);
+            SessionUtility.addErrorMessage("Cannot Clone", ex.getMessage());
             clonedItem = createEntityInstance();
         }
         return clonedItem;
