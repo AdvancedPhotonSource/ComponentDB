@@ -1507,4 +1507,86 @@ public class ItemDomainCableDesign extends Item {
         return searchResult;
     }
 
+    @Override
+    public Item clone(UserInfo ownerUser, UserGroup ownerGroup, boolean cloneProperties, boolean cloneSources, boolean cloneCreateItemElementPlaceholders) throws CloneNotSupportedException {
+        ItemDomainCableDesign clonedItem = (ItemDomainCableDesign) super.clone(ownerUser, ownerGroup, cloneProperties, cloneSources, cloneCreateItemElementPlaceholders);
+
+        try {
+            // Clone core metadata fields
+            if (this.getExternalCableName() != null) {
+                clonedItem.setExternalCableName(this.getExternalCableName());
+            }
+            if (this.getImportCableId() != null) {
+                clonedItem.setImportCableId(this.getImportCableId());
+            }
+            if (this.getAlternateCableId() != null) {
+                clonedItem.setAlternateCableId(this.getAlternateCableId());
+            }
+            if (this.getLaying() != null) {
+                clonedItem.setLaying(this.getLaying());
+            }
+            if (this.getVoltage() != null) {
+                clonedItem.setVoltage(this.getVoltage());
+            }
+            if (this.getRoutedLength() != null) {
+                clonedItem.setRoutedLength(this.getRoutedLength());
+            }
+            if (this.getRoute() != null) {
+                clonedItem.setRoute(this.getRoute());
+            }
+            if (this.getTotalReqLength() != null) {
+                clonedItem.setTotalReqLength(this.getTotalReqLength());
+            }
+            if (this.getNotes() != null) {
+                clonedItem.setNotes(this.getNotes());
+            }
+            if (this.getEndpoint1Description() != null) {
+                clonedItem.setEndpoint1Description(this.getEndpoint1Description());
+            }
+            if (this.getEndpoint1Route() != null) {
+                clonedItem.setEndpoint1Route(this.getEndpoint1Route());
+            }
+            if (this.getEndpoint1Pinlist() != null) {
+                clonedItem.setEndpoint1Pinlist(this.getEndpoint1Pinlist());
+            }
+            if (this.getEndpoint1EndLength() != null) {
+                clonedItem.setEndpoint1EndLength(this.getEndpoint1EndLength());
+            }
+            if (this.getEndpoint1Termination() != null) {
+                clonedItem.setEndpoint1Termination(this.getEndpoint1Termination());
+            }
+            if (this.getEndpoint1Notes() != null) {
+                clonedItem.setEndpoint1Notes(this.getEndpoint1Notes());
+            }
+            if (this.getEndpoint1Drawing() != null) {
+                clonedItem.setEndpoint1Drawing(this.getEndpoint1Drawing());
+            }
+            if (this.getEndpoint2Description() != null) {
+                clonedItem.setEndpoint2Description(this.getEndpoint2Description());
+            }
+            if (this.getEndpoint2Route() != null) {
+                clonedItem.setEndpoint2Route(this.getEndpoint2Route());
+            }
+            if (this.getEndpoint2Pinlist() != null) {
+                clonedItem.setEndpoint2Pinlist(this.getEndpoint2Pinlist());
+            }
+            if (this.getEndpoint2EndLength() != null) {
+                clonedItem.setEndpoint2EndLength(this.getEndpoint2EndLength());
+            }
+            if (this.getEndpoint2Termination() != null) {
+                clonedItem.setEndpoint2Termination(this.getEndpoint2Termination());
+            }
+            if (this.getEndpoint2Notes() != null) {
+                clonedItem.setEndpoint2Notes(this.getEndpoint2Notes());
+            }
+            if (this.getEndpoint2Drawing() != null) {
+                clonedItem.setEndpoint2Drawing(this.getEndpoint2Drawing());
+            }
+        } catch (CdbException e) {
+            throw new CloneNotSupportedException("Failed to clone core metadata fields: " + e.getMessage());
+        }
+
+        return clonedItem;
+    }
+
 }
