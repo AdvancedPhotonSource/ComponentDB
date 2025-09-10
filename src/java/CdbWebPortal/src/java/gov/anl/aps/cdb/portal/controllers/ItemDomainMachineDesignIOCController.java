@@ -135,6 +135,14 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
     }
 
     @Override
+    public String prepareClone(ItemDomainMachineDesign entity) {
+        // Reset variables
+        parentMachineSelectionTreeNode = null;
+
+        return super.prepareClone(entity);
+    }
+
+    @Override
     public String prepareCreate() {
         // Reset variables
         parentMachineSelectionTreeNode = null;
