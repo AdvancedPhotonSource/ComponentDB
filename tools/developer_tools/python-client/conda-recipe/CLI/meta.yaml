@@ -1,5 +1,5 @@
 {% set name = "ComponentDB-CLI" %}
-{% set version = "3.16.2" %}
+{% set version = "3.17.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -9,7 +9,7 @@ source:
   path: ..
 
 build:
-  number: 0
+  number: 1
   noarch: python  
   script: {{ PYTHON }} -m pip install . --no-deps
 
@@ -26,7 +26,6 @@ requirements:
     - click
     - pandas
     - rich    
-    - InquirerPy
     - paho-mqtt    
     - componentdb-api=={{ version }}
 

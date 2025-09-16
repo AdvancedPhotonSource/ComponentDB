@@ -4,7 +4,7 @@ prettyPrint: true
 cacheTTL: 0
 openAPI:
   info:
-    version: '3.16.2'
+    version: '3.17.0'
     title: Component Database API
     description: 'The API that provides access to Component Database data.'
     contact:
