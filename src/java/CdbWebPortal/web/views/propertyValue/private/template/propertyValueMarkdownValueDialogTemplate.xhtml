@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:insert name="propertyValueMarkdownValueDialogUiParams">
+        <ui:param name="propertyValueMarkdownValueDialogId" value="propertyValueMarkdownValueDialog" /> 
+        <ui:param name="propertyValueMarkdownValueDialogWidgetVar" value="#{propertyValueMarkdownValueDialogId}Widget" />   
+
+        <ui:param name="dialogTitle" value="123"/> 
+    </ui:insert>
+
+    <p:dialog id="#{propertyValueMarkdownValueDialogId}"
+              widgetVar="#{propertyValueMarkdownValueDialogWidgetVar}"
+              width="80vw"
+              height="80vh"
+              maximizable="true"
+              modal="true" >
+
+        <ui:param name="propertyValueObject"
+                  value="#{propertyValueController.current}"/> 
+
+        <f:facet name="header">
+            #{propertyValueObject.value}
+        </f:facet> 
+
+        <f:facet name="footer">
+            <p:outputPanel id="propertyValueMarkdownValueDialogFooter#{viewId}"
+                           style="display: inline-block">                
+                <p:panelGrid id="markdownEditFileUploadPanelGrid#{viewId}"
+                             columns="2"
+                             rendered="#{propertyValueObject.editMode and propertyValueObject.editModeWidgets}">
+
+                    <ui:insert name="uploadFileToMarkdown">
+                        <p:outputLabel value="Upload File"/>
+                        <p:fileUpload listener="#{propertyValueMarkdownzDocumentUploadBean.handleFileUpload}"       
+                                      id="markdownAttachmentFileUpload#{viewId}"
+                                      widgetVar="markdownAttachmentFileUploadWidget"    
+                                      oncomplete="completePastedImage()"
+                                      mode="simple"
+                                      auto="true"
+                                      fileLimit="1"                              
+                                      fileLimitMessage="Only one attachment can be added per upload."/>
+                    </ui:insert>
+
+
+                    <p:outputPanel style="display: none">
+                        <p:remoteCommand name="completePastedImage"
+                                         onstart="PF('loadingDialog').show();"
+                                         process="@this"
+                                         update="lastFileReference#{viewId}"
+                                         oncomplete="PF('loadingDialog').hide(); pasteLatestFileReference();" />                        
+
+                        <h:outputText id="lastFileReference#{viewId}" value="#{propertyValueMarkdownzDocumentUploadBean.lastFileReference}" /> 
+                    </p:outputPanel>
+
+                    <p:remoteCommand autoRun="true"
+                                     action="#{propertyValueMarkdownzDocumentUploadBean.setPropertyValue(propertyValueObject)}"/>
+                </p:panelGrid>                            
+
+                <p:commandButton value="Close" 
+                                 icon="fa fa-close"
+                                 onclick="PF('commonMarkdownHelpDialogWidget').hide();
+                                         PF('#{propertyValueMarkdownValueDialogWidgetVar}').hide()"/>
+
+                <p:commandButton value="#{propertyValueObject.editMode ? 'Save' : 'Edit'}" 
+                                 icon="#{propertyValueObject.editMode ? 'fa fa-save' : 'fa fa-pencil'}"      
+                                 onclick="PF('loadingDialog').show();"
+                                 oncomplete="PF('loadingDialog').hide(); #{propertyValueObject.editMode ? 'propertyValueMarkdownValueUpdateItemPrepare()' : 'propertyValueMarkdownValuePrepareEdit()'}"
+                                 rendered="#{isEntityWriteable}"
+                                 update="propertyValueMarkdownValueDialogFooter#{viewId} propertyValueMarkdownValueDialogContent#{viewId}">
+                    <f:setPropertyActionListener target="#{propertyValueObject.editMode}"
+                                                 value="#{true}" /> 
+                </p:commandButton>
+
+                <p:remoteCommand name="propertyValueMarkdownValueUpdateItem"                                 
+                                 action="#{entityController.update()}" /> 
+
+                <p:remoteCommand name="propertyValueMarkdownValuePrepareEdit"
+                                 onstart="PF('propertyValueMarkdownValueDialogWidget').initPosition(); PF('loadingDialog').hide(); " /> 
+            </p:outputPanel>
+        </f:facet>
+
+        <p:outputPanel id="propertyValueMarkdownValueDialogContent#{viewId}">                                    
+            <h:outputText escape="false" 
+                          value="#{propertyValueObject.generatedHTMLText}" styleClass="markdownGeneratedContent"
+                          rendered="#{!propertyValueObject.editMode}"/>                         
+
+            <p:tabView id="propertyValueMarkdownValueDialogEditTabView#{viewId}"
+                       widgetVar="propertyValueMarkdownValueDialogEditTabViewWidget"
+                       dynamic="true"
+                       rendered="#{propertyValueObject.editMode}">                                
+
+                <p:ajax event="tabChange" 
+                        listener="#{propertyValueController.markdownEditorTabChange}"
+                        update="@form:propertyValueMarkdownValueDialogFooter#{viewId}"
+                        onstart="submitCurrentMarkdownPropertyTextareaEdit()"
+                        oncomplete="reloadPropertyMarkdownEditPreviewTab()"/>
+
+
+                <p:tab title="Edit">
+                    <ui:insert name="editTabContents">
+
+                        <p:inputTextarea  id="markdownPropertyTextareaEdit"
+                                          value="#{propertyValueObject.text}"
+                                          style="width: 100%"
+                                          placeholder="#{facesUtility.markdownPlaceholderText}"
+                                          rows="25" /> 
+
+                        <p:commandLink value="Markdown Help"
+                                       onclick="PF('commonMarkdownHelpDialogWidget').hide();
+                                               PF('commonMarkdownHelpDialogWidget').show()" /> 
+
+                        <p:remoteCommand name="submitCurrentMarkdownPropertyTextareaEdit"
+                                         update="markdownPropertyTextareaEdit"
+                                         process="markdownPropertyTextareaEdit"/> 
+
+                        <p:remoteCommand name="propertyValueMarkdownValueUpdateItemPrepare"
+                                         oncomplete="propertyValueMarkdownValueUpdateItem()"/> 
+                    </ui:insert>
+
+                </p:tab>
+
+
+                <p:tab title="Preview"
+                       id="markdownEditPreviewTab">
+
+                    <h:outputText id="markdownEditPreviewTabOutputText"
+                                  escape="false" 
+                                  value="#{propertyValueObject.generatedHTMLText}" 
+                                  styleClass="markdownGeneratedContent"/>       
+
+                    <p:remoteCommand name="reloadPropertyMarkdownEditPreviewTab"                                                  
+                                     action="#{propertyValueController.reloadMarkdownPreview()}"
+                                     update="markdownEditPreviewTabOutputText"/> 
+                </p:tab>
+            </p:tabView>
+        </p:outputPanel>
+
+
+    </p:dialog>
+
+
+</ui:composition>
+
+

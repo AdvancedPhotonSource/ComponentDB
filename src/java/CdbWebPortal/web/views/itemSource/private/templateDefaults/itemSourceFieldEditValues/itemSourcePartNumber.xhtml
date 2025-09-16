@@ -7,13 +7,12 @@ See LICENSE file.
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                xmlns:p="http://primefaces.org/ui">
     
     <ui:param name="inputStyleClass"
               value="#{inputStyleClass != null ? inputStyleClass : 'cellInput'}"/> 
    
-    <h:inputText id="partNumber#{viewName}" value="#{itemSourceObject.partNumber}" styleClass="#{inputStyleClass}"/>
+    <p:inputText id="partNumber#{viewName}" value="#{itemSourceObject.partNumber}" styleClass="#{inputStyleClass}"/>
     <p:tooltip for="partNumber#{viewName}" value="Part number is optional."/>
     
 </ui:composition>

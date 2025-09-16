@@ -966,6 +966,20 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
 
     @Override
+    public String prepareClone(ItemDomainCableDesign entity) {
+        String redirect = super.prepareClone(entity);
+
+        ItemDomainCableDesign current = getCurrentFlash();
+
+        // Do not redirect if the clone failed.
+        if (current == null || !current.isIsCloned()) {
+            return getListPath();
+        }
+
+        return redirect;
+    }
+
+    @Override
     public String prepareCreate() {
         return prepareWizardCable();
     }

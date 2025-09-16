@@ -13,10 +13,10 @@ See LICENSE file.
     <p:panelGrid id="itemElementEditPanelGrid" columns="2" styleClass="editEntityDetails">
 
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
-        <h:inputText id="name" value="#{itemElementObject.name}" title="Name" styleClass="entityDataEmphasizedText">
+        <p:inputText id="name" value="#{itemElementObject.name}" title="Name" styleClass="entityDataEmphasizedText">
             <p:message for="name"/> 
             <p:tooltip for="name" value="Enter item element name."/>
-        </h:inputText>
+        </p:inputText>
         
         <ui:include src="templateDefaults/itemElementFieldLabels/itemElementParentItem.xhtml"/>
         <ui:include src="templateDefaults/itemElementFieldViewValues/itemElementParentItem.xhtml"/>
@@ -25,12 +25,13 @@ See LICENSE file.
         <ui:include src="templateDefaults/itemElementFieldViewValues/itemElementContainedItem.xhtml" />   
 
         <h:outputLabel for="description" value="Description" styleClass="entityDataEmphasizedLabel"/>
-        <h:inputTextarea id="description"
+        <p:inputTextarea id="description"
                          value="#{itemElementObject.description}" 
+                         autoResize="false"
                          title="Description" styleClass="entityDataText" />
                
         <h:outputLabel for="sortOrder" value="Sort Order" styleClass="entityDataEmphasizedLabel"/>
-        <h:inputText id="sortOrder" value="#{itemElementObject.sortOrder}" title="SortOrder" styleClass="entityDataEmphasizedText"/>
+        <p:inputText id="sortOrder" value="#{itemElementObject.sortOrder}" title="SortOrder" styleClass="entityDataEmphasizedText"/>
         
         <ui:include src="../../entityInfo/private/entityInfoEditObject.xhtml">
             <ui:param name="entityInfoObject" value="#{itemElementObject.entityInfo}"/>

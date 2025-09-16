@@ -26,7 +26,7 @@ See LICENSE file.
         <p:outputPanel rendered="#{!renderAllowedValuesEditPage}">
             <p:outputPanel rendered="#{propertyValueController.getPropertyEditPage(propertyValueObject) == null}"
                            styleClass="inlineOutputPanel">
-                <h:inputText id="freeFormTextValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
+                <p:inputText id="freeFormTextValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
                              rendered="#{propertyValueController.displayFreeFormTextValue(propertyValueObject)}"/>
                 <p:tooltip for="freeFormTextValue" value="Enter property value."/>
 
@@ -37,7 +37,7 @@ See LICENSE file.
                                 <p:outputLabel value="Title" />
                             </p:column>
                             <p:column>
-                                <h:inputText id="mdTitle" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"/>
+                                <p:inputText id="mdTitle" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"/>
                             </p:column>
                             <p:column>
                                 <p:tooltip for="mdTitle" value="Enter markdown title."/>
@@ -63,11 +63,11 @@ See LICENSE file.
                     </p:panelGrid>                           
                 </p:outputPanel>
 
-                <h:inputText id="GeneratedHttpLinkValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
+                <p:inputText id="GeneratedHttpLinkValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
                              rendered="#{propertyValueController.displayGeneratedHttpLinkValue(propertyValueObject)}"/>
                 <p:tooltip for="GeneratedHttpLinkValue" value="Enter identifier property value."/>
 
-                <h:inputText id="DownloadActionValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
+                <p:inputText id="DownloadActionValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
                              rendered="#{propertyValueController.displayDownloadActionValue(propertyValueObject)}" />
                 <p:tooltip for="DownloadActionValue" value="Enter identifier property value."/>              
 
@@ -89,15 +89,15 @@ See LICENSE file.
                 <p:panelGrid columns="3" 
                              rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}">
                     <p:outputLabel value="Link" />
-                    <h:inputText id="httpLinkValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"/>
+                    <p:inputText id="httpLinkValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"/>
                     <p:tooltip for="httpLinkValue" value="Enter link value."/>
 
                     <p:outputLabel value="Display Value" />
-                    <h:inputText id="httpLinkDisplayValue" value="#{propertyValueObject.displayValue}" styleClass="#{defaultStyleClass}"/>
+                    <p:inputText id="httpLinkDisplayValue" value="#{propertyValueObject.displayValue}" styleClass="#{defaultStyleClass}"/>
                     <p:tooltip for="httpLinkDisplayValue" value="Enter display value."/>
                 </p:panelGrid>
 
-                <h:inputText id="infoActionDisplayValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
+                <p:inputText id="infoActionDisplayValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
                              rendered="#{propertyValueController.displayInfoActionValue(propertyValueObject)}"/>
                 <p:tooltip for="infoActionDisplayValue" value="Enter property value."/>
 
@@ -110,7 +110,7 @@ See LICENSE file.
                         <f:setPropertyActionListener target="#{propertyValueController.current}"
                                                      value="#{propertyValueObject}" />
                     </p:commandButton>
-                    <h:inputText id="documentValue" value="#{propertyValueObject.value}"/>
+                    <p:inputText id="documentValue" value="#{propertyValueObject.value}"/>
                     <p:tooltip for="documentValue" value="Upload new document using upload action button."/>  
 
                 </p:outputPanel>

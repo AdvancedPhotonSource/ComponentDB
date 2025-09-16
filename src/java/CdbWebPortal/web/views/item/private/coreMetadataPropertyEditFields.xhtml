@@ -14,6 +14,7 @@ See LICENSE file.
 
     <p:accordionPanel multiple="true"
                       activeIndex="">
+        <ui:param name="itemMetadataObject" value="#{itemObject.itemMetadataObject}" /> 
         <c:forEach items="#{entityController.coreMetadataPropertyInfo.groupList}"
                    var="fieldGroup">
             <p:tab title="#{fieldGroup}">
@@ -32,21 +33,7 @@ See LICENSE file.
                                        title="#{metadataDescription}"/>
 
                         <p:column id="#{metadataKey}#{viewName}">
-                            <p:inputText value="#{itemObject[metadataKey]}" 
-                                         title="#{metadataLabel}" 
-                                         rendered="#{metadataType != 'url'}"
-                                         styleClass="entityDataText"/>
-                            <h:inputTextarea id="#{metadataKey}ITA#{viewName}"
-                                             value="#{itemObject[metadataKey]}" 
-                                             title="#{metadataLabel}" 
-                                             rendered="#{metadataType == 'url'}"
-                                             styleClass="entityDataText">
-                                <p:ajax event="blur" 
-                                        process="@this"
-                                        update="#{metadataKey}#{viewName}" /> 
-                            </h:inputTextarea>
-
-                            <p:message for="#{metadataKey}ITA#{viewName}" />
+                            <ui:include src="coreMetadataPropertyEditValue.xhtml" />
                         </p:column>
 
                     </c:forEach>

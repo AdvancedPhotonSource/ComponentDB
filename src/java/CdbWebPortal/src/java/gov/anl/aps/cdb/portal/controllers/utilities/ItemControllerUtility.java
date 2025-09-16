@@ -237,7 +237,11 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         return elementName;
     }
 
-    public void performPrepareEntityInsertUpdate(Item item, UserInfo userInfo) throws InvalidRequest {
+    public void performPrepareEntityInsertUpdate(Item item, UserInfo userInfo) throws InvalidRequest, CdbException {
+        if (item == null) {
+            throw new CdbException("Item is null");
+        }
+
         if (item instanceof LocatableItem) {
             LocatableItem locatableItem = (LocatableItem) item;
             LocatableItemControllerUtility locatableControllerUtility;
@@ -245,6 +249,8 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
             locatableControllerUtility.updateItemLocation(locatableItem, userInfo);
         }
         addDynamicPropertiesToItem(item, userInfo);
+
+        item.verifyAllowedValuesValidForCoreMetadata();
     }
 
     public void addDynamicPropertiesToItem(Item item, UserInfo createdByUser) {
@@ -388,6 +394,9 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
 
     protected abstract ItemDomainEntity instenciateNewItemDomainEntity();
 
+    protected void assignEntityTypeForNewInstance(ItemDomainEntity item) {
+    }
+
     @Override
     public ItemDomainEntity createEntityInstance(UserInfo sessionUser) {
         ItemDomainEntity item = instenciateNewItemDomainEntity();
@@ -399,6 +408,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         } else {
             item.init(ei);
         }
+        assignEntityTypeForNewInstance(item);
 
         // initialize core metadata if subclass uses that facility
         item.initializeCoreMetadataPropertyValue();
@@ -529,6 +539,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
             ptmList.add(ptm);
         }
         propertyType.setPropertyTypeMetadataList(ptmList);
+        propertyType.setDefaultValue(propInfo.getDefaultPropertyValue());
 
         try {
             propertyTypeControllerUtility.create(propertyType, null);
@@ -807,6 +818,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
                 PropertyValue newPropertyValue = new PropertyValue();
                 newPropertyValue.setPropertyType(propertyValue.getPropertyType());
                 newPropertyValue.setValue(propertyValue.getValue());
+                newPropertyValue.setText(propertyValue.getText());
                 newPropertyValue.setDisplayValue(propertyValue.getDisplayValue());
                 newPropertyValue.setTargetValue(propertyValue.getTargetValue());
                 newPropertyValue.setTag(propertyValue.getTag());
@@ -920,7 +932,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
 
         return parentItemList;
     }
-    
+
     public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {
         return new ItemElementConstraintInformation(itemElement);
     }

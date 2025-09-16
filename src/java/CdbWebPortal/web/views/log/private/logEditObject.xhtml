@@ -50,7 +50,7 @@ See LICENSE file.
     </p:column>
 
     <p:column sortBy="#{logObject.text}" headerText="Log Entry">
-        <h:inputTextarea id="logEntry" value="#{logObject.text}"/>
+        <p:inputTextarea id="logEntry" value="#{logObject.text}" autoResize="false" />
         <p:tooltip for="logEntry" value="Enter log entry text."/>
     </p:column>
 

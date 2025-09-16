@@ -10,7 +10,7 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
     <p:column id="name#{viewName}"
               rendered="#{entityController.entityDisplayItemName}">
-        <h:inputText id="nameInputText#{viewName}" value="#{itemObject.name}"                  
+        <p:inputText id="nameInputText#{viewName}" value="#{itemObject.name}"                  
                      title="#{entityController.nameTitle}" 
                      styleClass="entityDataEmphasizedText"
                      required="true"

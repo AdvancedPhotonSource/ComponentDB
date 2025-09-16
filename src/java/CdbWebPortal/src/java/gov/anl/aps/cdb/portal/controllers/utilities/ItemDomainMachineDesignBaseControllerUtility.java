@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
@@ -23,6 +24,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -50,12 +52,16 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         entityTypeFacade = EntityTypeFacade.getInstance();
     }
 
+    protected boolean isApplyUniqueness() {
+        return true;
+    }
+
     @Override
     protected boolean verifyItemNameCombinationUniqueness(Item item) {
         boolean unique = super.verifyItemNameCombinationUniqueness(item);
 
         // Ensure all machine designs are unique
-        if (!unique) {
+        if (isApplyUniqueness() && !unique) {
             String viewUUID = item.getViewUUID();
             item.setItemIdentifier2(viewUUID);
             unique = true;
@@ -281,6 +287,20 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         }
 
         return newItem;
+    }
+
+    @Override
+    protected void prepareEntityDestroy(ItemDomainMachineDesign item, UserInfo userInfo) throws CdbException {
+        // Verify if part of the control hierarchy and do not allow removal.
+        List<ItemElementRelationship> itemElementRelationshipList = item.getFullRelationshipList();
+        for (ItemElementRelationship ier : itemElementRelationshipList) {
+            RelationshipType relationshipType = ier.getRelationshipType();
+            if (relationshipType.getId().equals(ItemElementRelationshipTypeNames.CONTROLLED_BY_ID)) {
+                throw new CdbException("Cannot remove item. It first needs to be removed from the control hierarchy.");
+            }
+        }
+
+        super.prepareEntityDestroy(item, userInfo);
     }
 
     public ItemElement prepareMachinePlaceholder(ItemDomainMachineDesign parentMachine, UserInfo sessionUser) throws CdbException {
@@ -729,7 +749,7 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
                 throw new InvalidObjectState(errMessage);
             }
         }
-        
+
         ItemDomainMachineDesign parentMachineDesign = node.getParentMachineDesign();
         if (representedElement != null && parentMachineDesign.getRepresentsCatalogElement() != null) {
             String errMessage = node.getName();
@@ -814,35 +834,34 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
 
         return availableElementsForNodeRepresentation;
     }
-    
+
     public void unassignMachineTemplate(List<ItemElement> machineElementList, UserInfo updateUser) throws CdbException {
-        List<ItemElementRelationship> relationshipsToDestroy = new ArrayList<>();        
+        List<ItemElementRelationship> relationshipsToDestroy = new ArrayList<>();
         List<ItemDomainMachineDesign> machinesToUpdate = new ArrayList<>();
         ItemElementRelationshipControllerUtility ieru = new ItemElementRelationshipControllerUtility();
-        
+
         for (ItemElement element : machineElementList) {
-            boolean updateItem = false; 
+            boolean updateItem = false;
             if (element.getDerivedFromItemElement() != null) {
                 element.setDerivedFromItemElement(null);
-                updateItem = true; 
+                updateItem = true;
             }
             ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) element.getContainedItem();
             ItemElementRelationship templateRelationship = containedItem.getCreatedFromTemplateRelationship();
-            if (templateRelationship != null) { 
-                updateItem = true; 
+            if (templateRelationship != null) {
+                updateItem = true;
                 relationshipsToDestroy.add(templateRelationship);
                 List<ItemElement> childElements = containedItem.getItemElementDisplayList();
 
                 for (ItemElement derivedElement : childElements) {
-                    derivedElement.setDerivedFromItemElement(null);                
+                    derivedElement.setDerivedFromItemElement(null);
                 }
             }
             if (updateItem) {
-                machinesToUpdate.add(containedItem);         
+                machinesToUpdate.add(containedItem);
             }
         }
-        
-        
+
         updateList(machinesToUpdate, updateUser);
         ieru.destroyList(relationshipsToDestroy, null, updateUser);
     }

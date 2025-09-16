@@ -33,23 +33,23 @@ See LICENSE file.
         </p:column>
 
         <p:column sortBy="#{allowedPropertyValueObject.value}" headerText="Value">
-            <h:inputText id="value" value="#{allowedPropertyValueObject.value}" styleClass="cellInput"/>
+            <p:inputText id="value" value="#{allowedPropertyValueObject.value}" styleClass="cellInput"/>
             <p:tooltip for="value" value="Allowed property value string can be null."/>
         </p:column>
 
         <p:column sortBy="#{allowedPropertyValueObject.units}" headerText="Units">
-            <h:inputText id="valueUnits" value="#{allowedPropertyValueObject.units}" styleClass="cellInput"/>
+            <p:inputText id="valueUnits" value="#{allowedPropertyValueObject.units}" styleClass="cellInput"/>
             <p:tooltip for="valueUnits" value="Units specification is optional."/>
         </p:column>
 
         <p:column sortBy="#{allowedPropertyValueObject.sortOrder}" headerText="Sort Order">
-            <h:inputText id="valueSortOrder" value="#{allowedPropertyValueObject.sortOrder}" styleClass="cellInput"/>
+            <p:inputText id="valueSortOrder" value="#{allowedPropertyValueObject.sortOrder}" styleClass="cellInput"/>
             <p:tooltip for="valueSortOrder" value="Sort order is optional."/>
 
         </p:column>
 
         <p:column sortBy="#{allowedPropertyValueObject.description}" headerText="Description">
-            <h:inputText id="valueDescription" value="#{allowedPropertyValueObject.description}" styleClass="longCellInput"/>
+            <p:inputText id="valueDescription" value="#{allowedPropertyValueObject.description}" styleClass="longCellInput"/>
             <p:tooltip for="valueDescription" value="Description is optional."/>
         </p:column>
 
