@@ -16,6 +16,8 @@ public class SearchEntitiesResults {
     LinkedList<SearchResult> itemDomainCatalogResults;
     LinkedList<SearchResult> itemDomainInventoryResults;
     LinkedList<SearchResult> itemDomainMachineDesignResults;
+    LinkedList<SearchResult> itemDomainMachineDesignIOCResults;
+    LinkedList<SearchResult> itemDomainAppResults;
     LinkedList<SearchResult> itemDomainCableCatalogResults;
     LinkedList<SearchResult> itemDomainCableInventoryResults;
     LinkedList<SearchResult> itemDomainCableDesignResults;
@@ -55,6 +57,22 @@ public class SearchEntitiesResults {
 
     public void setItemDomainMachineDesignResults(LinkedList<SearchResult> itemDomainMachineDesignResults) {
         this.itemDomainMachineDesignResults = itemDomainMachineDesignResults;
+    }
+
+    public LinkedList<SearchResult> getItemDomainMachineDesignIOCResults() {
+        return itemDomainMachineDesignIOCResults;
+    }
+
+    public void setItemDomainMachineDesignIOCResults(LinkedList<SearchResult> itemDomainMachineDesignIOCResults) {
+        this.itemDomainMachineDesignIOCResults = itemDomainMachineDesignIOCResults;
+    }
+
+    public LinkedList<SearchResult> getItemDomainAppResults() {
+        return itemDomainAppResults;
+    }
+
+    public void setItemDomainAppResults(LinkedList<SearchResult> itemDomainAppResults) {
+        this.itemDomainAppResults = itemDomainAppResults;
     }
 
     public LinkedList<SearchResult> getItemDomainCableCatalogResults() {
