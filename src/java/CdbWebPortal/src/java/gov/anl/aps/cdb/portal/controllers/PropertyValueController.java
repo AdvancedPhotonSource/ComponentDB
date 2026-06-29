@@ -279,7 +279,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
     }
 
     public void setCurrentAndUpdateGeneratedHTML(PropertyValue propertyValue) {
-        // Fetch latest text before generating html. 
+        // Fetch latest text before generating html.
         PropertyValue latestProperty = findById(propertyValue.getId());
 
         propertyValue.setText(latestProperty.getText());
@@ -290,6 +290,12 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
         propertyValue.setGeneratedHTMLText(html);
 
         setCurrent(propertyValue);
+    }
+
+    public void setCurrentAndEditMarkdown(PropertyValue propertyValue) {
+        // Load latest text / html and open directly in edit mode.
+        setCurrentAndUpdateGeneratedHTML(propertyValue);
+        propertyValue.setEditMode(true);
     }
 
     public static String getAPIDownloadPath(PropertyValue propertyValue) {

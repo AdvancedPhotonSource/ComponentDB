@@ -53,7 +53,11 @@ See LICENSE file.
                  styleClass="iocInstructionsPanel"
                  header="IOC Instructions" toggleable="true">
             <f:facet name="actions">
-                <p:commandLink styleClass="fa fa-link-icon fa-expand" title="Edit / full screen"
+                <p:commandLink styleClass="fa fa-link-icon fa-pencil-square-o" title="Edit"
+                               rendered="#{isEntityWriteable}"
+                               onclick="editIOCInstructions()" />
+                <p:commandLink styleClass="fa fa-link-icon fa-expand" title="Full screen"
+                               rendered="#{!isEntityWriteable}"
                                onclick="displayIOCInstructions()" />
             </f:facet>
             <ui:include src="../propertyValue/private/markdownGeneratedContentOutput.xhtml">
@@ -68,7 +72,13 @@ See LICENSE file.
         <ui:param name="coreMetadataProperty" value="#{itemObject.coreMetadataPropertyValue}" />
         <p:remoteCommand name="displayIOCInstructions"
                          action="#{propertyValueController.setCurrentAndUpdateGeneratedHTML(coreMetadataProperty)}"
-                         update="@form:iocBootInstructionsMarkdownDialog" 
+                         update="@form:iocBootInstructionsMarkdownDialog"
+                         oncomplete="PF('iocBootInstructionsMarkdownDialogWidget').initPosition();
+                         PF('iocBootInstructionsMarkdownDialogWidget').show()" />
+
+        <p:remoteCommand name="editIOCInstructions"
+                         action="#{propertyValueController.setCurrentAndEditMarkdown(coreMetadataProperty)}"
+                         update="@form:iocBootInstructionsMarkdownDialog"
                          oncomplete="PF('iocBootInstructionsMarkdownDialogWidget').initPosition();
                          PF('iocBootInstructionsMarkdownDialogWidget').show()" />
     </ui:define>
