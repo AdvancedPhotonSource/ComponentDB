@@ -35,6 +35,11 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
     }
 
     @Override
+    public List<ItemDomainMachineDesign> searchEntities(String searchString) {
+        return itemFacade.getIOCItems();
+    }
+
+    @Override
     public String getDisplayEntityTypeName() {
         return "IOC Item";
     }
