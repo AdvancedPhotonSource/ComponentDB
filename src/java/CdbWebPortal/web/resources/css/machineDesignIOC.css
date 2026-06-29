@@ -8,6 +8,17 @@
     background: linear-gradient(to bottom right, #e8f0f7 0%, #a8d0e6 100%);
 }
 
+.iocInstructionsPanel.ui-panel {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.iocInstructionsPanel .ui-panel-content {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
 html, body {
 
     background: linear-gradient(
