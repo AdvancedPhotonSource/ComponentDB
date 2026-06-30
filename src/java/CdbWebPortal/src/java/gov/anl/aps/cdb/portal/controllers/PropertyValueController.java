@@ -85,6 +85,9 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
         return "/views/item/view.xhtml?faces-redirect=true&id=" + parentItem.getId();
     }
 
+    private boolean openMarkdownDialogOnLoad = false;
+    private boolean openDetailsDialogOnLoad = false;
+
     /**
      * Handle a property permalink request. When the view is loaded with a
      * {@code propertyValueId} request parameter, automatically open the
@@ -96,6 +99,9 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
     @Override
     public void processPreRender() {
         super.processPreRender();
+
+        openMarkdownDialogOnLoad = false;
+        openDetailsDialogOnLoad = false;
 
         String pvIdParam = SessionUtility.getRequestParameterValue("propertyValueId");
         if (pvIdParam == null) {
@@ -117,13 +123,35 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
 
         if (displayMarkdownValue(propertyValue)) {
             setCurrentAndUpdateGeneratedHTML(propertyValue);
-            SessionUtility.executeRemoteCommand(
-                    "$(function(){ PF('propertyValueMarkdownValueDialogWidget').show(); });");
+            openMarkdownDialogOnLoad = true;
         } else {
             setCurrent(propertyValue);
-            SessionUtility.executeRemoteCommand(
-                    "$(function(){ PF('propertyValueDetailsDialogWidget').show(); });");
+            openDetailsDialogOnLoad = true;
         }
+    }
+
+    /**
+     * Whether the markdown dialog should be shown on initial (non-postback)
+     * page load in response to a property permalink. Gated to non-postback
+     * renders so subsequent ajax updates (e.g. an {@code update="@form"} edit)
+     * do not reopen the dialog.
+     */
+    public boolean isOpenMarkdownDialogOnLoad() {
+        if (FacesContext.getCurrentInstance().isPostback()) {
+            return false;
+        }
+        return openMarkdownDialogOnLoad;
+    }
+
+    /**
+     * Whether the property details dialog should be shown on initial
+     * (non-postback) page load in response to a property permalink.
+     */
+    public boolean isOpenDetailsDialogOnLoad() {
+        if (FacesContext.getCurrentInstance().isPostback()) {
+            return false;
+        }
+        return openDetailsDialogOnLoad;
     }
 
     public boolean isItemElementAssignedToProperty(PropertyValue propertyValue) {

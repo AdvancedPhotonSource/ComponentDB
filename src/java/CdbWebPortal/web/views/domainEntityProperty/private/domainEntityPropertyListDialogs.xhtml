@@ -6,7 +6,8 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
 
     <ui:include src="domainEntityPropertyListCustomizeDisplayDialog.xhtml">
         <ui:param name="childEntityTypeName" value="#{entityTypeName}Property"/>
@@ -18,6 +19,18 @@ See LICENSE file.
     <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListDialog.xhtml"/>
     <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
     <ui:include src="domainEntityPropertyInfoActionDialogs.xhtml" />
+
+    <!-- Property permalink: open the relevant dialog on initial page load. -->
+    <p:remoteCommand name="openMarkdownPermalinkDialog"
+                     rendered="#{propertyValueController.openMarkdownDialogOnLoad}"
+                     autoRun="true"
+                     process="@this"
+                     oncomplete="PF('propertyValueMarkdownValueDialogWidget').show();" />
+    <p:remoteCommand name="openDetailsPermalinkDialog"
+                     rendered="#{propertyValueController.openDetailsDialogOnLoad}"
+                     autoRun="true"
+                     process="@this"
+                     oncomplete="PF('propertyValueDetailsDialogWidget').show();" />
 
 </ui:composition>
 
