@@ -385,21 +385,8 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             return searchResultList;
         }
         
-        // Start new search        
-        Pattern searchPattern;
-        String patternString;
-        if (searchString.contains("?") || searchString.contains("*")) { 
-            patternString = searchString.replace("*", ".*"); 
-            patternString = patternString.replace("?", ".");
-        } else {
-            patternString = Pattern.quote(searchString); 
-        }
-        
-        if (caseInsensitive) {
-            searchPattern = Pattern.compile(patternString, Pattern.CASE_INSENSITIVE);
-        } else {
-            searchPattern = Pattern.compile(patternString);
-        }
+        // Start new search
+        Pattern searchPattern = buildSearchPattern(searchString, caseInsensitive);
         List<EntityType> allObjectList = searchEntities(searchString);
         for (EntityType entity : allObjectList) {            
             try {
@@ -413,9 +400,35 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
 
         }
         
-        return searchResultList; 
+        return searchResultList;
     }
-    
+
+    /**
+     * Builds the regex pattern used to identify which entity attributes match a
+     * search string. The default treats the search string as a single contiguous
+     * pattern (with * and ? wildcards). Subclasses may override to change the
+     * matching semantics (e.g. word-order independent matching).
+     *
+     * @param searchString search string
+     * @param caseInsensitive use case insensitive matching
+     * @return compiled search pattern
+     */
+    protected Pattern buildSearchPattern(String searchString, boolean caseInsensitive) {
+        String patternString;
+        if (searchString.contains("?") || searchString.contains("*")) {
+            patternString = searchString.replace("*", ".*");
+            patternString = patternString.replace("?", ".");
+        } else {
+            patternString = Pattern.quote(searchString);
+        }
+
+        if (caseInsensitive) {
+            return Pattern.compile(patternString, Pattern.CASE_INSENSITIVE);
+        } else {
+            return Pattern.compile(patternString);
+        }
+    }
+
     public PropertyValue preparePropertyTypeValueAdd(EntityType cdbDomainEntity, PropertyType propertyType) {
         return preparePropertyTypeValueAdd(cdbDomainEntity, propertyType, propertyType.getDefaultValue(), null);
     }

@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -33,6 +34,33 @@ public class PropertyValueControllerUtility extends CdbEntityControllerUtility<P
     @Override
     public List<PropertyValue> searchEntities(String searchString) {
         return getEntityDbFacade().searchPropertyValues(searchString);
+    }
+
+    /**
+     * Builds a word-order independent pattern: each whitespace-delimited word of
+     * the search string is matched independently (alternation), so a field is
+     * recorded as a match when it contains any of the search words. This mirrors
+     * the facade's per-word query so DB-returned rows are never dropped.
+     */
+    @Override
+    protected Pattern buildSearchPattern(String searchString, boolean caseInsensitive) {
+        String[] tokens = searchString.trim().split("\\s+");
+        StringBuilder patternString = new StringBuilder("(");
+        for (int i = 0; i < tokens.length; i++) {
+            if (i > 0) {
+                patternString.append("|");
+            }
+            String token = tokens[i];
+            if (token.contains("*") || token.contains("?")) {
+                patternString.append(token.replace("*", ".*").replace("?", "."));
+            } else {
+                patternString.append(Pattern.quote(token));
+            }
+        }
+        patternString.append(")");
+
+        int flags = caseInsensitive ? Pattern.CASE_INSENSITIVE : 0;
+        return Pattern.compile(patternString.toString(), flags);
     }
 
 }

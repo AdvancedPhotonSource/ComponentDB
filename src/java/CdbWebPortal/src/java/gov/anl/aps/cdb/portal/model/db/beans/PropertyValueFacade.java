@@ -12,6 +12,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.StoredProcedureQuery;
 
 /**
@@ -66,12 +67,35 @@ public class PropertyValueFacade extends CdbEntityFacade<PropertyValue> {
         return null;
     }
 
+    /**
+     * Searches item-attached property values, matching each whitespace-delimited
+     * word of the search string independently (word-order independent). A property
+     * value matches when every word appears in at least one of its value, tag, or
+     * text fields.
+     *
+     * @param searchString whitespace-delimited search words
+     * @return matching property values, limited to SEARCH_RESULT_LIMIT
+     */
     public List<PropertyValue> searchPropertyValues(String searchString) {
-        searchString = convertWildcards(searchString);
-        return (List<PropertyValue>) em.createNamedStoredProcedureQuery("propertyValue.searchPropertyValues")
-                .setParameter("limit_row", SEARCH_RESULT_LIMIT)
-                .setParameter("search_string", searchString)
-                .getResultList();
+        String[] tokens = searchString.trim().split("\\s+");
+
+        StringBuilder jpql = new StringBuilder(
+                "SELECT DISTINCT pv FROM PropertyValue pv JOIN pv.itemElementList ie WHERE ");
+        for (int i = 0; i < tokens.length; i++) {
+            if (i > 0) {
+                jpql.append(" AND ");
+            }
+            jpql.append("(pv.value LIKE :t").append(i)
+                    .append(" OR pv.tag LIKE :t").append(i)
+                    .append(" OR pv.text LIKE :t").append(i).append(")");
+        }
+
+        Query query = em.createQuery(jpql.toString());
+        for (int i = 0; i < tokens.length; i++) {
+            query.setParameter("t" + i, "%" + convertWildcards(tokens[i]) + "%");
+        }
+        query.setMaxResults(SEARCH_RESULT_LIMIT);
+        return (List<PropertyValue>) query.getResultList();
     }
 
     /**
