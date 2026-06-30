@@ -7,12 +7,14 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -79,6 +81,23 @@ import javax.xml.bind.annotation.XmlTransient;
                         name = "relationship_type_id",
                         mode = ParameterMode.IN,
                         type = Integer.class
+                )
+            }
+    ),
+    @NamedStoredProcedureQuery(
+            name = "propertyValue.searchPropertyValues",
+            procedureName = "search_property_values",
+            resultClasses = PropertyValue.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "limit_row",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "search_string",
+                        mode = ParameterMode.IN,
+                        type = String.class
                 )
             }
     ),
@@ -217,6 +236,25 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    @Override
+    public SearchResult createSearchResultInfo(Pattern searchPattern) {
+        String label = "Property value";
+        if (propertyType != null && propertyType.getName() != null) {
+            label = propertyType.getName();
+        }
+        if (value != null && !value.isEmpty()) {
+            label += ": " + value;
+        } else if (tag != null && !tag.isEmpty()) {
+            label += " [" + tag + "]";
+        }
+
+        SearchResult searchResult = new SearchResult(this, id, label);
+        searchResult.doesValueContainPattern("value", value, searchPattern);
+        searchResult.doesValueContainPattern("tag", tag, searchPattern);
+        searchResult.doesValueContainPattern("text", text, searchPattern);
+        return searchResult;
     }
 
     public String getUnits() {
