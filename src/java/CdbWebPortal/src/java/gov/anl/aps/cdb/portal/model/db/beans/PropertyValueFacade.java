@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
@@ -22,6 +23,8 @@ public class PropertyValueFacade extends CdbEntityFacade<PropertyValue> {
 
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
+
+    private static final Integer SEARCH_RESULT_LIMIT = 1000;
 
     @Override
     protected EntityManager getEntityManager() {
@@ -62,5 +65,36 @@ public class PropertyValueFacade extends CdbEntityFacade<PropertyValue> {
         }
         return null;
     }
-    
+
+    public List<PropertyValue> searchPropertyValues(String searchString) {
+        searchString = convertWildcards(searchString);
+        return (List<PropertyValue>) em.createNamedStoredProcedureQuery("propertyValue.searchPropertyValues")
+                .setParameter("limit_row", SEARCH_RESULT_LIMIT)
+                .setParameter("search_string", searchString)
+                .getResultList();
+    }
+
+    /**
+     * Resolves the owning item of a property value by walking
+     * property value -> item element -> parent item. Performed at redirect time
+     * (rather than per search result row) to keep the search results page light.
+     *
+     * @param propertyValueId id of the property value
+     * @return the first parent item found, or null if none
+     */
+    public Item getParentItemForPropertyValue(Integer propertyValueId) {
+        try {
+            List<Item> resultList = (List<Item>) em.createQuery(
+                    "SELECT ie.parentItem FROM PropertyValue pv JOIN pv.itemElementList ie WHERE pv.id = :id")
+                    .setParameter("id", propertyValueId)
+                    .setMaxResults(1)
+                    .getResultList();
+            if (!resultList.isEmpty()) {
+                return resultList.get(0);
+            }
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+
 }
