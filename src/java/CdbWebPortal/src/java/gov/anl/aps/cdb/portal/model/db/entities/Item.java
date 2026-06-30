@@ -236,6 +236,23 @@ import org.primefaces.model.TreeNode;
             }
     ),
     @NamedStoredProcedureQuery(
+            name = "item.searchIOCItems",
+            procedureName = "search_ioc_items",
+            resultClasses = ItemDomainMachineDesign.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "limit_row",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "search_string",
+                        mode = ParameterMode.IN,
+                        type = String.class
+                )
+            }
+    ),
+    @NamedStoredProcedureQuery(
             name = "item.searchItemsNoEntityType",
             procedureName = "search_items_no_entity_type",
             resultClasses = Item.class,
@@ -1781,6 +1798,23 @@ public class Item extends CdbDomainEntity implements Serializable {
             searchResult.doesValueContainPattern("owned by", getEntityInfo().getOwnerUser().getUsername(), searchPattern);
         }
         searchResult.doesValueContainPattern("description", getDescription(), searchPattern);
+
+        List<PropertyValue> propertyValueList = getPropertyValueList();
+        if (propertyValueList != null) {
+            for (PropertyValue propertyValue : propertyValueList) {
+                PropertyType propertyType = propertyValue.getPropertyType();
+                String label = (propertyType != null && propertyType.getName() != null)
+                        ? "Property '" + propertyType.getName() + "'" : "Property";
+                boolean matched = false;
+                matched |= searchResult.doesValueContainPatternSnippet(label, propertyValue.getText(), searchPattern);
+                matched |= searchResult.doesValueContainPattern(label + " value", propertyValue.getValue(), searchPattern);
+                matched |= searchResult.doesValueContainPattern(label + " tag", propertyValue.getTag(), searchPattern);
+                if (matched && searchResult.getMatchedPropertyValueId() == null) {
+                    searchResult.setMatchedPropertyValueId(propertyValue.getId());
+                }
+            }
+        }
+
         return searchResult;
     }
 

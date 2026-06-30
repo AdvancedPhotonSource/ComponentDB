@@ -58,7 +58,15 @@ public class ItemDomainMachineDesignFacade extends ItemFacadeBase<ItemDomainMach
         return findByDomainAndEntityType(
                 ItemDomainName.machineDesign.getValue(),
                 EntityTypeName.ioc.getValue()
-        ); 
+        );
+    }
+
+    public List<ItemDomainMachineDesign> searchIOCItems(String searchString) {
+        searchString = convertWildcards(searchString);
+        return (List<ItemDomainMachineDesign>) em.createNamedStoredProcedureQuery("item.searchIOCItems")
+                .setParameter("limit_row", SEARCH_RESULT_LIMIT)
+                .setParameter("search_string", searchString)
+                .getResultList();
     }
 
     public List<ItemDomainMachineDesign> getMachineDesignTemplates() {
