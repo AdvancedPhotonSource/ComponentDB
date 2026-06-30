@@ -13,7 +13,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -93,6 +97,10 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     // Number of context characters kept on each side of a matched word in search
     // result match descriptions.
     private static final int SEARCH_SNIPPET_CONTEXT = 40;
+
+    // Matched words separated by more than this many words are shown as separate
+    // snippet blocks rather than one continuous run.
+    private static final int SEARCH_SNIPPET_MAX_GAP_WORDS = 3;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -249,6 +257,14 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
      * Records a match for the given field, but instead of storing the entire field
      * value (the text field can be very large) it stores a short snippet showing
      * the matched word(s) with surrounding context, e.g. "...word matchWord word...".
+     *
+     * For multi-word searches the snippet is based on the shortest region of the
+     * field that contains every matched word (a minimum window), so the result
+     * shows the tightest place where the words occur together. If words within
+     * that window are more than SEARCH_SNIPPET_MAX_GAP_WORDS apart the snippet is
+     * split into separate blocks joined by ellipses rather than one long run. The
+     * pattern wraps each search word in its own capturing group, which is how an
+     * individual match is attributed to a word.
      */
     private void addMatchSnippet(SearchResult searchResult, String key, String fieldValue, Pattern searchPattern) {
         if (fieldValue == null || fieldValue.isEmpty()) {
@@ -256,39 +272,112 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
         }
 
         Matcher matcher = searchPattern.matcher(fieldValue);
-        List<int[]> ranges = new ArrayList<>();
+        int wordCount = matcher.groupCount();
+
+        // Collect each match as {wordIndex, start, end} in text order.
+        List<int[]> matches = new ArrayList<>();
+        Set<Integer> matchedWords = new HashSet<>();
         while (matcher.find()) {
             if (matcher.end() == matcher.start()) {
-                // Zero-width match, advance to avoid an infinite loop.
+                // Zero-width match, stop to avoid an infinite loop.
                 break;
             }
-            int start = Math.max(0, matcher.start() - SEARCH_SNIPPET_CONTEXT);
-            int end = Math.min(fieldValue.length(), matcher.end() + SEARCH_SNIPPET_CONTEXT);
-            if (!ranges.isEmpty() && start <= ranges.get(ranges.size() - 1)[1]) {
-                // Overlapping/adjacent window, merge with the previous one.
-                ranges.get(ranges.size() - 1)[1] = Math.max(ranges.get(ranges.size() - 1)[1], end);
-            } else {
-                ranges.add(new int[]{start, end});
+            for (int word = 1; word <= wordCount; word++) {
+                if (matcher.group(word) != null) {
+                    matches.add(new int[]{word, matcher.start(word), matcher.end(word)});
+                    matchedWords.add(word);
+                    break;
+                }
             }
         }
-        if (ranges.isEmpty()) {
+        if (matches.isEmpty()) {
             return;
         }
 
+        // Find the shortest span containing one occurrence of each matched word.
+        int need = matchedWords.size();
+        Map<Integer, Integer> windowCounts = new HashMap<>();
+        int satisfied = 0;
+        int left = 0;
+        int bestLeft = 0;
+        int bestRight = matches.size() - 1;
+        int bestLength = Integer.MAX_VALUE;
+        for (int right = 0; right < matches.size(); right++) {
+            int word = matches.get(right)[0];
+            if (windowCounts.merge(word, 1, Integer::sum) == 1) {
+                satisfied++;
+            }
+            while (satisfied == need) {
+                int spanLength = matches.get(right)[2] - matches.get(left)[1];
+                if (spanLength < bestLength) {
+                    bestLength = spanLength;
+                    bestLeft = left;
+                    bestRight = right;
+                }
+                int leftWord = matches.get(left)[0];
+                if (windowCounts.merge(leftWord, -1, Integer::sum) == 0) {
+                    satisfied--;
+                }
+                left++;
+            }
+        }
+
+        // Within the shortest span, group matches into blocks, starting a new block
+        // whenever more than SEARCH_SNIPPET_MAX_GAP_WORDS words separate consecutive
+        // matches, so a wide span is not shown as one long continuous run.
+        List<int[]> blocks = new ArrayList<>();
+        for (int i = bestLeft; i <= bestRight; i++) {
+            int[] match = matches.get(i);
+            if (!blocks.isEmpty()) {
+                int[] block = blocks.get(blocks.size() - 1);
+                if (countWords(fieldValue.substring(block[1], match[1])) <= SEARCH_SNIPPET_MAX_GAP_WORDS) {
+                    block[1] = match[2];
+                    continue;
+                }
+            }
+            blocks.add(new int[]{match[1], match[2]});
+        }
+
+        // Render each block with surrounding context, clamped to the midpoint
+        // between neighboring blocks so their context does not overlap, joined by
+        // ellipses.
+        int fieldLength = fieldValue.length();
         StringBuilder snippet = new StringBuilder();
-        for (int[] range : ranges) {
-            if (snippet.length() > 0) {
+        for (int i = 0; i < blocks.size(); i++) {
+            int[] block = blocks.get(i);
+            int leftLimit = (i == 0) ? 0 : (blocks.get(i - 1)[1] + block[0]) / 2;
+            int rightLimit = (i == blocks.size() - 1) ? fieldLength : (block[1] + blocks.get(i + 1)[0]) / 2;
+            int blockStart = Math.max(leftLimit, block[0] - SEARCH_SNIPPET_CONTEXT);
+            int blockEnd = Math.min(rightLimit, block[1] + SEARCH_SNIPPET_CONTEXT);
+
+            if (i == 0) {
+                if (blockStart > 0) {
+                    snippet.append("...");
+                }
+            } else {
                 snippet.append(" ... ");
-            } else if (range[0] > 0) {
+            }
+            snippet.append(fieldValue.substring(blockStart, blockEnd).replaceAll("\\s+", " ").trim());
+            if (i == blocks.size() - 1 && blockEnd < fieldLength) {
                 snippet.append("...");
             }
-            snippet.append(fieldValue.substring(range[0], range[1]).replaceAll("\\s+", " ").trim());
-        }
-        if (ranges.get(ranges.size() - 1)[1] < fieldValue.length()) {
-            snippet.append("...");
         }
 
         searchResult.addAttributeMatch(key, snippet.toString());
+    }
+
+    /**
+     * Counts the whitespace-delimited words in a string (0 for null/blank).
+     */
+    private static int countWords(String value) {
+        if (value == null) {
+            return 0;
+        }
+        value = value.trim();
+        if (value.isEmpty()) {
+            return 0;
+        }
+        return value.split("\\s+").length;
     }
 
     public String getUnits() {

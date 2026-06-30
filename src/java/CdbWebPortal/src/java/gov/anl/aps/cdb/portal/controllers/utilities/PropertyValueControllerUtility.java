@@ -41,23 +41,27 @@ public class PropertyValueControllerUtility extends CdbEntityControllerUtility<P
      * the search string is matched independently (alternation), so a field is
      * recorded as a match when it contains any of the search words. This mirrors
      * the facade's per-word query so DB-returned rows are never dropped.
+     *
+     * Each word is wrapped in its own capturing group so consumers can identify
+     * which word a match belongs to (used to build the shortest match snippet).
      */
     @Override
     protected Pattern buildSearchPattern(String searchString, boolean caseInsensitive) {
         String[] tokens = searchString.trim().split("\\s+");
-        StringBuilder patternString = new StringBuilder("(");
+        StringBuilder patternString = new StringBuilder();
         for (int i = 0; i < tokens.length; i++) {
             if (i > 0) {
                 patternString.append("|");
             }
             String token = tokens[i];
+            String tokenRegex;
             if (token.contains("*") || token.contains("?")) {
-                patternString.append(token.replace("*", ".*").replace("?", "."));
+                tokenRegex = token.replace("*", ".*").replace("?", ".");
             } else {
-                patternString.append(Pattern.quote(token));
+                tokenRegex = Pattern.quote(token);
             }
+            patternString.append("(").append(tokenRegex).append(")");
         }
-        patternString.append(")");
 
         int flags = caseInsensitive ? Pattern.CASE_INSENSITIVE : 0;
         return Pattern.compile(patternString.toString(), flags);
