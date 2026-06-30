@@ -18,6 +18,6 @@ See LICENSE file.
 
     <pe:clipboard trigger="@previous"
                   action="copy"
-                  text="#{entityController.currentEntityPermalink}&amp;propertyValueId=#{propertyValueObject.id}"/>
+                  text="#{facesUtility.permanentUrl}/views/propertyValue/redirect?id=#{propertyValueObject.id}"/>
 
 </ui:composition>

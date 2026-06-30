@@ -85,6 +85,38 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
         return "/views/item/view.xhtml?faces-redirect=true&id=" + parentItem.getId();
     }
 
+    /**
+     * Short property permalink entry point. Backs the page
+     * {@code /views/propertyValue/redirect?id=<propertyValueId>}: resolves the
+     * owning item for the supplied property value id and redirects to that
+     * item's view page with the property value's dialog opened on load.
+     *
+     * @return faces navigation outcome to the owning item view, or to the home
+     * page when the property value or its parent item cannot be resolved
+     */
+    public String redirectToItemForPropertyValueViewParam() {
+        String idParam = SessionUtility.getRequestParameterValue("id");
+        if (idParam == null) {
+            SessionUtility.addWarningMessage("Warning", "No property value id supplied.");
+            return "/index.xhtml?faces-redirect=true";
+        }
+        Integer propertyValueId;
+        try {
+            propertyValueId = Integer.parseInt(idParam);
+        } catch (NumberFormatException ex) {
+            SessionUtility.addWarningMessage("Warning", "Invalid property value id: " + idParam);
+            return "/index.xhtml?faces-redirect=true";
+        }
+        Item parentItem = propertyValueFacade.getParentItemForPropertyValue(propertyValueId);
+        if (parentItem == null) {
+            SessionUtility.addWarningMessage("Warning",
+                    "No item found for property value id " + propertyValueId + ".");
+            return "/index.xhtml?faces-redirect=true";
+        }
+        return "/views/item/view.xhtml?faces-redirect=true&id=" + parentItem.getId()
+                + "&propertyValueId=" + propertyValueId;
+    }
+
     private boolean openMarkdownDialogOnLoad = false;
     private boolean openDetailsDialogOnLoad = false;
 
