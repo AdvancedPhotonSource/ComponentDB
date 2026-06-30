@@ -85,6 +85,47 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
         return "/views/item/view.xhtml?faces-redirect=true&id=" + parentItem.getId();
     }
 
+    /**
+     * Handle a property permalink request. When the view is loaded with a
+     * {@code propertyValueId} request parameter, automatically open the
+     * relevant dialog for that property value: the markdown dialog for markdown
+     * properties, or a read-only details dialog otherwise. The parent item is
+     * already loaded by the item controller's view action which runs before
+     * this one.
+     */
+    @Override
+    public void processPreRender() {
+        super.processPreRender();
+
+        String pvIdParam = SessionUtility.getRequestParameterValue("propertyValueId");
+        if (pvIdParam == null) {
+            return;
+        }
+
+        Integer pvId;
+        try {
+            pvId = Integer.parseInt(pvIdParam);
+        } catch (NumberFormatException ex) {
+            // Ignore a malformed permalink parameter; the page still loads.
+            return;
+        }
+
+        PropertyValue propertyValue = findById(pvId);
+        if (propertyValue == null) {
+            return;
+        }
+
+        if (displayMarkdownValue(propertyValue)) {
+            setCurrentAndUpdateGeneratedHTML(propertyValue);
+            SessionUtility.executeRemoteCommand(
+                    "$(function(){ PF('propertyValueMarkdownValueDialogWidget').show(); });");
+        } else {
+            setCurrent(propertyValue);
+            SessionUtility.executeRemoteCommand(
+                    "$(function(){ PF('propertyValueDetailsDialogWidget').show(); });");
+        }
+    }
+
     public boolean isItemElementAssignedToProperty(PropertyValue propertyValue) {
         if (propertyValue.getItemElementList() != null) {
             return propertyValue.getItemElementList().size() > 0;

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dialog id="propertyValueDetailsDialog"
+              widgetVar="propertyValueDetailsDialogWidget"
+              header="Property Details"
+              width="50vw"
+              modal="true"
+              resizable="false">
+
+        <ui:param name="propertyValueObject" value="#{propertyValueController.current}"/>
+
+        <p:panelGrid columns="2" styleClass="ui-noborder" columnClasses="ui-grid-col-3,ui-grid-col-9">
+            <h:outputText value="Type" styleClass="ui-panelgrid-bold"/>
+            <h:outputText value="#{propertyValueObject.propertyType.name}"/>
+
+            <h:outputText value="Tag" styleClass="ui-panelgrid-bold"/>
+            <h:outputText value="#{propertyValueObject.tag}"/>
+
+            <h:outputText value="Value" styleClass="ui-panelgrid-bold"/>
+            <h:outputText value="#{propertyValueObject.value}"/>
+
+            <h:outputText value="Description" styleClass="ui-panelgrid-bold"/>
+            <h:outputText value="#{propertyValueObject.description}"/>
+
+            <h:outputText value="Category" styleClass="ui-panelgrid-bold"/>
+            <h:outputText value="#{propertyValueObject.propertyType.propertyTypeCategory.name}"/>
+
+            <h:outputText value="Units" styleClass="ui-panelgrid-bold"/>
+            <h:outputText value="#{propertyValueObject.units}"/>
+
+            <h:outputText value="Entered By" styleClass="ui-panelgrid-bold"/>
+            <h:outputText value="#{propertyValueObject.enteredByUser.username}"/>
+
+            <h:outputText value="Entered On" styleClass="ui-panelgrid-bold"/>
+            <h:outputText value="#{propertyValueObject.enteredOnDateTime}"/>
+
+            <h:outputText value="Effective Date" styleClass="ui-panelgrid-bold"/>
+            <h:outputText value="#{propertyValueObject.effectiveFromDateTime}"/>
+        </p:panelGrid>
+
+        <f:facet name="footer">
+            <p:commandButton value="Close"
+                             icon="fa fa-close"
+                             onclick="PF('propertyValueDetailsDialogWidget').hide()"/>
+        </f:facet>
+
+    </p:dialog>
+
+</ui:composition>
