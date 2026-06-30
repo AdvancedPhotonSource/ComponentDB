@@ -19,33 +19,45 @@ See LICENSE file.
 
         <ui:param name="propertyValueObject" value="#{propertyValueController.current}"/>
 
-        <p:panelGrid columns="2" styleClass="ui-noborder" columnClasses="ui-grid-col-3,ui-grid-col-9">
-            <h:outputText value="Type" styleClass="ui-panelgrid-bold"/>
-            <h:outputText value="#{propertyValueObject.propertyType.name}"/>
-
-            <h:outputText value="Tag" styleClass="ui-panelgrid-bold"/>
-            <h:outputText value="#{propertyValueObject.tag}"/>
-
-            <h:outputText value="Value" styleClass="ui-panelgrid-bold"/>
-            <h:outputText value="#{propertyValueObject.value}"/>
-
-            <h:outputText value="Description" styleClass="ui-panelgrid-bold"/>
-            <h:outputText value="#{propertyValueObject.description}"/>
-
-            <h:outputText value="Category" styleClass="ui-panelgrid-bold"/>
-            <h:outputText value="#{propertyValueObject.propertyType.propertyTypeCategory.name}"/>
-
-            <h:outputText value="Units" styleClass="ui-panelgrid-bold"/>
-            <h:outputText value="#{propertyValueObject.units}"/>
-
-            <h:outputText value="Entered By" styleClass="ui-panelgrid-bold"/>
-            <h:outputText value="#{propertyValueObject.enteredByUser.username}"/>
-
-            <h:outputText value="Entered On" styleClass="ui-panelgrid-bold"/>
-            <h:outputText value="#{propertyValueObject.enteredOnDateTime}"/>
-
-            <h:outputText value="Effective Date" styleClass="ui-panelgrid-bold"/>
-            <h:outputText value="#{propertyValueObject.effectiveFromDateTime}"/>
+        <p:panelGrid styleClass="ui-noborder">
+            <p:row>
+                <p:column styleClass="ui-panelgrid-bold">Type</p:column>
+                <p:column><h:outputText value="#{propertyValueObject.propertyType.name}"/></p:column>
+            </p:row>
+            <p:row>
+                <p:column styleClass="ui-panelgrid-bold">Tag</p:column>
+                <p:column><h:outputText value="#{propertyValueObject.tag}"/></p:column>
+            </p:row>
+            <p:row>
+                <p:column styleClass="ui-panelgrid-bold">Value</p:column>
+                <p:column>
+                    <ui:include src="propertyValueListObjectValue.xhtml"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column styleClass="ui-panelgrid-bold">Description</p:column>
+                <p:column><h:outputText value="#{propertyValueObject.description}"/></p:column>
+            </p:row>
+            <p:row>
+                <p:column styleClass="ui-panelgrid-bold">Category</p:column>
+                <p:column><h:outputText value="#{propertyValueObject.propertyType.propertyTypeCategory.name}"/></p:column>
+            </p:row>
+            <p:row>
+                <p:column styleClass="ui-panelgrid-bold">Units</p:column>
+                <p:column><h:outputText value="#{propertyValueObject.units}"/></p:column>
+            </p:row>
+            <p:row>
+                <p:column styleClass="ui-panelgrid-bold">Entered By</p:column>
+                <p:column><h:outputText value="#{propertyValueObject.enteredByUser.username}"/></p:column>
+            </p:row>
+            <p:row>
+                <p:column styleClass="ui-panelgrid-bold">Entered On</p:column>
+                <p:column><h:outputText value="#{propertyValueObject.enteredOnDateTime}"/></p:column>
+            </p:row>
+            <p:row>
+                <p:column styleClass="ui-panelgrid-bold">Effective Date</p:column>
+                <p:column><h:outputText value="#{propertyValueObject.effectiveFromDateTime}"/></p:column>
+            </p:row>
         </p:panelGrid>
 
         <f:facet name="footer">
