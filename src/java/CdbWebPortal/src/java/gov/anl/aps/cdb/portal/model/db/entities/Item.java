@@ -1799,22 +1799,6 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         searchResult.doesValueContainPattern("description", getDescription(), searchPattern);
 
-        List<PropertyValue> propertyValueList = getPropertyValueList();
-        if (propertyValueList != null) {
-            for (PropertyValue propertyValue : propertyValueList) {
-                PropertyType propertyType = propertyValue.getPropertyType();
-                String label = (propertyType != null && propertyType.getName() != null)
-                        ? "Property '" + propertyType.getName() + "'" : "Property";
-                boolean matched = false;
-                matched |= searchResult.doesValueContainPatternSnippet(label, propertyValue.getText(), searchPattern);
-                matched |= searchResult.doesValueContainPattern(label + " value", propertyValue.getValue(), searchPattern);
-                matched |= searchResult.doesValueContainPattern(label + " tag", propertyValue.getTag(), searchPattern);
-                if (matched && searchResult.getMatchedPropertyValueId() == null) {
-                    searchResult.setMatchedPropertyValueId(propertyValue.getId());
-                }
-            }
-        }
-
         return searchResult;
     }
 
