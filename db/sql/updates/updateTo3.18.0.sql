@@ -7,7 +7,8 @@
 
 INSERT IGNORE INTO `setting_type` VALUES
 (15018,'Search.Display.ItemDomainMachineDesignIOC','Display search result for IOC items.','true'),
-(15019,'Search.Display.ItemDomainApp','Display search result for application items.','true');
+(15019,'Search.Display.ItemDomainApp','Display search result for application items.','true'),
+(15020,'Search.Display.PropertyValue','Display search result for property values.','true');
 
 -- Add text property value (value/text/tag) matching to the item search procedures
 -- and a dedicated IOC item search procedure (used to search markdown IOC instructions).
@@ -38,6 +39,21 @@ BEGIN
 		OR owneru.username LIKE search_string
 		OR creatoru.username LIKE search_string
 		OR updateu.username LIKE search_string
+	)
+	LIMIT limit_row;
+END //
+
+DROP PROCEDURE IF EXISTS search_property_values;//
+CREATE PROCEDURE `search_property_values` (IN limit_row int, IN search_string VARCHAR(255))
+BEGIN
+	SET search_string = CONCAT('%', search_string, '%');
+	SELECT DISTINCT pv.* FROM property_value pv
+	INNER JOIN item_element_property iep ON iep.property_value_id = pv.id
+	INNER JOIN item_element ie ON iep.item_element_id = ie.id
+	WHERE (
+		pv.value LIKE search_string
+		OR pv.tag LIKE search_string
+		OR pv.text LIKE search_string
 	)
 	LIMIT limit_row;
 END //

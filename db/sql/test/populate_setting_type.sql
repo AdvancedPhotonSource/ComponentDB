@@ -286,6 +286,7 @@ INSERT INTO `setting_type` VALUES
 (15017,'Search.Display.ItemDomainMAARC','Display search result for MAARC items','false'),
 (15018,'Search.Display.ItemDomainMachineDesignIOC','Display search result for IOC items.','true'),
 (15019,'Search.Display.ItemDomainApp','Display search result for application items.','true'),
+(15020,'Search.Display.PropertyValue','Display search result for property values.','true'),
 (16000,'Source.List.Display.ContactInfo','Display source contact info.','true'),
 (16001,'Source.List.Display.Description','Display source description.','true'),
 (16002,'Source.List.Display.Url','Display source URL.','true'),
