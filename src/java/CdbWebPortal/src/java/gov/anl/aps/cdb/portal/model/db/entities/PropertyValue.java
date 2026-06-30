@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -88,6 +89,10 @@ import javax.xml.bind.annotation.XmlTransient;
 public class PropertyValue extends PropertyValueBase implements Serializable {
         
     private static final long serialVersionUID = 1L;
+
+    // Number of context characters kept on each side of a matched word in search
+    // result match descriptions.
+    private static final int SEARCH_SNIPPET_CONTEXT = 40;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -236,8 +241,54 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
         SearchResult searchResult = new SearchResult(this, id, label);
         searchResult.doesValueContainPattern("value", value, searchPattern);
         searchResult.doesValueContainPattern("tag", tag, searchPattern);
-        searchResult.doesValueContainPattern("text", text, searchPattern);
+        addMatchSnippet(searchResult, "text", text, searchPattern);
         return searchResult;
+    }
+
+    /**
+     * Records a match for the given field, but instead of storing the entire field
+     * value (the text field can be very large) it stores a short snippet showing
+     * the matched word(s) with surrounding context, e.g. "...word matchWord word...".
+     */
+    private void addMatchSnippet(SearchResult searchResult, String key, String fieldValue, Pattern searchPattern) {
+        if (fieldValue == null || fieldValue.isEmpty()) {
+            return;
+        }
+
+        Matcher matcher = searchPattern.matcher(fieldValue);
+        List<int[]> ranges = new ArrayList<>();
+        while (matcher.find()) {
+            if (matcher.end() == matcher.start()) {
+                // Zero-width match, advance to avoid an infinite loop.
+                break;
+            }
+            int start = Math.max(0, matcher.start() - SEARCH_SNIPPET_CONTEXT);
+            int end = Math.min(fieldValue.length(), matcher.end() + SEARCH_SNIPPET_CONTEXT);
+            if (!ranges.isEmpty() && start <= ranges.get(ranges.size() - 1)[1]) {
+                // Overlapping/adjacent window, merge with the previous one.
+                ranges.get(ranges.size() - 1)[1] = Math.max(ranges.get(ranges.size() - 1)[1], end);
+            } else {
+                ranges.add(new int[]{start, end});
+            }
+        }
+        if (ranges.isEmpty()) {
+            return;
+        }
+
+        StringBuilder snippet = new StringBuilder();
+        for (int[] range : ranges) {
+            if (snippet.length() > 0) {
+                snippet.append(" ... ");
+            } else if (range[0] > 0) {
+                snippet.append("...");
+            }
+            snippet.append(fieldValue.substring(range[0], range[1]).replaceAll("\\s+", " ").trim());
+        }
+        if (ranges.get(ranges.size() - 1)[1] < fieldValue.length()) {
+            snippet.append("...");
+        }
+
+        searchResult.addAttributeMatch(key, snippet.toString());
     }
 
     public String getUnits() {
