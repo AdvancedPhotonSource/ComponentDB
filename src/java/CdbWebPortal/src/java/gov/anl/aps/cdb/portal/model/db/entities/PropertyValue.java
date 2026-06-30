@@ -84,23 +84,6 @@ import javax.xml.bind.annotation.XmlTransient;
                 )
             }
     ),
-    @NamedStoredProcedureQuery(
-            name = "propertyValue.searchPropertyValues",
-            procedureName = "search_property_values",
-            resultClasses = PropertyValue.class,
-            parameters = {
-                @StoredProcedureParameter(
-                        name = "limit_row",
-                        mode = ParameterMode.IN,
-                        type = Integer.class
-                ),
-                @StoredProcedureParameter(
-                        name = "search_string",
-                        mode = ParameterMode.IN,
-                        type = String.class
-                )
-            }
-    ),
 })
 public class PropertyValue extends PropertyValueBase implements Serializable {
         
