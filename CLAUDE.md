@@ -104,6 +104,8 @@ MariaDB 10.5. Authoritative schema is the set of `create_cdb_tables.sql`, `creat
 
 **Releases bump the version in `etc/version` and add `db/sql/updates/updateTo<NEW_VERSION>.sql`** containing the idempotent (INSERT IGNORE / ALTER ... IF NOT EXISTS) migrations needed to bring an existing prod DB to the new schema. Header comments in each update file document how to run it. The existing version chain (e.g. `updateTo3.15.5.sql` → `updateTo3.17.0.sql`) is the template; do not retroactively edit older update scripts.
 
+**Adding a setting:** `setting_type` ids are organized into per-type blocks with numeric gaps between blocks (e.g. `15xxx` Search, `16xxx` Source, `22xxx` MAARC) so each type has room for new entries. A new setting takes the next free id at the end of its type block — never reuse an id or insert one mid-block (the gap before the next block is the room reserved for this). Add the identical row to all seed copies (`db/sql/{clean,test,static}/populate_setting_type.sql`) and to the current release's `db/sql/updates/updateTo<VERSION>.sql`.
+
 ## Repo-specific conventions
 
 - **Generated files that look like sources** are common: `cdb.portal.properties`, `web/WEB-INF/glassfish-web.xml`, `web/WEB-INF/web.xml`, `setup/glassfish-resources.xml`, `nbproject/private/private.properties`, and everything under `tools/developer_tools/python-client/cdbApi/`. They are produced from `*.template` files (or via openapi-generator) by `dev-config` / `configure-web-portal` / `dist` targets and are in `.gitignore`. Edit the template, regenerate, then commit only the template.
