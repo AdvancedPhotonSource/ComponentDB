@@ -121,6 +121,9 @@ public class SearchController implements Serializable {
                 else if (controller instanceof ItemDomainLocationController) {
                     if (!searchSettings.getDisplayLocationItems()) continue;
                 }
+                else if (controller instanceof PropertyValueController) {
+                    if (!searchSettings.getDisplayPropertyValues()) continue;
+                }
                 else if (controller instanceof PropertyTypeController) {
                     if (!searchSettings.getDisplayPropertyTypes()) continue;
                 }

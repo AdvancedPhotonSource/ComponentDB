@@ -140,12 +140,21 @@ See LICENSE file.
     </p:panel>
 
 
-    <p:panel header="Property Types" 
+    <p:panel header="Property Values"
+             rendered="#{entitySettingObject.displayPropertyValues}"
+             collapsed="#{!propertyValueController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../propertyValue/private/propertyValueSearchDataTable.xhtml"/>
+
+        <ui:include src="searchResultLimitDisclaimer.xhtml" />
+    </p:panel>
+
+    <p:panel header="Property Types"
              rendered="#{entitySettingObject.displayPropertyTypes}"
              collapsed="#{!propertyTypeController.displaySearchResultList}"
              toggleable="true">
         <ui:include src="../../propertyType/private/propertyTypeSearchDataTable.xhtml"/>
-    </p:panel>   
+    </p:panel>
 
     <p:panel header="Property Type Categories" 
              rendered="#{entitySettingObject.displayPropertyTypeCategories}"

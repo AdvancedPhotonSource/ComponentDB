@@ -34,6 +34,7 @@ public class SearchSettings<EntityController extends SearchController> extends S
     private static final String DisplayCableInventoryItemsSettingTypeKey = "Search.Display.ItemDomainCableInventory";
     private static final String DisplayCableDesignItemsSettingTypeKey = "Search.Display.ItemDomainCableDesign"; 
     private static final String DisplayMAARCItemsSettingTypeKey= "Search.Display.ItemDomainMAARC"; 
+    private static final String DisplayPropertyValuesSettingTypeKey = "Search.Display.PropertyValue";
     private static final String DisplayPropertyTypesSettingTypeKey = "Search.Display.PropertyTypes";
     private static final String DisplayPropertyTypeCategoriesSettingTypeKey = "Search.Display.PropertyTypeCategories";
     private static final String DisplaySourcesSettingTypeKey = "Search.Display.Sources";
@@ -55,6 +56,7 @@ public class SearchSettings<EntityController extends SearchController> extends S
     protected Boolean displayItemTypes = null;
     protected Boolean displayItemCategories = null;
     protected Boolean displayItemElements = null;
+    protected Boolean displayPropertyValues = null;
     protected Boolean displayPropertyTypes = null;
     protected Boolean displayPropertyTypeCategories = null;
     protected Boolean displaySources = null;
@@ -85,6 +87,7 @@ public class SearchSettings<EntityController extends SearchController> extends S
         displayItemCategories = Boolean.parseBoolean(settingTypeMap.get(DisplayItemCategoriesSettingTypeKey).getDefaultValue());
         displayItemElements = Boolean.parseBoolean(settingTypeMap.get(DisplayItemElementsSettingTypeKey).getDefaultValue());
         displayLocationItems = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationsSettingTypeKey).getDefaultValue());
+        displayPropertyValues = Boolean.parseBoolean(settingTypeMap.get(DisplayPropertyValuesSettingTypeKey).getDefaultValue());
         displayPropertyTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayPropertyTypesSettingTypeKey).getDefaultValue());
         displayPropertyTypeCategories = Boolean.parseBoolean(settingTypeMap.get(DisplayPropertyTypeCategoriesSettingTypeKey).getDefaultValue());
         displaySources = Boolean.parseBoolean(settingTypeMap.get(DisplaySourcesSettingTypeKey).getDefaultValue());
@@ -112,6 +115,7 @@ public class SearchSettings<EntityController extends SearchController> extends S
         displayItemCategories = settingEntity.getSettingValueAsBoolean(DisplayItemCategoriesSettingTypeKey, displayItemCategories);
         displayItemElements = settingEntity.getSettingValueAsBoolean(DisplayItemElementsSettingTypeKey, displayItemElements);
         displayLocationItems = settingEntity.getSettingValueAsBoolean(DisplayLocationsSettingTypeKey, displayLocationItems);
+        displayPropertyValues = settingEntity.getSettingValueAsBoolean(DisplayPropertyValuesSettingTypeKey, displayPropertyValues);
         displayPropertyTypes = settingEntity.getSettingValueAsBoolean(DisplayPropertyTypesSettingTypeKey, displayPropertyTypes);
         displayPropertyTypeCategories = settingEntity.getSettingValueAsBoolean(DisplayPropertyTypeCategoriesSettingTypeKey, displayPropertyTypeCategories);
         displaySources = settingEntity.getSettingValueAsBoolean(DisplaySourcesSettingTypeKey, displaySources);
@@ -140,6 +144,7 @@ public class SearchSettings<EntityController extends SearchController> extends S
         settingEntity.setSettingValue(DisplayItemCategoriesSettingTypeKey, displayItemCategories);
         settingEntity.setSettingValue(DisplayItemElementsSettingTypeKey, displayItemElements);
         settingEntity.setSettingValue(DisplayLocationsSettingTypeKey, displayLocationItems);
+        settingEntity.setSettingValue(DisplayPropertyValuesSettingTypeKey, displayPropertyValues);
         settingEntity.setSettingValue(DisplayPropertyTypesSettingTypeKey, displayPropertyTypes);
         settingEntity.setSettingValue(DisplayPropertyTypeCategoriesSettingTypeKey, displayPropertyTypeCategories);
         settingEntity.setSettingValue(DisplaySourcesSettingTypeKey, displaySources);
@@ -185,6 +190,14 @@ public class SearchSettings<EntityController extends SearchController> extends S
 
     public void setDisplayAppItems(Boolean displayAppItems) {
         this.displayAppItems = displayAppItems;
+    }
+
+    public Boolean getDisplayPropertyValues() {
+        return displayPropertyValues;
+    }
+
+    public void setDisplayPropertyValues(Boolean displayPropertyValues) {
+        this.displayPropertyValues = displayPropertyValues;
     }
 
     public Boolean getDisplayCatalogItems() {
