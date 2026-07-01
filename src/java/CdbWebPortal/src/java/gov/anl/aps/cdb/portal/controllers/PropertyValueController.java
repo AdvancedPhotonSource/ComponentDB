@@ -67,25 +67,6 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
     }
 
     /**
-     * Search result action: resolve the property value's owning item and
-     * redirect to its view page. The parent item lookup is performed here (on
-     * click) rather than per search result row to keep the search results page
-     * light.
-     *
-     * @param propertyValue the property value selected in the search results
-     * @return navigation outcome to the owning item's view page, or null if no
-     * parent item could be found
-     */
-    public String redirectToParentItem(PropertyValue propertyValue) {
-        Item parentItem = propertyValueFacade.getParentItemForPropertyValue(propertyValue.getId());
-        if (parentItem == null) {
-            SessionUtility.addWarningMessage("Warning", "No parent item found for this property value.");
-            return null;
-        }
-        return "/views/item/view.xhtml?faces-redirect=true&id=" + parentItem.getId();
-    }
-
-    /**
      * Short property permalink entry point. Backs the page
      * {@code /views/propertyValue/redirect?id=<propertyValueId>}: resolves the
      * owning item for the supplied property value id and redirects to that

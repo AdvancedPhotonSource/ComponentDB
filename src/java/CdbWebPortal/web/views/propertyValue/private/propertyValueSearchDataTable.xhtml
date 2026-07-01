@@ -20,9 +20,10 @@ See LICENSE file.
                  emptyMessage="No property values match.">
 
         <p:column sortBy="#{searchResultObject.objectName}" headerText="Property Value">
-            <p:commandLink value="#{searchResultObject.objectName}"
-                           title="Go to parent item: #{searchResultObject.objectName}"
-                           action="#{propertyValueController.redirectToParentItem(searchResultObject.cdbEntity)}"/>
+            <h:outputLink value="../propertyValue/redirect.xhtml?id=#{searchResultObject.objectId}"
+                          title="Go to parent item: #{searchResultObject.objectName}">
+                <h:outputText value="#{searchResultObject.objectName}"/>
+            </h:outputLink>
         </p:column>
 
         <p:column sortBy="#{searchResultObject.display}" headerText="Match Description">
