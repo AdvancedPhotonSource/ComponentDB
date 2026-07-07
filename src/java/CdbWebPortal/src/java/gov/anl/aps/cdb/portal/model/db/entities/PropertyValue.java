@@ -67,7 +67,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyValue.findByTargetValue", query = "SELECT p FROM PropertyValue p WHERE p.targetValue = :targetValue"),
     @NamedQuery(name = "PropertyValue.findByValueAndTypeId", query = "SELECT p FROM PropertyValue p WHERE p.value = :value and p.propertyType.id = :propertyTypeId")})
 @NamedStoredProcedureQueries({
-@NamedStoredProcedureQuery(
+    @NamedStoredProcedureQuery(
             name = "propertyValue.fetchRelationshipParentPropertyValues",
             procedureName = "fetch_relationship_parent_property_values",
             resultClasses = PropertyValue.class,
@@ -88,10 +88,9 @@ import javax.xml.bind.annotation.XmlTransient;
                         type = Integer.class
                 )
             }
-    ),
-})
+    ),})
 public class PropertyValue extends PropertyValueBase implements Serializable {
-        
+
     private static final long serialVersionUID = 1L;
 
     // Number of context characters kept on each side of a matched word in search
@@ -118,16 +117,16 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     private String description;
     @Basic(optional = false)
     @Column(name = "entered_on_date_time")
-    @Temporal(TemporalType.TIMESTAMP)    
+    @Temporal(TemporalType.TIMESTAMP)
     private Date enteredOnDateTime;
-    @Basic(optional = false)    
+    @Basic(optional = false)
     @Column(name = "is_user_writeable")
     private boolean isUserWriteable;
-    @Column(name = "effective_from_date_time")    
+    @Column(name = "effective_from_date_time")
     private Date effectiveFromDateTime;
-    @Column(name = "effective_to_date_time")    
+    @Column(name = "effective_to_date_time")
     private Date effectiveToDateTime;
-    @Basic(optional = false)    
+    @Basic(optional = false)
     @Column(name = "is_dynamic")
     private boolean isDynamic;
     @Size(max = 512)
@@ -152,8 +151,8 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     private UserInfo enteredByUser;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValue")
     private List<PropertyValueHistory> propertyValueHistoryList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValue")    
-    private List<PropertyMetadata> propertyMetadataList;    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValue")
+    private List<PropertyMetadata> propertyMetadataList;
     @JoinTable(name = "property_attachment", joinColumns = {
         @JoinColumn(name = "property_value_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "attachment_id", referencedColumnName = "id")})
@@ -161,7 +160,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     private List<Attachment> attachmentList;
 
     public static final transient SimpleDateFormat InputDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
-    
+
     @JsonIgnore
     private transient Boolean booleanValue;
     @JsonIgnore
@@ -173,19 +172,24 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     private transient boolean handlerInfoSet;
 
     @JsonIgnore
-    private transient List<PropertyValueMetadata> propertyValueMetadataList;    
+    private transient List<PropertyValueMetadata> propertyValueMetadataList;
     @JsonIgnore
     private transient Boolean isHasPropertyMetadata = null;
-    
+
     @JsonIgnore
-    private transient AllowedPropertyValue selectedAllowedPropertyValue = null; 
-    
-    private transient List<Item> itemList = null; 
-    
+    private transient AllowedPropertyValue selectedAllowedPropertyValue = null;
+
+    private transient List<Item> itemList = null;
+
+    // Owning item of this property value, populated during search so results can
+    // display the item without a per-row lookup.
+    @JsonIgnore
+    private transient Item searchResultParentItem = null;
+
     // Generated HTML for the markdown property type handler. 
-    private transient String generatedHTMLText; 
-    private transient boolean editMode = false; 
-    private transient boolean editModeWidgets = false; 
+    private transient String generatedHTMLText;
+    private transient boolean editMode = false;
+    private transient boolean editModeWidgets = false;
 
     public PropertyValue() {
     }
@@ -242,7 +246,12 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
         }
         if (value != null && !value.isEmpty()) {
             label += ": " + value;
-        } else if (tag != null && !tag.isEmpty()) {
+        }
+        if (searchResultParentItem != null && searchResultParentItem.getName() != null) {
+            label = searchResultParentItem.getName() + " — " + label;
+        }
+
+        if (tag != null && !tag.isEmpty()) {
             label += " [" + tag + "]";
         }
 
@@ -254,17 +263,18 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     }
 
     /**
-     * Records a match for the given field, but instead of storing the entire field
-     * value (the text field can be very large) it stores a short snippet showing
-     * the matched word(s) with surrounding context, e.g. "...word matchWord word...".
+     * Records a match for the given field, but instead of storing the entire
+     * field value (the text field can be very large) it stores a short snippet
+     * showing the matched word(s) with surrounding context, e.g. "...word
+     * matchWord word...".
      *
-     * For multi-word searches the snippet is based on the shortest region of the
-     * field that contains every matched word (a minimum window), so the result
-     * shows the tightest place where the words occur together. If words within
-     * that window are more than SEARCH_SNIPPET_MAX_GAP_WORDS apart the snippet is
-     * split into separate blocks joined by ellipses rather than one long run. The
-     * pattern wraps each search word in its own capturing group, which is how an
-     * individual match is attributed to a word.
+     * For multi-word searches the snippet is based on the shortest region of
+     * the field that contains every matched word (a minimum window), so the
+     * result shows the tightest place where the words occur together. If words
+     * within that window are more than SEARCH_SNIPPET_MAX_GAP_WORDS apart the
+     * snippet is split into separate blocks joined by ellipses rather than one
+     * long run. The pattern wraps each search word in its own capturing group,
+     * which is how an individual match is attributed to a word.
      */
     private void addMatchSnippet(SearchResult searchResult, String key, String fieldValue, Pattern searchPattern) {
         if (fieldValue == null || fieldValue.isEmpty()) {
@@ -420,7 +430,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     public void setEnteredOnDateTime(Date enteredOnDateTime) {
         this.enteredOnDateTime = enteredOnDateTime;
     }
-    
+
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     public Date getEffectiveFromDateTime() {
         if (effectiveFromDateTime == null) {
@@ -483,13 +493,13 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     public void setTargetValue(String targetValue) {
         this.targetValue = targetValue;
     }
-    
+
     @JsonIgnore
     public String getFilterValue() {
         if (displayValue != null && !displayValue.isEmpty()) {
-            return displayValue; 
+            return displayValue;
         }
-        return value; 
+        return value;
     }
 
     @XmlTransient
@@ -526,6 +536,15 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
         this.itemList = itemList;
     }
 
+    @JsonIgnore
+    public Item getSearchResultParentItem() {
+        return searchResultParentItem;
+    }
+
+    public void setSearchResultParentItem(Item searchResultParentItem) {
+        this.searchResultParentItem = searchResultParentItem;
+    }
+
     @XmlTransient
     public List<ItemElement> getItemElementList() {
         return itemElementList;
@@ -559,7 +578,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     public List<PropertyMetadata> getPropertyMetadataList() {
         return propertyMetadataList;
     }
-    
+
     @Override
     @JsonIgnore
     public List<PropertyMetadataBase> getPropertyMetadataBaseList() {
@@ -593,31 +612,31 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
                     && ObjectUtility.equals(this.value, other.value)
                     && ObjectUtility.equals(this.units, other.units)
                     && ObjectUtility.equals(this.description, other.description));
-            
+
             if (equal) {
                 if (this.getIsHasPropertyMetadata()) {
                     if (other.getIsHasPropertyMetadata()) {
                         for (PropertyMetadata pm : this.getPropertyMetadataList()) {
                             String metadataKey = pm.getMetadataKey();
-                            PropertyMetadata otherPm = other.getPropertyMetadataForKey(metadataKey); 
+                            PropertyMetadata otherPm = other.getPropertyMetadataForKey(metadataKey);
                             if ((otherPm == null) || (ObjectUtility.equals(pm.getMetadataValue(), otherPm.getMetadataValue()) == false)) {
-                                equal = false; 
-                                break; 
+                                equal = false;
+                                break;
                             }
                         }
                     } else {
-                        equal = false; 
-                    }                 
+                        equal = false;
+                    }
                 } else if (other.getIsHasPropertyMetadata()) {
-                    equal = false; 
+                    equal = false;
                 }
             }
-            
+
             return equal;
         }
         return false;
     }
-    
+
     public Boolean getBooleanValue() {
         if (booleanValue == null) {
             if (value == null || value.isEmpty()) {
@@ -695,7 +714,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
 
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
-        this.editModeWidgets = editMode; 
+        this.editModeWidgets = editMode;
     }
 
     public boolean isEditModeWidgets() {
@@ -711,9 +730,9 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
             if (propertyType != null) {
                 List<PropertyTypeMetadata> propertyTypeMetadataList = propertyType.getPropertyTypeMetadataList();
                 if (propertyTypeMetadataList == null) {
-                    return propertyValueMetadataList; 
+                    return propertyValueMetadataList;
                 }
-                
+
                 propertyValueMetadataList = new ArrayList<>();
 
                 for (PropertyTypeMetadata ptm : propertyTypeMetadataList) {
@@ -828,7 +847,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
         cloned.itemConnectorList = null;
         cloned.connectorList = null;
         cloned.propertyValueHistoryList = null;
-        
+
         if (cloned.propertyMetadataList != null) {
             List<PropertyMetadata> pmd = cloned.propertyMetadataList;
             cloned.propertyMetadataList = new ArrayList<>();
@@ -837,7 +856,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
                 pmetadata.setPropertyValue(cloned);
                 pmetadata.setMetadataKey(propertyMetadata.getMetadataKey());
                 pmetadata.setMetadataValue(propertyMetadata.getMetadataValue());
-                cloned.propertyMetadataList.add(pmetadata); 
+                cloned.propertyMetadataList.add(pmetadata);
             }
         }
         cloned.tag = tag;
@@ -863,7 +882,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
                 String value = apv.getValue();
                 if (value.equals(this.value)) {
                     selectedAllowedPropertyValue = apv;
-                    break; 
+                    break;
                 }
             }
         }
@@ -873,7 +892,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     public void setSelectedAllowedPropertyValue(AllowedPropertyValue selectedAllowedPropertyValue) {
         this.selectedAllowedPropertyValue = selectedAllowedPropertyValue;
         if (selectedAllowedPropertyValue != null) {
-            this.value = selectedAllowedPropertyValue.getValue(); 
+            this.value = selectedAllowedPropertyValue.getValue();
         }
     }
 
@@ -948,7 +967,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
         }
 
     }
-    
+
     @XmlTransient
     public List<Attachment> getAttachmentList() {
         return attachmentList;
