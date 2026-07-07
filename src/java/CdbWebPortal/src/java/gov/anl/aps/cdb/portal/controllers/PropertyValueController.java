@@ -134,6 +134,21 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
             return;
         }
 
+        // Verify the permalinked property value actually belongs to the item in the URL.
+        // Guards against hand-edited/stale permalinks pointing a property at the wrong item.
+        String itemIdParam = SessionUtility.getRequestParameterValue("id");
+        if (itemIdParam != null) {
+            Item parentItem = propertyValueFacade.getParentItemForPropertyValue(pvId);
+            if (parentItem == null || !itemIdParam.equals(String.valueOf(parentItem.getId()))) {
+                String detail = "Property (id " + pvId + ") does not exist for this item.";
+                if (parentItem != null) {
+                    detail += " See item " + parentItem.toString() + " (id " + parentItem.getId() + ").";
+                }
+                SessionUtility.addWarningMessage("Warning", detail);
+                return;
+            }
+        }
+
         if (displayMarkdownValue(propertyValue)) {
             setCurrentAndUpdateGeneratedHTML(propertyValue);
             openMarkdownDialogOnLoad = true;
