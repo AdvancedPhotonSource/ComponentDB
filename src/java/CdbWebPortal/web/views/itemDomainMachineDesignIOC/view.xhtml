@@ -53,6 +53,12 @@ See LICENSE file.
                  styleClass="iocInstructionsPanel"
                  header="IOC Instructions" toggleable="true">
             <f:facet name="actions">
+                <ui:fragment rendered="#{coreMetadataProperty != null}">
+                    <ui:include src="../propertyValue/private/propertyValuePermalinkActionButton.xhtml">
+                        <ui:param name="propertyValueObject" value="#{coreMetadataProperty}" />
+                    </ui:include>
+                </ui:fragment>
+
                 <p:commandLink styleClass="fa fa-link-icon fa-pencil-square-o" title="Edit"
                                rendered="#{isEntityWriteable}"
                                onclick="editIOCInstructions()" />
