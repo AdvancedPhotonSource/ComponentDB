@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.utilities.FileUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 import java.io.Serializable;
@@ -154,6 +155,7 @@ public class Attachment implements Serializable {
         return "gov.anl.aps.cdb.portal.model.db.entities.Attachment[ id=" + id + " ]";
     }
 
+    @JsonIgnore
     public String getFilePath() {
         if (filePath == null) {
             filePath = StorageUtility.getApplicationLogAttachmentPath(name);
