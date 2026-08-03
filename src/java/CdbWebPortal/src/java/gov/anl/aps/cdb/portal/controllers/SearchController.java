@@ -91,8 +91,14 @@ public class SearchController implements Serializable {
                 else if (controller instanceof ItemDomainInventoryController) {
                     if (!searchSettings.getDisplayInventoryItems()) continue;
                 } 
+                else if (controller instanceof ItemDomainMachineDesignIOCController) {
+                    if (!searchSettings.getDisplayIOCItems()) continue;
+                }
                 else if (controller instanceof ItemDomainMachineDesignController) {
                     if (!searchSettings.getDisplayMachineDesignItems()) continue;
+                }
+                else if (controller instanceof ItemDomainAppController) {
+                    if (!searchSettings.getDisplayAppItems()) continue;
                 }
                 else if (controller instanceof ItemDomainCableCatalogController) {
                     if (!searchSettings.getDisplayCableCatalogItems()) continue;
@@ -114,6 +120,9 @@ public class SearchController implements Serializable {
                 }
                 else if (controller instanceof ItemDomainLocationController) {
                     if (!searchSettings.getDisplayLocationItems()) continue;
+                }
+                else if (controller instanceof PropertyValueController) {
+                    if (!searchSettings.getDisplayPropertyValues()) continue;
                 }
                 else if (controller instanceof PropertyTypeController) {
                     if (!searchSettings.getDisplayPropertyTypes()) continue;

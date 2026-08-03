@@ -24,6 +24,8 @@ public class ItemMetadataPropertyInfo {
 
     private String defaultPropertyText = null;
 
+    private String propertyTypeHandlerName = null;
+
     private List<ItemMetadataFieldInfo> fieldList = new ArrayList<>();
     private Map<String, ItemMetadataFieldInfo> fieldMap = new HashMap<>();
     private Map<String, List<ItemMetadataFieldInfo>> groupMap = new HashMap<>();
@@ -64,6 +66,14 @@ public class ItemMetadataPropertyInfo {
 
     public void setDefaultPropertyText(String defaultPropertyText) {
         this.defaultPropertyText = defaultPropertyText;
+    }
+
+    public String getPropertyTypeHandlerName() {
+        return propertyTypeHandlerName;
+    }
+
+    public void setPropertyTypeHandlerName(String propertyTypeHandlerName) {
+        this.propertyTypeHandlerName = propertyTypeHandlerName;
     }
 
     public void addField(

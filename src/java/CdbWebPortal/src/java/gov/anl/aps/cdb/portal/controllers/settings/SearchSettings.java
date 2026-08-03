@@ -27,11 +27,14 @@ public class SearchSettings<EntityController extends SearchController> extends S
     private static final String DisplayLocationsSettingTypeKey = "Search.Display.ItemDomainLocation";
     private static final String DisplayCatalogItemsSettingTypeKey = "Search.Display.ItemDomainCatalog";
     private static final String DisplayInventoryItemsSettingTypeKey = "Search.Display.ItemDomainInventory";
-    private static final String DisplayMachineDesignItemsSettingTypeKey = "Search.DisplayItemDomainMachineDesign"; 
+    private static final String DisplayMachineDesignItemsSettingTypeKey = "Search.DisplayItemDomainMachineDesign";
+    private static final String DisplayIOCItemsSettingTypeKey = "Search.Display.ItemDomainMachineDesignIOC";
+    private static final String DisplayAppItemsSettingTypeKey = "Search.Display.ItemDomainApp";
     private static final String DisplayCableCatalogItemsSettingTypeKey = "Search.Display.ItemDomainCableCatalog";
     private static final String DisplayCableInventoryItemsSettingTypeKey = "Search.Display.ItemDomainCableInventory";
     private static final String DisplayCableDesignItemsSettingTypeKey = "Search.Display.ItemDomainCableDesign"; 
     private static final String DisplayMAARCItemsSettingTypeKey= "Search.Display.ItemDomainMAARC"; 
+    private static final String DisplayPropertyValuesSettingTypeKey = "Search.Display.PropertyValue";
     private static final String DisplayPropertyTypesSettingTypeKey = "Search.Display.PropertyTypes";
     private static final String DisplayPropertyTypeCategoriesSettingTypeKey = "Search.Display.PropertyTypeCategories";
     private static final String DisplaySourcesSettingTypeKey = "Search.Display.Sources";
@@ -41,6 +44,8 @@ public class SearchSettings<EntityController extends SearchController> extends S
     private Boolean caseInsensitive = true;
     
     protected Boolean displayMachineDesignItems = null;
+    protected Boolean displayIOCItems = null;
+    protected Boolean displayAppItems = null;
     protected Boolean displayCatalogItems = null;
     protected Boolean displayInventoryItems = null;
     protected Boolean displayCableCatalogItems = null;
@@ -51,6 +56,7 @@ public class SearchSettings<EntityController extends SearchController> extends S
     protected Boolean displayItemTypes = null;
     protected Boolean displayItemCategories = null;
     protected Boolean displayItemElements = null;
+    protected Boolean displayPropertyValues = null;
     protected Boolean displayPropertyTypes = null;
     protected Boolean displayPropertyTypeCategories = null;
     protected Boolean displaySources = null;
@@ -70,7 +76,9 @@ public class SearchSettings<EntityController extends SearchController> extends S
         caseInsensitive = Boolean.parseBoolean(settingTypeMap.get(CaseInsensitiveSettingTypeKey).getDefaultValue());
         displayCatalogItems = Boolean.parseBoolean(settingTypeMap.get(DisplayCatalogItemsSettingTypeKey).getDefaultValue());
         displayInventoryItems = Boolean.parseBoolean(settingTypeMap.get(DisplayInventoryItemsSettingTypeKey).getDefaultValue());
-        displayMachineDesignItems = Boolean.parseBoolean(settingTypeMap.get(DisplayMachineDesignItemsSettingTypeKey).getDefaultValue()); 
+        displayMachineDesignItems = Boolean.parseBoolean(settingTypeMap.get(DisplayMachineDesignItemsSettingTypeKey).getDefaultValue());
+        displayIOCItems = Boolean.parseBoolean(settingTypeMap.get(DisplayIOCItemsSettingTypeKey).getDefaultValue());
+        displayAppItems = Boolean.parseBoolean(settingTypeMap.get(DisplayAppItemsSettingTypeKey).getDefaultValue());
         displayCableCatalogItems = Boolean.parseBoolean(settingTypeMap.get(DisplayCableCatalogItemsSettingTypeKey).getDefaultValue());
         displayCableInventoryItems = Boolean.parseBoolean(settingTypeMap.get(DisplayCableInventoryItemsSettingTypeKey).getDefaultValue()); 
         displayCableDesignItems = Boolean.parseBoolean(settingTypeMap.get(DisplayCableDesignItemsSettingTypeKey).getDefaultValue());
@@ -79,6 +87,7 @@ public class SearchSettings<EntityController extends SearchController> extends S
         displayItemCategories = Boolean.parseBoolean(settingTypeMap.get(DisplayItemCategoriesSettingTypeKey).getDefaultValue());
         displayItemElements = Boolean.parseBoolean(settingTypeMap.get(DisplayItemElementsSettingTypeKey).getDefaultValue());
         displayLocationItems = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationsSettingTypeKey).getDefaultValue());
+        displayPropertyValues = Boolean.parseBoolean(settingTypeMap.get(DisplayPropertyValuesSettingTypeKey).getDefaultValue());
         displayPropertyTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayPropertyTypesSettingTypeKey).getDefaultValue());
         displayPropertyTypeCategories = Boolean.parseBoolean(settingTypeMap.get(DisplayPropertyTypeCategoriesSettingTypeKey).getDefaultValue());
         displaySources = Boolean.parseBoolean(settingTypeMap.get(DisplaySourcesSettingTypeKey).getDefaultValue());
@@ -95,8 +104,10 @@ public class SearchSettings<EntityController extends SearchController> extends S
         caseInsensitive = settingEntity.getSettingValueAsBoolean(CaseInsensitiveSettingTypeKey, caseInsensitive);
         displayCatalogItems = settingEntity.getSettingValueAsBoolean(DisplayCatalogItemsSettingTypeKey, displayCatalogItems);
         displayInventoryItems = settingEntity.getSettingValueAsBoolean(DisplayInventoryItemsSettingTypeKey, displayInventoryItems);
-        displayMachineDesignItems = settingEntity.getSettingValueAsBoolean(DisplayMachineDesignItemsSettingTypeKey, displayMachineDesignItems); 
-        displayCableCatalogItems = settingEntity.getSettingValueAsBoolean(DisplayCableCatalogItemsSettingTypeKey, displayCableCatalogItems); 
+        displayMachineDesignItems = settingEntity.getSettingValueAsBoolean(DisplayMachineDesignItemsSettingTypeKey, displayMachineDesignItems);
+        displayIOCItems = settingEntity.getSettingValueAsBoolean(DisplayIOCItemsSettingTypeKey, displayIOCItems);
+        displayAppItems = settingEntity.getSettingValueAsBoolean(DisplayAppItemsSettingTypeKey, displayAppItems);
+        displayCableCatalogItems = settingEntity.getSettingValueAsBoolean(DisplayCableCatalogItemsSettingTypeKey, displayCableCatalogItems);
         displayCableInventoryItems = settingEntity.getSettingValueAsBoolean(DisplayCableInventoryItemsSettingTypeKey, displayCableInventoryItems);
         displayCableDesignItems = settingEntity.getSettingValueAsBoolean(DisplayCableDesignItemsSettingTypeKey, displayCableDesignItems);
         displayMAARCItems = settingEntity.getSettingValueAsBoolean(DisplayMAARCItemsSettingTypeKey, displayMAARCItems); 
@@ -104,6 +115,7 @@ public class SearchSettings<EntityController extends SearchController> extends S
         displayItemCategories = settingEntity.getSettingValueAsBoolean(DisplayItemCategoriesSettingTypeKey, displayItemCategories);
         displayItemElements = settingEntity.getSettingValueAsBoolean(DisplayItemElementsSettingTypeKey, displayItemElements);
         displayLocationItems = settingEntity.getSettingValueAsBoolean(DisplayLocationsSettingTypeKey, displayLocationItems);
+        displayPropertyValues = settingEntity.getSettingValueAsBoolean(DisplayPropertyValuesSettingTypeKey, displayPropertyValues);
         displayPropertyTypes = settingEntity.getSettingValueAsBoolean(DisplayPropertyTypesSettingTypeKey, displayPropertyTypes);
         displayPropertyTypeCategories = settingEntity.getSettingValueAsBoolean(DisplayPropertyTypeCategoriesSettingTypeKey, displayPropertyTypeCategories);
         displaySources = settingEntity.getSettingValueAsBoolean(DisplaySourcesSettingTypeKey, displaySources);
@@ -122,7 +134,9 @@ public class SearchSettings<EntityController extends SearchController> extends S
         settingEntity.setSettingValue(DisplayInventoryItemsSettingTypeKey, displayCatalogItems);
         settingEntity.setSettingValue(DisplayCatalogItemsSettingTypeKey, displayInventoryItems);
         settingEntity.setSettingValue(DisplayMachineDesignItemsSettingTypeKey, displayMachineDesignItems);
-        settingEntity.setSettingValue(DisplayCableCatalogItemsSettingTypeKey, displayCableCatalogItems); 
+        settingEntity.setSettingValue(DisplayIOCItemsSettingTypeKey, displayIOCItems);
+        settingEntity.setSettingValue(DisplayAppItemsSettingTypeKey, displayAppItems);
+        settingEntity.setSettingValue(DisplayCableCatalogItemsSettingTypeKey, displayCableCatalogItems);
         settingEntity.setSettingValue(DisplayCableInventoryItemsSettingTypeKey, displayCableInventoryItems);
         settingEntity.setSettingValue(DisplayCableDesignItemsSettingTypeKey, displayCableDesignItems);
         settingEntity.setSettingValue(DisplayMAARCItemsSettingTypeKey, displayMAARCItems);
@@ -130,6 +144,7 @@ public class SearchSettings<EntityController extends SearchController> extends S
         settingEntity.setSettingValue(DisplayItemCategoriesSettingTypeKey, displayItemCategories);
         settingEntity.setSettingValue(DisplayItemElementsSettingTypeKey, displayItemElements);
         settingEntity.setSettingValue(DisplayLocationsSettingTypeKey, displayLocationItems);
+        settingEntity.setSettingValue(DisplayPropertyValuesSettingTypeKey, displayPropertyValues);
         settingEntity.setSettingValue(DisplayPropertyTypesSettingTypeKey, displayPropertyTypes);
         settingEntity.setSettingValue(DisplayPropertyTypeCategoriesSettingTypeKey, displayPropertyTypeCategories);
         settingEntity.setSettingValue(DisplaySourcesSettingTypeKey, displaySources);
@@ -159,6 +174,30 @@ public class SearchSettings<EntityController extends SearchController> extends S
 
     public void setDisplayMachineDesignItems(Boolean displayMachineDesignItems) {
         this.displayMachineDesignItems = displayMachineDesignItems;
+    }
+
+    public Boolean getDisplayIOCItems() {
+        return displayIOCItems;
+    }
+
+    public void setDisplayIOCItems(Boolean displayIOCItems) {
+        this.displayIOCItems = displayIOCItems;
+    }
+
+    public Boolean getDisplayAppItems() {
+        return displayAppItems;
+    }
+
+    public void setDisplayAppItems(Boolean displayAppItems) {
+        this.displayAppItems = displayAppItems;
+    }
+
+    public Boolean getDisplayPropertyValues() {
+        return displayPropertyValues;
+    }
+
+    public void setDisplayPropertyValues(Boolean displayPropertyValues) {
+        this.displayPropertyValues = displayPropertyValues;
     }
 
     public Boolean getDisplayCatalogItems() {

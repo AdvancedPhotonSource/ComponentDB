@@ -29,6 +29,12 @@ See LICENSE file.
             <p:selectBooleanCheckbox id="displayMachineDesignItems" value="#{entitySettingObject.displayMachineDesignItems}"/>
             <h:outputLabel for="displayMachineDesignItems" value="Search Machine Design Items" styleClass="dialogDataLabel"/>
 
+            <p:selectBooleanCheckbox id="displayIOCItems" value="#{entitySettingObject.displayIOCItems}"/>
+            <h:outputLabel for="displayIOCItems" value="Search IOC Items" styleClass="dialogDataLabel"/>
+
+            <p:selectBooleanCheckbox id="displayAppItems" value="#{entitySettingObject.displayAppItems}"/>
+            <h:outputLabel for="displayAppItems" value="Search Applications" styleClass="dialogDataLabel"/>
+
             <p:selectBooleanCheckbox id="displayCatalogItems" value="#{entitySettingObject.displayCatalogItems}"/>
             <h:outputLabel for="displayCatalogItems" value="Search Catalog Items" styleClass="dialogDataLabel"/>
 
@@ -58,6 +64,9 @@ See LICENSE file.
             
             <p:selectBooleanCheckbox id="displayMAARCItems" value="#{entitySettingObject.displayMAARCItems}"/>
             <h:outputLabel for="displayMAARCItems" value="Search MAARC Items" styleClass="dialogDataLabel"/>
+
+            <p:selectBooleanCheckbox id="displayPropertyValues" value="#{entitySettingObject.displayPropertyValues}"/>
+            <h:outputLabel for="displayPropertyValues" value="Search Property Values" styleClass="dialogDataLabel"/>
 
             <p:selectBooleanCheckbox id="displayPropertyTypes" value="#{entitySettingObject.displayPropertyTypes}"/>
             <h:outputLabel for="displayPropertyTypes" value="Search Property Types" styleClass="dialogDataLabel"/>

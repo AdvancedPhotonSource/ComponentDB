@@ -89,9 +89,11 @@ See LICENSE file.
         </f:facet>
 
         <p:outputPanel id="propertyValueMarkdownValueDialogContent#{viewId}">                                    
-            <h:outputText escape="false" 
-                          value="#{propertyValueObject.generatedHTMLText}" styleClass="markdownGeneratedContent"
-                          rendered="#{!propertyValueObject.editMode}"/>                         
+            <ui:fragment rendered="#{!propertyValueObject.editMode}">
+                <ui:include src="../markdownGeneratedContentOutput.xhtml">
+                    <ui:param name="markdownHtmlValue" value="#{propertyValueObject.generatedHTMLText}" />
+                </ui:include>
+            </ui:fragment>
 
             <p:tabView id="propertyValueMarkdownValueDialogEditTabView#{viewId}"
                        widgetVar="propertyValueMarkdownValueDialogEditTabViewWidget"

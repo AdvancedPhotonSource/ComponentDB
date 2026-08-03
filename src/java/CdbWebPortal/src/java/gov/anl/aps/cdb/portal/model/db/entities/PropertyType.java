@@ -119,7 +119,7 @@ public class PropertyType extends CdbEntity implements Serializable {
     @ManyToOne
     private PropertyTypeCategory propertyTypeCategory;
     @JoinColumn(name = "property_type_handler_id", referencedColumnName = "id")
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     private PropertyTypeHandler propertyTypeHandler;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
     private List<PropertyTypeMetadata> propertyTypeMetadataList;

@@ -18,6 +18,8 @@ public class SearchEntitiesOptions {
     private final boolean includeCableInventory;
     private final boolean includeCableDesign;
     private final boolean includeMachineDesign;
+    private final boolean includeIOC;
+    private final boolean includeApp;
     private final boolean includeItemLocation;
     private final boolean includeMAARC; 
     private final boolean includeItemElement;
@@ -41,6 +43,8 @@ public class SearchEntitiesOptions {
         this.includeMAARC = false;
         this.includeItemLocation = false;
         this.includeMachineDesign = false;
+        this.includeIOC = false;
+        this.includeApp = false;
         this.includeCableDesign = false;
         this.includeCableInventory = false;
         this.includeCableCatalog = false;
@@ -74,6 +78,14 @@ public class SearchEntitiesOptions {
 
     public boolean isIncludeMachineDesign() {
         return includeMachineDesign;
+    }
+
+    public boolean isIncludeIOC() {
+        return includeIOC;
+    }
+
+    public boolean isIncludeApp() {
+        return includeApp;
     }
 
     public boolean isIncludeItemLocation() {

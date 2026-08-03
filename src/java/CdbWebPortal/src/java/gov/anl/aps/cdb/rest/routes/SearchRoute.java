@@ -9,8 +9,10 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemCategoryControllerUtilit
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableCatalogControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableInventoryControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainAppControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignIOCControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMAARCControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
@@ -82,6 +84,16 @@ public class SearchRoute {
             ItemDomainMachineDesignControllerUtility machineDesignControllerUtility = new ItemDomainMachineDesignControllerUtility();
             LinkedList<SearchResult> machineDesignResults = machineDesignControllerUtility.performEntitySearch(searchText, true);
             results.setItemDomainMachineDesignResults(machineDesignResults);
+        }
+        if (searchEntitiesOptions.isIncludeIOC()) {
+            ItemDomainMachineDesignIOCControllerUtility iocControllerUtility = new ItemDomainMachineDesignIOCControllerUtility();
+            LinkedList<SearchResult> iocResults = iocControllerUtility.performEntitySearch(searchText, true);
+            results.setItemDomainMachineDesignIOCResults(iocResults);
+        }
+        if (searchEntitiesOptions.isIncludeApp()) {
+            ItemDomainAppControllerUtility appControllerUtility = new ItemDomainAppControllerUtility();
+            LinkedList<SearchResult> appResults = appControllerUtility.performEntitySearch(searchText, true);
+            results.setItemDomainAppResults(appResults);
         }
         if (searchEntitiesOptions.isIncludeItemLocation()) {
             ItemDomainLocationControllerUtility locationControllerUtility = new ItemDomainLocationControllerUtility();

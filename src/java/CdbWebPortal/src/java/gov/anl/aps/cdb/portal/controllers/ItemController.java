@@ -1906,6 +1906,18 @@ public abstract class ItemController<
             urlParams += "mode=" + mode + "&";
         }
 
+        // Forward a property permalink target through the domain redirect so the
+        // domain view can open the corresponding property dialog on load.
+        String propertyValueIdParam = SessionUtility.getRequestParameterValue("propertyValueId");
+        if (propertyValueIdParam != null) {
+            try {
+                Integer propertyValueId = Integer.parseInt(propertyValueIdParam);
+                urlParams += "propertyValueId=" + propertyValueId + "&";
+            } catch (NumberFormatException ex) {
+                // Ignore a malformed permalink parameter.
+            }
+        }
+
         try {
             if (paramValue != null) {
                 idParam = Integer.parseInt(paramValue);

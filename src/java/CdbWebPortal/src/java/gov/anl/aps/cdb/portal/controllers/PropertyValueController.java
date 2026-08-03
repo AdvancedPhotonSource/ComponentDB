@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue.PropertyValueMetadata;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueBase;
@@ -63,6 +64,122 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
 
     public static PropertyValueController getInstance() {
         return (PropertyValueController) SessionUtility.findBean("propertyValueController");
+    }
+
+    /**
+     * Short property permalink entry point. Backs the page
+     * {@code /views/propertyValue/redirect?id=<propertyValueId>}: resolves the
+     * owning item for the supplied property value id and redirects to that
+     * item's view page with the property value's dialog opened on load.
+     *
+     * @return faces navigation outcome to the owning item view, or to the home
+     * page when the property value or its parent item cannot be resolved
+     */
+    public String redirectToItemForPropertyValueViewParam() {
+        String idParam = SessionUtility.getRequestParameterValue("id");
+        if (idParam == null) {
+            SessionUtility.addWarningMessage("Warning", "No property value id supplied.");
+            return "/index.xhtml?faces-redirect=true";
+        }
+        Integer propertyValueId;
+        try {
+            propertyValueId = Integer.parseInt(idParam);
+        } catch (NumberFormatException ex) {
+            SessionUtility.addWarningMessage("Warning", "Invalid property value id: " + idParam);
+            return "/index.xhtml?faces-redirect=true";
+        }
+        Item parentItem = propertyValueFacade.getParentItemForPropertyValue(propertyValueId);
+        if (parentItem == null) {
+            SessionUtility.addWarningMessage("Warning",
+                    "No item found for property value id " + propertyValueId + ".");
+            return "/index.xhtml?faces-redirect=true";
+        }
+        return "/views/item/view.xhtml?faces-redirect=true&id=" + parentItem.getId()
+                + "&propertyValueId=" + propertyValueId;
+    }
+
+    private boolean openMarkdownDialogOnLoad = false;
+    private boolean openDetailsDialogOnLoad = false;
+
+    /**
+     * Handle a property permalink request. When the view is loaded with a
+     * {@code propertyValueId} request parameter, automatically open the
+     * relevant dialog for that property value: the markdown dialog for markdown
+     * properties, or a read-only details dialog otherwise. The parent item is
+     * already loaded by the item controller's view action which runs before
+     * this one.
+     */
+    @Override
+    public void processPreRender() {
+        super.processPreRender();
+
+        openMarkdownDialogOnLoad = false;
+        openDetailsDialogOnLoad = false;
+
+        String pvIdParam = SessionUtility.getRequestParameterValue("propertyValueId");
+        if (pvIdParam == null) {
+            return;
+        }
+
+        Integer pvId;
+        try {
+            pvId = Integer.parseInt(pvIdParam);
+        } catch (NumberFormatException ex) {
+            // Ignore a malformed permalink parameter; the page still loads.
+            return;
+        }
+
+        PropertyValue propertyValue = findById(pvId);
+        if (propertyValue == null) {
+            return;
+        }
+
+        // Verify the permalinked property value actually belongs to the item in the URL.
+        // Guards against hand-edited/stale permalinks pointing a property at the wrong item.
+        String itemIdParam = SessionUtility.getRequestParameterValue("id");
+        if (itemIdParam != null) {
+            Item parentItem = propertyValueFacade.getParentItemForPropertyValue(pvId);
+            if (parentItem == null || !itemIdParam.equals(String.valueOf(parentItem.getId()))) {
+                String detail = "Property (id " + pvId + ") does not exist for this item.";
+                if (parentItem != null) {
+                    detail += " See item " + parentItem.toString() + " (id " + parentItem.getId() + ").";
+                }
+                SessionUtility.addWarningMessage("Warning", detail);
+                return;
+            }
+        }
+
+        if (displayMarkdownValue(propertyValue)) {
+            setCurrentAndUpdateGeneratedHTML(propertyValue);
+            openMarkdownDialogOnLoad = true;
+        } else {
+            setCurrent(propertyValue);
+            openDetailsDialogOnLoad = true;
+        }
+    }
+
+    /**
+     * Whether the markdown dialog should be shown on initial (non-postback)
+     * page load in response to a property permalink. Gated to non-postback
+     * renders so subsequent ajax updates (e.g. an {@code update="@form"} edit)
+     * do not reopen the dialog.
+     */
+    public boolean isOpenMarkdownDialogOnLoad() {
+        if (FacesContext.getCurrentInstance().isPostback()) {
+            return false;
+        }
+        return openMarkdownDialogOnLoad;
+    }
+
+    /**
+     * Whether the property details dialog should be shown on initial
+     * (non-postback) page load in response to a property permalink.
+     */
+    public boolean isOpenDetailsDialogOnLoad() {
+        if (FacesContext.getCurrentInstance().isPostback()) {
+            return false;
+        }
+        return openDetailsDialogOnLoad;
     }
 
     public boolean isItemElementAssignedToProperty(PropertyValue propertyValue) {
@@ -267,8 +384,19 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
         setCurrent(propertyValue);
     }
 
+    public String getRenderedMarkdownHtml(PropertyValue propertyValue) {
+        if (propertyValue == null) {
+            return null;
+        }
+        if (propertyValue.getGeneratedHTMLText() == null) {
+            propertyValue.setGeneratedHTMLText(
+                    MarkdownParser.parseMarkdownAsHTML(propertyValue.getText()));
+        }
+        return propertyValue.getGeneratedHTMLText();
+    }
+
     public void setCurrentAndUpdateGeneratedHTML(PropertyValue propertyValue) {
-        // Fetch latest text before generating html. 
+        // Fetch latest text before generating html.
         PropertyValue latestProperty = findById(propertyValue.getId());
 
         propertyValue.setText(latestProperty.getText());
@@ -279,6 +407,12 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
         propertyValue.setGeneratedHTMLText(html);
 
         setCurrent(propertyValue);
+    }
+
+    public void setCurrentAndEditMarkdown(PropertyValue propertyValue) {
+        // Load latest text / html and open directly in edit mode.
+        setCurrentAndUpdateGeneratedHTML(propertyValue);
+        propertyValue.setEditMode(true);
     }
 
     public static String getAPIDownloadPath(PropertyValue propertyValue) {

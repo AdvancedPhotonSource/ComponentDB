@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemMetadataIOC;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemMetadataIOC.IOC_ITEM_INTERNAL_PROPERTY_TYPE;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.MarkdownPropertyTypeHandler;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +36,11 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
     }
 
     @Override
+    public List<ItemDomainMachineDesign> searchEntities(String searchString) {
+        return itemFacade.searchIOCItems(searchString);
+    }
+
+    @Override
     public String getDisplayEntityTypeName() {
         return "IOC Item";
     }
@@ -44,6 +50,8 @@ public class ItemDomainMachineDesignIOCControllerUtility extends ItemDomainMachi
 
         ItemMetadataPropertyInfo info
                 = new ItemMetadataPropertyInfo("IOC Metadata", IOC_ITEM_INTERNAL_PROPERTY_TYPE);
+
+        info.setPropertyTypeHandlerName(MarkdownPropertyTypeHandler.HANDLER_NAME);
 
         info.setDefaultPropertyValue("IOC Instructions");
 

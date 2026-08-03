@@ -26,7 +26,9 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
@@ -540,6 +542,13 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         }
         propertyType.setPropertyTypeMetadataList(ptmList);
         propertyType.setDefaultValue(propInfo.getDefaultPropertyValue());
+
+        String handlerName = propInfo.getPropertyTypeHandlerName();
+        if (handlerName != null) {
+            PropertyTypeHandler handler
+                    = PropertyTypeHandlerFacade.getInstance().findByName(handlerName);
+            propertyType.setPropertyTypeHandler(handler);
+        }
 
         try {
             propertyTypeControllerUtility.create(propertyType, null);

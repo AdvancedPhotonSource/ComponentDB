@@ -15,10 +15,32 @@ See LICENSE file.
              collapsed="#{!itemDomainMachineDesignController.displaySearchResultList}"
              toggleable="true">
         <ui:include src="../../itemDomainMachineDesignBase/private/itemDomainMachineDesignSearchTreeTable.xhtml"/>
-        
+
         <ui:include src="searchResultLimitDisclaimer.xhtml" />
     </p:panel>
-    
+
+    <p:panel header="#{itemDomainMachineDesignIOCController.displayEntityTypeName}s"
+             rendered="#{entitySettingObject.displayIOCItems}"
+             collapsed="#{!itemDomainMachineDesignIOCController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../item/private/itemSearchDataTable.xhtml">
+            <ui:param name="itemDomainController" value="#{itemDomainMachineDesignIOCController}" />
+        </ui:include>
+
+        <ui:include src="searchResultLimitDisclaimer.xhtml" />
+    </p:panel>
+
+    <p:panel header="Applications"
+             rendered="#{entitySettingObject.displayAppItems}"
+             collapsed="#{!itemDomainAppController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../item/private/itemSearchDataTable.xhtml">
+            <ui:param name="itemDomainController" value="#{itemDomainAppController}" />
+        </ui:include>
+
+        <ui:include src="searchResultLimitDisclaimer.xhtml" />
+    </p:panel>
+
     <p:panel header="#{itemDomainCatalogController.displayEntityTypeName}s"
              rendered="#{entitySettingObject.displayCatalogItems}"
              collapsed="#{!itemDomainCatalogController.displaySearchResultList}"
@@ -118,12 +140,21 @@ See LICENSE file.
     </p:panel>
 
 
-    <p:panel header="Property Types" 
+    <p:panel header="Property Values"
+             rendered="#{entitySettingObject.displayPropertyValues}"
+             collapsed="#{!propertyValueController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../propertyValue/private/propertyValueSearchDataTable.xhtml"/>
+
+        <ui:include src="searchResultLimitDisclaimer.xhtml" />
+    </p:panel>
+
+    <p:panel header="Property Types"
              rendered="#{entitySettingObject.displayPropertyTypes}"
              collapsed="#{!propertyTypeController.displaySearchResultList}"
              toggleable="true">
         <ui:include src="../../propertyType/private/propertyTypeSearchDataTable.xhtml"/>
-    </p:panel>   
+    </p:panel>
 
     <p:panel header="Property Type Categories" 
              rendered="#{entitySettingObject.displayPropertyTypeCategories}"
