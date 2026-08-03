@@ -77,6 +77,7 @@ class CdbTestBase(unittest.TestCase):
         self.appApi = self.factory.appItemApi
         self.logApi = self.factory.logApi
         self.searchApi = self.factory.searchApi
+        self.downloadsApi = self.factory.downloadsApi
 
     def tearDown(self):
         if self.loggedIn:
