@@ -2018,7 +2018,7 @@ public class Item extends CdbDomainEntity implements Serializable {
 
             boolean valid = true;
 
-            if (ptMeta.getIsHaveAllowedValues()) {
+            if (ptMeta != null && ptMeta.getIsHaveAllowedValues()) {
                 valid = ptMeta.hasAllowedPropertyMetadataValue(value);
             }
 
