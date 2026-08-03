@@ -229,7 +229,7 @@ class ItemCableTest(CdbTestBase):
 
         # Generate metadata
         metadata_dict = {}
-        metadata_keys = ItemDomainCableDesignMetadata.attribute_map.keys()
+        metadata_keys = ItemDomainCableDesignMetadata.model_fields.keys()
         for metadata_key in metadata_keys:
             if metadata_key == "cable_design_id":
                 continue

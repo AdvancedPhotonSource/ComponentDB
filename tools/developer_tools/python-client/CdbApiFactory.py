@@ -145,7 +145,7 @@ class CdbApiFactory:
             username=username, password=password
         )
 
-        token = response[-1][self.HEADER_TOKEN_KEY]
+        token = response.headers[self.HEADER_TOKEN_KEY]
         self.setAuthenticateToken(token)
 
     def setAuthenticateToken(self, token):
@@ -169,10 +169,11 @@ class CdbApiFactory:
         return FileUploadObject(file_name=fileName, base64_binary=b64String)
 
     def parseApiException(self, openApiException):
-        responseType = ApiExceptionMessage.__name__
-        openApiException.data = openApiException.body
-        exObj = self.apiClient.deserialize(openApiException, responseType)
-        exObj.status = openApiException.status
+        exObj = ApiExceptionMessage.from_json(openApiException.body)
+        # `status` is not part of the ApiExceptionMessage schema; attach the HTTP
+        # status code from the exception for callers that report it. Bypass the
+        # pydantic-validated __setattr__, which rejects undeclared fields.
+        object.__setattr__(exObj, "status", openApiException.status)
         return exObj
 
 

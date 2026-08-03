@@ -331,7 +331,7 @@ class ItemMdTest(CdbTestBase):
         rep_machine = (
             self.machineDesignApi.update_representing_assembly_element_for_machine(info)
         )
-        self.assertEquals(
+        self.assertEqual(
             rep_machine.assigned_represented_element.id,
             element_id,
             msg="The represented element was not assigned to item.",
@@ -343,7 +343,7 @@ class ItemMdTest(CdbTestBase):
             self.machineDesignApi.update_representing_assembly_element_for_machine(info)
         )
 
-        self.assertEquals(
+        self.assertEqual(
             rep_machine.assigned_represented_element,
             None,
             msg="The reresented assembly element failed to clear.",

@@ -123,7 +123,7 @@ class PropertyTest(CdbTestBase):
                 found = True
                 break
 
-        self.assertEquals(
+        self.assertEqual(
             found,
             True,
             msg="The allowed value was not found under the updated property type. ",

@@ -63,10 +63,10 @@ class LogTest(CdbTestBase):
         )
 
         # Download the attachment and confirm the bytes match the uploaded file.
-        response = self.downloadsApi.get_log_attachment(
-            attachment_id, _preload_content=False
+        response = self.downloadsApi.get_log_attachment_without_preload_content(
+            attachment_id
         )
-        downloaded_bytes = response.data
+        downloaded_bytes = response.read()
         expected_size = os.path.getsize(self.SAMPLE_DOC_PATH)
         self.assertEqual(len(downloaded_bytes), expected_size)
 
@@ -83,7 +83,7 @@ class LogTest(CdbTestBase):
         # A bogus attachment id should raise.
         fail = False
         try:
-            self.downloadsApi.get_log_attachment(999999999, _preload_content=False)
+            self.downloadsApi.get_log_attachment(999999999)
         except OpenApiException as ex:
             fail = True
         self.assertEqual(fail, True)

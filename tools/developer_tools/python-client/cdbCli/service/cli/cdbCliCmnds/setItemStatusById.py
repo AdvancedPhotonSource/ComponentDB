@@ -27,7 +27,7 @@ def set_item_status_by_id_helper(item_api, prop_type_api, item_id, status):
     status_prop = prop_type_api.get_inventory_status_property_type()
 
     status_list = [
-        status.to_dict()["value"]
+        status.value
         for status in status_prop.sorted_allowed_property_value_list
     ]
 

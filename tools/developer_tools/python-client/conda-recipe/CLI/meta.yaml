@@ -20,13 +20,12 @@ requirements:
     - pip
   run:
     - python
-    - python-dateutil
-    - urllib3
-    - six    
+    - python-dateutil >=2.8.2
+    - urllib3 >=2.6.3,<3.0.0
     - click
     - pandas
-    - rich    
-    - paho-mqtt    
+    - rich
+    - paho-mqtt
     - componentdb-api=={{ version }}
 
 
