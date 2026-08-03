@@ -18,15 +18,18 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControlle
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.LocatableItemControllerUtility;
+import gov.anl.aps.cdb.portal.model.db.beans.AttachmentFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LogFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserGroupFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Attachment;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -65,14 +68,14 @@ import gov.anl.aps.cdb.rest.entities.SimpleLocationInformation;
 import gov.anl.aps.cdb.rest.entities.LogEntryEditInformation;
 import gov.anl.aps.cdb.rest.entities.NewLocationInformation;
 import gov.anl.aps.cdb.rest.entities.SearchEntitiesResults;
+import gov.anl.aps.cdb.rest.utilities.FileUploadUtility;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -123,6 +126,12 @@ public class ItemRoute extends ItemBaseRoute {
 
     @EJB
     ItemCategoryFacade itemCategoryFacade;
+
+    @EJB
+    AttachmentFacade attachmentFacade;
+
+    @EJB
+    LogFacade logFacade;
 
     @GET
     @Path("/ById/{itemId}")
@@ -847,10 +856,10 @@ public class ItemRoute extends ItemBaseRoute {
         if (logEntryEditInformation.getEffectiveDate() != null) {
             newLog.setEffectiveFromDateTime(logEntryEditInformation.getEffectiveDate());
         }
-
-        controllerUtility.update(itemById, updateUser);
-
-        return newLog;
+        
+        Item updatedItem = (Item) controllerUtility.update(itemById, updateUser);
+        Log latestLog = updatedItem.getLogList().get(0);
+        return latestLog; 
     }
 
     @POST
@@ -904,9 +913,7 @@ public class ItemRoute extends ItemBaseRoute {
             throw ex;
         }
 
-        Base64.Decoder decoder = Base64.getDecoder();
-        byte[] decode = decoder.decode(fileUpload.getBase64Binary());
-        ByteArrayInputStream stream = new ByteArrayInputStream(decode);
+        InputStream stream = FileUploadUtility.decodeFileUpload(fileUpload);
 
         ItemControllerUtility itemControllerUtility = dbItem.getItemControllerUtility();
         PropertyType uploadPropertyType = null;
@@ -944,6 +951,45 @@ public class ItemRoute extends ItemBaseRoute {
         pv = pvList.get(lastIdx);
 
         return pv;
+    }
+
+    @POST
+    @Path("/uploadLogAttachment/{itemId}/{logId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    @Operation(summary = "Attach a file to an existing log entry for an item.")
+    public Log uploadLogAttachmentForItem(
+            @PathParam("itemId") int itemId,
+            @PathParam("logId") int logId,
+            @RequestBody(required = true) FileUploadObject fileUpload)
+            throws AuthorizationError, ObjectNotFound, IOException, CdbException {
+        LOGGER.debug("Uploading log attachment for item: " + itemId + " log: " + logId);
+        Item item = getItemByIdBase(itemId);
+        UserInfo updatedByUser = verifyCurrentUserPermissionForItem(item);
+
+        Log log = null;
+        for (Log l : item.getLogList()) {
+            if (l.getId() != null && l.getId() == logId) {
+                log = l;
+                break;
+            }
+        }
+        if (log == null) {
+            throw new ObjectNotFound("Could not find log " + logId + " for item " + itemId);
+        }
+
+        Attachment attachment = FileUploadUtility.writeLogAttachmentFile(
+                fileUpload.getFileName(), FileUploadUtility.decodeFileUpload(fileUpload));
+        attachmentFacade.create(attachment);
+        if (log.getAttachmentList() == null) {
+            log.setAttachmentList(new ArrayList<>());
+        }
+        log.getAttachmentList().add(attachment);
+        logFacade.edit(log);
+
+        return log;
     }
 
     @GET
