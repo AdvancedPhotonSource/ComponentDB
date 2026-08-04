@@ -973,6 +973,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<EntityType> getEntityTypeList() {
         return entityTypeList;
     }
@@ -1083,6 +1084,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemCategory> getItemCategoryList() {
         return itemCategoryList;
     }
@@ -1131,6 +1133,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemType> getItemTypeList() {
         return itemTypeList;
     }
@@ -1157,6 +1160,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemProject> getItemProjectList() {
         return itemProjectList;
     }
@@ -1226,6 +1230,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElement> getFullItemElementList() {
         return fullItemElementList;
     }
@@ -1291,6 +1296,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElement> getItemElementMemberList() {
         return itemElementMemberList;
     }
@@ -1308,6 +1314,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElement> getItemElementMemberList2() {
         return itemElementMemberList2;
     }
@@ -1325,16 +1332,19 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElementHistory> getHistoryMemberList() {
         return historyMemberList;
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElementHistory> getHistoryMemberList2() {
         return historyMemberList2;
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Item> getDerivedFromItemList() {
         return derivedFromItemList;
     }
@@ -1481,6 +1491,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemSource> getItemSourceList() {
         return itemSourceList;
     }

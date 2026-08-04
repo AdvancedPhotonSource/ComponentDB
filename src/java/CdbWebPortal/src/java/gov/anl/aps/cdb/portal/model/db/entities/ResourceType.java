@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -144,6 +145,7 @@ public class ResourceType implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElementRelationshipHistory> getItemElementRelationshipHistoryList() {
         return itemElementRelationshipHistoryList;
     }
@@ -153,6 +155,7 @@ public class ResourceType implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Connector> getConnectorList() {
         return connectorList;
     }
@@ -162,6 +165,7 @@ public class ResourceType implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemResource> getItemResourceList() {
         return itemResourceList;
     }
@@ -171,6 +175,7 @@ public class ResourceType implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElementRelationship> getItemElementRelationshipList() {
         return itemElementRelationshipList;
     }

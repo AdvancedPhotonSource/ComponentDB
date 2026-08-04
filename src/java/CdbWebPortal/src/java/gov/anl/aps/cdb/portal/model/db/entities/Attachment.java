@@ -122,6 +122,7 @@ public class Attachment implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Log> getLogList() {
         return logList;
     }
@@ -164,6 +165,7 @@ public class Attachment implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<PropertyValue> getPropertyValueList() {
         return propertyValueList;
     }

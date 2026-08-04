@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -98,6 +99,7 @@ public class EntityType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<EntityType> getAllowedEntityTypeList() {
         return allowedEntityTypeList;
     }
@@ -107,6 +109,7 @@ public class EntityType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<EntityType> getEntityTypeList1() {
         return entityTypeList1;
     }
@@ -116,6 +119,7 @@ public class EntityType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Item> getItemList() {
         return itemList;
     }
@@ -125,6 +129,7 @@ public class EntityType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<PropertyType> getPropertyTypeList() {
         return propertyTypeList;
     }

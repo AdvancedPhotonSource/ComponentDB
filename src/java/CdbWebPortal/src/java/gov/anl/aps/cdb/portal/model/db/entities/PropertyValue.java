@@ -503,6 +503,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemConnector> getItemConnectorList() {
         return itemConnectorList;
     }
@@ -512,6 +513,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Connector> getConnectorList() {
         return connectorList;
     }
@@ -546,6 +548,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElement> getItemElementList() {
         return itemElementList;
     }
@@ -555,6 +558,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElementRelationship> getItemElementRelationshipList() {
         return itemElementRelationshipList;
     }
@@ -969,6 +973,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Attachment> getAttachmentList() {
         return attachmentList;
     }
