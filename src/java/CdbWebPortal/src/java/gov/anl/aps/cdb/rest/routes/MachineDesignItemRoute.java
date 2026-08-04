@@ -348,6 +348,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @PUT
     @Path("/createPlaceholder/{parentMdId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Create machine placeholder item.")
     @SecurityRequirement(name = "cdbAuth")
     @Secured
@@ -469,6 +470,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @PUT
     @Path("/createControlElement")
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Create machine control top level item.")
     @SecurityRequirement(name = "cdbAuth")
     @Secured
@@ -489,6 +491,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @PUT
     @Path("/createControlRelationship")
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Create machine control relationship.")
     @SecurityRequirement(name = "cdbAuth")
     @Secured
