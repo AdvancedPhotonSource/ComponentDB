@@ -91,7 +91,7 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.jackson-datatype-jsr310-2.19.4.jar}</file>
+                    <file>${file.reference.jackson-datatype-jsr310-2.13.4.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
