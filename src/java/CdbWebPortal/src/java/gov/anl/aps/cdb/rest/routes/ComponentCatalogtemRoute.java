@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.ejb.EJB;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -44,6 +45,7 @@ public class ComponentCatalogtemRoute extends ItemBaseRoute {
     @PUT
     @Path("/create")
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Create catalog item.")
     @SecurityRequirement(name = "cdbAuth")
     @Secured
@@ -63,6 +65,7 @@ public class ComponentCatalogtemRoute extends ItemBaseRoute {
     @PUT
     @Path("/createElement/{catalogItemId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Create catalog item element.")
     @SecurityRequirement(name = "cdbAuth")
     @Secured

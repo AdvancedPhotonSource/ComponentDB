@@ -19,7 +19,7 @@ class CdbTestBase(unittest.TestCase):
     INVENTORY_FIRST_CONTAINED_ITEM_ID = 45
     INVENTORY_FIRST_CONTAINED_NEW_ITEM_ID = 41
     INVENTORY_FIRST_CONTAINED_INVALID_ITEM_ID = 97
-    LOCATION_WITH_INVENTORY_ID = "89"
+    LOCATION_WITH_INVENTORY_ID = 89
     LOC_BUILDING_1_ID = 89
     LOC_ROOM_104_ID = 91
     MACHINE_DESIGN_ID = 93
@@ -44,7 +44,7 @@ class CdbTestBase(unittest.TestCase):
     MD_CONTROL_EXPECTED_PARENT_ID = 109
     MD_CREATED_FROM_TEMPLATE_ID = 118
     TEST_PROPERTY_TYPE_NAME = "Test Property"
-    CONTROL_INTERFACE_PROPERTY_TYPE_ID = "14"
+    CONTROL_INTERFACE_PROPERTY_TYPE_ID = 14
     LOCATION_QRID_TESTUSER_PERMISSIONS = 101111101
     TEST_NEW_CATALOG_ITEM_NAME = "new catalog from test"
     TEST_NEW_INVENTORY_ITEM_TAG = "TEST_TAG"
@@ -77,6 +77,7 @@ class CdbTestBase(unittest.TestCase):
         self.appApi = self.factory.appItemApi
         self.logApi = self.factory.logApi
         self.searchApi = self.factory.searchApi
+        self.downloadsApi = self.factory.downloadsApi
 
     def tearDown(self):
         if self.loggedIn:

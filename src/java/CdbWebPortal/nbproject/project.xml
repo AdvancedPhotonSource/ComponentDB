@@ -87,27 +87,31 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.jackson-core-2.11.2.jar}</file>
+                    <file>${file.reference.jackson-core-2.19.4.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.jackson-datatype-jsr310-2.11.3.jar}</file>
+                    <file>${file.reference.jackson-datatype-jsr310-2.13.4.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.jackson-databind-2.11.2.jar}</file>
+                    <file>${file.reference.jackson-databind-2.19.4.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.jackson-annotations-2.11.2.jar}</file>
+                    <file>${file.reference.jackson-annotations-2.19.4.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.jackson-jaxrs-base-2.11.2.jar}</file>
+                    <file>${file.reference.jackson-jaxrs-base-2.19.4.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.jackson-jaxrs-json-provider-2.11.2.jar}</file>
+                    <file>${file.reference.jackson-jaxrs-json-provider-2.19.4.jar}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library dirs="200">
+                    <file>${file.reference.jackson-dataformat-yaml-2.19.4.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
@@ -119,35 +123,31 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.jackson-dataformat-yaml-2.11.2.jar}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
-                <library dirs="200">
                     <file>${file.reference.classgraph-4.8.31.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.snakeyaml-1.24.jar}</file>
+                    <file>${file.reference.snakeyaml-2.6.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.swagger-annotations-2.1.5.jar}</file>
+                    <file>${file.reference.swagger-annotations-2.2.52.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.swagger-core-2.1.5.jar}</file>
+                    <file>${file.reference.swagger-core-2.2.52.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.swagger-jaxrs2-2.1.5.jar}</file>
+                    <file>${file.reference.swagger-jaxrs2-2.2.52.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.swagger-models-2.1.5.jar}</file>
+                    <file>${file.reference.swagger-models-2.2.52.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.swagger-integration-2.1.5.jar}</file>
+                    <file>${file.reference.swagger-integration-2.2.52.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">

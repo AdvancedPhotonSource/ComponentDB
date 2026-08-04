@@ -7,7 +7,9 @@ package gov.anl.aps.cdb.rest.routes;
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
+import gov.anl.aps.cdb.portal.model.db.beans.AttachmentFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Attachment;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.DocumentPropertyTypeHandler;
@@ -41,6 +43,25 @@ public class DownloadRoute extends BaseRoute {
 
     @EJB
     PropertyValueFacade propertyValueFacade;
+
+    @EJB
+    AttachmentFacade attachmentFacade;
+
+    @GET
+    @Path("/LogAttachment/{attachmentId}")
+    public Response getLogAttachment(@PathParam("attachmentId") Integer attachmentId) throws FileNotFoundException, ObjectNotFound {
+        Attachment attachment = attachmentFacade.find(attachmentId);
+        if (attachment == null) {
+            throw new ObjectNotFound("Could not find an attachment with id: " + attachmentId);
+        }
+        String storedFileName = attachment.getName();
+        String originalFileName = attachment.getOriginalFilename();
+        if (originalFileName == null) {
+            originalFileName = storedFileName;
+        }
+        String filePath = StorageUtility.getFileSystemLogAttachmentPath(storedFileName);
+        return getFileResponse("Log attachment: " + originalFileName, originalFileName, filePath, true);
+    }
 
     @GET
     @Path("/PropertyValue/Image/{imageName}/{scaling}")

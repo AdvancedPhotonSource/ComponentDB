@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -124,6 +125,7 @@ public class ListTbl implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public java.util.List<ItemElement> getItemElementList() {
         return itemElementList;
     }
@@ -133,6 +135,7 @@ public class ListTbl implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public java.util.List<UserInfo> getUserInfoList() {
         return userInfoList;
     }
@@ -142,6 +145,7 @@ public class ListTbl implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public java.util.List<UserGroup> getUserGroupList() {
         return userGroupList;
     }

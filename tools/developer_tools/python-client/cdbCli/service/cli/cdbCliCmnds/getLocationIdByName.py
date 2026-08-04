@@ -47,13 +47,13 @@ def get_location_id_by_name_helper(item_api, location_name):
     click.echo("--------------")
     for i in range(len(locations)):
 
-        matches = re.findall(r, (locations[i].to_dict()["name"]).lower())
+        matches = re.findall(r, (locations[i].name).lower())
 
         if matches:
             print_string = (
-                locations[i].to_dict()["name"]
+                locations[i].name
                 + ": "
-                + str(locations[i].to_dict()["id"])
+                + str(locations[i].id)
             )
             print(print_string)
             found = True

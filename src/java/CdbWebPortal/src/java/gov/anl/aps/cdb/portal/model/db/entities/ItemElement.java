@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
@@ -359,6 +360,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<gov.anl.aps.cdb.portal.model.db.entities.ListTbl> getListList() {
         return listList;
     }
@@ -378,6 +380,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     @Override
     @XmlTransient
+    @JsonIgnore
     public List<PropertyValue> getPropertyValueList() {
         return propertyValueList;
     }
@@ -388,11 +391,13 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     @Override
     @XmlTransient
+    @JsonIgnore
     public List<Log> getLogList() {
         return logList;
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElementHistory> getItemElementHistoryList() {
         return itemElementHistoryList;
     }
@@ -402,6 +407,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElement> getDerivedFromItemElementList() {
         return derivedFromItemElementList;
     }
@@ -411,6 +417,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElement> getRepresentsItemElementList() {
         return representsItemElementList;
     }
@@ -420,6 +427,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public ItemElement getRepresentsItemElement() {
         return representsItemElement;
     }
@@ -429,6 +437,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public ItemElement getDerivedFromItemElement() {
         return derivedFromItemElement;
     }
@@ -449,6 +458,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public Item getParentItem() {
         return parentItem;
     }
@@ -465,6 +475,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public Item getContainedItem() {
         return containedItem1;
     }
@@ -482,6 +493,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public Item getContainedItem2() {
         return containedItem2;
     }
@@ -500,6 +512,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElementRelationshipHistory> getItemElementRelationshipHistoryList() {
         return itemElementRelationshipHistoryList;
     }
@@ -509,6 +522,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElementRelationshipHistory> getItemElementRelationshipHistoryList1() {
         return itemElementRelationshipHistoryList1;
     }
@@ -518,6 +532,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElementRelationshipHistory> getItemElementRelationshipHistoryList2() {
         return itemElementRelationshipHistoryList2;
     }
@@ -527,6 +542,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElementRelationship> getItemElementRelationshipList() {
         return itemElementRelationshipList;
     }
@@ -536,6 +552,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElementRelationship> getItemElementRelationshipList1() {
         return itemElementRelationshipList1;
     }
@@ -545,6 +562,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElementRelationship> getItemElementRelationshipList2() {
         return itemElementRelationshipList2;
     }
@@ -574,6 +592,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public boolean isMarkedForDeletion() {
         return this.markedForDeletion;
     }

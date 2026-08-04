@@ -2,6 +2,18 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Build & deploy are the developer's job
+
+**Do not build or deploy the application.** The developer builds and deploys the
+Java web portal themselves from NetBeans (Ant project → WAR → Payara). Never run
+`make deploy-web-portal`, `make deploy-web-portal-dev`, `make undeploy-web-portal`,
+`ant`, or a Maven package/deploy of `CdbWebPortal`, and do not restart Payara.
+
+When a change needs to be built or deployed to be exercised, make the source change
+and then say so — the developer will do the NetBeans build/deploy and report back.
+The `make` targets below are documented for reference and for the developer's own
+use, not for you to invoke.
+
 ## Environment bootstrap
 
 Every shell that builds, deploys, or runs CDB **must first source `setup.sh`** from the repo root. It sets `CDB_ROOT_DIR`, `CDB_INSTALL_DIR`, `CDB_DATA_DIR`, `CDB_VAR_DIR`, `CDB_SUPPORT_DIR`, `CDB_GLASSFISH_DIR`, `CDB_PYTHON_DIR`, `PYTHONPATH`, and prepends `bin/`, Ant, Java, Payara, NetBeans-bundled Maven, the support Python, and MariaDB to `PATH`. Most `make` targets and `sbin/` scripts assume those variables exist; running them without sourcing first will fail in non-obvious ways.
@@ -27,6 +39,7 @@ make backup                        # dumps cdb to $CDB_INSTALL_DIR/backup/cdb/<Y
 make clean-db-dev                  # same, against cdb_dev
 
 # Build & deploy the Java web portal (WAR -> Payara)
+# NOTE: developer-run only — done from NetBeans, not by Claude. See section above.
 make configure-web-portal          # one-time: writes glassfish-resources.xml, etc.
 make deploy-web-portal             # builds dist/CdbWebPortal.war via Ant and deploys to Payara
 make undeploy-web-portal
@@ -71,7 +84,7 @@ ComponentDB has **three deployable pieces** plus a generated client. They commun
 
 ### 1. Java web portal — `src/java/CdbWebPortal/`
 
-A JSF (PrimeFaces) + JAX-RS application packaged as a WAR and deployed to **Payara 5**. Built with **Ant via the NetBeans project** (`build.xml` → `nbproject/build-impl.xml`); the `make` target invokes `cdb-ant` from the support dir. Maven `pom-wip-jdk11.xml` exists but is not the build of record.
+A JSF (PrimeFaces) + JAX-RS application packaged as a WAR and deployed to **Payara 5**. Built with **Ant via the NetBeans project** (`build.xml` → `nbproject/build-impl.xml`); the developer runs this build and the deploy from NetBeans. The `make` target invokes `cdb-ant` from the support dir. Maven `pom-wip-jdk11.xml` exists but is not the build of record.
 
 Source root: `src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/` with these top-level packages:
 

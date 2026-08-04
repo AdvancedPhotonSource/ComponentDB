@@ -28,9 +28,8 @@ setup(
         "cdbCli.service.cli.cdbCliCmnds",
     ],
     install_requires=[
-        "python-dateutil",
-        "urllib3",
-        "six",
+        "python-dateutil >= 2.8.2",
+        "urllib3 >= 2.6.3, < 3.0.0",
         "paho-mqtt",
         "click",
         "pandas",

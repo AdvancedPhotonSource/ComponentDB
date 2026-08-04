@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
@@ -239,6 +240,7 @@ public class PropertyType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Domain> getAllowedDomainList() {
         return allowedDomainList;
     }
@@ -256,6 +258,7 @@ public class PropertyType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<EntityType> getEntityTypeList() {
         return entityTypeList;
     }
@@ -265,6 +268,7 @@ public class PropertyType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<PropertyValue> getPropertyValueList() {
         return propertyValueList;
     }
@@ -310,6 +314,7 @@ public class PropertyType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<AllowedPropertyValue> getAllowedPropertyValueList() {
         return allowedPropertyValueList;
     }

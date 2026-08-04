@@ -664,6 +664,7 @@ public class CableDesignItemRoute extends ItemBaseRoute {
     @POST
     @Path("/CableDesignMetadataUpdate")
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public ItemDomainCableDesignMetadata updateCableDesignMetadata(@Parameter(description = "Only specified metadata fields will be set. "

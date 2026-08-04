@@ -168,8 +168,6 @@ public class Log extends CdbEntity implements Serializable {
         this.effectiveToDateTime = effectiveToDateTime;
     }
 
-    @XmlTransient
-    @JsonIgnore
     public List<Attachment> getAttachmentList() {
         return attachmentList;
     }

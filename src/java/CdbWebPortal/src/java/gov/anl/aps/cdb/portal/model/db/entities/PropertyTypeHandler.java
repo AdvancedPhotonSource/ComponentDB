@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -87,6 +88,7 @@ public class PropertyTypeHandler extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<PropertyType> getPropertyTypeList() {
         return propertyTypeList;
     }
