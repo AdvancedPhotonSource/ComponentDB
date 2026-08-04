@@ -177,6 +177,12 @@ The python web service is deprecated but is still a part of the distribution for
 # For web service development (Use your favorite python editor) to test run web service using:
 ./sbin/cdbWebService.sh
 ```
-    
+
+## Preparing a Release
+`make prepare-release` bumps the version string across the repo (`etc/version`, `openapi.yaml`, web asset cache-busters, python-client `setup-*.py`/conda recipes) and scaffolds `docs/release-notes/<VERSION>.md`. Run it, review the diff, then commit.
+```sh
+make prepare-release
+```
+
 # License
 [Copyright (c) UChicago Argonne, LLC. All rights reserved.](https://github.com/AdvancedPhotonSource/ComponentDB/blob/master/LICENSE)

@@ -8,7 +8,7 @@ TOP = .
 #SUBDIRS = irmis src
 SUBDIRS = src
 
-.PHONY: support support-mysql dev-config
+.PHONY: support support-mysql dev-config prepare-release
 .PHONY: db backup db-dev deploy-web-portal undeploy-web-portal deploy-web-service undeploy-web-service
 .PHONY: db-dev backup-dev deploy-web-portal-dev undeploy-web-portal-dev deploy-web-service-dev undeploy-web-service-dev
 
@@ -18,6 +18,9 @@ prepare-dev-env: support db dev-config
 
 dev-config:
 	$(TOP)/sbin/cdb_prepare_dev_config.sh
+
+prepare-release:
+	$(TOP)/sbin/cdb_prepare_release.py
 
 configuration:
 	$(TOP)/sbin/cdb_create_configuration.sh
