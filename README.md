@@ -179,10 +179,16 @@ The python web service is deprecated but is still a part of the distribution for
 ```
 
 ## Preparing a Release
-`make prepare-release` bumps the version string across the repo (`etc/version`, `openapi.yaml`, web asset cache-busters, python-client `setup-*.py`/conda recipes) and scaffolds `docs/release-notes/<VERSION>.md`. Run it, review the diff, then commit.
+`make prepare-release` bumps the version string across the repo (`etc/version`, `openapi.yaml`, web asset cache-busters, python-client `packages/*/pyproject.toml`/conda recipes) and scaffolds `docs/release-notes/<VERSION>.md`. Run it, review the diff, then commit.
 ```sh
 make prepare-release
 ```
+
+Publish the python client (`componentdb-api`, `componentdb-cli`) to PyPI with:
+```sh
+make release-python-client
+```
+See `tools/developer_tools/python-client/README.md` for the `uv build`/`uv publish` details, TestPyPI dry runs, and the conda packaging path.
 
 # License
 [Copyright (c) UChicago Argonne, LLC. All rights reserved.](https://github.com/AdvancedPhotonSource/ComponentDB/blob/master/LICENSE)
