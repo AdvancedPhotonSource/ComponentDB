@@ -107,9 +107,11 @@ A CherryPy service that runs on port 10232 (`./sbin/cdbWebService.sh`), handling
 
 ### 3. Python client + CLI — `tools/developer_tools/python-client/`
 
-- `cdbApi/` is **generated** from `openapi.yaml` by `./generatePyClient.sh <portal-url>` (uses openapi-generator). Do not hand-edit it — regenerate after changing the Java REST routes. `setup-api.py` packages it as `ComponentDB_API` for PyPI.
-- `CdbApiFactory.py` is the hand-written entry point that hides authentication & client wiring.
-- `cdbCli/` is the user-facing CLI (`cdbSearch`, `cdbInfo`, `cdb-cli`); see `docs/CLI.md` for usage and option reference. `cli-template/` holds skeletons for new commands.
+A [uv workspace](https://docs.astral.sh/uv/concepts/projects/workspaces/) with two members under `packages/`, built and published with `uv build` / `uv publish` (see `tools/developer_tools/python-client/README.md`).
+
+- `packages/api/cdbApi/` is **generated** from `openapi.yaml` by `./generatePyClient.sh <portal-url>` (uses openapi-generator). Do not hand-edit it — regenerate after changing the Java REST routes. `packages/api/pyproject.toml` packages it as `componentdb-api` for PyPI.
+- `packages/api/CdbApiFactory.py` is the hand-written entry point that hides authentication & client wiring.
+- `packages/cli/cdbCli/` is the user-facing CLI (`cdbSearch`, `cdbInfo`, `cdb-cli`), packaged as `componentdb-cli`; see `docs/CLI.md` for usage and option reference. `cli-template/` (untracked, gitignored) holds skeletons for new commands.
 
 ### Database — `db/sql/`
 
@@ -121,9 +123,9 @@ MariaDB 10.5. Authoritative schema is the set of `create_cdb_tables.sql`, `creat
 
 ## Repo-specific conventions
 
-- **Generated files that look like sources** are common: `cdb.portal.properties`, `web/WEB-INF/glassfish-web.xml`, `web/WEB-INF/web.xml`, `setup/glassfish-resources.xml`, `nbproject/private/private.properties`, and everything under `tools/developer_tools/python-client/cdbApi/`. They are produced from `*.template` files (or via openapi-generator) by `dev-config` / `configure-web-portal` / `dist` targets and are in `.gitignore`. Edit the template, regenerate, then commit only the template.
+- **Generated files that look like sources** are common: `cdb.portal.properties`, `web/WEB-INF/glassfish-web.xml`, `web/WEB-INF/web.xml`, `setup/glassfish-resources.xml`, `nbproject/private/private.properties`, and everything under `tools/developer_tools/python-client/packages/api/cdbApi/`. They are produced from `*.template` files (or via openapi-generator) by `dev-config` / `configure-web-portal` / `dist` targets and are in `.gitignore`. Edit the template, regenerate, then commit only the template.
 - **`cdb` vs `cdb_dev`**: every db, deploy, undeploy, and backup target has a `-dev` variant that targets a separate database name and Payara domain, so a developer can run both side-by-side. When adding new admin scripts, follow the same pattern (first arg is DB name, defaulting to `cdb`).
-- **Single canonical version string**: run `make prepare-release` (`sbin/cdb_prepare_release.py`) to bump `etc/version`, `openapi.yaml`, the web `?v=` cache-busters, the python-client `setup-*.py`/conda recipes, and scaffold `docs/release-notes/<VERSION>.md` together. It also flags any file that drifted out of sync in a prior manual release.
+- **Single canonical version string**: run `make prepare-release` (`sbin/cdb_prepare_release.py`) to bump `etc/version`, `openapi.yaml`, the web `?v=` cache-busters, the python-client `packages/*/pyproject.toml`/conda recipes, and scaffold `docs/release-notes/<VERSION>.md` together. It also flags any file that drifted out of sync in a prior manual release, and refreshes `uv.lock`.
 - **Plugins** under `tools/developer_tools/cdb_plugins/plugins/<name>/` extend both the Java portal (deployed via `make deploy-cdb-plugin` → `update_plugin_generated_files.py`) and the Python web service. `pluginTemplates/` is the scaffold.
 - **REST changes touch three places**: the Java route, `openapi.yaml`, and (after `generatePyClient.sh`) the regenerated `cdbApi/` package. The Python API tests in `tools/developer_tools/python-client/test/api_test.py` are the integration check.
 

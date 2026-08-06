@@ -1,0 +1,34 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "componentdb-cli"
+version = "3.18.0"
+description = "Python APIs used to communicate with java hosted ComponentDB API."
+license = { text = "Copyright (c) UChicago Argonne, LLC. All rights reserved." }
+maintainers = [
+    { name = "Dariusz Jarosz", email = "djarosz@aps.anl.gov" },
+]
+requires-python = ">=3.10"
+dependencies = [
+    "python-dateutil >= 2.8.2",
+    "urllib3 >= 2.6.3, < 3.0.0",
+    "paho-mqtt",
+    "click",
+    "pandas",
+    "rich",
+    "componentdb-api==3.18.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/AdvancedPhotonSource/ComponentDB"
+
+[project.scripts]
+cdb-cli = "cdbCli.service.cli.cli:main"
+cdbSearch = "cdbCli.service.cli.cdbCliCmnds.search:cdb_search"
+cdbInfo = "cdbCli.service.cli.cdbCliCmnds.info:cdb_info"
+cdbHelp = "cdbCli.service.cli.cdbCliCmnds.help:showHelp"
+
+[tool.hatch.build.targets.wheel]
+packages = ["cdbCli"]

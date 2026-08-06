@@ -13,6 +13,8 @@ import argparse
 import glob
 import os
 import re
+import shutil
+import subprocess
 import sys
 
 DIST_ROOT_DIRECTORY_ENV_KEY = "CDB_ROOT_DIR"
@@ -55,16 +57,16 @@ SPECS = [
         "sparse": True,
     },
     {
-        "name": "python-client API setup",
-        "paths": lambda: paths("tools/developer_tools/python-client/setup-api.py"),
-        "patterns": [r'(version=")(?P<ver>%s)(")' % VERSION_RE],
+        "name": "python-client API pyproject",
+        "paths": lambda: paths("tools/developer_tools/python-client/packages/api/pyproject.toml"),
+        "patterns": [r'(^version = ")(?P<ver>%s)(")' % VERSION_RE],
     },
     {
-        "name": "python-client CLI setup",
-        "paths": lambda: paths("tools/developer_tools/python-client/setup-cli.py"),
+        "name": "python-client CLI pyproject",
+        "paths": lambda: paths("tools/developer_tools/python-client/packages/cli/pyproject.toml"),
         "patterns": [
-            r'(version=")(?P<ver>%s)(")' % VERSION_RE,
-            r'(ComponentDB-API==)(?P<ver>%s)(")' % VERSION_RE,
+            r'(^version = ")(?P<ver>%s)(")' % VERSION_RE,
+            r'(componentdb-api==)(?P<ver>%s)(")' % VERSION_RE,
         ],
     },
     {
@@ -232,6 +234,18 @@ def main():
         write(notes_path, RELEASE_NOTES_STUB)
 
     print("Wrote %d file(s)." % (len(file_changes) + (1 if notes_is_new else 0)))
+
+    refresh_uv_lock()
+
+
+def refresh_uv_lock():
+    """Keep uv.lock in sync with the version bump just written to the workspace members."""
+    if shutil.which("uv") is None:
+        print("WARNING: uv not found on PATH, skipping `uv lock` refresh.", file=sys.stderr)
+        return
+    client_dir = os.path.join(rootDir, "tools/developer_tools/python-client")
+    subprocess.run(["uv", "lock"], cwd=client_dir, check=True)
+    print("Refreshed uv.lock.")
 
 
 if __name__ == "__main__":

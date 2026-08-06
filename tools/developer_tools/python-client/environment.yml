@@ -5,12 +5,15 @@
 #
 #   conda env create -f environment.yml
 #   conda activate cdb-python-dev
-#   export PYTHONPATH=$PWD          # so `import CdbApiFactory` / `import cdbApi` resolve
+#   export PYTHONPATH=$PWD/packages/api:$PWD/packages/cli   # (source setup.sh does this too)
 #
 # This installs *dependencies only* — the client itself is used straight from this
 # checkout, not installed. Regenerate cdbApi first with:
 #
 #   ./generatePyClient.sh http://localhost:8080/cdb
+#
+# Prefer uv? `uv sync` does an editable install of both packages/* members instead of
+# relying on PYTHONPATH, and `uv run pytest test/` picks them up automatically.
 #
 name: cdb-python-dev
 
@@ -42,9 +45,8 @@ dependencies:
   - curl
 
   # --- release tooling ------------------------------------------------------
-  # setuptools + twine  -> sbin/cdb_release_cdb_api_pip.py (python setup.py sdist; twine upload)
-  # conda-build         -> ./conda-build.sh
+  # uv           -> sbin/cdb_release_cdb_api_pip.py (uv build; uv publish), also `uv sync`
+  # conda-build  -> ./conda-build.sh
   - pip
-  - setuptools
-  - twine
+  - uv
   - conda-build

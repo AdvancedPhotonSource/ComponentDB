@@ -15,16 +15,19 @@ tools/developer_tools/portal_testing/CdbFunctionalTester/nbproject/private/
 /tools/developer_tools/python-client/*
 /tools/developer_tools/python-client/**/.DS_Store
 !/tools/developer_tools/python-client/generatePyClient.sh
-!/tools/developer_tools/python-client/CdbApiFactory.py
 !/tools/developer_tools/python-client/ClientApiConfig.yml
-!/tools/developer_tools/python-client/cdbCli
-!/tools/developer_tools/python-client/setup-cli.py
-!/tools/developer_tools/python-client/setup-api.py
 !/tools/developer_tools/python-client/test
 !/tools/developer_tools/python-client/conda-recipe
 !/tools/developer_tools/python-client/conda-build.sh
 !/tools/developer_tools/python-client/environment.yml
 !/tools/developer_tools/python-client/data
+!/tools/developer_tools/python-client/pyproject.toml
+!/tools/developer_tools/python-client/uv.lock
+!/tools/developer_tools/python-client/README.md
+!/tools/developer_tools/python-client/packages
+/tools/developer_tools/python-client/packages/api/cdbApi/
+/tools/developer_tools/python-client/packages/**/__pycache__/
+/tools/developer_tools/python-client/packages/**/dist/
 
 # Generated deployment specific config files 
 src/java/CdbWebPortal/nbproject/private/private.xml
@@ -51,4 +54,4 @@ docs/python/_build/
 /src/python/dist
 
 # Temporary testing csv files
-tools/developer_tools/python-client/cdbCli/service/cli/Spreadsheets/
+tools/developer_tools/python-client/packages/cli/cdbCli/service/cli/Spreadsheets/
