@@ -13,10 +13,10 @@ build:
   noarch: python
   script: {{ PYTHON }} -m pip install . --no-deps
 
-requirements:  
-  build:
+requirements:
+  host:
     - python>=3.10
-    - setuptools    
+    - setuptools
     - pip
   run:
     - python>=3.10

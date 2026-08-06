@@ -14,7 +14,7 @@ build:
   script: {{ PYTHON }} -m pip install . --no-deps
 
 requirements:
-  build:
+  host:
     - python>=3.10
     - setuptools
     - pip
