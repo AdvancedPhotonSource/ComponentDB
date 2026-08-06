@@ -1,0 +1,50 @@
+# Copyright (c) UChicago Argonne, LLC. All rights reserved.
+# See LICENSE file.
+#
+# Development environment for the ComponentDB python client (cdbApi + cdbCli).
+#
+#   conda env create -f environment.yml
+#   conda activate cdb-python-dev
+#   export PYTHONPATH=$PWD          # so `import CdbApiFactory` / `import cdbApi` resolve
+#
+# This installs *dependencies only* — the client itself is used straight from this
+# checkout, not installed. Regenerate cdbApi first with:
+#
+#   ./generatePyClient.sh http://localhost:8080/cdb
+#
+name: cdb-python-dev
+
+#channels:
+#  - conda-forge
+
+dependencies:
+  # --- interpreter ---------------------------------------------------------
+  - python >=3.10
+
+  # --- cdbApi / CdbApiFactory runtime (mirrors setup-api.py) ---------------
+  - urllib3 >=2.6.3,<3.0.0
+  - python-dateutil >=2.8.2
+  - pydantic >=2.11
+  - typing-extensions >=4.7.1
+  - certifi
+
+  # --- cdbCli runtime (mirrors setup-cli.py) -------------------------------
+  - click
+  - pandas
+  - rich
+  - paho-mqtt
+
+  # --- test runner (test/ modules are unittest; pytest just discovers them) -
+  - pytest
+
+  # --- client regeneration: generatePyClient.sh runs openapi-generator 7.24.0
+  - openjdk >=11
+  - curl
+
+  # --- release tooling ------------------------------------------------------
+  # setuptools + twine  -> sbin/cdb_release_cdb_api_pip.py (python setup.py sdist; twine upload)
+  # conda-build         -> ./conda-build.sh
+  - pip
+  - setuptools
+  - twine
+  - conda-build
