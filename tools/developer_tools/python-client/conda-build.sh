@@ -58,7 +58,7 @@ cd ..
 
 # Build CLI
 cd cli-build
-conda build conda-recipe --output-folder ../build || exit 1
+conda build conda-recipe -c ../build --output-folder ../build || exit 1
 cd ..
 
 # Clean up
