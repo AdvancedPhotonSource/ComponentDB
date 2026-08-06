@@ -37,8 +37,13 @@ uv run cdb-cli --help
 ./generatePyClient.sh <CDB_BASE_PATH>     # e.g. http://localhost:8080/cdb
 ```
 
-Downloads `openapi-generator-cli`, generates a client from `<CDB_BASE_PATH>/api/openapi.yaml`,
-and overwrites `packages/api/cdbApi/`. Run this any time REST routes or `openapi.yaml` change.
+Downloads `openapi-generator-cli` (once — cached for subsequent runs), generates a client
+from `<CDB_BASE_PATH>/api/openapi.yaml`, and overwrites `packages/api/cdbApi/`. Run this
+any time REST routes or `openapi.yaml` change.
+
+The generator jar is cached in the first of: `$OPENAPI_GENERATOR_CACHE_DIR` (explicit
+override), `$CDB_SUPPORT_DIR/src` (the repo's usual download cache, if `make support` has
+been run), or a repo-local `support_bin/` here.
 
 ## Building & publishing to PyPI
 
