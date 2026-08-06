@@ -20,6 +20,7 @@ OPEN_API_GENERATOR_JAR_URL="https://repo1.maven.org/maven2/org/openapitools/open
 
 GEN_CONFIG_FILE_PATH=$MY_DIR/ClientApiConfig.yml
 GEN_OUT_DIR="pythonApi"
+API_PKG_DIR="$MY_DIR/packages/api"
 
 if [ -z "$1" ]; then
     echo "Please specify CDB_BASE_PATH";
@@ -40,13 +41,13 @@ if [ $? -ne 0 ]; then
 fi
 
 # Clean up
-rm cdbApi -rv
+rm -rf "$API_PKG_DIR/cdbApi"
 rm $OPEN_API_GENERATOR_JAR
 
 # Fetch the generated Api
 cd $GEN_OUT_DIR
-cp -rv cdbApi ../
+cp -rv cdbApi "$API_PKG_DIR/"
 cd ..
 
 # Clean up
-rm -rf $GEN_OUT_DIR 
+rm -rf $GEN_OUT_DIR

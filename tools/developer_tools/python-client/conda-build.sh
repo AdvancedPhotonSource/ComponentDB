@@ -26,7 +26,7 @@ URL=${1:-$DEFAULT_URL}
 # Output the URL being used
 echo "Generating updated APIs using URL: $URL"
 
-sh ./generatePyClient.sh $URL 
+./generatePyClient.sh $URL
 
 if [ $? -ne 0 ]; then
   echo "Generating API failed. Exiting."
@@ -36,34 +36,11 @@ fi
 # Clean and Build
 rm -rf ./build
 
-# Prepare API directory 
-rm -rf api-build
-mkdir -p api-build/conda-recipe
-cp conda-recipe/API/meta.yaml api-build/conda-recipe
-cp CdbApiFactory.py api-build/
-cp -R cdbApi api-build
-cp setup-api.py api-build/setup.py
-
-# Prepare CLI direactory
-rm -rf cli-build
-mkdir -p cli-build/conda-recipe
-cp conda-recipe/CLI/meta.yaml cli-build/conda-recipe
-cp -R cdbCli cli-build
-cp setup-cli.py cli-build/setup.py
-
 # Build API
-cd api-build
-conda build conda-recipe --output-folder ../build || exit 1
-cd ..
+conda build conda-recipe/API --output-folder ./build || exit 1
 
-# Build CLI
-cd cli-build
-conda build conda-recipe -c ../build --output-folder ../build || exit 1
-cd ..
-
-# Clean up
-rm -rf api-build
-rm -rf cli-build
+# Build CLI (against the API package just built, via the local channel)
+conda build conda-recipe/CLI -c ./build --output-folder ./build || exit 1
 
 # Install build into a new env 
 conda create -n $ENV_NAME -y || exit 1

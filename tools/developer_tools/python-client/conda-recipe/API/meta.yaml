@@ -6,17 +6,17 @@ package:
   version: "{{ version }}"
  
 source:
-  path: ..
+  path: ../../packages/api
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation
 
 requirements:
   host:
     - python>=3.10
-    - setuptools
+    - hatchling
     - pip
   run:
     - python>=3.10

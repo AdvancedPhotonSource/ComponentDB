@@ -1,0 +1,16 @@
+# Copyright (c) UChicago Argonne, LLC. All rights reserved.
+# See LICENSE file.
+#
+# Virtual uv workspace root for the ComponentDB python client. This project itself is
+# not published -- it just groups the two publishable members under packages/ so they
+# share a lockfile and can be built/tested together. See README.md for the full
+# regenerate / build / publish procedure.
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+componentdb-api = { workspace = true }
+
+[dependency-groups]
+dev = ["pytest"]
