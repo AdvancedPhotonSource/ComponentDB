@@ -73,7 +73,6 @@ part of the delta and said so explicitly (e.g. `### PLEASE REBUILD DB ###` in
 are self-contained, so this step is normally skipped -- worth knowing, since a rebuild
 can take a while on a large database:
 ~~~~
-# cp ../backup/cdb/`date +%Y%m%d` ../backup/cdb/`date +%Y%m%d`-prepatch
 # make backup
 # mkdir -p ../db/cdb/
 # cp ../backup/cdb/`date +%Y%m%d`/populate* ../db/cdb
