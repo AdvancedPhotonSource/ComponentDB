@@ -89,29 +89,43 @@ Restart application to reset any caches for `item_project`.
 ```
 
 # Deployment Upgrade
+See [docs/update/README.md](docs/update/README.md) for the full upgrade procedure,
+including how to skip multiple releases at once. Summary:
 ```sh
 # Navigate to cdb installation directory
-cd $CDB_INSTALL_DIRECTORY
+cd $CDB_INSTALL_DIR
 
-# Download the release package to cdb install dicrectory
-# Using version 3.10 as an example. 
-wget https://github.com/AdvancedPhotonSource/ComponentDB/archive/v3.10.0.tar.gz
-tar -xvf v3.10.0.tar.gz
-rm v3.10.0.tar.gz
-cd ComponentDB-3.10.0
+# Download the release package to cdb install directory
+# Using version 3.18 as an example. 
+wget https://github.com/AdvancedPhotonSource/ComponentDB/archive/v3.18.0.tar.gz
+tar -xvf v3.18.0.tar.gz
+rm v3.18.0.tar.gz
+cd ComponentDB-3.18.0
+source setup.sh
 
-# Backup the database. 
+# Backup the database, then copy it aside as the pre-change snapshot (backups are
+# date-stamped to the day, so without this a later backup would overwrite it).
 make backup
+cp -r $CDB_INSTALL_DIR/backup/cdb/`date +%Y%m%d` $CDB_INSTALL_DIR/backup/cdb/`date +%Y%m%d`-pre-change
 
-# Verify db changes. 
+# Apply any db/sql/updates/updateTo<VERSION>.sql scripts between the old and new
+# version, in order.
 cd db/sql/updates
-# Check to see if the release has a updateTo(Version).sql script. 
-# Follow instructions described in the top comments of the sql update file.
-cd ../../../ # Navigate back to release directory
+# mysql $CDB_DB_NAME --host=127.0.0.1 --user=cdb -p < updateTo<VERSION>.sql
+cd ../../../
+
+# Only needed if an update script's header explicitly says to rebuild the db --
+# recent scripts are self-contained and this can be skipped to save time.
+# make backup
+# mkdir -p ../db/cdb/
+# cp ../backup/cdb/`date +%Y%m%d`/populate* ../db/cdb
+# make db
 
 # Deploy plugins if needed using `make deploy-cdb-plugin`
 # See https://github.com/AdvancedPhotonSource/ComponentDB/wiki/Plugins
 
+# Only needed if generated config templates changed -- typically not required.
+# make configure-web-portal
 make deploy-web-portal
 ```
     
