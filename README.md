@@ -89,22 +89,18 @@ Restart application to reset any caches for `item_project`.
 ```
 
 # Deployment Upgrade
-See [docs/update/README.md](docs/update/README.md) for the full upgrade procedure,
-including how to skip multiple releases at once. Summary:
+See [docs/update/README.md](docs/update/README.md) for the full procedure, including
+how to skip multiple releases at once. Summary, upgrading to 3.18.0:
 ```sh
-# Navigate to cdb installation directory
 cd $CDB_INSTALL_DIR
-
-# Download the release package to cdb install directory
-# Using version 3.18 as an example. 
 wget https://github.com/AdvancedPhotonSource/ComponentDB/archive/v3.18.0.tar.gz
 tar -xvf v3.18.0.tar.gz
 rm v3.18.0.tar.gz
 cd ComponentDB-3.18.0
 source setup.sh
 
-# Backup the database, then copy it aside as the pre-change snapshot (backups are
-# date-stamped to the day, so without this a later backup would overwrite it).
+# Backup, then stash it as a pre-change snapshot -- backups are date-stamped to the
+# day, so without this a later backup below would overwrite it.
 make backup
 cp -r $CDB_INSTALL_DIR/backup/cdb/`date +%Y%m%d` $CDB_INSTALL_DIR/backup/cdb/`date +%Y%m%d`-pre-change
 
@@ -114,18 +110,17 @@ cd db/sql/updates
 # mysql $CDB_DB_NAME --host=127.0.0.1 --user=cdb -p < updateTo<VERSION>.sql
 cd ../../../
 
-# Only needed if an update script's header explicitly says to rebuild the db --
-# recent scripts are self-contained and this can be skipped to save time.
+# Only needed if an update script's header says to rebuild the db -- recent scripts
+# are self-contained, so this is normally skipped to save time.
 # make backup
 # mkdir -p ../db/cdb/
 # cp ../backup/cdb/`date +%Y%m%d`/populate* ../db/cdb
 # make db
 
-# Deploy plugins if needed using `make deploy-cdb-plugin`
+# Deploy plugins if needed: make deploy-cdb-plugin
 # See https://github.com/AdvancedPhotonSource/ComponentDB/wiki/Plugins
 
-# Only needed if generated config templates changed -- typically not required.
-# make configure-web-portal
+# make configure-web-portal   # only if generated config templates changed -- rare
 make deploy-web-portal
 ```
     
