@@ -4,10 +4,23 @@
  */
 package gov.anl.aps.mqtt;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Date;
 
-/** An application-owned payload and its destination topic. */
-public interface MqttEvent {
+/** Base for an application-owned payload and its destination topic. */
+public abstract class MqttEvent {
+    private final Date eventTimestamp;
+
+    protected MqttEvent() {
+        eventTimestamp = new Date();
+    }
+
     @JsonIgnore
-    String getTopic();
+    public abstract String getTopic();
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    public Date getEventTimestamp() {
+        return new Date(eventTimestamp.getTime());
+    }
 }

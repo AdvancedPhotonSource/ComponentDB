@@ -1,6 +1,8 @@
 # CDB MQTT Java
 
-Shared Java 8 MQTT event publishing API and Payara JCA/JNDI transport used by ComponentDB and BELY.
+Shared Java 8 MQTT event base class, publishing API, and Payara JCA/JNDI transport used by ComponentDB and BELY.
+
+`MqttEvent` owns the event timestamp and requires applications to supply a string topic. Application-specific payload fields and topic definitions remain in each portal.
 
 ## Build and test
 

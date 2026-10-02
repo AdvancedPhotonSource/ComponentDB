@@ -21,7 +21,10 @@ class JcaMqttPublisherTest {
         JcaMqttPublisher publisher = new JcaMqttPublisher(() -> connection, new ObjectMapper(), 1, true);
         publisher.publish(new Event("value"));
         assertEquals("cdb/add", connection.topic);
-        assertTrue(new String(connection.payload, StandardCharsets.UTF_8).contains("\"value\":\"value\""));
+        String payload = new String(connection.payload, StandardCharsets.UTF_8);
+        assertTrue(payload.contains("\"value\":\"value\""));
+        assertTrue(payload.contains("\"eventTimestamp\":"));
+        assertFalse(payload.contains("\"topic\":"));
         assertEquals(1, connection.qos); assertTrue(connection.retained); assertTrue(connection.closed);
     }
     @Test void reportsMissingConfiguration() {
@@ -41,7 +44,7 @@ class JcaMqttPublisherTest {
     }
     @Test void rejectsInvalidQos() { assertThrows(IllegalArgumentException.class, () -> new JcaMqttPublisher(() -> null, new ObjectMapper(), 3, false)); }
 
-    static final class Event implements MqttEvent {
+    static final class Event extends MqttEvent {
         private final String value; Event(String value){this.value=value;}
         @Override public String getTopic(){return "cdb/add";} public String getValue(){return value;}
     }
