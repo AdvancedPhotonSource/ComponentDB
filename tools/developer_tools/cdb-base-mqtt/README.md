@@ -15,6 +15,8 @@ sha256sum -c SHA256SUMS
 
 The versioned thin JAR is written to `target/cdb-base-mqtt-1.0.0.jar`. Jackson is provided by each consuming portal and is intentionally not bundled.
 
+GitLab CI runs `mvn verify` when this module or the root `.gitlab-ci.yml` changes and publishes the Surefire JUnit reports.
+
 ## Release artifact
 
 The checked-in `SHA256SUMS` records the released JAR checksum and verifies the artifact under `target/`. After changing this library:

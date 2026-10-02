@@ -1,0 +1,26 @@
+stages:
+  - test
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+
+cdb-base-mqtt-tests:
+  stage: test
+  image: maven:3.9-eclipse-temurin-8
+  cache:
+    key:
+      files:
+        - tools/developer_tools/cdb-base-mqtt/pom.xml
+    paths:
+      - .m2/repository/
+  rules:
+    - changes:
+        - tools/developer_tools/cdb-base-mqtt/**/*
+        - .gitlab-ci.yml
+  script:
+    - mvn --batch-mode --no-transfer-progress --file tools/developer_tools/cdb-base-mqtt/pom.xml verify
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - tools/developer_tools/cdb-base-mqtt/target/surefire-reports/TEST-*.xml
