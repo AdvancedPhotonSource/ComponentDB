@@ -54,6 +54,20 @@ public class ItemDomainMachineDesignFacade extends ItemFacadeBase<ItemDomainMach
         return result;
     } 
     
+    public boolean hasDisplayChildren(Integer itemId) {
+        if (itemId == null) {
+            return false;
+        }
+
+        Number result = (Number) em.createNativeQuery(
+                "SELECT EXISTS (SELECT 1 FROM item_element "
+                + "WHERE parent_item_id = ? "
+                + "AND (name IS NOT NULL OR derived_from_item_element_id IS NOT NULL) LIMIT 1)")
+                .setParameter(1, itemId)
+                .getSingleResult();
+        return result.intValue() != 0;
+    }
+
     public List<ItemDomainMachineDesign> getIOCItems() {
         return findByDomainAndEntityType(
                 ItemDomainName.machineDesign.getValue(),

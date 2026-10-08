@@ -147,6 +147,10 @@ public abstract class ItemBaseLazyTreeNode<ItemEntity extends Item, ItemEntityFa
         return (List<T>) (List<?>) this.getChildren();
     }
 
+    protected boolean hasLoadedChildren() {
+        return !super.getChildren().isEmpty();
+    }
+
     private void fetchChildren() {
         unloadAdditionalChildren();
 

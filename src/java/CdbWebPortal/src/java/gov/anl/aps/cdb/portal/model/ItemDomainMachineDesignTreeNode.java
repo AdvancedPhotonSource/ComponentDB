@@ -33,6 +33,7 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
     boolean assemblyElementsLoaded = false;
     boolean cablesLoaded = false;
     boolean cableRelatedNode = false;
+    private Boolean hasElementChildren;
 
     public ItemDomainMachineDesignTreeNode(ItemElement element, MachineTreeConfiguration config, ItemDomainMachineDesignBaseTreeNode parent, boolean setTypeForLevel) {
         super(element, config, parent, setTypeForLevel);
@@ -53,6 +54,30 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
     @Override
     protected ItemDomainMachineDesignTreeNode createTreeNodeObject(ItemElement itemElement) {
         return new ItemDomainMachineDesignTreeNode(itemElement, config, this, true);
+    }
+
+    @Override
+    public boolean isLeaf() {
+        if (loadAdditionalNodes()) {
+            return false;
+        }
+
+        if (hasLoadedChildren()) {
+            return false;
+        }
+
+        if (childrenLoaded) {
+            return true;
+        }
+
+        if (hasElementChildren == null) {
+            ItemElement element = getElement();
+            Item containedItem = element == null ? null : element.getContainedItem();
+            hasElementChildren = containedItem != null
+                    && config.getFacade().hasDisplayChildren(containedItem.getId());
+        }
+
+        return !hasElementChildren;
     }
 
     private ItemDomainMachineDesignTreeNode createChildNode(ItemConnector itemConnector) {
