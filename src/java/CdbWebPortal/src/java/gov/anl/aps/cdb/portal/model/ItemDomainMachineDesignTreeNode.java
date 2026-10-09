@@ -57,17 +57,26 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
     }
 
     @Override
-    public boolean isLeaf() {
-        if (loadAdditionalNodes()) {
-            return false;
+    public int getChildCount() {
+        if (isExpanded() && (!childrenLoaded || loadAdditionalNodes())) {
+            getChildren();
         }
 
-        if (hasLoadedChildren()) {
-            return false;
+        return getLoadedChildCount();
+    }
+
+    @Override
+    public boolean isLeaf() {
+        return !hasChildren();
+    }
+
+    private boolean hasChildren() {
+        if (loadAdditionalNodes() || hasLoadedChildren()) {
+            return true;
         }
 
         if (childrenLoaded) {
-            return true;
+            return false;
         }
 
         if (hasElementChildren == null) {
@@ -77,7 +86,7 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
                     && config.getFacade().hasDisplayChildren(containedItem.getId());
         }
 
-        return !hasElementChildren;
+        return hasElementChildren;
     }
 
     private ItemDomainMachineDesignTreeNode createChildNode(ItemConnector itemConnector) {
