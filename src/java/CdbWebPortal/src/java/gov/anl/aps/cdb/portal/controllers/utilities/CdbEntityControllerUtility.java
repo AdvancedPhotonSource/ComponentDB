@@ -5,6 +5,9 @@
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.mqtt.CdbEntityEvent;
+import gov.anl.aps.cdb.mqtt.CdbMqttPublisher;
+import gov.anl.aps.cdb.mqtt.CdbMqttTopic;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
 import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
@@ -55,6 +58,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
            
             addCreatedSystemLog(entity, createdByUserInfo);
             entity.setPersitanceErrorMessage(null);
+            publishMqttEvent(CdbMqttTopic.ADD, entity, createdByUserInfo);
             
             clearCaches();
             return entity; 
@@ -79,7 +83,10 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             }
             getEntityDbFacade().create(entities);            
             
-            addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Created " + entities.size() + " entities.", createdByUserInfo);            
+            addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Created " + entities.size() + " entities.", createdByUserInfo);
+            for (EntityType entity : entities) {
+                publishMqttEvent(CdbMqttTopic.ADD, entity, createdByUserInfo);
+            }
             setPersistenceErrorMessageForList(entities, null);
             clearCaches();
         } catch (CdbException ex) {
@@ -103,6 +110,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             EntityType updatedEntity = getEntityDbFacade().edit(entity);
             addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Updated: " + entity.getSystemLogString(), updatedByUserInfo);
             entity.setPersitanceErrorMessage(null);
+            publishMqttEvent(CdbMqttTopic.UPDATE, updatedEntity, updatedByUserInfo);
             
             clearCaches();
             return updatedEntity; 
@@ -127,6 +135,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             logger.debug("Updating " + getDisplayEntityTypeName() + " " + getEntityInstanceName(entity));
             prepareEntityUpdateOnRemoval(entity);
             EntityType updatedEntity = getEntityDbFacade().edit(entity);
+            publishMqttEvent(CdbMqttTopic.UPDATE, updatedEntity, updatedByUserInfo);
             clearCaches();
             
             return updatedEntity; 
@@ -156,6 +165,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             for (EntityType entity : entities) {                
                 entity.setPersitanceErrorMessage(null);
                 addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Updated: " + entity.getSystemLogString(), updatedByUserInfo);
+                publishMqttEvent(CdbMqttTopic.UPDATE, entity, updatedByUserInfo);
             }
             clearCaches();
         } catch (CdbException ex) {
@@ -177,7 +187,8 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             prepareEntityDestroy(entity, destroyedByUserInfo);
             getEntityDbFacade().remove(entity);
             
-            addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Deleted: " + entity.getSystemLogString(), destroyedByUserInfo);            
+            addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Deleted: " + entity.getSystemLogString(), destroyedByUserInfo);
+            publishMqttEvent(CdbMqttTopic.DELETE, entity, destroyedByUserInfo);
             clearCaches();
         } catch (CdbException ex) {
             entity.setPersitanceErrorMessage(ex.getMessage());
@@ -214,6 +225,14 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             getEntityDbFacade().remove(entities, updateEntity);
 
             addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Deleted: " + entities.size() + " entities.", destroyedByUserInfo);
+            for (EntityType entity : entities) {
+                if (entity != null) {
+                    publishMqttEvent(CdbMqttTopic.DELETE, entity, destroyedByUserInfo);
+                }
+            }
+            if (updateEntity != null) {
+                publishMqttEvent(CdbMqttTopic.UPDATE, updateEntity, destroyedByUserInfo);
+            }
             setPersistenceErrorMessageForList(entities, null);
             clearCaches();
         } catch (CdbException ex) {
@@ -229,6 +248,14 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
         }        
     }
     
+    protected void publishMqttEvent(CdbMqttTopic topic, EntityType entity, UserInfo userInfo) {
+        try {
+            CdbMqttPublisher.publish(new CdbEntityEvent(topic, entity, userInfo));
+        } catch (RuntimeException ex) {
+            logger.error("Failed to create MQTT event for " + getDisplayEntityTypeName(), ex);
+        }
+    }
+
     /**
      * On database operation clear cache of related cached entity when needed. 
      */
