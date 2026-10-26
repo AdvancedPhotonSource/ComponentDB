@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="newCableDesignDefaultsOnComplete"
+              value="#{newCableDesignDefaultsOnComplete != null ? newCableDesignDefaultsOnComplete : ''}" /> 
+
+    <p:dialog header="New Cable Design Defaults" 
+              id="newCableDesignDefaultsDialog"
+              widgetVar="newCableDesignDefaultsDialogWidget" 
+              styleClass="viewTransparentBackgroundDialog"
+              modal="true"
+              closable="false">
+
+        <ui:param name="entitySettingObject"
+                  value="#{itemDomainCableDesignController.settingObject}" /> 
+
+        <p:panelGrid columns="2">
+
+            <p:outputLabel for="defaultCablePrefix" value="Cable Name Prefix" />
+            <p:inputText id="defaultCablePrefix"
+                         value="#{entitySettingObject.defaultCablePrefix}">                
+            </p:inputText>                                   
+
+            <p:outputLabel for="defaultCableProject"
+                           value="Project"
+                           rendered="#{entitySettingObject.defaultProjectList != null}"
+                           styleClass="entityDataLabel"/>
+            <p:selectCheckboxMenu id="defaultCableProject"
+                                  label="Select Project"
+                                  multiple="true"
+                                  rendered="#{entitySettingObject.defaultProjectList != null}"
+                                  value="#{entitySettingObject.defaultProjectList}"
+                                  converter="itemProjectConverter"
+                                  filter="true" 
+                                  filterMatchMode="contains">
+                <f:selectItems value="#{itemProjectController.availableItems}" />                 
+            </p:selectCheckboxMenu>   
+
+            <p:outputLabel for="defaultTechnicalSystem"
+                           value="Technical System"
+                           rendered="#{entitySettingObject.defaultCategoryList != null}"
+                           styleClass="entityDataLabel"/>
+            <p:selectCheckboxMenu id="defaultTechnicalSystem"
+                                  label="Select Technical System"
+                                  multiple="true"
+                                  rendered="#{entitySettingObject.defaultCategoryList != null}"
+                                  value="#{entitySettingObject.defaultCategoryList}"
+                                  converter="itemCategoryConverter"
+                                  filter="true" 
+                                  filterMatchMode="contains">
+                <f:selectItems value="#{itemDomainCableDesignController.domainItemCategoryList}" /> 
+            </p:selectCheckboxMenu>
+        </p:panelGrid>
+
+
+        <f:facet name="footer">
+            <p:commandButton  icon="fa fa-save"
+                              onclick="PF('loadingDialog').show(); PF('newCableDesignDefaultsDialogWidget').hide()"
+                              oncomplete="PF('loadingDialog').hide(); #{newCableDesignDefaultsOnComplete}"
+                              update="@form"
+                              action="#{settingController.saveSettingListForSettingEntity()}"
+                              actionListener="#{entitySettingObject.saveListSettingsForSessionSettingEntityActionListener}"
+                              rendered="#{settingController.sessionUserHaveSettingsWritePermissions}"
+                              value="Save"/>
+
+            <p:commandButton icon="fa fa-close"
+                             onclick="PF('newCableDesignDefaultsDialogWidget').hide()"
+                             value="Cancel"/>            
+        </f:facet>
+
+
+    </p:dialog>
+
+    <p:remoteCommand name="prepareNewCableDesignDefaultsDialog"
+                     action="#{itemDomainCableDesignController.ensureSettingDefaultsLoaded()}"
+                     update="newCableDesignDefaultsDialog"
+                     oncomplete="PF('newCableDesignDefaultsDialogWidget').show()"/>
+
+</ui:composition>

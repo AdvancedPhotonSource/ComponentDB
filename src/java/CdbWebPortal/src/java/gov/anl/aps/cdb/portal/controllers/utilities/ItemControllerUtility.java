@@ -9,7 +9,6 @@ import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.ListName;
-import static gov.anl.aps.cdb.portal.controllers.ItemController.getParentItemList;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
 import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyMetadataValueFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
@@ -27,7 +26,9 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
@@ -38,6 +39,7 @@ import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
+import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import java.util.ArrayList;
@@ -169,14 +171,13 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
             }
         }
     }
-    
-    
+
     @Override
     public PropertyValue preparePropertyTypeValueAdd(ItemDomainEntity cdbDomainEntity,
             PropertyType propertyType, String propertyValueString, String tag) {
         EntityInfo entityInfo = cdbDomainEntity.getEntityInfo();
         UserInfo ownerUser = entityInfo.getOwnerUser();
-        
+
         return preparePropertyTypeValueAdd(cdbDomainEntity, propertyType, propertyValueString, tag, ownerUser);
     }
 
@@ -208,7 +209,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         // and not rebuilt as child items are added, the generated element names were not correct when adding 
         // multiple children to the same parent sequentially.  The generated name was always "E1".
         item.resetItemElementDisplayList();
-        
+
         List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
         int elementNumber = itemElementsDisplayList.size() + 1;
         String elementNameSuffix = "E";
@@ -238,7 +239,11 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         return elementName;
     }
 
-    public void performPrepareEntityInsertUpdate(Item item, UserInfo userInfo) throws InvalidRequest {
+    public void performPrepareEntityInsertUpdate(Item item, UserInfo userInfo) throws InvalidRequest, CdbException {
+        if (item == null) {
+            throw new CdbException("Item is null");
+        }
+
         if (item instanceof LocatableItem) {
             LocatableItem locatableItem = (LocatableItem) item;
             LocatableItemControllerUtility locatableControllerUtility;
@@ -246,6 +251,8 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
             locatableControllerUtility.updateItemLocation(locatableItem, userInfo);
         }
         addDynamicPropertiesToItem(item, userInfo);
+
+        item.verifyAllowedValuesValidForCoreMetadata();
     }
 
     public void addDynamicPropertiesToItem(Item item, UserInfo createdByUser) {
@@ -389,6 +396,9 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
 
     protected abstract ItemDomainEntity instenciateNewItemDomainEntity();
 
+    protected void assignEntityTypeForNewInstance(ItemDomainEntity item) {
+    }
+
     @Override
     public ItemDomainEntity createEntityInstance(UserInfo sessionUser) {
         ItemDomainEntity item = instenciateNewItemDomainEntity();
@@ -400,6 +410,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         } else {
             item.init(ei);
         }
+        assignEntityTypeForNewInstance(item);
 
         // initialize core metadata if subclass uses that facility
         item.initializeCoreMetadataPropertyValue();
@@ -530,6 +541,14 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
             ptmList.add(ptm);
         }
         propertyType.setPropertyTypeMetadataList(ptmList);
+        propertyType.setDefaultValue(propInfo.getDefaultPropertyValue());
+
+        String handlerName = propInfo.getPropertyTypeHandlerName();
+        if (handlerName != null) {
+            PropertyTypeHandler handler
+                    = PropertyTypeHandlerFacade.getInstance().findByName(handlerName);
+            propertyType.setPropertyTypeHandler(handler);
+        }
 
         try {
             propertyTypeControllerUtility.create(propertyType, null);
@@ -764,7 +783,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         if (cloneSources) {
             clonedItem = cloneSources(clonedItem, cloningFrom);
         }
-        if (cloneCreateItemElementPlaceholders) {            
+        if (cloneCreateItemElementPlaceholders) {
             clonedItem = defaultCloneCreateItemElementsForClone(clonedItem, cloningFrom, user);
         }
 
@@ -774,14 +793,15 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
 
         return clonedItem;
     }
-    
+
     /**
-     * Default domain specific configuration for cloning elements when doing the complete clone
-     * 
+     * Default domain specific configuration for cloning elements when doing the
+     * complete clone
+     *
      * @param clonedItem
      * @param cloningFrom
      * @param user
-     * @return 
+     * @return
      */
     protected ItemDomainEntity defaultCloneCreateItemElementsForClone(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, UserInfo user) {
         return cloneCreateItemElements(clonedItem, cloningFrom, user, false, false, false);
@@ -807,6 +827,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
                 PropertyValue newPropertyValue = new PropertyValue();
                 newPropertyValue.setPropertyType(propertyValue.getPropertyType());
                 newPropertyValue.setValue(propertyValue.getValue());
+                newPropertyValue.setText(propertyValue.getText());
                 newPropertyValue.setDisplayValue(propertyValue.getDisplayValue());
                 newPropertyValue.setTargetValue(propertyValue.getTargetValue());
                 newPropertyValue.setTag(propertyValue.getTag());
@@ -910,17 +931,21 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
 
         return newItemElement;
     }
-    
-    public List<Item> getParentItemList(ItemDomainEntity itemEntity) {        
+
+    public List<Item> getParentItemList(ItemDomainEntity itemEntity) {
         List<Item> parentItemList = itemEntity.getParentItemList();
-        if (parentItemList == null) {            
+        if (parentItemList == null) {
             parentItemList = getStandardParentItemList(itemEntity);
             itemEntity.setParentItemList(parentItemList);
         }
 
         return parentItemList;
     }
-    
+
+    public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {
+        return new ItemElementConstraintInformation(itemElement);
+    }
+
     public static List<Item> getStandardParentItemList(Item itemEntity) {
 
         List<Item> itemList = new ArrayList<>();

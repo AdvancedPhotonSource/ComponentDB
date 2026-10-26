@@ -7,7 +7,6 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">    
 
     <p:outputPanel>
@@ -81,6 +80,9 @@ See LICENSE file.
                          rendered="#{cableWizard.isTypeCatalog()}">
 
                     <ui:decorate template="../../../itemDomainCableCatalog/private/templates/itemDomainCableCatalogDataTableTemplate.xhtml">
+                        
+                        <ui:param name="displayItemNameColumnLink"
+                                  value="#{false}"/>
 
                         <ui:param name="cableCatalogDataTableSelectionModel" 
                                   value="#{cableWizard.selectionCableCatalogItem}" /> 
@@ -88,7 +90,8 @@ See LICENSE file.
                                   value="cableWizardDetailsTab" />
 
                         <ui:define name="cableCatalogDataTableEvents">
-                            <p:ajax event="rowSelectRadio"
+                            <p:ajax event="rowSelect"
+                                    update="@parent"
                                     listener="#{cableWizard.selectListenerCableCatalogItem}"
                                     oncomplete="update#{rootViewId}WizardButtons();"/>
                         </ui:define>

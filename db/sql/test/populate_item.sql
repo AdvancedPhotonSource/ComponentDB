@@ -95,7 +95,7 @@ INSERT INTO `item` VALUES
 (92,1,'Room 105',NULL,'','',NULL),
 (93,6,'Test Machine',NULL,NULL,NULL,NULL),
 (94,6,'Component 1',NULL,NULL,NULL,NULL),
-(95,6,'Another Needed Component',NULL,'','',NULL),
+(95,6,'Another Needed Component',NULL,NULL,NULL,NULL),
 (97,3,'Unit: 0001',6,'','',NULL),
 (98,3,'Unit: 0002',6,'','',NULL),
 (99,3,'Unit: 0003',6,'','',NULL),
@@ -118,6 +118,14 @@ INSERT INTO `item` VALUES
 (116,6,'Template Holder',NULL,NULL,NULL,NULL),
 (117,6,'child 01',NULL,'','c8696da153c4451585945ac16e4792a2',NULL),
 (118,6,'Template_Test 01',NULL,NULL,'c9c62b55c1244095851ad74a3d38142b',NULL),
-(119,5,'TEST MAARC',NULL,'','',NULL);
+(119,5,'TEST MAARC',NULL,'','',NULL),
+(120,6,'Machine2',NULL,NULL,NULL,NULL),
+(121,6,'Item with Ports 1',NULL,NULL,NULL,NULL),
+(122,6,'Item with Ports 2',NULL,NULL,NULL,NULL),
+(123,2,'Item With Connectors 1',NULL,'','',NULL),
+(124,2,'Item With Connectors 2',NULL,'','',NULL),
+(125,9,'TEST CABLE 2',NULL,'KABEL',NULL,NULL),
+(126,6,'Item with Ports 3',NULL,NULL,NULL,NULL),
+(127,2,'Item With Connectors 3',NULL,'','',NULL);
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -50,7 +50,7 @@ See LICENSE file.
                    emptyLabel="-"
                    styleClass="entityDataText">
             <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
-            <h:inputTextarea value="#{itemElementObject.description}" title="Description" styleClass="entityDataText"/>
+            <p:inputTextarea value="#{itemElementObject.description}" title="Description" autoResize="false" styleClass="entityDataText"/>
         </p:inplace>
 
         <h:outputLabel for="sortOrder" value="Sort Order" styleClass="entityDataLabel"/>
@@ -60,7 +60,7 @@ See LICENSE file.
                    emptyLabel="-"
                    styleClass="entityDataText">
             <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
-            <h:inputText value="#{itemElementObject.sortOrder}" title="Sort Order" styleClass="entityDataText"/>
+            <p:inputText value="#{itemElementObject.sortOrder}" title="Sort Order" styleClass="entityDataText"/>
         </p:inplace>
 
     </p:panelGrid>

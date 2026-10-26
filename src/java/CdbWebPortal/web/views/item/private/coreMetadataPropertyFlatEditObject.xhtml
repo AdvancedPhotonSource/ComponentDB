@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="itemMetadataObject" value="#{itemObject.itemMetadataObject}" />
+
+    <c:forEach items="#{entityController.coreMetadataPropertyInfo.fields}"
+               var="metadataField">
+
+        <ui:param name="metadataKey" value="#{metadataField.key}"/>
+        <ui:param name="metadataLabel" value="#{metadataField.label}"/>
+        <ui:param name="metadataType" value="#{metadataField.typeString}"/>
+        <ui:param name="metadataDescription" value="#{metadataField.description}"/>
+
+        <h:outputLabel for="#{metadataKey}#{viewName}"
+                       value="#{metadataLabel}"
+                       styleClass="entityDataLabel"
+                       title="#{metadataDescription}"/>
+
+        <p:column id="#{metadataKey}#{viewName}">
+            <ui:include src="coreMetadataPropertyEditValue.xhtml" />
+        </p:column>
+
+    </c:forEach>
+
+
+
+</ui:composition>

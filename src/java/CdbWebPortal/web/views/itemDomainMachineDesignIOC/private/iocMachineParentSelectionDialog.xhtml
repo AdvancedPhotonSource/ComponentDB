@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="iocMachineParentSelectionDialog"
+              widgetVar="iocMachineParentSelectionDialogWidget"
+              header="Select Machine Parent"
+              height="500px"
+              closable="false"
+              modal="true">
+
+        <ui:include src="iocMachineParentSelectionTree.xhtml" />
+
+        <f:facet name="footer">
+            <p:commandButton value="Save"
+                             icon="fa fa-save"
+                             onclick="PF('loadingDialog').show()"
+                             action="#{itemDomainMachineDesignIOCController.update()}"
+                             oncomplete="PF('loadingDialog').hide()"/>
+            <p:commandButton value="Clear"
+                             icon="fa fa-eraser"
+                             onclick="PF('loadingDialog').show()"
+                             action="#{itemDomainMachineDesignIOCController.clearMachineParent()}"
+                             oncomplete="PF('loadingDialog').hide()"/>
+            <p:commandButton value="Close"
+                             icon="fa fa-close"
+                             action="#{itemDomainMachineDesignIOCController.viewForCurrentEntity()}" />
+        </f:facet>
+    </p:dialog>
+
+</ui:composition>
+
+

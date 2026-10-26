@@ -6,7 +6,6 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
@@ -15,27 +14,27 @@ See LICENSE file.
     <p:panelGrid columns="4" styleClass="createEntityDetails">
 
         <h:outputLabel for="username" value="Username" styleClass="entityDataEmphasizedLabel"/>
-        <h:inputText id="username" value="#{userInfoObject.username}" title="Username" required="true" styleClass="entityDataEmphasizedText"/>
+        <p:inputText id="username" value="#{userInfoObject.username}" title="Username" required="true" styleClass="entityDataEmphasizedText"/>
         <p:message for="username"/> 
         <p:tooltip for="username" value="Username is required."/>
 
         <h:outputLabel for="lastName" value="Last Name" styleClass="entityDataLabel"/>
-        <h:inputText id="lastName" value="#{userInfoObject.lastName}" title="Last Name" required="true" styleClass="entityDataText"/>
+        <p:inputText id="lastName" value="#{userInfoObject.lastName}" title="Last Name" required="true" styleClass="entityDataText"/>
         <p:message for="lastName"/>
         <p:tooltip for="lastName" value="User last name is required."/>
 
         <h:outputLabel for="firstName" value="First Name" styleClass="entityDataLabel"/>
-        <h:inputText id="firstName" value="#{userInfoObject.firstName}" title="First Name" required="true" styleClass="entityDataText"/>
+        <p:inputText id="firstName" value="#{userInfoObject.firstName}" title="First Name" required="true" styleClass="entityDataText"/>
         <p:message for="firstName"/> 
         <p:tooltip for="firstName" value="User first name is required."/>
 
         <h:outputLabel for="middleName" value="Middle Name" styleClass="entityDataLabel"/>
-        <h:inputText id="middleName" value="#{userInfoObject.middleName}" title="Middle Name" styleClass="entityDataText"/>
+        <p:inputText id="middleName" value="#{userInfoObject.middleName}" title="Middle Name" styleClass="entityDataText"/>
         <p:message for="middleName"/>
         <p:tooltip for="middleName" value="User middle name or initial is optional."/>
 
         <h:outputLabel for="email" value="Email" styleClass="entityDataLabel"/>
-        <h:inputText id="email" value="#{userInfoObject.email}" title="Email" styleClass="entityDataText"/>
+        <p:inputText id="email" value="#{userInfoObject.email}" title="Email" styleClass="entityDataText"/>
         <p:message for="email"/>
         <p:tooltip for="email" value="User email is optional."/>
 
@@ -45,7 +44,7 @@ See LICENSE file.
         <p:tooltip for="password" value="User local password specification is optional. When it is set, the system database becomes primary authentication mechanism. (Optional)"/>
 
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
-        <h:inputText id="description" value="#{userInfoObject.description}" title="Description" styleClass="entityDataText"/>
+        <p:inputText id="description" value="#{userInfoObject.description}" title="Description" styleClass="entityDataText"/>
         <p:message for="description"/>        
         <p:tooltip for="description" value="User description is optional."/>
 

@@ -1165,8 +1165,8 @@ public abstract class ItemController<
         }
     }
 
-    public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {
-        return new ItemElementConstraintInformation(itemElement);
+    public final ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {
+        return getControllerUtility().loadItemElementConstraintInformation(itemElement);         
     }
 
     public void completeSucessfulDerivedFromItemCreation() {
@@ -1451,6 +1451,7 @@ public abstract class ItemController<
             clonedItem = (ItemDomainEntity) (entity.clone(user, firstGroup, cloneProperties, cloneSources, cloneCreateItemElementPlaceholders));
         } catch (CloneNotSupportedException ex) {
             LOGGER.error("Object cannot be cloned: " + ex);
+            SessionUtility.addErrorMessage("Cannot Clone", ex.getMessage());
             clonedItem = createEntityInstance();
         }
         return clonedItem;
@@ -1903,6 +1904,18 @@ public abstract class ItemController<
         String mode = SessionUtility.getRequestParameterValue("mode");
         if (mode != null) {
             urlParams += "mode=" + mode + "&";
+        }
+
+        // Forward a property permalink target through the domain redirect so the
+        // domain view can open the corresponding property dialog on load.
+        String propertyValueIdParam = SessionUtility.getRequestParameterValue("propertyValueId");
+        if (propertyValueIdParam != null) {
+            try {
+                Integer propertyValueId = Integer.parseInt(propertyValueIdParam);
+                urlParams += "propertyValueId=" + propertyValueId + "&";
+            } catch (NumberFormatException ex) {
+                // Ignore a malformed permalink parameter.
+            }
         }
 
         try {

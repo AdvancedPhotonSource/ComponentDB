@@ -1,28 +1,29 @@
 {% set name = "ComponentDB-API" %}
-{% set version = "3.15.4" %}
+{% set version = "3.18.0" %}
 
 package:
   name: "{{ name|lower }}"  
   version: "{{ version }}"
-
+ 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 33979ae849995e13f04c8f0fe8a795e0354e48eb8111743a29997783d86a2253
+  path: ../../packages/api
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation
 
-requirements:  
-  build:
+requirements:
+  host:
+    - python>=3.10
+    - hatchling
     - pip
-    - python    
   run:
-    - python
-    - python-dateutil
-    - six
-    - urllib3
+    - python>=3.10
+    - python-dateutil >=2.8.2
+    - urllib3 >=2.6.3,<3.0.0
+    - pydantic >=2.11
+    - typing-extensions >=4.7.1
     - certifi
 
 test:

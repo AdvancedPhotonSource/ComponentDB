@@ -146,6 +146,7 @@ public class Domain extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Item> getItemList() {
         return itemList;
     }
@@ -155,6 +156,7 @@ public class Domain extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemType> getItemTypeList() {
         return itemTypeList;
     }
@@ -164,6 +166,7 @@ public class Domain extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<PropertyType> getPropertyTypeList() {
         return propertyTypeList;
     }
@@ -173,6 +176,7 @@ public class Domain extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemCategory> getItemCategoryList() {
         return itemCategoryList;
     }

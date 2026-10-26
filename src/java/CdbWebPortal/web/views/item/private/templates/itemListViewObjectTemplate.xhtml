@@ -11,6 +11,9 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 template="itemListObjectTemplate.xhtml">
 
+    <ui:param name="displayItemNameColumnLink"
+              value="#{displayItemNameColumnLink != null
+                       ? displayItemNameColumnLink : true}" />
 
     <ui:define name="idColumnObject">
         <h:outputText value="#{itemListObject.id}" />
@@ -19,10 +22,10 @@ See LICENSE file.
     <ui:define name="nameColumnObject">
         <f:attribute name="exportValue" value="#{itemListObject.name}"/>
         <h:outputLink value="../item/view.xhtml?id=#{itemListObject.id}" title="View #{entityTypeName} details"
-                      rendered="#{itemListObject.id != null}"> 
+                      rendered="#{itemListObject.id != null and displayItemNameColumnLink}">
             <h:outputText value="#{itemListObject.name}" />
         </h:outputLink>
-        <h:outputLabel rendered="#{itemListObject.id == null}" value="#{itemListObject.name}" />
+        <h:outputLabel rendered="#{itemListObject.id == null or !displayItemNameColumnLink}" value="#{itemListObject.name}" />
     </ui:define>
 
     <ui:define name="qrIdColumnObject">
@@ -32,37 +35,37 @@ See LICENSE file.
     <ui:define name="itemIdentifier2ColumnObject">
         <h:outputText value="#{itemListObject.itemIdentifier2}" />
     </ui:define>
-    
+
     <ui:define name="itemProjectObject">
         <h:outputText value="#{itemListObject.itemProjectString}" />
     </ui:define>
-    
+
     <ui:define name="entityTypeColumnObject">
         <f:attribute name="exportValue" value="#{itemListObject.entityTypeString}"/>
-            <ui:repeat value="#{itemListObject.entityTypeDisplayList}" var="itemEntityType" >
-                    <h:outputText value="#{itemEntityType.name}" /> <br/>
-            </ui:repeat>
+        <ui:repeat value="#{itemListObject.entityTypeDisplayList}" var="itemEntityType" >
+            <h:outputText value="#{itemEntityType.name}" /> <br/>
+        </ui:repeat>
     </ui:define>
 
     <ui:define name="itemTypeColumnObject">
         <f:attribute name="exportValue" value="#{itemListObject.itemTypeString}"/>
-            <ui:repeat value="#{itemListObject.itemTypeList}" var="itemTypeObject">
-                <h:outputText value="#{itemTypeObject.name}" /> <br/>
-            </ui:repeat>
+        <ui:repeat value="#{itemListObject.itemTypeList}" var="itemTypeObject">
+            <h:outputText value="#{itemTypeObject.name}" /> <br/>
+        </ui:repeat>
     </ui:define>
 
     <ui:define name="itemCategoryColumnObject">
         <f:attribute name="exportValue" value="#{itemListObject.itemCategoryString}"/>
-            <ui:repeat value="#{itemListObject.itemCategoryList}" var="itemCategoryObject">
-                <h:outputText value="#{itemCategoryObject.name}" /> <br/>
-            </ui:repeat>
+        <ui:repeat value="#{itemListObject.itemCategoryList}" var="itemCategoryObject">
+            <h:outputText value="#{itemCategoryObject.name}" /> <br/>
+        </ui:repeat>
     </ui:define>
 
     <ui:define name="itemSourceColumnObject">
         <f:attribute name="exportValue" value="#{itemListObject.itemSourceString}"/>
-            <ui:repeat value="#{itemListObject.itemSourceList}" var="itemSource">
-                    <h:outputText value="#{itemSource.source.name}" /> <br/>
-            </ui:repeat>
+        <ui:repeat value="#{itemListObject.itemSourceList}" var="itemSource">
+            <h:outputText value="#{itemSource.source.name}" /> <br/>
+        </ui:repeat>
     </ui:define>
 
     <ui:define  name="derivedFromItemColumnObject">

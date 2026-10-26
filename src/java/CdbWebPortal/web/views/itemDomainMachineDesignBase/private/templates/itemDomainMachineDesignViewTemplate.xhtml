@@ -38,6 +38,12 @@ See LICENSE file.
                          action="#{entityController.listViewForCurrentEntity()}">
             <p:tooltip for="#{entityTypeName}ListViewButton" value="Go to the split tree/view display."/>
         </p:commandButton>
+        <p:commandButton id="#{entityTypeName}ListButton"
+                         value="List" alt="View in tree list" icon="fa fa-sitemap"
+                         onclick="PF('loadingDialog').show()"
+                         action="#{entityController.listForCurrentEntity()}">
+            <p:tooltip for="#{entityTypeName}ListButton" value="View this machine element in machine design hierarchy."/>
+        </p:commandButton>
     </ui:define>
 
     

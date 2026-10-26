@@ -13,12 +13,12 @@ See LICENSE file.
 
     <p:panelGrid columns="4">
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
-        <h:inputText id="name" value="#{sourceObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
+        <p:inputText id="name" value="#{sourceObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
         <p:message for="name"/> 
         <p:tooltip for="name" value="Source name is required."/>
 
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
-        <h:inputText id="description" value="#{sourceObject.description}" title="Description" styleClass="entityDataText"/>
+        <p:inputText id="description" value="#{sourceObject.description}" title="Description" styleClass="entityDataText"/>
         <p:message for="description"/> 
         <p:tooltip for="description" value="Source description is optional."/>
 
@@ -28,12 +28,12 @@ See LICENSE file.
         <p:tooltip for="id" value="Source id cannot be modified."/>
 
         <h:outputLabel for="contactInfo" value="Contact Info" styleClass="entityDataLabel"/>
-        <h:inputText id="contactInfo" value="#{sourceObject.contactInfo}" title="Description" styleClass="entityDataText"/>
+        <p:inputText id="contactInfo" value="#{sourceObject.contactInfo}" title="Description" styleClass="entityDataText"/>
         <p:message for="contactInfo"/>  
         <p:tooltip for="contactInfo" value="Enter source contact info."/>
 
         <h:outputLabel for="url" value="URL" styleClass="entityDataLabel"/>
-        <h:inputText id="url" value="#{sourceObject.url}" title="URL" styleClass="entityDataText"/>
+        <p:inputText id="url" value="#{sourceObject.url}" title="URL" styleClass="entityDataText"/>
         <p:message for="url"/>  
         <p:tooltip for="url" value="Enter source url."/>          
     </p:panelGrid>

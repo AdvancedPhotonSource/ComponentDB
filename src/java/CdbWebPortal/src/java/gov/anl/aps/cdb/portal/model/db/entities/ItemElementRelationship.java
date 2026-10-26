@@ -164,6 +164,7 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<PropertyValue> getPropertyValueList() {
         return propertyValueList;
     }
@@ -181,6 +182,7 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     }
     
     @XmlTransient
+    @JsonIgnore
     public List<ItemElementRelationshipHistory> getItemElementRelationshipHistoryList() {
         return itemElementRelationshipHistoryList;
     }

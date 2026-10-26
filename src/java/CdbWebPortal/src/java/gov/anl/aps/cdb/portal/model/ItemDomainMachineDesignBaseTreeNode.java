@@ -123,8 +123,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
 
     protected void loadRelationshipsFromRelationshipList(boolean fetchParents, ItemElementRelationshipTypeNames relationshipTypeName, String customType) {
         ItemElement element = this.getElement();
-        Item machineElement = element.getContainedItem();                
-        
+        Item machineElement = element.getContainedItem();
 
         List<ItemDomainMachineDesign> results = null;
         ItemDomainMachineDesignFacade designFacade = config.getFacade();
@@ -193,18 +192,22 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
                     if (isItemMachineDesignAndTemplate(parentItem)) {
                         // parent is template -- default name is correct
                         defaultDomainAssignment += "Member";
-                        
+
                         ItemElement representsCatalogElement = ((ItemDomainMachineDesign) item).getRepresentsCatalogElement();
                         if (representsCatalogElement != null) {
                             defaultDomainAssignment += "Assembly";
-                        }                        
+                        }
                     } else {
                         // parent is machine design 
                         defaultDomainAssignment += "Placeholder";
                     }
                 } else if (itemDomainId == ItemDomainName.MACHINE_DESIGN_ID) {
-                    // machine design sub item of a machine design 
-                    defaultDomainAssignment += "Member";
+                    if (isItemMachineDesignAndIOC(item)) {
+                        defaultDomainAssignment += "IOCMember";
+                    } else {
+                        // machine design sub item of a machine design 
+                        defaultDomainAssignment += "Member";
+                    }
 
                     ItemElement representsCatalogElement = ((ItemDomainMachineDesign) item).getRepresentsCatalogElement();
                     if (representsCatalogElement != null) {
@@ -234,6 +237,14 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
     public boolean isItemMachineDesignAndTemplate(Item item) {
         if (item instanceof ItemDomainMachineDesign) {
             return ((ItemDomainMachineDesign) item).getIsItemTemplate();
+        }
+
+        return false;
+    }
+
+    public boolean isItemMachineDesignAndIOC(Item item) {
+        if (item instanceof ItemDomainMachineDesign) {
+            return ((ItemDomainMachineDesign) item).getIsItemIOC();
         }
 
         return false;
@@ -311,7 +322,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
             Integer maxSearchNodes = config.getMaxSearchNodes();
             if (displayedNodes[0] > maxSearchNodes) {
                 clearFilterResults();
-                SessionUtility.addErrorMessage("Too many results rows (" + displayedNodes[0] + ")" , "Too many results to display. Please provide a more specific search criteria.", true);
+                SessionUtility.addErrorMessage("Too many results rows (" + displayedNodes[0] + ")", "Too many results to display. Please provide a more specific search criteria.", true);
             } else {
                 SessionUtility.addInfoMessage("Done", "Showing " + relevantResults + " relevant results.", true);
             }
@@ -337,9 +348,9 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
         ItemDomainMachineDesign parentMachineDesign = item.getParentMachineDesign();
         return Arrays.asList(parentMachineDesign);
     }
-    
+
     protected List<ItemDomainMachineDesign> getParentItems(ItemDomainMachineDesign item, Set<ItemDomainMachineDesign> additionalParents) {
-        return getParentItems(item); 
+        return getParentItems(item);
     }
 
     protected ItemElement getParentItemElement(ItemDomainMachineDesign item) {
@@ -359,13 +370,13 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
         ItemDomainMachineDesign parentMachineDesign = null;
 
         if (!parentMachineDesigns.isEmpty()) {
-            parentMachineDesign = parentMachineDesigns.get(0);           
-                        
+            parentMachineDesign = parentMachineDesigns.get(0);
+
             for (int i = 0; i < parentMachineDesigns.size(); i++) {
                 if (i == 0) {
                     continue;
                 }
-                ItemDomainMachineDesign potentialParent = parentMachineDesigns.get(i); 
+                ItemDomainMachineDesign potentialParent = parentMachineDesigns.get(i);
 
                 if (processWithParent != null) {
                     if (processWithParent.contains(potentialParent)) {
@@ -375,8 +386,8 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
                 }
 
                 additionalParents.add(potentialParent);
-            }           
-        }                
+            }
+        }
 
         ItemDomainMachineDesignBaseTreeNode parentNode = createTreeFromFilter(parentMachineDesign, false, displayedNodes, additionalParents, processWithParent);
 
@@ -467,8 +478,8 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
             }
         }
         this.filterAllNodes = filterAllNodes;
-    }    
-    
+    }
+
     public class MachineTreeBaseConfiguration extends ItemTreeBaseConfiguration {
 
         private boolean setMachineTreeNodeType = true;
@@ -519,7 +530,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
             if (settings != null) {
                 Integer displayMaximumNumberOfSearchResults = settings.getDisplayMaximumNumberOfSearchResults();
                 if (displayMaximumNumberOfSearchResults != null) {
-                    return displayMaximumNumberOfSearchResults; 
+                    return displayMaximumNumberOfSearchResults;
                 }
             }
             return 600;

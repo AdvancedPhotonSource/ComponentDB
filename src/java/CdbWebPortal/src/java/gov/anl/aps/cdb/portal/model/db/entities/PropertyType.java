@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
@@ -65,11 +66,9 @@ import javax.xml.bind.annotation.XmlTransient;
     "propertyValueList",
     "propertyTypeCategory",
     "propertyTypeHandler",
-    "propertyTypeMetadataList",
     "allowedPropertyValueList",
-        
     //Transient Variables 
-    "displayType",    
+    "displayType",
     "allowedDomainString"
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -113,20 +112,20 @@ public class PropertyType extends CdbEntity implements Serializable {
     @JoinTable(name = "allowed_entity_type", joinColumns = {
         @JoinColumn(name = "property_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "entity_type_id", referencedColumnName = "id")})
-    @ManyToMany    
+    @ManyToMany
     private List<EntityType> entityTypeList;
-    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "propertyType")    
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "propertyType")
     private List<PropertyValue> propertyValueList;
     @JoinColumn(name = "property_type_category_id", referencedColumnName = "id")
-    @ManyToOne    
+    @ManyToOne
     private PropertyTypeCategory propertyTypeCategory;
     @JoinColumn(name = "property_type_handler_id", referencedColumnName = "id")
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     private PropertyTypeHandler propertyTypeHandler;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
     private List<PropertyTypeMetadata> propertyTypeMetadataList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
-    @OrderBy("sortOrder ASC")    
+    @OrderBy("sortOrder ASC")
     private List<AllowedPropertyValue> allowedPropertyValueList;
 
     private transient List<AllowedPropertyValue> sortedAllowedPropertyValueList;
@@ -241,6 +240,7 @@ public class PropertyType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Domain> getAllowedDomainList() {
         return allowedDomainList;
     }
@@ -258,6 +258,7 @@ public class PropertyType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<EntityType> getEntityTypeList() {
         return entityTypeList;
     }
@@ -267,6 +268,7 @@ public class PropertyType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<PropertyValue> getPropertyValueList() {
         return propertyValueList;
     }
@@ -291,11 +293,10 @@ public class PropertyType extends CdbEntity implements Serializable {
         this.propertyTypeHandler = propertyTypeHandler;
     }
 
-    @XmlTransient
     public List<PropertyTypeMetadata> getPropertyTypeMetadataList() {
         return propertyTypeMetadataList;
     }
-    
+
     @XmlTransient
     public PropertyTypeMetadata getPropertyTypeMetadataForKey(String key) {
         if (propertyTypeMetadataList != null) {
@@ -313,6 +314,7 @@ public class PropertyType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<AllowedPropertyValue> getAllowedPropertyValueList() {
         return allowedPropertyValueList;
     }

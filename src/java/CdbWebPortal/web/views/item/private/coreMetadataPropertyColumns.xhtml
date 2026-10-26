@@ -10,10 +10,12 @@ See LICENSE file.
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
-    
+
     <ui:param name="rendered" value="#{rendered != null ? rendered : true}" />
-    
+
     <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
+
+    <ui:param name="itemMetadataListObject" value="#{itemListObject.itemMetadataObject}" /> 
 
     <c:forEach items="#{entitySettingObject.coreMetadataPropertyInfo.fields}"
                var="metadataField">  
@@ -26,8 +28,8 @@ See LICENSE file.
 
         <p:column id="#{metadataKey}Column"
                   rendered="#{rendered and entitySettingObject[propertyName]}"
-                  sortBy="#{itemListObject[metadataKey]}"
-                  filterBy="#{itemListObject[metadataKey]}"
+                  sortBy="#{itemMetadataListObject[metadataKey]}"
+                  filterBy="#{itemMetadataListObject[metadataKey]}"
                   field="Metadata-#{metadataKey}"
                   filterMatchMode="contains"
                   filterValue="#{entitySettingObject[filterValue]}"
@@ -36,8 +38,8 @@ See LICENSE file.
                 <h:outputText value="#{metadataLabel}" />
                 <p:tooltip value="#{metadataDescription}"
                            for="#{metadataKey}Column"/>
-            </f:facet> 
-            <h:outputText value="#{itemListObject[metadataKey]}"/>
+            </f:facet>
+            <h:outputText value="#{itemMetadataListObject[metadataKey]}"/>
         </p:column>
 
 

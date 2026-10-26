@@ -115,7 +115,7 @@ See LICENSE file.
                                       value="#{itemElementNameLabel}"
                                       styleClass="entityDataEmphasizedLabel"
                                       rendered="#{!simpleElementsView or displayPartName}"/>
-                        <h:inputText value="#{newItemElement.name}"
+                        <p:inputText value="#{newItemElement.name}"
                                      rendered="#{!simpleElementsView or displayPartName}"/> 
                         <p:tooltip for="addNewAssemblyItemDialogItemElementName" 
                                    value="Name of the new element."
@@ -125,7 +125,7 @@ See LICENSE file.
                                       value="#{itemElementDescriptionLabel}"
                                       styleClass="entityDataEmphasizedLabel"
                                       rendered="#{!simpleElementsView or displayPartDescription}"/>
-                        <h:inputText value="#{newItemElement.description}"
+                        <p:inputText value="#{newItemElement.description}"
                                      rendered="#{!simpleElementsView or displayPartDescription}"/> 
                         <p:tooltip for="addNewAssemblyItemDialogItemElementDescription" 
                                    value="Description of the new element."

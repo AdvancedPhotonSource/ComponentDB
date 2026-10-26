@@ -89,29 +89,38 @@ Restart application to reset any caches for `item_project`.
 ```
 
 # Deployment Upgrade
+See [docs/update/README.md](docs/update/README.md) for the full procedure, including
+how to skip multiple releases at once. Summary, upgrading to 3.18.0:
 ```sh
-# Navigate to cdb installation directory
-cd $CDB_INSTALL_DIRECTORY
+cd $CDB_INSTALL_DIR
+wget https://github.com/AdvancedPhotonSource/ComponentDB/archive/v3.18.0.tar.gz
+tar -xvf v3.18.0.tar.gz
+rm v3.18.0.tar.gz
+cd ComponentDB-3.18.0
+source setup.sh
 
-# Download the release package to cdb install dicrectory
-# Using version 3.10 as an example. 
-wget https://github.com/AdvancedPhotonSource/ComponentDB/archive/v3.10.0.tar.gz
-tar -xvf v3.10.0.tar.gz
-rm v3.10.0.tar.gz
-cd ComponentDB-3.10.0
-
-# Backup the database. 
+# Backup, then stash it as a pre-change snapshot -- backups are date-stamped to the
+# day, so without this a later backup below would overwrite it.
 make backup
+cp -r $CDB_INSTALL_DIR/backup/cdb/`date +%Y%m%d` $CDB_INSTALL_DIR/backup/cdb/`date +%Y%m%d`-pre-change
 
-# Verify db changes. 
+# Apply any db/sql/updates/updateTo<VERSION>.sql scripts between the old and new
+# version, in order.
 cd db/sql/updates
-# Check to see if the release has a updateTo(Version).sql script. 
-# Follow instructions described in the top comments of the sql update file.
-cd ../../../ # Navigate back to release directory
+# mysql $CDB_DB_NAME --host=127.0.0.1 --user=cdb -p < updateTo<VERSION>.sql
+cd ../../../
 
-# Deploy plugins if needed using `make deploy-cdb-plugin`
+# Only needed if an update script's header says to rebuild the db -- recent scripts
+# are self-contained, so this is normally skipped to save time.
+# make backup
+# mkdir -p ../db/cdb/
+# cp ../backup/cdb/`date +%Y%m%d`/populate* ../db/cdb
+# make db
+
+# Deploy plugins if needed: make deploy-cdb-plugin
 # See https://github.com/AdvancedPhotonSource/ComponentDB/wiki/Plugins
 
+# make configure-web-portal   # only if generated config templates changed -- rare
 make deploy-web-portal
 ```
     
@@ -177,6 +186,18 @@ The python web service is deprecated but is still a part of the distribution for
 # For web service development (Use your favorite python editor) to test run web service using:
 ./sbin/cdbWebService.sh
 ```
-    
+
+## Preparing a Release
+`make prepare-release` bumps the version string across the repo (`etc/version`, `openapi.yaml`, web asset cache-busters, python-client `packages/*/pyproject.toml`/conda recipes) and scaffolds `docs/release-notes/<VERSION>.md`. Run it, review the diff, then commit.
+```sh
+make prepare-release
+```
+
+Publish the python client (`componentdb-api`, `componentdb-cli`) to PyPI with:
+```sh
+make release-python-client
+```
+See `tools/developer_tools/python-client/README.md` for the `uv build`/`uv publish` details, TestPyPI dry runs, and the conda packaging path.
+
 # License
 [Copyright (c) UChicago Argonne, LLC. All rights reserved.](https://github.com/AdvancedPhotonSource/ComponentDB/blob/master/LICENSE)

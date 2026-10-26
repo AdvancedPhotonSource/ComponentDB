@@ -13,6 +13,16 @@ See LICENSE file.
         <ui:include src="contextMenu/relationshipSubMenu.xhtml" /> 
     </ui:define>
 
+    <ui:define name="additionalPromotedMenuOptionMachineDesignIOCMember">
+        <p:submenu icon="fa fa-connectdevelop"
+                   label="Relationship">
+
+            <p:menuitem value="Show in control hierarchy"
+                        icon="fa fa-code"
+                        action="#{entityController.showInControlHierarchyForSelectedTreeNode()}"/>
+        </p:submenu>
+    </ui:define>
+
     <ui:define name="additionalPromotedMenuOptionMachineDesignCatalogMember">
         <ui:include src="contextMenu/relationshipSubMenu.xhtml" /> 
     </ui:define>

@@ -34,6 +34,11 @@ public class ItemDomainAppController extends ItemController<ItemDomainAppControl
     }
 
     @Override
+    protected String getCloneCreatePageName() {
+        return "create";
+    }
+
+    @Override
     public ItemDomainAppLazyDataModel createItemLazyDataModel() {
         return new ItemDomainAppLazyDataModel(itemDomainAppFacade, getDefaultDomain(), settingObject);
     }
@@ -88,7 +93,7 @@ public class ItemDomainAppController extends ItemController<ItemDomainAppControl
         ItemDomainApp current = getCurrent();
         if (current != null) {
             if (current.getDerivedFromItemList().size() > 0) {
-                return false; 
+                return false;
             }
         }
         return true;
@@ -137,7 +142,7 @@ public class ItemDomainAppController extends ItemController<ItemDomainAppControl
 
     @Override
     public boolean entityCanBeCreatedByUsers() {
-        return true; 
+        return true;
     }
 
     @Override

@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -189,6 +190,7 @@ public class ItemElementHistory extends CdbEntity implements Serializable {
     }
     
     @XmlTransient
+    @JsonIgnore
     public Item getParentItem() {
         // Handle self element
         if (parentItem == null && itemElement != null) {
@@ -213,6 +215,7 @@ public class ItemElementHistory extends CdbEntity implements Serializable {
     }
     
     @XmlTransient
+    @JsonIgnore
     public Item getContainedItem() {
         return containedItem1;
     }
@@ -230,6 +233,7 @@ public class ItemElementHistory extends CdbEntity implements Serializable {
     }
     
     @XmlTransient
+    @JsonIgnore
     public Item getContainedItem2() {
         return containedItem2;
     }
@@ -247,6 +251,7 @@ public class ItemElementHistory extends CdbEntity implements Serializable {
     }
     
     @XmlTransient
+    @JsonIgnore
     public ItemElement getDerivedFromItemElement() {
         return derivedFromItemElement;
     }
@@ -256,6 +261,7 @@ public class ItemElementHistory extends CdbEntity implements Serializable {
     }
     
     @XmlTransient
+    @JsonIgnore
     public ItemElement getRepresentsItemElement() {
         return representsItemElement;
     }
@@ -265,6 +271,7 @@ public class ItemElementHistory extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public UserInfo getEnteredByUser() {
         return enteredByUser;
     }
@@ -274,6 +281,7 @@ public class ItemElementHistory extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public Date getEnteredOnDateTime() {
         return enteredOnDateTime;
     }

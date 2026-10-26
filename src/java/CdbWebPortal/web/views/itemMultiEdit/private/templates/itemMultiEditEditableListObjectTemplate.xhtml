@@ -24,7 +24,7 @@ See LICENSE file.
         <ui:include src="../itemMultiEditColumnHeaderFacet.xhtml" >
             <ui:param name="columnEnum" value="#{columnNamesToApplyValuesTo.name}" />
         </ui:include>
-        <h:inputText value="#{itemObject.name}"/>                            
+        <p:inputText value="#{itemObject.name}"/>
     </p:column>
 
     <p:column rendered="#{entityController.updateItemIdentifier1 and entityController.entityDisplayItemIdentifier1}">

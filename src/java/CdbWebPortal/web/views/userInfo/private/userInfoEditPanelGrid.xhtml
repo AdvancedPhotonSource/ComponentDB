@@ -16,7 +16,7 @@ See LICENSE file.
     <p:panelGrid columns="4" styleClass="editEntityDetails"> 
 
         <h:outputLabel for="username" value="Username" styleClass="entityDataEmphasizedLabel"/>
-        <h:inputText id="username" value="#{userInfoObject.username}" rendered="#{isFieldWriteable}" title="Username" required="true" styleClass="entityDataEmphasizedText"/>
+        <p:inputText id="username" value="#{userInfoObject.username}" rendered="#{isFieldWriteable}" title="Username" required="true" styleClass="entityDataEmphasizedText"/>
         <h:outputText id="usernameOutput" value="#{userInfoObject.username}" rendered="#{!isFieldWriteable}" title="Username" styleClass="entityDataEmphasizedText"/>
         <p:message for="username"/> 
         <p:tooltip for="username" value="Username is required."/>
@@ -27,25 +27,25 @@ See LICENSE file.
         <p:tooltip for="id" value="User id cannot be modified."/>
 
         <h:outputLabel for="lastName" value="Last Name" styleClass="entityDataLabel"/>
-        <h:inputText id="lastName" value="#{userInfoObject.lastName}" rendered="#{isFieldWriteable}" title="Last Name" required="true" styleClass="entityDataText"/>
+        <p:inputText id="lastName" value="#{userInfoObject.lastName}" rendered="#{isFieldWriteable}" title="Last Name" required="true" styleClass="entityDataText"/>
         <h:outputText id="lastNameOutput" value="#{userInfoObject.lastName}" rendered="#{!isFieldWriteable}" title="Last Name" styleClass="entityDataText"/>
         <p:message for="lastName"/>
         <p:tooltip for="lastName" value="User last name is required."/>
 
         <h:outputLabel for="firstName" value="First Name" styleClass="entityDataLabel"/>
-        <h:inputText id="firstName" value="#{userInfoObject.firstName}" rendered="#{isFieldWriteable}" title="First Name" required="true" styleClass="entityDataText"/>
+        <p:inputText id="firstName" value="#{userInfoObject.firstName}" rendered="#{isFieldWriteable}" title="First Name" required="true" styleClass="entityDataText"/>
         <h:outputText id="firstNameOutput" value="#{userInfoObject.firstName}" rendered="#{!isFieldWriteable}" title="First Name" styleClass="entityDataText"/>
         <p:message for="firstName"/> 
         <p:tooltip for="firstName" value="User first name is required."/>
 
         <h:outputLabel for="middleName" value="Middle Name" styleClass="entityDataLabel"/>
-        <h:inputText id="middleName" value="#{userInfoObject.middleName}" title="Middle Name" rendered="#{isFieldWriteable}" styleClass="entityDataText"/>
+        <p:inputText id="middleName" value="#{userInfoObject.middleName}" title="Middle Name" rendered="#{isFieldWriteable}" styleClass="entityDataText"/>
         <h:outputText id="middleNameOutput" value="#{userInfoObject.middleName}" title="Middle Name" rendered="#{!isFieldWriteable}" styleClass="entityDataText"/>
         <p:message for="middleName"/>
         <p:tooltip for="middleName" value="User middle name or initial is optional."/>
 
         <h:outputLabel for="email" value="Email" styleClass="entityDataLabel"/>
-        <h:inputText id="email" value="#{userInfoObject.email}" title="Email" styleClass="entityDataText"/>
+        <p:inputText id="email" value="#{userInfoObject.email}" title="Email" styleClass="entityDataText"/>
         <p:message for="email"/>
         <p:tooltip for="email" value="User email is optional."/>
 
@@ -62,7 +62,7 @@ See LICENSE file.
         <p:tooltip for="password" value="User local password specification is optional. When it is set, the system database becomes primary authentication mechanism. (Optional)"/>
 
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
-        <h:inputText id="description" value="#{userInfoObject.description}" title="Description" styleClass="entityDataText"/>
+        <p:inputText id="description" value="#{userInfoObject.description}" title="Description" styleClass="entityDataText"/>
         <p:message for="description"/>        
         <p:tooltip for="description" value="User description is optional."/>
 

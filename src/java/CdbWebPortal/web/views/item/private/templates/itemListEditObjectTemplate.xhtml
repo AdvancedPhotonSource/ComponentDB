@@ -18,20 +18,20 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="nameColumnObject">
-        <h:inputText value="#{itemListObject.name}" />
+        <p:inputText value="#{itemListObject.name}" />
     </ui:define>
 
     <ui:define name="qrIdColumnObject">
-        <h:inputText id="qrId" value="#{itemListObject.qrId}" />
+        <p:inputText id="qrId" value="#{itemListObject.qrId}" />
         <p:tooltip for="qrId" value="Enter QR id."/>
     </ui:define>
 
     <ui:define name="itemIdentifier1ColumnObject">
-        <h:inputText value="#{itemListObject.itemIdentifier1}" />
+        <p:inputText value="#{itemListObject.itemIdentifier1}" />
     </ui:define>
 
     <ui:define name="itemIdentifier2ColumnObject">
-        <h:inputText value="#{itemListObject.itemIdentifier2}" />
+        <p:inputText value="#{itemListObject.itemIdentifier2}" />
     </ui:define>
     
     <ui:define name="entityTypeColumn"/>
@@ -45,7 +45,7 @@ See LICENSE file.
     <ui:define  name="derivedFromItemColumn"/>
 
     <ui:define name="descriptionColumnObject">
-        <h:inputTextarea value="#{itemListObject.description}"/>
+        <p:inputTextarea value="#{itemListObject.description}" autoResize="false"/>
     </ui:define>
 
 </ui:composition>

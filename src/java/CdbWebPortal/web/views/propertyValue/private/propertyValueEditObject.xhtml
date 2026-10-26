@@ -37,17 +37,17 @@ See LICENSE file.
 
     <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
               rendered="#{propertyValueSettingObject.displayTag}">
-        <h:inputText id="name" value="#{propertyValueObject.tag}" styleClass="cellInput"/>
+        <p:inputText id="name" value="#{propertyValueObject.tag}" styleClass="cellInput"/>
         <p:tooltip for="name" value="Property value tag is optional."/>
     </p:column>   
 
     <p:column sortBy="#{propertyValueObject.description}" headerText="Description">
-        <h:inputText id="description" value="#{propertyValueObject.description}" styleClass="longCellInput"/>
+        <p:inputText id="description" value="#{propertyValueObject.description}" styleClass="longCellInput"/>
         <p:tooltip for="description" value="Description is optional."/>
     </p:column>
     
     <p:column sortBy="#{propertyValueObject.units}" headerText="Units">
-        <h:inputText id="units" value="#{propertyValueObject.units}" styleClass="cellInput"/>
+        <p:inputText id="units" value="#{propertyValueObject.units}" styleClass="cellInput"/>
         <p:tooltip for="units" value="Units field is optional."/>
     </p:column>
 

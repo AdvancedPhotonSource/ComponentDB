@@ -17,7 +17,7 @@ See LICENSE file.
     </ui:define>
     <ui:define name="simpleEntityNameValue">
         <p:column>
-            <h:inputText id="name" value="#{simpleEntityObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
+            <p:inputText id="name" value="#{simpleEntityObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
             <p:message for="name"/> 
             <p:tooltip for="name" value="#{displayEntityTypeName} name is required."/>
         </p:column>
@@ -25,7 +25,7 @@ See LICENSE file.
 
     <ui:define name="simpleEntityDescriptionValue" >        
         <p:column>
-            <h:inputText id="description" value="#{simpleEntityObject.description}" title="Description" styleClass="entityDataText"/>
+            <p:inputText id="description" value="#{simpleEntityObject.description}" title="Description" styleClass="entityDataText"/>
             <p:message for="description"/> 
             <p:tooltip for="description" value="#{displayEntityTypeName} description is optional."/>
         </p:column>

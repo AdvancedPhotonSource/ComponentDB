@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:inplace id="ownerUserInplace#{viewId}"
+               widgetVar="ownerUser#{viewId}Widget"
+               editor="#{isEntityWriteable}"
+               toggleable="false"
+               styleClass="entityDataText">
+        <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
+        <p:ajax event="cancel" oncomplete="reloadEntityInfoOwnerUser()"/>
+
+        <f:facet name="output">
+            <p:outputPanel styleClass="inlineFlexOutputPanel">
+                <p:commandLink id="ownerUserEditShowButton#{viewId}"
+                               styleClass="fa-link-icon fa-icon fa fa-pencil"
+                               onclick="PF('ownerUser#{viewId}Widget').show();"
+                               rendered="#{isEntityWriteable}"/>
+                <h:outputText value="#{entityInfoObject.ownerUserDisplayName}" title="Owner User" styleClass="entityDataText" />
+            </p:outputPanel>
+        </f:facet>
+
+        <f:facet name="input">
+            <p:remoteCommand name="reloadEntityInfoOwnerUser"
+                             action="#{entityController.reloadCurrent()}"
+                             update="ownerUserInplace"
+                             />
+            <p:selectOneMenu rendered="#{entityInfoObject != null}"
+                             value="#{entityInfoObject.ownerUser}"
+                             converter="userInfoConverter"
+                             styleClass="entityDataText">
+                <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+                <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
+            </p:selectOneMenu>
+            <p:message for="ownerUserInplace#{viewId}"/>
+            <p:tooltip for="ownerUserInplace#{viewId}" value="Owner user has the ability to modify this entity."/>
+        </f:facet>
+    </p:inplace>
+
+</ui:composition>
+
+

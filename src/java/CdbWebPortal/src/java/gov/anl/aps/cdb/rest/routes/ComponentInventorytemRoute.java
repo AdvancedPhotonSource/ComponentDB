@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.ejb.EJB;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -40,7 +41,8 @@ public class ComponentInventorytemRoute extends ItemBaseRoute {
     @PUT
     @Path("/create")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Create inventory item.")    
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Create inventory item.")
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public ItemDomainInventory createInventory(@RequestBody(required = true) NewInventoryInformation inventoryInformation) throws InvalidArgument, CdbException {

@@ -18,7 +18,7 @@ See LICENSE file.
     <ui:param name="pageRendered" value="#{pageRendered != null ? pageRendered : true}" />
     
     <ui:define name="templateCss">
-        <link href="../../resources/css/#{entityController.currentItemStyleName}.css?v=v3.16.0" rel="stylesheet" type="text/css"/>
+        <link href="../../resources/css/#{entityController.currentItemStyleName}.css?v=v3.18.0" rel="stylesheet" type="text/css"/>
     </ui:define>
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
@@ -26,7 +26,8 @@ See LICENSE file.
     <ui:define name="pageTitle">: Create #{entityController.displayEntityTypeName}</ui:define>        
     <ui:define name="middleCenter">
 
-        <h:form id="addComponentForm" rendered="#{loginController.loggedIn and pageRendered}">
+        <h:form id="addComponentForm" rendered="#{loginController.loggedIn and pageRendered}"
+                onkeypress="if (event.keyCode === 13) { return false; }">
             <div class="pageTitle">
                 <h1>Add #{entityController.displayEntityTypeName}</h1>
             </div>

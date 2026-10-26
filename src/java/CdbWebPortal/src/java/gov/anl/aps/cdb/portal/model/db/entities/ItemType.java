@@ -112,6 +112,7 @@ public class ItemType extends ItemTypeCategoryEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Item> getItemList() {
         return itemList;
     }
@@ -121,6 +122,7 @@ public class ItemType extends ItemTypeCategoryEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     @Override
     public Domain getDomain() {
         return domain;
@@ -140,6 +142,7 @@ public class ItemType extends ItemTypeCategoryEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemCategory> getItemCategoryList() {
         return itemCategoryList;
     }

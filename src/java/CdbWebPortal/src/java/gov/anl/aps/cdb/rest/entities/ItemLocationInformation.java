@@ -28,11 +28,7 @@ public class ItemLocationInformation {
     public ItemLocationInformation(LocatableItem locatableItem) {
         this.locatableItem = locatableItem;
         
-        List<ItemDomainLocation> cachedLocationHierarchy = locatableItem.getCachedLocationHierarchy();
-        if (cachedLocationHierarchy != null && cachedLocationHierarchy.size() > 0) {
-            int last = cachedLocationHierarchy.size() - 1; 
-            locationItem = cachedLocationHierarchy.get(last); 
-        }
+        locationItem = locatableItem.getActiveInheritedLocation();
         
         List<Item> cachedHousingHierarchy = locatableItem.getCachedHousingHierarchy();
         if (cachedHousingHierarchy != null && cachedHousingHierarchy.size() > 0) {

@@ -126,6 +126,15 @@ See LICENSE file.
     </p:contextMenu>
 
     <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                   nodeType="MachineDesignIOCMember"
+                   id="machineDesignDualViewMachineDesignIOCMemberContextMenu"
+                   widgetVar="machineDesignDualViewMachineDesignIOCMemberContextMenuWidget"
+                   event="select contextmenu">
+        <ui:insert name="additionalPromotedMenuOptionMachineDesignIOCMember"/>
+        <ui:include src="../machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
+    </p:contextMenu>
+
+    <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
                    nodeType="MachineDesignMemberCatalog"
                    id="machineDesignDualViewMachineDesignMemberCatalogContextMenu"
                    widgetVar="machineDesignDualViewMachineDesignMemberCatalogContextMenuWidget"
@@ -154,7 +163,7 @@ See LICENSE file.
         <ui:include src="../machineDesignContextMenu/installedInventorySubMenu.xhtml" />
         <ui:include src="../machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
     </p:contextMenu>
-    
+
     <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
                    nodeType="MachineDesignMemberApp"
                    id="machineDesignDualViewMachineDesignMemberAppContextMenu"
@@ -168,7 +177,7 @@ See LICENSE file.
         <ui:include src="../machineDesignContextMenu/unlinkContainedItem2ContextMenuItem.xhtml" />     
         <ui:include src="../machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
     </p:contextMenu>
-    
+
     <ui:insert name="additionalContextMenuTypes"/>
 
 </ui:composition>

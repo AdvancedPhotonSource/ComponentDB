@@ -22,7 +22,7 @@ See LICENSE file.
         <p:panelGrid columns="2" rendered="#{logObject != null}">
 
             <h:outputLabel for="logEntryValue" value="Log Entry" styleClass="entityDataEmphasizedLabel"/>
-            <h:inputTextarea id="logEntryValue" value="#{logObject.text}"/>
+            <p:inputTextarea id="logEntryValue" value="#{logObject.text}" autoResize="false" />
             
             <h:outputLabel for="effectiveFromDate" value="Date" styleClass="entityDataEmphasizedLabel"/>
             <p:calendar id="effectiveFromDate"

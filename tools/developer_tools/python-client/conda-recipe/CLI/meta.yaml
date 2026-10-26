@@ -1,32 +1,31 @@
 {% set name = "ComponentDB-CLI" %}
-{% set version = "3.15.4" %}
+{% set version = "3.18.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 0043323080c2012df4ad3c6f36e83011c6888dff0e28005653c2b3aa6b0a6820
+  path: ../../packages/cli
+
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation
 
 requirements:
-  build:
-   - python
-   - pip
+  host:
+    - python>=3.10
+    - hatchling
+    - pip
   run:
     - python
-    - python-dateutil
-    - urllib3
-    - six    
+    - python-dateutil >=2.8.2
+    - urllib3 >=2.6.3,<3.0.0
     - click
     - pandas
-    - rich    
-    - InquirerPy
-    - paho-mqtt    
+    - rich
+    - paho-mqtt
     - componentdb-api=={{ version }}
 
 

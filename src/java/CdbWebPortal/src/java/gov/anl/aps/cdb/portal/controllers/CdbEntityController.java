@@ -846,6 +846,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
             clonedEntity = (EntityType) (entity.clone(user));
         } catch (CloneNotSupportedException ex) {
             logger.error("Object cannot be cloned: " + ex);
+            SessionUtility.addErrorMessage("Cannot Clone", ex.getMessage());
             clonedEntity = createEntityInstance();
         }
         return clonedEntity;

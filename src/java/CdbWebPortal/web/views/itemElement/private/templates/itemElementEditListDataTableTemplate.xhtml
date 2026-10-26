@@ -37,7 +37,7 @@ See LICENSE file.
         </p:column>
 
         <p:column sortBy="#{itemElementObject.name}" headerText="Element Name">
-            <h:inputText id="itemElementObjectName" value="#{itemElementObject.name}" styleClass="cellInput"/>
+            <p:inputText id="itemElementObjectName" value="#{itemElementObject.name}" styleClass="cellInput"/>
             <p:tooltip for="itemElementObjectName" value="Enter name."/>
         </p:column>
 
@@ -73,14 +73,14 @@ See LICENSE file.
 
         <p:column sortBy="#{itemElementObject.sortOrder}" headerText="Sort Order"
                   rendered="#{itemElementSettingObject.displaySortOrder}">
-            <h:inputText id="sortOrder" value="#{itemElementObject.sortOrder}" styleClass="shortCellInput"/>
+            <p:inputText id="sortOrder" value="#{itemElementObject.sortOrder}" styleClass="shortCellInput"/>
             <p:tooltip for="sortOrder" value="Enter sort order."/>
         </p:column>
 
 
         <p:column sortBy="#{itemElementObject.description}" headerText="Description"
                   rendered="#{itemElementSettingObject.displayDescription}">
-            <h:inputText id="description" value="#{itemElementObject.description}" styleClass="longCellInput"/>
+            <p:inputText id="description" value="#{itemElementObject.description}" styleClass="longCellInput"/>
             <p:tooltip for="description" value="Enter description."/>
         </p:column>
 

@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.rest.routes;
 
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -25,20 +26,27 @@ import org.apache.logging.log4j.Logger;
 @Path("/CableCatalogItems")
 @Tag(name = "cableCatalogItems")
 public class CableCatalogItemRoute extends BaseRoute {
-    
+
     private static final Logger LOGGER = LogManager.getLogger(CableCatalogItemRoute.class.getName());
-    
+
     @EJB
-    ItemDomainCableCatalogFacade facade; 
-    
+    ItemDomainCableCatalogFacade facade;
+
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemDomainCableCatalog> getCableCatalogItemList() {
         LOGGER.debug("Fetching cable catalog list");
-        return facade.findAll();
+
+        List<ItemDomainCableCatalog> cableCatalogItems = facade.findAll();
+
+        for (ItemDomainCableCatalog cableCatalogItem : cableCatalogItems) {
+            loadConnectorInformation(cableCatalogItem);
+        }
+
+        return cableCatalogItems;
     }
-    
+
     @GET
     @Path("/ById/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -48,11 +56,12 @@ public class CableCatalogItemRoute extends BaseRoute {
         if (item == null) {
             ObjectNotFound ex = new ObjectNotFound("Could not find item with id: " + id);
             LOGGER.error(ex);
-            throw ex; 
+            throw ex;
         }
+        loadConnectorInformation(item);
         return item;
     }
-    
+
     @GET
     @Path("/ByName/{name}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -62,13 +71,20 @@ public class CableCatalogItemRoute extends BaseRoute {
         if (itemList == null || itemList.isEmpty()) {
             ObjectNotFound ex = new ObjectNotFound("Could not find item with name: " + name);
             LOGGER.error(ex);
-            throw ex; 
+            throw ex;
         } else if (itemList.size() > 1) {
             ObjectNotFound ex = new ObjectNotFound("Found multiple items with name: " + name);
             LOGGER.error(ex);
-            throw ex; 
+            throw ex;
         }
-        return itemList.get(0);
+        ItemDomainCableCatalog item = itemList.get(0);
+        loadConnectorInformation(item);
+        return item;
+    }
+
+    private void loadConnectorInformation(ItemDomainCableCatalog cableCatalogItem) {
+        List<ItemConnector> itemConnectorList = cableCatalogItem.getItemConnectorList();
+        cableCatalogItem.setConnectorList(itemConnectorList);
     }
 
 }

@@ -25,6 +25,12 @@ import java.util.List;
  */
 public class ItemElementControllerUtility extends CdbDomainEntityControllerUtility<ItemElement, ItemElementFacade> {
     
+    ItemElementFacade itemElementFacade; 
+
+    public ItemElementControllerUtility() {        
+        itemElementFacade = ItemElementFacade.getInstance(); 
+    }        
+    
     @Override
     protected void prepareEntityDestroy(ItemElement itemElement, UserInfo userInfo) throws CdbException {
         super.prepareEntityDestroy(itemElement, userInfo);
@@ -150,8 +156,8 @@ public class ItemElementControllerUtility extends CdbDomainEntityControllerUtili
             if (itemElementConstraintInformation == null) {
                 Item parentItem = itemElement.getParentItem();
                 if (parentItem != null) {
-                    ItemController itemDomainController = ItemController.findDomainControllerForItem(parentItem);
-                    itemElementConstraintInformation = itemDomainController.loadItemElementConstraintInformation(itemElement);
+                    ItemControllerUtility itemDomainControllerUtility = parentItem.getControllerUtility();
+                    itemElementConstraintInformation = itemDomainControllerUtility.loadItemElementConstraintInformation(itemElement);
                     itemElement.setConstraintInformation(itemElementConstraintInformation);
                 }
             }
@@ -161,7 +167,7 @@ public class ItemElementControllerUtility extends CdbDomainEntityControllerUtili
     
     @Override
     protected ItemElementFacade getEntityDbFacade() {
-        return ItemElementFacade.getInstance(); 
+        return itemElementFacade; 
     }
     
     @Override

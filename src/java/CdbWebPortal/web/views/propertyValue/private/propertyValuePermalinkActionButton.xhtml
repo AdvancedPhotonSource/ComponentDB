@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <p:commandLink id="#{entityTypeName}PropertyPermalinkActionButton"
+                   styleClass="fa fa-link-icon fa-link"
+                   title="Copy permalink to this property"
+                   action="#{facesUtility.displayGrowlInfoMessage('Copied', 'Permalink copied to clipboard.')}">
+        <p:tooltip for="#{entityTypeName}PropertyPermalinkActionButton" value="Copy permalink to this property."/>
+    </p:commandLink>
+
+    <pe:clipboard trigger="@previous"
+                  action="copy"
+                  text="#{facesUtility.permanentUrl}/views/propertyValue/redirect?id=#{propertyValueObject.id}"/>
+
+</ui:composition>

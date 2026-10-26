@@ -11,7 +11,6 @@ import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.IItemStatusControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogControllerUtility;
@@ -19,19 +18,23 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControlle
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.LocatableItemControllerUtility;
+import gov.anl.aps.cdb.portal.model.db.beans.AttachmentFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LogFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserGroupFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Attachment;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
@@ -65,14 +68,14 @@ import gov.anl.aps.cdb.rest.entities.SimpleLocationInformation;
 import gov.anl.aps.cdb.rest.entities.LogEntryEditInformation;
 import gov.anl.aps.cdb.rest.entities.NewLocationInformation;
 import gov.anl.aps.cdb.rest.entities.SearchEntitiesResults;
+import gov.anl.aps.cdb.rest.utilities.FileUploadUtility;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -124,6 +127,12 @@ public class ItemRoute extends ItemBaseRoute {
     @EJB
     ItemCategoryFacade itemCategoryFacade;
 
+    @EJB
+    AttachmentFacade attachmentFacade;
+
+    @EJB
+    LogFacade logFacade;
+
     @GET
     @Path("/ById/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -146,6 +155,21 @@ public class ItemRoute extends ItemBaseRoute {
     }
 
     @GET
+    @Path("/ById/{itemId}/Connectors")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Fetch item connectors by its id.")
+    public List<ItemConnector> getItemConnectorsById(@PathParam("itemId") int id) throws ObjectNotFound {
+        Item itemByIdBase = getItemByIdBase(id);
+
+        List<ItemConnector> itemConnectorList = itemByIdBase.getItemConnectorList();
+        List<ItemConnector> syncedConnectorList = itemByIdBase.getSyncedConnectorList();
+
+        itemConnectorList.addAll(syncedConnectorList);
+
+        return itemConnectorList;
+    }
+
+    @GET
     @Path("/HierarchyById/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Fetch an item by its id.")
@@ -153,16 +177,16 @@ public class ItemRoute extends ItemBaseRoute {
     public ItemHierarchy getItemHierarchyByIdDeprecated(@PathParam("id") int id) throws ObjectNotFound {
         return getItemHierarchyById(id);
     }
-    
+
     @GET
     @Path("/ById/{itemId}/ItemElementCount")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Fetch count of item elements for item id.")
     public Integer getItemElementCount(@PathParam("itemId") int id) throws ObjectNotFound {
-        Item itemByIdBase = getItemByIdBase(id);       
+        Item itemByIdBase = getItemByIdBase(id);
         List<ItemElement> itemElementDisplayList = itemByIdBase.getItemElementDisplayList();
-        
-        return itemElementDisplayList.size(); 
+
+        return itemElementDisplayList.size();
     }
 
     @POST
@@ -340,11 +364,11 @@ public class ItemRoute extends ItemBaseRoute {
     public List<ItemMembership> getItemMemberships(@PathParam("itemId") int id) throws ObjectNotFound {
         LOGGER.debug("Fetching memberships for item with id: " + id);
         Item itemById = getItemByIdBase(id);
-        
+
         ItemControllerUtility itemControllerUtility = itemById.getItemControllerUtility();
-        
-        List<Item> parentItemList = itemControllerUtility.getParentItemList(itemById); 
-        
+
+        List<Item> parentItemList = itemControllerUtility.getParentItemList(itemById);
+
         List<ItemMembership> itemMemberships = new ArrayList<>();
         for (Item parentItem : parentItemList) {
             ItemMembership itemMembership = new ItemMembership(parentItem);
@@ -602,6 +626,7 @@ public class ItemRoute extends ItemBaseRoute {
 
     private void updateDbPropertyValueWithPassedInDate(PropertyValue dbPropertyValue, PropertyValue userPassedValue) {
         dbPropertyValue.setValue(userPassedValue.getValue());
+        dbPropertyValue.setText(userPassedValue.getText());
         dbPropertyValue.setTargetValue(userPassedValue.getTargetValue());
         dbPropertyValue.setDisplayValue(userPassedValue.getDisplayValue());
         dbPropertyValue.setTag(userPassedValue.getTag());
@@ -831,10 +856,10 @@ public class ItemRoute extends ItemBaseRoute {
         if (logEntryEditInformation.getEffectiveDate() != null) {
             newLog.setEffectiveFromDateTime(logEntryEditInformation.getEffectiveDate());
         }
-
-        controllerUtility.update(itemById, updateUser);
-
-        return newLog;
+        
+        Item updatedItem = (Item) controllerUtility.update(itemById, updateUser);
+        Log latestLog = updatedItem.getLogList().get(0);
+        return latestLog; 
     }
 
     @POST
@@ -888,9 +913,7 @@ public class ItemRoute extends ItemBaseRoute {
             throw ex;
         }
 
-        Base64.Decoder decoder = Base64.getDecoder();
-        byte[] decode = decoder.decode(fileUpload.getBase64Binary());
-        ByteArrayInputStream stream = new ByteArrayInputStream(decode);
+        InputStream stream = FileUploadUtility.decodeFileUpload(fileUpload);
 
         ItemControllerUtility itemControllerUtility = dbItem.getItemControllerUtility();
         PropertyType uploadPropertyType = null;
@@ -930,6 +953,45 @@ public class ItemRoute extends ItemBaseRoute {
         return pv;
     }
 
+    @POST
+    @Path("/uploadLogAttachment/{itemId}/{logId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    @Operation(summary = "Attach a file to an existing log entry for an item.")
+    public Log uploadLogAttachmentForItem(
+            @PathParam("itemId") int itemId,
+            @PathParam("logId") int logId,
+            @RequestBody(required = true) FileUploadObject fileUpload)
+            throws AuthorizationError, ObjectNotFound, IOException, CdbException {
+        LOGGER.debug("Uploading log attachment for item: " + itemId + " log: " + logId);
+        Item item = getItemByIdBase(itemId);
+        UserInfo updatedByUser = verifyCurrentUserPermissionForItem(item);
+
+        Log log = null;
+        for (Log l : item.getLogList()) {
+            if (l.getId() != null && l.getId() == logId) {
+                log = l;
+                break;
+            }
+        }
+        if (log == null) {
+            throw new ObjectNotFound("Could not find log " + logId + " for item " + itemId);
+        }
+
+        Attachment attachment = FileUploadUtility.writeLogAttachmentFile(
+                fileUpload.getFileName(), FileUploadUtility.decodeFileUpload(fileUpload));
+        attachmentFacade.create(attachment);
+        if (log.getAttachmentList() == null) {
+            log.setAttachmentList(new ArrayList<>());
+        }
+        log.getAttachmentList().add(attachment);
+        logFacade.edit(log);
+
+        return log;
+    }
+
     @GET
     @Path("/ByQrId/{qrId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -961,19 +1023,19 @@ public class ItemRoute extends ItemBaseRoute {
         Item itemById = getItemByIdBase(itemId);
         return itemById.getLogList();
     }
-    
+
     @GET
     @Path("/ById/{itemid}/CreatedFromTemplate")
-    @Produces(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get created from template for item id.")
     public Item getCreatedFromTemplate(@PathParam("itemid") int itemId) throws ObjectNotFound {
         Item itemById = getItemById(itemId);
         Item createdFromTemplate = itemById.getCreatedFromTemplate();
-        
+
         if (createdFromTemplate == null) {
             throw new ObjectNotFound("Item " + itemById.toString() + " does not have a template association.");
         }
-        
+
         return createdFromTemplate;
     }
 
@@ -1241,18 +1303,18 @@ public class ItemRoute extends ItemBaseRoute {
         LinkedList<SearchResult> catalogResults = catalogControllerUtility.performEntitySearch(searchText, true);
         LinkedList<SearchResult> inventoryResults = inventoryInstance.performEntitySearch(searchText, true);
         LinkedList<SearchResult> mdResults = mdInstance.performEntitySearch(searchText, true);
-        
-        SearchEntitiesResults results = new SearchEntitiesResults(); 
+
+        SearchEntitiesResults results = new SearchEntitiesResults();
         results.setItemDomainCatalogResults(catalogResults);
         results.setItemDomainInventoryResults(inventoryResults);
         results.setItemDomainMachineDesignResults(mdResults);
-        
-        return results; 
+
+        return results;
     }
 
     @GET
     @Path("/DetailedCatalogSearch/{searchText}")
-    @Produces(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)
     public List<ItemDomainCatalogSearchResult> getDetailedCatalogSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
         LOGGER.debug("Performing a detailed catalog item search for search query: " + searchText);
 
