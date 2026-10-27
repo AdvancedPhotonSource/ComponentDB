@@ -8,7 +8,7 @@ import os
 import time
 
 from selenium import webdriver
-from selenium.common.exceptions import ElementNotInteractableException, NoSuchElementException, StaleElementReferenceException
+from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException, NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -24,6 +24,8 @@ class CdbSeleniumModuleBase:
 
 	WAIT_FOR_ELEMENT_TIMEOUT = 10
 	VISIBLE_ID_TIMEOUT = 10
+	CLICK_RETRY_COUNT = 5
+	CLICK_RETRY_DELAY = 0.1
 	LOADING_DIALOG_ID = 'loadingDialog'
 
 	def __init__(self, driver):
@@ -92,8 +94,16 @@ class CdbSeleniumModuleBase:
 		return self.driver.find_element(by=By.XPATH, value=xpath)
 
 	def _wait_for_id_and_click(self, id):
-		element = self._wait_for_id(id)
-		element.click()
+		for attempt in range(self.CLICK_RETRY_COUNT):
+			try:
+				element = self._wait_for_clickable_id(id)
+				element.click()
+				return
+			except (ElementClickInterceptedException, StaleElementReferenceException):
+				if attempt < self.CLICK_RETRY_COUNT - 1:
+					time.sleep(self.CLICK_RETRY_DELAY)
+					continue
+				raise
 
 	def _wait_for_visible_id(self, id):
 		return self._wait_for_visible(By.ID, id)
