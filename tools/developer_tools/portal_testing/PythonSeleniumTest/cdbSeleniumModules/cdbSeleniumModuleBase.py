@@ -109,8 +109,6 @@ class CdbSeleniumModuleBase:
 		return self._wait_for_visible(By.ID, id)
 
 	def _wait_for_invisible_loading_dialog(self, timeout=VISIBLE_ID_TIMEOUT):
-		# Needs to be visible before checked for invisible
-		self._wait_for_visible_id(self.LOADING_DIALOG_ID)
 		self._wait_for_invisible_by_id(self.LOADING_DIALOG_ID, timeout)
 
 	def _wait_for_visible_xpath(self, xpath):

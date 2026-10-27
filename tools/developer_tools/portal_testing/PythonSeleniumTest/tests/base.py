@@ -44,8 +44,7 @@ class CdbPortalTestCase(unittest.TestCase):
         self.portal.login()
 
     def tearDown(self):
-        self.portal.logout()
-        self.driver.close()
+        self.driver.quit()
 
     def prepare_download_area(self):
         if os.path.exists(self.DATA_PATH):
