@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Requires viewId, valueModel, and selectionModel. -->
+    <p:scrollPanel style="height: #{selectionHeight != null ? selectionHeight : '100%'}"
+                   mode="native">
+        <ui:decorate template="templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+            <ui:param name="viewId" value="#{viewId}" />
+            <ui:param name="hideOptionalColumns" value="#{false}" />
+            <ui:param name="valueModel" value="#{valueModel}" />
+            <ui:param name="selectionModel" value="#{selectionModel}" />
+            <ui:param name="rendered" value="#{true}" />
+            <ui:param name="scrollable" value="#{false}" />
+            <ui:param name="resizableColumns" value="#{false}" />
+            <ui:param name="liveResize" value="#{false}" />
+            <ui:param name="rendredHousing" value="#{false}" />
+            <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
+            <ui:param name="entitySettingObject" value="#{itemDomainMachineDesignController.settingObject}" />
+            <ui:define name="treeTableEvents">
+                <ui:insert name="treeTableEvents" />
+            </ui:define>
+        </ui:decorate>
+    </p:scrollPanel>
+
+    <script type="text/javascript">
+        function scrollMachineSelectionToSelected#{viewId}() {
+            var tree = document.querySelector("[id$='itemMachineDesignListDataTable#{viewId}']");
+            if (tree) {
+                var row = tree.querySelector('.ui-state-highlight.ui-selected.ui-treetable-selectable-node');
+                if (row) {
+                    row.scrollIntoView({behavior: 'smooth', block: 'center'});
+                }
+            }
+        }
+    </script>
+</ui:composition>
