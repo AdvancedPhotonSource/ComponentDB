@@ -61,7 +61,7 @@ printf "$PRINTF_HEADER" "Selenium"
 cd $CDB_DIST_DIR/tools/developer_tools/portal_testing/PythonSeleniumTest
 
 # Selenium Manager resolves and downloads a compatible driver when Chrome starts.
-pytest tests/ -n auto --dist loadfile
+pytest tests/ -n auto --dist loadfile --reruns 1 --reruns-delay 1 -rR
 
 if [[ $backup_database == 1 ]]; then
     printf "\n\nRestore the original database from the backup? [Y/n] "
