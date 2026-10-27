@@ -29,7 +29,7 @@ class CdbPortalTestCase(unittest.TestCase):
         prefs = {"download.default_directory": self.DATA_PATH}
         opts.add_experimental_option("prefs", prefs)
 
-        headless = os.getenv("CDB_TEST_HEADLESS", 'False').lower() in ('true', '1', 't', 'y', 'yes')
+        headless = os.getenv("CDB_TEST_HEADLESS", 'True').lower() in ('true', '1', 't', 'y', 'yes')
         if headless:
             opts.add_argument("headless")
             opts.add_argument("window-size=1920,1080")
