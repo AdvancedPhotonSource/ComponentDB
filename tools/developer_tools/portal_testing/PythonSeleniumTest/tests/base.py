@@ -26,10 +26,12 @@ class CdbPortalTestCase(unittest.TestCase):
         headless = os.getenv("CDB_TEST_HEADLESS", 'False').lower() in ('true', '1', 't', 'y', 'yes')
         if headless:
             opts.add_argument("headless")
+            opts.add_argument("window-size=1920,1080")
 
         self.driver = webdriver.Chrome(options=opts)
         self.driver.set_window_position(0, 0)
-        self.driver.maximize_window()
+        if not headless:
+            self.driver.maximize_window()
         self.driver.get(self.PORTAL_URL)
 
         self.portal = Portal(self.driver)
