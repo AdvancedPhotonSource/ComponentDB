@@ -280,11 +280,11 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         return null;
     }
 
-    private Item getCatalogItem(Item item) {
+    protected Item getCatalogItem(Item item) {
         return item instanceof ItemDomainInventory ? item.getDerivedFromItem() : item;
     }
 
-    private boolean requiresCatalogReplacementConfirmation(ItemDomainMachineDesign machine) {
+    protected boolean requiresCatalogReplacementConfirmation(ItemDomainMachineDesign machine) {
         Item assignment = machine.getAssignedItem();
         if (assignment == null || assignment.equals(getCurrent())) {
             return false;
