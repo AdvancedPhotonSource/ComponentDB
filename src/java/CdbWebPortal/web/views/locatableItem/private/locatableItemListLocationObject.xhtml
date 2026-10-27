@@ -46,9 +46,13 @@ See LICENSE file.
         <ui:include src="templateDefaults/locatableItemLocationDetailsListColumnObject.xhtml"/>
     </p:column>
 
+    <ui:param name="housingItem" value="#{locatableItemController.getHousing(itemListObject)}"/>
+
     <p:column headerText="Housing"
-              rendered="#{rendredHousing}">
-        <ui:param name="housingItem" value="#{locatableItemController.getHousing(itemListObject)}"/> 
+              rendered="#{rendredHousing}"
+              filterBy="#{housingItem.name}"
+              filterable="#{filterable}"
+              filterMatchMode="contains">
 
         <div class="actionLink">
             <p:commandLink id="#{entityTypeName}housingLink" 
