@@ -1,6 +1,6 @@
 # Inventory Machine Assignment Acceptance Coverage
 
-Automated by `CdbPortalFunctionalTestSuite.test_inventory_machine_assignment` using the test database fixtures.
+Automated by `tests/test_inventory.py::InventoryTest::test_inventory_machine_assignment` using the test database fixtures.
 
 ## Automated scenarios
 

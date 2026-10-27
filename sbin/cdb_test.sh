@@ -87,7 +87,7 @@ fi
 if [[ $skiptest == 0 ]]; then    
     export PATH=`pwd`:$PATH
     cd ..
-    pytest gui_test.py
+    pytest tests/
 else
     echo "Error finding required chromedriver" 
 fi
