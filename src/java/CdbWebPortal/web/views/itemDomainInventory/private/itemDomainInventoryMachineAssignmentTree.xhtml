@@ -12,6 +12,7 @@ See LICENSE file.
         <ui:param name="selectionHeight" value="500px" />
         <ui:param name="valueModel" value="#{itemDomainInventoryController.machineAssignmentTree}" />
         <ui:param name="selectionModel" value="#{itemDomainInventoryController.selectedMachineAssignmentNode}" />
+        <ui:param name="renderedAssignedItem" value="#{true}" />
         <ui:define name="treeTableEvents">
             <p:ajax event="select" />
         </ui:define>

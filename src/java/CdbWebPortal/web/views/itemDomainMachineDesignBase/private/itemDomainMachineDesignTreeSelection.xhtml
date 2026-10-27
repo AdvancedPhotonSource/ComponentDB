@@ -8,6 +8,9 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
     <!-- Requires viewId, valueModel, and selectionModel. -->
+    <ui:param name="renderedAssignedItem"
+              value="#{renderedAssignedItem != null ? renderedAssignedItem : false}" />
+
     <p:scrollPanel style="height: #{selectionHeight != null ? selectionHeight : '100%'}"
                    mode="native">
         <ui:decorate template="templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
@@ -22,6 +25,11 @@ See LICENSE file.
             <ui:param name="rendredHousing" value="#{false}" />
             <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
             <ui:param name="entitySettingObject" value="#{itemDomainMachineDesignController.settingObject}" />
+            <ui:define name="itemDomainMachineDesignListObject">
+                <ui:decorate template="templates/itemDomainMachineDesignListObjectTemplate.xhtml">
+                    <ui:param name="renderedAssignedItem" value="#{renderedAssignedItem}" />
+                </ui:decorate>
+            </ui:define>
             <ui:define name="treeTableEvents">
                 <ui:insert name="treeTableEvents" />
             </ui:define>
