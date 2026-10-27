@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.view.objects.MachineDesignTreeSelection;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignIOCSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignIOCControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementControllerUtility;
@@ -47,8 +48,7 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
             + "2. Power cycling may interrupt system communications temporarily\n"
             + "3. Verify all dependent systems are in safe state before proceeding";
 
-    private ItemDomainMachineDesignTreeNode parentMachineSelectionTreeNode;
-    private ItemDomainMachineDesignTreeNode parentMachineSelectedTreeNode = null;
+    private final MachineDesignTreeSelection parentMachineSelection = new MachineDesignTreeSelection();
 
     public static ItemDomainMachineDesignIOCController getInstance() {
         return (ItemDomainMachineDesignIOCController) SessionUtility.findBean(CONTROLLER_NAMED);
@@ -136,18 +136,25 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
 
     @Override
     public String prepareClone(ItemDomainMachineDesign entity) {
-        // Reset variables
-        parentMachineSelectionTreeNode = null;
+        parentMachineSelection.reset();
 
         return super.prepareClone(entity);
     }
 
     @Override
     public String prepareCreate() {
-        // Reset variables
-        parentMachineSelectionTreeNode = null;
+        parentMachineSelection.reset();
 
         return super.prepareCreate();
+    }
+
+    public void prepareMachineParentSelection() {
+        ItemDomainMachineDesign current = getCurrent();
+        // Unsaved items use the parent selected in the UI because no relationship exists yet.
+        ItemDomainMachineDesign parentMachine = current.getId() == null
+                ? current.getParentMachineDesignPlaceholder()
+                : current.getParentMachineDesign();
+        parentMachineSelection.selectMachine(parentMachine);
     }
 
     public String clearMachineParent() {
@@ -202,33 +209,18 @@ public class ItemDomainMachineDesignIOCController extends ItemDomainMachineDesig
     }
 
     public ItemDomainMachineDesignTreeNode getParentMachineSelectionTreeNode() {
-        if (parentMachineSelectionTreeNode == null) {
-            ItemDomainMachineDesignController instance = ItemDomainMachineDesignController.getInstance();
-            parentMachineSelectionTreeNode = instance.loadMachineDesignRootTreeNode();
-
-        }
-        return parentMachineSelectionTreeNode;
+        return parentMachineSelection.getTree();
     }
 
     public ItemDomainMachineDesignTreeNode getParentMachineSelectedTreeNode() {
-        return parentMachineSelectedTreeNode;
+        return parentMachineSelection.getSelectedNode();
     }
 
-    public void setParentMachineSelectedTreeNode(ItemDomainMachineDesignTreeNode parentMachineSelectedTreeNode) {
-        this.parentMachineSelectedTreeNode = parentMachineSelectedTreeNode;
-
-        if (parentMachineSelectedTreeNode != null) {
-            ItemElement machineElement = (ItemElement) parentMachineSelectedTreeNode.getData();
-
-            if (machineElement.getId() == null) {
-                return;
-            }
-
-            ItemDomainMachineDesign current = getCurrent();
-            ItemDomainMachineDesign parentItem = (ItemDomainMachineDesign) machineElement.getContainedItem();
-
-            current.setParentMachineDesignPlaceholder(parentItem);
-
+    public void setParentMachineSelectedTreeNode(ItemDomainMachineDesignTreeNode selectedNode) {
+        parentMachineSelection.setSelectedNode(selectedNode);
+        ItemDomainMachineDesign selectedMachine = parentMachineSelection.getSelectedMachine();
+        if (selectedMachine != null) {
+            getCurrent().setParentMachineDesignPlaceholder(selectedMachine);
         }
     }
 
