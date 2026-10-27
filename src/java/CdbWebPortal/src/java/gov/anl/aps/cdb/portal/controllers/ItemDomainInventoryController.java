@@ -4,6 +4,8 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.constants.CdbRole;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperInventory;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
@@ -12,9 +14,12 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesContr
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainInventoryController;
+import gov.anl.aps.cdb.portal.view.objects.InventoryMachineAssignmentSelection;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainInventorySettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainInventoryLazyDataModel;
+import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -23,6 +28,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
@@ -52,13 +59,249 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.inventory.getValue();
     private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "Catalog";
 
-    private static final Logger logger = LogManager.getLogger(ItemDomainInventoryController.class.getName());   
+    private static final Logger logger = LogManager.getLogger(ItemDomainInventoryController.class.getName());
 
     @EJB
     private ItemDomainInventoryFacade itemDomainInventoryFacade;
 
+    private final InventoryMachineAssignmentSelection machineAssignmentSelection
+            = new InventoryMachineAssignmentSelection();
+
     public boolean isInventory(Item item) {
         return item instanceof ItemDomainInventory;
+    }
+
+    public InventoryMachineAssignmentSelection getMachineAssignmentSelection() {
+        return machineAssignmentSelection;
+    }
+
+    public ItemDomainMachineDesignTreeNode getMachineAssignmentTree() {
+        return machineAssignmentSelection.getTree();
+    }
+
+    public ItemDomainMachineDesignTreeNode getSelectedMachineAssignmentNode() {
+        return machineAssignmentSelection.getSelectedNode();
+    }
+
+    public void setSelectedMachineAssignmentNode(ItemDomainMachineDesignTreeNode node) {
+        machineAssignmentSelection.setSelectedNode(node);
+        machineAssignmentSelection.setReplacementConfirmation(false);
+    }
+
+    public boolean isMachineAssignmentInstalled() {
+        return machineAssignmentSelection.isInstalled();
+    }
+
+    public void setMachineAssignmentInstalled(boolean installed) {
+        machineAssignmentSelection.setInstalled(installed);
+    }
+
+    public boolean isMachineAssignmentReplacementConfirmation() {
+        return machineAssignmentSelection.isReplacementConfirmation();
+    }
+
+    public void setMachineAssignmentReplacementConfirmation(boolean confirmation) {
+        machineAssignmentSelection.setReplacementConfirmation(confirmation);
+    }
+
+    public void prepareMachineAssignment() {
+        resetMachineAssignmentState();
+        ItemDomainMachineDesign assignedMachine = getAssignedMachine();
+        if (assignedMachine != null) {
+            machineAssignmentSelection.selectMachine(assignedMachine);
+            machineAssignmentSelection.setInstalled(assignedMachine.isIsHoused());
+        }
+    }
+
+    public void cancelMachineAssignment() {
+        resetMachineAssignmentState();
+        reloadCurrent();
+    }
+
+    public void saveMachineAssignment() {
+        saveMachineAssignment(false);
+    }
+
+    public void confirmMachineAssignmentReplacement() {
+        machineAssignmentSelection.resetReplacementProgress();
+        saveMachineAssignment(true);
+    }
+
+    public void cancelMachineAssignmentReplacement() {
+        machineAssignmentSelection.setReplacementConfirmation(false);
+    }
+
+    public void completeMachineAssignmentReplacement() {
+        finishMachineAssignmentUpdate();
+    }
+
+    public Item getSelectedMachineCurrentAssignment() {
+        ItemDomainMachineDesign machine = machineAssignmentSelection.getSelectedMachine();
+        return machine == null ? null : machine.getAssignedItem();
+    }
+
+    public Item getSelectedMachineCurrentCatalog() {
+        return getCatalogItem(getSelectedMachineCurrentAssignment());
+    }
+
+    public Item getCurrentInventoryCatalog() {
+        return getCatalogItem(getCurrent());
+    }
+
+    public boolean isCurrentAssignedToMachine() {
+        return getAssignedMachine() != null;
+    }
+
+    public boolean isSourceMachineReleaseRequired() {
+        ItemDomainMachineDesign sourceMachine = getAssignedMachine();
+        ItemDomainMachineDesign destinationMachine = machineAssignmentSelection.getSelectedMachine();
+        return sourceMachine != null && !sourceMachine.equals(destinationMachine);
+    }
+
+    public void clearMachineAssignment() {
+        ItemDomainMachineDesign machine = getAssignedMachine();
+        if (machine == null) {
+            SessionUtility.addInfoMessage("No update", "Inventory item is not assigned to a machine element.");
+            return;
+        }
+        if (!verifyMachineAssignmentPermission(machine)) {
+            return;
+        }
+        try {
+            logger.info("Clearing inventory {} from machine {}", getCurrent(), machine);
+            updateMachineAssignment(machine, getCatalogItem(machine.getAssignedItem()), null);
+            finishMachineAssignmentUpdate();
+        } catch (CdbException | RuntimeException ex) {
+            logger.error("Could not clear inventory machine assignment", ex);
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+        }
+    }
+
+    private void saveMachineAssignment(boolean replacementConfirmed) {
+        ItemDomainMachineDesign machine = machineAssignmentSelection.getSelectedMachine();
+        if (machine == null) {
+            SessionUtility.addErrorMessage("Invalid Selection", "Select a machine element to continue.");
+            return;
+        }
+        if (!verifyMachineAssignmentPermission(machine)) {
+            return;
+        }
+        if (!replacementConfirmed
+                && requiresCatalogReplacementConfirmation(machine)) {
+            machineAssignmentSelection.setReplacementConfirmation(true);
+            SessionUtility.executeRemoteCommand("showMachineAssignmentReplacementConfirmDialog()");
+            return;
+        }
+
+        ItemDomainMachineDesign previousMachine = getAssignedMachine();
+        if (previousMachine != null && !previousMachine.equals(machine)
+                && !verifyMachineAssignmentPermission(previousMachine)) {
+            return;
+        }
+
+        boolean previousMachineCleared = false;
+        boolean previousMachineInstalled = previousMachine != null && previousMachine.isIsHoused();
+        try {
+            if (replacementConfirmed) {
+                logger.info("Replacing catalog assignment on destination machine {}", machine);
+                updateMachineAssignment(machine, getCurrentInventoryCatalog(), null);
+                machineAssignmentSelection.setDestinationPrepared(true);
+                SessionUtility.addInfoMessage("Machine Assignment", "Updated destination machine catalog assignment.");
+            }
+            if (previousMachine != null && !previousMachine.equals(machine)) {
+                logger.info("Releasing inventory {} from source machine {}", getCurrent(), previousMachine);
+                updateMachineAssignment(previousMachine,
+                        getCatalogItem(previousMachine.getAssignedItem()), null);
+                previousMachineCleared = true;
+                machineAssignmentSelection.setSourceReleased(true);
+                SessionUtility.addInfoMessage("Machine Assignment", "Released inventory from source machine element.");
+                reloadCurrent();
+            }
+            logger.info("Assigning inventory {} to destination machine {}", getCurrent(), machine);
+            updateMachineAssignment(machine, getCurrent(),
+                    machineAssignmentSelection.isInstalled());
+            machineAssignmentSelection.setInventoryAssigned(true);
+            SessionUtility.addInfoMessage("Machine Assignment", "Assigned inventory to destination machine element.");
+            if (replacementConfirmed) {
+                ItemDomainMachineDesignController.getInstance().resetListDataModel();
+                reloadCurrent();
+            } else {
+                finishMachineAssignmentUpdate();
+            }
+        } catch (CdbException | RuntimeException ex) {
+            logger.error("Could not update inventory machine assignment", ex);
+            machineAssignmentSelection.setReplacementError(ex.getMessage());
+            if (previousMachineCleared) {
+                restoreMachineAssignment(previousMachine, previousMachineInstalled);
+            }
+            if (!replacementConfirmed) {
+                SessionUtility.addErrorMessage("Error", ex.getMessage());
+            }
+        }
+    }
+
+    private boolean verifyMachineAssignmentPermission(ItemDomainMachineDesign machine) {
+        UserInfo user = SessionUtility.getUser();
+        boolean permitted = user != null && (SessionUtility.getRole() == CdbRole.ADMIN
+                || (AuthorizationUtility.isEntityWriteableByUser(getCurrent(), user)
+                && AuthorizationUtility.isEntityWriteableByUser(machine, user)));
+        if (!permitted) {
+            SessionUtility.addErrorMessage("Error", "Write permission is required for both the inventory item and machine element.");
+        }
+        return permitted;
+    }
+
+    private void restoreMachineAssignment(ItemDomainMachineDesign machine, boolean installed) {
+        try {
+            updateMachineAssignment(machine, getCurrent(), installed);
+        } catch (CdbException | RuntimeException ex) {
+            logger.error("Could not restore previous inventory machine assignment", ex);
+            SessionUtility.addErrorMessage("Error", "The previous machine assignment could not be restored.");
+        }
+    }
+
+    private void updateMachineAssignment(ItemDomainMachineDesign machine, Item assignment,
+            Boolean installed) throws CdbException {
+        ItemDomainMachineDesignBaseControllerUtility utility = machine.getItemControllerUtility();
+        utility.updateAssignedItem(machine, assignment, SessionUtility.getUser(), installed);
+        utility.update(machine, SessionUtility.getUser());
+    }
+
+    private ItemDomainMachineDesign getAssignedMachine() {
+        for (ItemElement element : getCurrent().getItemElementMemberList2()) {
+            Item parent = element.getParentItem();
+            if (parent instanceof ItemDomainMachineDesign) {
+                ItemDomainMachineDesign machine = (ItemDomainMachineDesign) parent;
+                if (getCurrent().equals(machine.getAssignedItem())) {
+                    return machine;
+                }
+            }
+        }
+        return null;
+    }
+
+    private Item getCatalogItem(Item item) {
+        return item instanceof ItemDomainInventory ? item.getDerivedFromItem() : item;
+    }
+
+    private boolean requiresCatalogReplacementConfirmation(ItemDomainMachineDesign machine) {
+        Item assignment = machine.getAssignedItem();
+        if (assignment == null || assignment.equals(getCurrent())) {
+            return false;
+        }
+        Item assignedCatalog = getCatalogItem(assignment);
+        return assignedCatalog == null || !assignedCatalog.equals(getCurrentInventoryCatalog());
+    }
+
+    private void finishMachineAssignmentUpdate() {
+        ItemDomainMachineDesignController.getInstance().resetListDataModel();
+        resetMachineAssignmentState();
+        reloadCurrent();
+        SessionUtility.executeRemoteCommand("machineAssignmentUpdateSuccess()");
+    }
+
+    public void resetMachineAssignmentState() {
+        machineAssignmentSelection.reset();
     }
 
     @Override
