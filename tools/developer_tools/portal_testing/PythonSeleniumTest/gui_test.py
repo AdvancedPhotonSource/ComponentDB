@@ -167,6 +167,9 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
         self.inventory.navigate_to_inventory_list()
         self.inventory.test_inventory_detail_page(self)
 
+    def test_inventory_machine_assignment(self):
+        self.inventory.test_machine_assignment_acceptance(self)
+
     def test_inventory_import(self):
         self.inventory.navigate_to_inventory_list()
         self.inventory.test_import_create(self)
