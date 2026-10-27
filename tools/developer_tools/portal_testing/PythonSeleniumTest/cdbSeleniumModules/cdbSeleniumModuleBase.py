@@ -8,7 +8,7 @@ import os
 import time
 
 from selenium import webdriver
-from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
+from selenium.common.exceptions import ElementNotInteractableException, NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -50,7 +50,10 @@ class CdbSeleniumModuleBase:
 				action.move_to_element(growl_container)
 				action.perform()
 				time.sleep(.1)
-				growl_close.click()
+				try:
+					growl_close.click()
+				except ElementNotInteractableException:
+					self._click_using_javascript(growl_close)
 				time.sleep(0.5)
 
 				growl_container = next_growl
@@ -293,9 +296,17 @@ class CdbSeleniumModuleBase:
 
 		test.verify_file_downloaded(result_file_name)
 
+	def _expand_panel(self, form_name, panel_id):
+		panel = self._wait_for_id('%s:%s' % (form_name, panel_id))
+		content = panel.find_element(by=By.CSS_SELECTOR, value='.ui-panel-content')
+		if not content.is_displayed():
+			self._click_on_id('%s:%s_toggler' % (form_name, panel_id))
+			WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(
+				lambda driver: content.is_displayed())
+
 	def _add_log_to_item(self, form_name, entity_name, log_entry, needs_toggler=True):
 		if needs_toggler:
-			self._click_on_id('%s:%sViewLogEntriesPanel_toggler' % (form_name, entity_name))
+			self._expand_panel(form_name, '%sViewLogEntriesPanel' % entity_name)
 		self._wait_for_id_and_click('%s:%sLogAddButton' % (form_name, entity_name))
 		logEntry = self._wait_for_id('%s:logEntryValue' % form_name)
 
@@ -307,12 +318,11 @@ class CdbSeleniumModuleBase:
 
 	def _add_property_to_item(self, test, form_name, entity_name, prop_value_text, needs_toggler=True):
 		if needs_toggler:
-			toggle_id = '%s:%sViewPropertiesPanel_toggler' % (form_name, entity_name)
-			self._click_on_id(toggle_id)
+			self._expand_panel(form_name, '%sViewPropertiesPanel' % entity_name)
 
 		add_btn_id = '%s:%sPropertyAddButton' % (form_name, entity_name)
 		self._wait_for_id_and_click(add_btn_id)
-		categorySelectionXpath = "//div[@id='%s:filterViewItemCategorySelection']/div[2]/ul/li" % form_name
+		categorySelectionXpath = "//*[@id='%s:filterViewItemCategorySelection']//li[1]" % form_name
 		categorySel = self._wait_for_visible_xpath(categorySelectionXpath)
 		categorySel.click()
 
@@ -339,8 +349,7 @@ class CdbSeleniumModuleBase:
 
 	def _add_image_to_item(self, form_name, entity_name, sample_file_name='AnlLogo.png', needs_toggler=True):
 		if needs_toggler:
-			toggle_id = "%s:%sViewGalleryPanel_toggler" % (form_name, entity_name)
-			self._click_on_id(toggle_id)
+			self._expand_panel(form_name, '%sViewGalleryPanel' % entity_name)
 		
 		add_btn_id = "%s:%sPropertyAddImagesCommandButton" % (form_name, entity_name)
 		self._wait_for_id_and_click(add_btn_id)
