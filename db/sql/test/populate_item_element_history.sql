@@ -203,6 +203,10 @@ INSERT INTO `item_element_history` VALUES
 (200,'E3',184,'Machine2',120,'Item with Ports 3',126,NULL,NULL,NULL,NULL,0,1,NULL,2.00,'2025-04-02 08:43:21',1),
 (201,NULL,185,'Item with Ports 3',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,'',NULL,'2025-04-02 08:43:21',1),
 (202,NULL,186,'Item With Connectors 3',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,'',NULL,'2025-04-02 08:43:31',1),
-(203,NULL,185,'Item with Ports 3',NULL,NULL,NULL,'Item With Connectors 3',127,NULL,NULL,0,1,'',NULL,'2025-04-02 08:44:46',1);
+(203,NULL,185,'Item with Ports 3',NULL,NULL,NULL,'Item With Connectors 3',127,NULL,NULL,0,1,'',NULL,'2025-04-02 08:44:46',1),
+(204,NULL,187,'Another Top Level ',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,'',NULL,'2026-10-27 10:43:43',1),
+(205,'E1',188,'Another Top Level ',128,'Inventory Assignment Test Destination',129,NULL,NULL,NULL,NULL,0,1,NULL,0.00,'2026-10-27 10:44:07',1),
+(206,NULL,189,'Inventory Assignment Test Destination',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,'',NULL,'2026-10-27 10:44:07',1),
+(207,NULL,189,'Inventory Assignment Test Destination',NULL,NULL,NULL,'Test Item',40,NULL,NULL,0,1,'',NULL,'2026-10-27 10:44:19',1);
 /*!40000 ALTER TABLE `item_element_history` ENABLE KEYS */;
 UNLOCK TABLES;
