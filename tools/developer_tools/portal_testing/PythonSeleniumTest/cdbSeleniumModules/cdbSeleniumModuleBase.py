@@ -301,9 +301,6 @@ class CdbSeleniumModuleBase:
 		self._wait_for_clickable_id_with_stale_protection(download_button_id)
 		self._click_on_id_with_stale_protection(download_button_id)
 
-		# Wait for download to complete
-		time.sleep(1)
-
 		test.verify_file_downloaded(result_file_name)
 
 	def _expand_panel(self, form_name, panel_id):
