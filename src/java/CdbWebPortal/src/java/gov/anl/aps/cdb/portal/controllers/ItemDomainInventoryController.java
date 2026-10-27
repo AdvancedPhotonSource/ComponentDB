@@ -108,9 +108,13 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         resetMachineAssignmentState();
         ItemDomainMachineDesign assignedMachine = getAssignedMachine();
         if (assignedMachine != null) {
-            machineAssignmentSelection.selectMachine(assignedMachine);
+            selectMachineAssignment(assignedMachine);
             machineAssignmentSelection.setInstalled(assignedMachine.isIsHoused());
         }
+    }
+
+    protected void selectMachineAssignment(ItemDomainMachineDesign machine) {
+        machineAssignmentSelection.selectMachine(machine);
     }
 
     public void cancelMachineAssignment() {
@@ -260,14 +264,14 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         }
     }
 
-    private void updateMachineAssignment(ItemDomainMachineDesign machine, Item assignment,
+    protected void updateMachineAssignment(ItemDomainMachineDesign machine, Item assignment,
             Boolean installed) throws CdbException {
         ItemDomainMachineDesignBaseControllerUtility utility = machine.getItemControllerUtility();
         utility.updateAssignedItem(machine, assignment, SessionUtility.getUser(), installed);
         utility.update(machine, SessionUtility.getUser());
     }
 
-    private ItemDomainMachineDesign getAssignedMachine() {
+    protected ItemDomainMachineDesign getAssignedMachine() {
         for (ItemElement element : getCurrent().getItemElementMemberList2()) {
             Item parent = element.getParentItem();
             if (parent instanceof ItemDomainMachineDesign) {
@@ -293,7 +297,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         return assignedCatalog == null || !assignedCatalog.equals(getCurrentInventoryCatalog());
     }
 
-    private void finishMachineAssignmentUpdate() {
+    protected void finishMachineAssignmentUpdate() {
         ItemDomainMachineDesignController.getInstance().resetListDataModel();
         resetMachineAssignmentState();
         reloadCurrent();
