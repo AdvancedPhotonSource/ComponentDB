@@ -22,15 +22,27 @@ cd $MY_DIR/..
 CDB_DIST_DIR=`pwd`
 cd $CURRENT_DIR
 
-$MY_DIR/cdb_backup_db.sh
+printf "\nBack up the current database and restore it after testing? [Y/n] "
+read -r backup_response
 
-timestamp=`date +%Y%m%d`
-CDB_BACKUP_DIR=$CDB_INSTALL_DIR/backup/cdb/$timestamp
+backup_database=1
+case "$backup_response" in
+    [Nn]*) backup_database=0 ;;
+    *)
+        $MY_DIR/cdb_backup_db.sh
+        timestamp=`date +%Y%m%d`
+        CDB_BACKUP_DIR=$CDB_INSTALL_DIR/backup/cdb/$timestamp
+        ;;
+esac
 
 yes $db_password | $MY_DIR/cdb_create_db.sh cdb $CDB_DIST_DIR/db/sql/test || exit 1
 
+printf "\nRestart Payara so it uses the newly deployed test database, then press enter to continue..."
+read -r
+
 # Regenerate the API with current code base
-API_CLIENT_PATH=$CDB_DIST_DIR/tools/developer_tools/python-client/
+API_CLIENT_PATH=$CDB_DIST_DIR/tools/developer_tools/python-client
+export PYTHONPATH="$API_CLIENT_PATH/packages/api:$API_CLIENT_PATH/packages/cli${PYTHONPATH:+:$PYTHONPATH}"
 cd $API_CLIENT_PATH
 ./generatePyClient.sh http://localhost:8080/cdb
 
@@ -42,59 +54,24 @@ cd $CDB_DIST_DIR/tools/developer_tools/code_testing/CdbWebPortalTest
 mvn test
 
 printf "$PRINTF_HEADER" "API"
-cd $API_CLIENT_PATH/test
-pytest api_test.py
+cd $API_CLIENT_PATH
+pytest test/
 
 printf "$PRINTF_HEADER" "Selenium"
 cd $CDB_DIST_DIR/tools/developer_tools/portal_testing/PythonSeleniumTest
 
-if [ ! -d "support_bin" ]; then
-    mkdir support_bin
-fi
+# Selenium Manager resolves and downloads a compatible driver when Chrome starts.
+pytest tests/ -n auto --dist loadfile
 
-cd support_bin
-
-skiptest=0
-needs_download=1
-
-chromedriver_version_start=`google-chrome --version | grep -oP "[^A-Z ][0-9]+.[0-9]+.[0-9]+"`
-chromedriver_version_regex="$chromedriver_version_start.[0-9]+/chromedriver_linux64.zip"
-chromedriver_version=(`curl https://chromedriver.storage.googleapis.com/ | grep -oP $chromedriver_version_regex`)
-echo ${chromedriver_version[0]}
-
-count_results=`echo $chromedriver_version | wc -l`
-
-if [ $count_results > 1 ]; then
-    chromedriver_version=`echo ${chromedriver_version%%$'\n'*}`
-fi
-
-if [ -f "chromedriver" ]; then 
-    current_version_result=`./chromedriver --version | grep -oP $chromedriver_version`
-    if [[ -z "$current_version_result" ]]; then        
-        rm chromedriver
-    else
-        needs_download=0        
-    fi
-fi
-
-if [[ $needs_download == 1 ]]; then
-    wget https://chromedriver.storage.googleapis.com/$chromedriver_version || skiptest=1
-    unzip chromedriver_linux64.zip
-    rm chromedriver_linux64.zip
-fi
-
-
-if [[ $skiptest == 0 ]]; then    
-    export PATH=`pwd`:$PATH
-    cd ..
-    pytest tests/
+if [[ $backup_database == 1 ]]; then
+    printf "\n\nRestore the original database from the backup? [Y/n] "
+    read -r restore_response
+    case "$restore_response" in
+        [Nn]*) printf "The test database remains installed as cdb.\n" ;;
+        *) yes $db_password | $MY_DIR/cdb_create_db.sh cdb $CDB_BACKUP_DIR ;;
+    esac
 else
-    echo "Error finding required chromedriver" 
+    printf "\n\nBackup was skipped; the test database remains installed as cdb.\n"
 fi
-
-printf "\n\nPress enter to proceed restoring original database back to cdb..."
-read -s 
-
-yes $db_password | $MY_DIR/cdb_create_db.sh cdb $CDB_BACKUP_DIR
 
 cd $CURRENT_DIR
