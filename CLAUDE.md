@@ -63,8 +63,8 @@ mvn test -Dtest=ClassName#methodName    # single test
 
 # Python API tests — require the portal to be running on localhost:8080
 cd tools/developer_tools/python-client && ./generatePyClient.sh http://localhost:8080/cdb
-cd tools/developer_tools/python-client/test && pytest api_test.py
-pytest api_test.py::TestClass::test_method    # single test
+cd tools/developer_tools/python-client && pytest test/
+pytest test/item_test.py::ItemTest::test_method    # single test
 
 # Selenium GUI tests
 cd tools/developer_tools/portal_testing/PythonSeleniumTest && pytest gui_test.py
@@ -127,7 +127,7 @@ MariaDB 10.5. Authoritative schema is the set of `create_cdb_tables.sql`, `creat
 - **`cdb` vs `cdb_dev`**: every db, deploy, undeploy, and backup target has a `-dev` variant that targets a separate database name and Payara domain, so a developer can run both side-by-side. When adding new admin scripts, follow the same pattern (first arg is DB name, defaulting to `cdb`).
 - **Single canonical version string**: run `make prepare-release` (`sbin/cdb_prepare_release.py`) to bump `etc/version`, `openapi.yaml`, the web `?v=` cache-busters, the python-client `packages/*/pyproject.toml`/conda recipes, and scaffold `docs/release-notes/<VERSION>.md` together. It also flags any file that drifted out of sync in a prior manual release, and refreshes `uv.lock`.
 - **Plugins** under `tools/developer_tools/cdb_plugins/plugins/<name>/` extend both the Java portal (deployed via `make deploy-cdb-plugin` → `update_plugin_generated_files.py`) and the Python web service. `pluginTemplates/` is the scaffold.
-- **REST changes touch three places**: the Java route, `openapi.yaml`, and (after `generatePyClient.sh`) the regenerated `cdbApi/` package. The Python API tests in `tools/developer_tools/python-client/test/api_test.py` are the integration check.
+- **REST changes touch three places**: the Java route, `openapi.yaml`, and (after `generatePyClient.sh`) the regenerated `cdbApi/` package. The Python API tests under `tools/developer_tools/python-client/test/` are the integration check.
 
 ## Reference docs
 
