@@ -49,6 +49,20 @@ public class StringUtilityTest {
         assertEquals(expResult, result);
     }
 
+    @Test
+    public void testBuildWildcardSearchPattern() {
+        assertTrue(StringUtility.buildWildcardSearchPattern("S01*H1", true)
+                .matcher("s01-RACK-H1").find());
+        assertTrue(StringUtility.buildWildcardSearchPattern("Q?", false)
+                .matcher("S01-Q1:PS").find());
+        assertFalse(StringUtility.buildWildcardSearchPattern("Q?", false)
+                .matcher("S01-q1:PS").find());
+        assertTrue(StringUtility.buildWildcardSearchPattern("A.B", false)
+                .matcher("X-A.B-Y").find());
+        assertFalse(StringUtility.buildWildcardSearchPattern("A.B", false)
+                .matcher("X-AxB-Y").find());
+    }
+
     /**
      * Test of equals method, of class StringUtility.
      */
