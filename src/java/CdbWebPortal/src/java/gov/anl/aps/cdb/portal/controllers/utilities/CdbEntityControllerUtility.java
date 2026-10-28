@@ -414,19 +414,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
      * @return compiled search pattern
      */
     protected Pattern buildSearchPattern(String searchString, boolean caseInsensitive) {
-        String patternString;
-        if (searchString.contains("?") || searchString.contains("*")) {
-            patternString = searchString.replace("*", ".*");
-            patternString = patternString.replace("?", ".");
-        } else {
-            patternString = Pattern.quote(searchString);
-        }
-
-        if (caseInsensitive) {
-            return Pattern.compile(patternString, Pattern.CASE_INSENSITIVE);
-        } else {
-            return Pattern.compile(patternString);
-        }
+        return StringUtility.buildWildcardSearchPattern(searchString, caseInsensitive);
     }
 
     public PropertyValue preparePropertyTypeValueAdd(EntityType cdbDomainEntity, PropertyType propertyType) {

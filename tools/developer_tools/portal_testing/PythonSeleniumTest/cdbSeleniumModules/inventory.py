@@ -22,10 +22,14 @@ class Inventory(ItemBase):
     ASSIGNMENT_TREE_ID = VIEW_FORM_NAME + ':itemMachineDesignListDataTableinventoryMachineAssignment'
     REPLACEMENT_DIALOG_ID = VIEW_FORM_NAME + ':machineAssignmentReplacementConfirmDialog'
 
-    TEST_MACHINE = ['Test Machine']
-    TEST_MACHINE_COMPONENT_1 = ['Test Machine', 'Component 1']
-    TEST_MACHINE_COMPONENT_2 = ['Test Machine', 'Another Needed Component']
-    TEST_REPLACEMENT_DESTINATION = ['Another Top Level', 'Inventory Assignment Test Destination']
+    TEST_INVENTORY_ID = 130
+    TEST_MACHINE_COMPONENT_1 = [
+        'Machine Assignment Test Source', 'Machine Assignment Test Component 1']
+    TEST_MACHINE_COMPONENT_2 = [
+        'Machine Assignment Test Source', 'Machine Assignment Test Component 2']
+    TEST_REPLACEMENT_DESTINATION = [
+        'Machine Assignment Replacement Root',
+        'Machine Assignment Replacement Destination']
 
     def navigate_to_inventory_list(self):
         self._navigate_to_dropdown('inventoryDropdownButton', 'componentInstanceButton', '%s/list' % self.VIEW_BASE_NAME)
@@ -51,7 +55,7 @@ class Inventory(ItemBase):
 
     def test_machine_assignment_acceptance(self, test):
         """Acceptance coverage for inventory-side machine assignment."""
-        self._open_inventory_by_id(41)
+        self._open_inventory_by_id(self.TEST_INVENTORY_ID)
 
         # Selection and Installed/Planned state are available from Housing edit.
         self._open_machine_assignment()
