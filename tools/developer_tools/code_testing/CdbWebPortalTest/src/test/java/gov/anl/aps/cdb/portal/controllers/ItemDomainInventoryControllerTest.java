@@ -198,11 +198,40 @@ public class ItemDomainInventoryControllerTest {
         ItemDomainMachineDesign unassigned = machine();
 
         java.util.List<ItemDomainMachineDesign> matches
-                = ItemDomainInventoryController.filterMachinesByCatalog(
+                = ItemDomainInventoryController.filterMachinesByCatalogAndHierarchyName(
                         Arrays.asList(directCatalog, sameCatalogInventory,
-                                otherCatalogInventory, unassigned), catalog);
+                                otherCatalogInventory, unassigned), catalog, "");
 
         assertEquals(Arrays.asList(directCatalog, sameCatalogInventory), matches);
+    }
+
+    @Test
+    public void filtersCatalogMatchesByMachineOrAncestorName() {
+        ItemDomainMachineDesign top = machine("S01 Area H1");
+        ItemDomainMachineDesign housing = childMachine("Rack", top);
+        ItemDomainMachineDesign matchingLeaf = childMachine("Power Supply", housing);
+        matchingLeaf.setAssignedItem(catalog);
+        ItemDomainMachineDesign excludedLeaf = childMachine("Other Supply", machine("S02 Area"));
+        excludedLeaf.setAssignedItem(catalog);
+        ItemDomainMachineDesign wrongCatalog = childMachine("S01 H1 Wrong", top);
+        wrongCatalog.setAssignedItem(catalog(2));
+
+        java.util.List<ItemDomainMachineDesign> matches
+                = ItemDomainInventoryController.filterMachinesByCatalogAndHierarchyName(
+                        Arrays.asList(matchingLeaf, excludedLeaf, wrongCatalog),
+                        catalog, "S01*H1");
+
+        assertEquals(Collections.singletonList(matchingLeaf), matches);
+    }
+
+    @Test
+    public void catalogMatchNameFilterMatchesLeafAndQuestionWildcard() {
+        ItemDomainMachineDesign leaf = machine("S01-Q1 Supply");
+        leaf.setAssignedItem(catalog);
+
+        assertEquals(Collections.singletonList(leaf),
+                ItemDomainInventoryController.filterMachinesByCatalogAndHierarchyName(
+                        Collections.singletonList(leaf), catalog, "s01-q?"));
     }
 
     @Test
@@ -265,13 +294,28 @@ public class ItemDomainInventoryControllerTest {
     }
 
     private ItemDomainMachineDesign machine() {
+        return machine(null);
+    }
+
+    private ItemDomainMachineDesign machine(String name) {
         ItemDomainMachineDesign machine = new ItemDomainMachineDesign();
         machine.setId(nextMachineId++);
+        machine.setName(name);
         ItemElement selfElement = new ItemElement();
         selfElement.setParentItem(machine);
         machine.setFullItemElementList(Collections.singletonList(selfElement));
         setOwner(machine, SessionUtility.getUser());
+        machine.setItemElementMemberList(new ArrayList<>());
         return machine;
+    }
+
+    private ItemDomainMachineDesign childMachine(String name, ItemDomainMachineDesign parent) {
+        ItemDomainMachineDesign child = machine(name);
+        ItemElement membership = new ItemElement();
+        membership.setParentItem(parent);
+        membership.setContainedItem(child);
+        child.setItemElementMemberList(Collections.singletonList(membership));
+        return child;
     }
 
     private ItemDomainMachineDesign house(ItemDomainInventory item, boolean installed) {

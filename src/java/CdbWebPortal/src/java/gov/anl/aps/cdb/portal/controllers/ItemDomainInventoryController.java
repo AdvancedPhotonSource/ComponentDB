@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbRole;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperInventory;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
@@ -36,7 +37,10 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -330,21 +334,52 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         if (!(catalog instanceof ItemDomainCatalog)) {
             return new ArrayList<>();
         }
-        return filterMachinesByCatalog(
-                itemDomainMachineDesignFacade.findByAssignedCatalog(
-                        (ItemDomainCatalog) catalog, machineAssignmentSelection.getMachineNameFilter()),
-                catalog);
+        return filterMachinesByCatalogAndHierarchyName(
+                itemDomainMachineDesignFacade.findByAssignedCatalog((ItemDomainCatalog) catalog),
+                catalog, machineAssignmentSelection.getMachineNameFilter());
     }
 
-    static List<ItemDomainMachineDesign> filterMachinesByCatalog(
-            List<ItemDomainMachineDesign> machines, Item catalog) {
+    static List<ItemDomainMachineDesign> filterMachinesByCatalogAndHierarchyName(
+            List<ItemDomainMachineDesign> machines, Item catalog, String nameFilter) {
+        Pattern namePattern = createWildcardPattern(nameFilter);
         List<ItemDomainMachineDesign> matches = new ArrayList<>();
         for (ItemDomainMachineDesign machine : machines) {
-            if (catalog.equals(machine.getCatalogItem())) {
+            if (catalog.equals(machine.getCatalogItem())
+                    && hierarchyNameMatches(machine, namePattern)) {
                 matches.add(machine);
             }
         }
         return matches;
+    }
+
+    private static boolean hierarchyNameMatches(
+            ItemDomainMachineDesign machine, Pattern namePattern) {
+        if (namePattern == null) {
+            return true;
+        }
+        Set<Integer> visitedIds = new HashSet<>();
+        Set<ItemDomainMachineDesign> visitedItems = new HashSet<>();
+        ItemDomainMachineDesign current = machine;
+        while (current != null) {
+            Integer id = current.getId();
+            if ((id != null && !visitedIds.add(id))
+                    || (id == null && !visitedItems.add(current))) {
+                break;
+            }
+            String name = current.getName();
+            if (name != null && namePattern.matcher(name).find()) {
+                return true;
+            }
+            current = current.getParentMachineDesign();
+        }
+        return false;
+    }
+
+    private static Pattern createWildcardPattern(String nameFilter) {
+        if (nameFilter == null || nameFilter.isBlank()) {
+            return null;
+        }
+        return StringUtility.buildWildcardSearchPattern(nameFilter, true);
     }
 
     protected boolean requiresCatalogReplacementConfirmation(ItemDomainMachineDesign machine) {
