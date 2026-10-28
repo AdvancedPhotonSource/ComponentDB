@@ -44,11 +44,19 @@ public class SessionUtility {
         errorMessage = detail;
     }
 
+    public static void addErrorMessage(String summary, String detail, boolean isAjax) {
+        addErrorMessage(summary, detail);
+    }
+
     public static void addWarningMessage(String summary, String detail) {
     }
 
     public static void addInfoMessage(String summary, String detail) {
         infoMessage = detail;
+    }
+
+    public static void addInfoMessage(String summary, String detail, boolean isAjax) {
+        addInfoMessage(summary, detail);
     }
 
     public static void executeRemoteCommand(String command) {
