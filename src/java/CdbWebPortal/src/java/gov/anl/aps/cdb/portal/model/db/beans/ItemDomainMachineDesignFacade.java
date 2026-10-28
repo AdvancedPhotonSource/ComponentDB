@@ -84,30 +84,21 @@ public class ItemDomainMachineDesignFacade extends ItemFacadeBase<ItemDomainMach
                 .getResultList();
     }
 
-    public List<ItemDomainMachineDesign> findByAssignedCatalog(
-            ItemDomainCatalog catalog, String nameFilter) {
+    public List<ItemDomainMachineDesign> findByAssignedCatalog(ItemDomainCatalog catalog) {
         if (catalog == null || catalog.getId() == null) {
             return java.util.Collections.emptyList();
         }
-        String query = "SELECT DISTINCT machine FROM ItemDomainMachineDesign machine "
+        return em.createQuery(
+                "SELECT DISTINCT machine FROM ItemDomainMachineDesign machine "
                 + "JOIN machine.fullItemElementList element "
                 + "JOIN element.containedItem2 assignment "
                 + "WHERE element.name IS NULL "
                 + "AND element.derivedFromItemElement IS NULL "
                 + "AND (assignment.id = :catalogId "
-                + "OR assignment.derivedFromItem.id = :catalogId)";
-        boolean filterByName = nameFilter != null && !nameFilter.isBlank();
-        if (filterByName) {
-            query += " AND LOWER(machine.name) LIKE :nameFilter";
-        }
-        javax.persistence.TypedQuery<ItemDomainMachineDesign> typedQuery
-                = em.createQuery(query, ItemDomainMachineDesign.class)
-                        .setParameter("catalogId", catalog.getId());
-        if (filterByName) {
-            String namePattern = convertWildcards(nameFilter.toLowerCase());
-            typedQuery.setParameter("nameFilter", "%" + namePattern + "%");
-        }
-        return typedQuery.getResultList();
+                + "OR assignment.derivedFromItem.id = :catalogId)",
+                ItemDomainMachineDesign.class)
+                .setParameter("catalogId", catalog.getId())
+                .getResultList();
     }
 
     public List<ItemDomainMachineDesign> getMachineDesignTemplates() {
