@@ -116,8 +116,13 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         if (machineAssignmentSelection.isMatchingCatalogOnly()) {
             tree.buildResultTree(getMachinesMatchingCurrentInventoryCatalog());
         }
-        machineAssignmentSelection.setTree(tree);
-        machineAssignmentSelection.selectMachineInTree(selectedMachine);
+        machineAssignmentSelection.setAssignmentTree(tree);
+        if (selectedMachine != null) {
+            ItemDomainMachineDesignTreeNode selectedNode
+                    = (ItemDomainMachineDesignTreeNode) ItemDomainMachineDesignController
+                            .expandToSpecificMachineDesignItem(tree, selectedMachine);
+            machineAssignmentSelection.setSelectedNode(selectedNode);
+        }
     }
 
     public boolean isMachineAssignmentInstalled() {
