@@ -21,6 +21,7 @@ public class ItemDomainMachineDesignBaseTreeNodeTest {
     @Test
     public void normalFilteringStillRespectsDisabledTopLevelMachines() throws Exception {
         ItemDomainMachineDesign top = machine(1, "Top");
+        top.updateFilterMachineNode(false);
         ItemDomainMachineDesign child = childMachine(2, "Child", top);
         ItemDomainMachineDesignTreeNode root = root(top);
         setRawFilterResults(root, Collections.singletonList(child));
@@ -78,6 +79,7 @@ public class ItemDomainMachineDesignBaseTreeNodeTest {
     @Test
     public void suppliedResultModeDoesNotAffectLaterNormalFiltering() throws Exception {
         ItemDomainMachineDesign top = machine(1, "Top");
+        top.updateFilterMachineNode(false);
         ItemDomainMachineDesign child = childMachine(2, "Child", top);
         ItemDomainMachineDesignTreeNode root = root(top);
         root.buildResultTree(Collections.singletonList(child));
