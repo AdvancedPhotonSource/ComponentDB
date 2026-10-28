@@ -17,6 +17,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryMachineAssignmentSelection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
@@ -187,9 +188,31 @@ public class ItemDomainInventoryControllerTest {
     }
 
     @Test
+    public void filtersMachinesByDirectOrInventoryCatalogAssignment() {
+        ItemDomainMachineDesign directCatalog = machine();
+        directCatalog.setAssignedItem(catalog);
+        ItemDomainMachineDesign sameCatalogInventory = machine();
+        sameCatalogInventory.setAssignedItem(inventory(catalog));
+        ItemDomainMachineDesign otherCatalogInventory = machine();
+        otherCatalogInventory.setAssignedItem(inventory(catalog(2)));
+        ItemDomainMachineDesign unassigned = machine();
+
+        java.util.List<ItemDomainMachineDesign> matches
+                = ItemDomainInventoryController.filterMachinesByCatalog(
+                        Arrays.asList(directCatalog, sameCatalogInventory,
+                                otherCatalogInventory, unassigned), catalog);
+
+        assertEquals(Arrays.asList(directCatalog, sameCatalogInventory), matches);
+    }
+
+    @Test
     public void tracksInstalledAndReplacementProgressAndResetsState() {
         InventoryMachineAssignmentSelection selection = controller.getMachineAssignmentSelection();
+        assertFalse(controller.isMachineAssignmentMatchingCatalogOnly());
+        assertEquals("", controller.getMachineAssignmentNameFilter());
         controller.setMachineAssignmentInstalled(false);
+        controller.setMachineAssignmentMatchingCatalogOnly(true);
+        controller.setMachineAssignmentNameFilter("sector");
         controller.setMachineAssignmentReplacementConfirmation(true);
         selection.setDestinationPrepared(true);
         selection.setSourceReleased(true);
@@ -204,6 +227,8 @@ public class ItemDomainInventoryControllerTest {
 
         controller.resetMachineAssignmentState();
         assertTrue(controller.isMachineAssignmentInstalled());
+        assertFalse(controller.isMachineAssignmentMatchingCatalogOnly());
+        assertEquals("", controller.getMachineAssignmentNameFilter());
         assertNull(controller.getSelectedMachineAssignmentNode());
         assertFalse(selection.isDestinationPrepared());
         assertFalse(selection.isSourceReleased());
