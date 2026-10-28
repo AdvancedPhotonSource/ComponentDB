@@ -10,6 +10,8 @@ package gov.anl.aps.cdb.portal.view.objects;
 public class InventoryMachineAssignmentSelection extends MachineDesignTreeSelection {
 
     private boolean installed = true;
+    private boolean matchingCatalogOnly;
+    private String machineNameFilter = "";
     private boolean replacementConfirmation;
     private boolean destinationPrepared;
     private boolean sourceReleased;
@@ -22,6 +24,22 @@ public class InventoryMachineAssignmentSelection extends MachineDesignTreeSelect
 
     public void setInstalled(boolean installed) {
         this.installed = installed;
+    }
+
+    public boolean isMatchingCatalogOnly() {
+        return matchingCatalogOnly;
+    }
+
+    public void setMatchingCatalogOnly(boolean matchingCatalogOnly) {
+        this.matchingCatalogOnly = matchingCatalogOnly;
+    }
+
+    public String getMachineNameFilter() {
+        return machineNameFilter;
+    }
+
+    public void setMachineNameFilter(String machineNameFilter) {
+        this.machineNameFilter = machineNameFilter == null ? "" : machineNameFilter;
     }
 
     public boolean isReplacementConfirmation() {
@@ -75,6 +93,8 @@ public class InventoryMachineAssignmentSelection extends MachineDesignTreeSelect
     public void reset() {
         super.reset();
         installed = true;
+        matchingCatalogOnly = false;
+        machineNameFilter = "";
         replacementConfirmation = false;
         resetReplacementProgress();
     }

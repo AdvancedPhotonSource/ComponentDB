@@ -21,8 +21,10 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseC
 import gov.anl.aps.cdb.portal.model.ItemDomainInventoryLazyDataModel;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -64,6 +66,9 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     @EJB
     private ItemDomainInventoryFacade itemDomainInventoryFacade;
 
+    @EJB
+    private ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
+
     private final InventoryMachineAssignmentSelection machineAssignmentSelection
             = new InventoryMachineAssignmentSelection();
 
@@ -86,6 +91,33 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     public void setSelectedMachineAssignmentNode(ItemDomainMachineDesignTreeNode node) {
         machineAssignmentSelection.setSelectedNode(node);
         machineAssignmentSelection.setReplacementConfirmation(false);
+    }
+
+    public boolean isMachineAssignmentMatchingCatalogOnly() {
+        return machineAssignmentSelection.isMatchingCatalogOnly();
+    }
+
+    public void setMachineAssignmentMatchingCatalogOnly(boolean matchingCatalogOnly) {
+        machineAssignmentSelection.setMatchingCatalogOnly(matchingCatalogOnly);
+    }
+
+    public String getMachineAssignmentNameFilter() {
+        return machineAssignmentSelection.getMachineNameFilter();
+    }
+
+    public void setMachineAssignmentNameFilter(String nameFilter) {
+        machineAssignmentSelection.setMachineNameFilter(nameFilter);
+    }
+
+    public void updateMachineAssignmentCatalogFilter() {
+        ItemDomainMachineDesign selectedMachine = machineAssignmentSelection.getSelectedMachine();
+        ItemDomainMachineDesignTreeNode tree
+                = ItemDomainMachineDesignController.getInstance().loadMachineDesignRootTreeNode();
+        if (machineAssignmentSelection.isMatchingCatalogOnly()) {
+            tree.buildResultTree(getMachinesMatchingCurrentInventoryCatalog());
+        }
+        machineAssignmentSelection.setTree(tree);
+        machineAssignmentSelection.selectMachineInTree(selectedMachine);
     }
 
     public boolean isMachineAssignmentInstalled() {
@@ -286,6 +318,28 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
 
     protected Item getCatalogItem(Item item) {
         return item instanceof ItemDomainInventory ? item.getDerivedFromItem() : item;
+    }
+
+    protected List<ItemDomainMachineDesign> getMachinesMatchingCurrentInventoryCatalog() {
+        Item catalog = getCurrentInventoryCatalog();
+        if (!(catalog instanceof ItemDomainCatalog)) {
+            return new ArrayList<>();
+        }
+        return filterMachinesByCatalog(
+                itemDomainMachineDesignFacade.findByAssignedCatalog(
+                        (ItemDomainCatalog) catalog, machineAssignmentSelection.getMachineNameFilter()),
+                catalog);
+    }
+
+    static List<ItemDomainMachineDesign> filterMachinesByCatalog(
+            List<ItemDomainMachineDesign> machines, Item catalog) {
+        List<ItemDomainMachineDesign> matches = new ArrayList<>();
+        for (ItemDomainMachineDesign machine : machines) {
+            if (catalog.equals(machine.getCatalogItem())) {
+                matches.add(machine);
+            }
+        }
+        return matches;
     }
 
     protected boolean requiresCatalogReplacementConfirmation(ItemDomainMachineDesign machine) {
