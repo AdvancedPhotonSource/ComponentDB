@@ -41,6 +41,7 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
     private List<ItemDomainMachineDesign> rawFilterResults;
     private List<ItemDomainMachineDesign> filterResults;
     private Boolean filterAllNodes;
+    private boolean includeAllTopLevelResults;
 
     protected ItemDomainMachineDesignBaseTreeNode(ItemElement element, MachineNodeConfiguration config, ItemDomainMachineDesignBaseTreeNode parent, boolean setTypeForLevel) {
         super(element, config, parent);
@@ -299,33 +300,48 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
 
     public void finishFiltering() {
         if (rawFilterResults != null) {
-            getChildren().clear();
+            buildResultTree(rawFilterResults, true);
+        }
+    }
 
-            AtomicInteger relevantResults = new AtomicInteger(0);
-            filterResults = new ArrayList<>();
-            // Passed as array to force pass by reference. 
-            Integer[] displayedNodes = new Integer[1];
-            displayedNodes[0] = 0;
-            for (ItemDomainMachineDesign item : rawFilterResults) {
-                Set<ItemDomainMachineDesign> additionalParents = new HashSet<>();
-                List<ItemDomainMachineDesign> processParents = new ArrayList<>();
+    public void buildResultTree(List<ItemDomainMachineDesign> results) {
+        includeAllTopLevelResults = true;
+        try {
+            buildResultTree(results, false);
+        } finally {
+            includeAllTopLevelResults = false;
+        }
+    }
 
-                ItemDomainMachineDesignBaseTreeNode createTreeFromFilter = createTreeFromFilter(item, true, displayedNodes, additionalParents, null);
-                processAdditionalFilterParentResult(item, additionalParents, processParents, relevantResults, displayedNodes);
+    private void buildResultTree(List<ItemDomainMachineDesign> results, boolean displayMessages) {
+        getChildren().clear();
 
-                if (createTreeFromFilter != null) {
-                    relevantResults.incrementAndGet();
-                    filterResults.add(item);
-                }
+        AtomicInteger relevantResults = new AtomicInteger(0);
+        filterResults = new ArrayList<>();
+        // Passed as array to force pass by reference.
+        Integer[] displayedNodes = new Integer[]{0};
+        for (ItemDomainMachineDesign item : results) {
+            Set<ItemDomainMachineDesign> additionalParents = new HashSet<>();
+            List<ItemDomainMachineDesign> processParents = new ArrayList<>();
+
+            ItemDomainMachineDesignBaseTreeNode resultNode
+                    = createTreeFromFilter(item, true, displayedNodes, additionalParents, null);
+            processAdditionalFilterParentResult(item, additionalParents, processParents,
+                    relevantResults, displayedNodes);
+
+            if (resultNode != null) {
+                relevantResults.incrementAndGet();
+                filterResults.add(item);
             }
+        }
 
-            Integer maxSearchNodes = config.getMaxSearchNodes();
-            if (displayedNodes[0] > maxSearchNodes) {
-                clearFilterResults();
-                SessionUtility.addErrorMessage("Too many results rows (" + displayedNodes[0] + ")", "Too many results to display. Please provide a more specific search criteria.", true);
-            } else {
-                SessionUtility.addInfoMessage("Done", "Showing " + relevantResults + " relevant results.", true);
-            }
+        Integer maxSearchNodes = config.getMaxSearchNodes();
+        if (displayMessages && displayedNodes[0] > maxSearchNodes) {
+            clearFilterResults();
+            SessionUtility.addErrorMessage("Too many results rows (" + displayedNodes[0] + ")",
+                    "Too many results to display. Please provide a more specific search criteria.", true);
+        } else if (displayMessages) {
+            SessionUtility.addInfoMessage("Done", "Showing " + relevantResults + " relevant results.", true);
         }
     }
 
@@ -436,6 +452,9 @@ public abstract class ItemDomainMachineDesignBaseTreeNode<MachineNodeConfigurati
     }
 
     private boolean isFilterTopLevelItem(ItemDomainMachineDesign item) {
+        if (includeAllTopLevelResults) {
+            return topLevelItems.contains(item);
+        }
         for (ItemDomainMachineDesign topItem : topLevelItems) {
             if (topItem.equals(item)) {
                 return topItem.isFilterMachineNode();
