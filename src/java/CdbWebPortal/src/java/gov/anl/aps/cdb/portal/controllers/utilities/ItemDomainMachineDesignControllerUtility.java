@@ -61,18 +61,18 @@ public class ItemDomainMachineDesignControllerUtility extends ItemDomainMachineD
             throw new InvalidArgument("Assembly element provided for representation was not found.");
         }
 
+        Item parentItem = catalogElement.getParentItem();
+        if (!(parentItem instanceof ItemDomainCatalog)
+                && !(parentItem instanceof ItemDomainInventory)) {
+            throw new InvalidArgument("Cannot create representing machine element for selected item.");
+        }
+
         // Inventory assembly elements represent their source catalog element.
         ItemElement derivedFromItemElement = catalogElement.getDerivedFromItemElement();
         if (derivedFromItemElement != null) {
             catalogElement = derivedFromItemElement;
         }
         validateElementAvailableForRepresentation(parentMachine, null, catalogElement);
-
-        Item parentItem = catalogElement.getParentItem();
-        if ((parentItem instanceof ItemDomainCatalog
-                || parentItem instanceof ItemDomainInventory) == false) {
-            throw new InvalidArgument("Cannot create representing machine element for selected item.");
-        }
 
         // Create new machine placeholder       
         ItemElement machinePlaceholder = null;
