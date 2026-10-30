@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.view.objects;
 
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
@@ -43,7 +44,7 @@ public class ItemElementConstraintInformation {
     }
 
     public boolean isSafeToUpdateContainedItem() {
-        if (isReferencedByRepresentingMachine()) {
+        if (hasRepresentedMachineChildren()) {
             return false;
         }
         for (ItemElementConstraintInformation ieci : relatedConstraintInfo) {
@@ -92,6 +93,26 @@ public class ItemElementConstraintInformation {
     public boolean isReferencedByRepresentingMachine() {
         List<ItemElement> representingElements = itemElement.getRepresentsItemElementList();
         return representingElements != null && !representingElements.isEmpty();
+    }
+
+    public boolean hasRepresentedMachineChildren() {
+        if (!isReferencedByRepresentingMachine()) {
+            return false;
+        }
+        for (ItemElement representingElement : itemElement.getRepresentsItemElementList()) {
+            if (representingElement.getParentItem() instanceof ItemDomainMachineDesign) {
+                ItemDomainMachineDesign machine = (ItemDomainMachineDesign) representingElement.getParentItem();
+                for (ItemElement childElement : machine.getItemElementDisplayList()) {
+                    if (childElement.getContainedItem() instanceof ItemDomainMachineDesign) {
+                        ItemDomainMachineDesign child = (ItemDomainMachineDesign) childElement.getContainedItem();
+                        if (child.getRepresentsCatalogElement() != null) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public String getRelatedItemElementToString() {
