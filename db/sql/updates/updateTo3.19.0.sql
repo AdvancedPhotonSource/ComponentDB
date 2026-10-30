@@ -5,6 +5,12 @@
 
 -- Execute by running `mysql CDB_DB_NAME -h 127.0.0.1 -u cdb -p < updateTo3.19.0.sql`
 
+SELECT 'If adding item_element_fk6 reports dangling references, review and run db/sql/scripts/cleanup-dangling-item-element-representations.sql before retrying this update.' AS recommendation;
+
+ALTER TABLE item_element
+    ADD KEY `item_element_k6` (`represents_item_element_id`),
+    ADD CONSTRAINT `item_element_fk6` FOREIGN KEY (`represents_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE;
+
 DROP VIEW IF EXISTS v_ioc_owner_info;
 
 CREATE VIEW v_ioc_owner_info AS
