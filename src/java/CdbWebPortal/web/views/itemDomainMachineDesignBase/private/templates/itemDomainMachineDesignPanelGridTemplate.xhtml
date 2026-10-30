@@ -27,7 +27,7 @@ See LICENSE file.
                        value="Installed QR Id"
                        rendered="#{!entityController.currentViewIsTemplate}"
                        styleClass="entityDataEmphasizedLabel"/>
-        <p:column>
+        <p:column rendered="#{!entityController.currentViewIsTemplate}">
             <ui:include src="../templateDefaults/common/itemInstalledQrIdField.xhtml">
                 <ui:param name="machineDesignObject"
                       value="#{itemObject}"/> 
