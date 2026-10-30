@@ -36,12 +36,12 @@ public class ItemElementControllerUtility extends CdbDomainEntityControllerUtili
         super.prepareEntityDestroy(itemElement, userInfo);
         // Verify that item domain allows destroy of item element.   
 
+        ItemElementConstraintInformation ieci = getFreshItemElementConstraintInformation(itemElement);
         Item parentItem = itemElement.getParentItem();
-        if (!(parentItem instanceof ItemDomainCatalog)) {
-            ItemElementConstraintInformation ieci = getFreshItemElementConstraintInformation(itemElement);
+        if (!(parentItem instanceof ItemDomainCatalog) || ieci.isReferencedByRepresentingMachine()) {
             if (ieci.isSafeToRemove() == false) {
                 String constraintMessage = generateSingleDeleteConstraintMessage(itemElement);
-                throw new CdbException("Cannot remove item element. Constrains not met. " + constraintMessage);
+                throw new CdbException("Cannot remove item element. Constraints not met. " + constraintMessage);
             }
         }
     }
@@ -56,6 +56,9 @@ public class ItemElementControllerUtility extends CdbDomainEntityControllerUtili
         ItemElementConstraintInformation constraint = getItemElementConstraintInformation(itemElement);
         String message = null;
 
+        if (constraint.isReferencedByRepresentingMachine()) {
+            return "Item element is represented by a machine design element. Unlink it before continuing.";
+        }
         if (constraint instanceof CatalogItemElementConstraintInformation) {
             CatalogItemElementConstraintInformation catalogConstraint = (CatalogItemElementConstraintInformation) constraint;
             message = generateCatalogSpecificPreventDeleteUpdateContainedMessage(catalogConstraint);
@@ -137,6 +140,10 @@ public class ItemElementControllerUtility extends CdbDomainEntityControllerUtili
                 ItemElementConstraintInformation ieci = getItemElementConstraintInformation(freshDbItemElement);
                 if (ieci.isSafeToUpdateContainedItem() == false) {
                     itemElement.setContainedItem(originalContainedItem);
+                    if (ieci.hasRepresentedMachineChildren()) {
+                        throw new CdbException("Cannot replace the item assigned to element " + itemElement
+                                + " while its representing machine has represented children. Unlink the children before continuing.");
+                    }
                     throw new CdbException("Cannot update item element " + itemElement + " due to constraints not met. Please reload the item details page and try again.");
                 }
             }
