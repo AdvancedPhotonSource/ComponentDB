@@ -43,6 +43,9 @@ public class ItemElementConstraintInformation {
     }
 
     public boolean isSafeToUpdateContainedItem() {
+        if (isReferencedByRepresentingMachine()) {
+            return false;
+        }
         for (ItemElementConstraintInformation ieci : relatedConstraintInfo) {
             if (ieci.isPreventUpdateContainedItem()) {
                 return false;
@@ -64,6 +67,9 @@ public class ItemElementConstraintInformation {
     }
 
     protected boolean isPreventsDelete() {
+        if (isReferencedByRepresentingMachine()) {
+            return true;
+        }
         // the primary element cannot prevent delete
         if (isHasProperties()) {
             return true;
@@ -81,6 +87,11 @@ public class ItemElementConstraintInformation {
     public boolean isHasLogs() {
         List<Log> logList = itemElement.getLogList(); 
         return logList != null && logList.isEmpty() == false;
+    }
+
+    public boolean isReferencedByRepresentingMachine() {
+        List<ItemElement> representingElements = itemElement.getRepresentsItemElementList();
+        return representingElements != null && !representingElements.isEmpty();
     }
 
     public String getRelatedItemElementToString() {
