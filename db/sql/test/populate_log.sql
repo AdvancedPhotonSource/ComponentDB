@@ -8,6 +8,10 @@ INSERT INTO `log` VALUES
 (5,'User: cdb | Created: Template Holder [Item Id: 116]','2023-10-09 10:24:50',1,NULL,NULL,NULL),
 (6,'User: cdb | Updated: Template Holder [Item Id: 116]','2023-10-09 10:25:54',1,NULL,NULL,NULL),
 (7,'Authentication Succeeded: cdb','2023-10-12 13:08:58',1,NULL,NULL,NULL),
-(8,'User: cdb | Created: TEST MAARC [Item Id: 119]','2023-10-12 13:09:09',1,NULL,NULL,NULL);
+(8,'User: cdb | Created: TEST MAARC [Item Id: 119]','2023-10-12 13:09:09',1,NULL,NULL,NULL),
+(9,'Authentication Succeeded: cdb','2026-10-27 10:43:40',1,NULL,NULL,NULL),
+(10,'User: cdb | Created: Another Top Level  [Item Id: 128]','2026-10-27 10:43:53',1,NULL,NULL,NULL),
+(11,'User: cdb | Updated: Another Top Level  [Item Id: 128]','2026-10-27 10:44:07',1,NULL,NULL,NULL),
+(12,'User: cdb | Updated: Inventory Assignment Test Destination [Item Id: 129]','2026-10-27 10:44:19',1,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;

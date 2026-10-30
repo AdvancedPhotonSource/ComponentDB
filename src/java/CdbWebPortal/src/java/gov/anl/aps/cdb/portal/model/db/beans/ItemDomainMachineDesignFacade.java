@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
@@ -80,6 +81,23 @@ public class ItemDomainMachineDesignFacade extends ItemFacadeBase<ItemDomainMach
         return (List<ItemDomainMachineDesign>) em.createNamedStoredProcedureQuery("item.searchIOCItems")
                 .setParameter("limit_row", SEARCH_RESULT_LIMIT)
                 .setParameter("search_string", searchString)
+                .getResultList();
+    }
+
+    public List<ItemDomainMachineDesign> findByAssignedCatalog(ItemDomainCatalog catalog) {
+        if (catalog == null || catalog.getId() == null) {
+            return java.util.Collections.emptyList();
+        }
+        return em.createQuery(
+                "SELECT DISTINCT machine FROM ItemDomainMachineDesign machine "
+                + "JOIN machine.fullItemElementList element "
+                + "JOIN element.containedItem2 assignment "
+                + "WHERE element.name IS NULL "
+                + "AND element.derivedFromItemElement IS NULL "
+                + "AND (assignment.id = :catalogId "
+                + "OR assignment.derivedFromItem.id = :catalogId)",
+                ItemDomainMachineDesign.class)
+                .setParameter("catalogId", catalog.getId())
                 .getResultList();
     }
 

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <p:confirmDialog id="machineAssignmentReplacementConfirmDialog"
+                     widgetVar="machineAssignmentReplacementConfirmDialogWidget"
+                     header="Confirm Different Catalog Replacement"
+                     severity="alert"
+                     width="600"
+                     styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+        <f:facet name="message">
+            <p:panelGrid columns="2"
+                         styleClass="plainPanelGrid"
+                         columnClasses="entityDataLabel,entityDataText">
+                <h:outputText value="Current Assignment" />
+                <h:outputText value="#{itemDomainInventoryController.selectedMachineCurrentAssignment}" />
+                <h:outputText value="New Assignment" />
+                <h:outputText value="#{itemDomainInventoryController.current}" />
+            </p:panelGrid>
+            <p:separator />
+            <h:outputText value="Clear the destination machine element and complete these steps:" />
+        </f:facet>
+        <p:panelGrid columns="2"
+                     style="margin: 0 auto"
+                     styleClass="plainPanelGrid"
+                     columnClasses="entityDataLabel,entityDataText">
+            <h:outputText styleClass="fa #{itemDomainInventoryController.machineAssignmentSelection.destinationPrepared ? 'fa-check-square-o' : 'fa-square-o'}" />
+            <h:outputText value="Clear destination assignment and update catalog" />
+            <h:outputText rendered="#{itemDomainInventoryController.sourceMachineReleaseRequired}"
+                          styleClass="fa #{itemDomainInventoryController.machineAssignmentSelection.sourceReleased ? 'fa-check-square-o' : 'fa-square-o'}" />
+            <h:outputText rendered="#{itemDomainInventoryController.sourceMachineReleaseRequired}"
+                          value="Release inventory from source machine element" />
+            <h:outputText styleClass="fa #{itemDomainInventoryController.machineAssignmentSelection.inventoryAssigned ? 'fa-check-square-o' : 'fa-square-o'}" />
+            <h:outputText value="Assign inventory to destination machine element" />
+        </p:panelGrid>
+        <p:outputPanel layout="block"
+                       rendered="#{itemDomainInventoryController.machineAssignmentSelection.replacementError != null}"
+                       styleClass="ui-message-error">
+            <h:outputText value="#{itemDomainInventoryController.machineAssignmentSelection.replacementError}" />
+        </p:outputPanel>
+        <p:commandButton value="Clear Destination and Assign"
+                         icon="fa fa-check"
+                         rendered="#{!itemDomainInventoryController.machineAssignmentSelection.inventoryAssigned}"
+                         action="#{itemDomainInventoryController.confirmMachineAssignmentReplacement()}"
+                         update="machineAssignmentReplacementConfirmDialog"
+                         oncomplete="PF('machineAssignmentReplacementConfirmDialogWidget').show()" />
+        <p:commandButton value="Done"
+                         icon="fa fa-check"
+                         rendered="#{itemDomainInventoryController.machineAssignmentSelection.inventoryAssigned}"
+                         action="#{itemDomainInventoryController.completeMachineAssignmentReplacement()}"
+                         update="@form" />
+        <p:commandButton value="Cancel"
+                         icon="fa fa-close"
+                         rendered="#{!itemDomainInventoryController.machineAssignmentSelection.inventoryAssigned}"
+                         action="#{itemDomainInventoryController.cancelMachineAssignmentReplacement()}"
+                         oncomplete="PF('machineAssignmentReplacementConfirmDialogWidget').hide()" />
+    </p:confirmDialog>
+
+    <p:remoteCommand name="showMachineAssignmentReplacementConfirmDialog"
+                     oncomplete="PF('machineAssignmentReplacementConfirmDialogWidget').show()" />
+</ui:composition>

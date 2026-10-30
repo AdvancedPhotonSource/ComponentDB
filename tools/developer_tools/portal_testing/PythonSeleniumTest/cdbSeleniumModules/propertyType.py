@@ -56,8 +56,9 @@ class PropertyType(CdbSeleniumModuleBase):
 		nameFilter = self._wait_for_id("viewPropertyTypeListForm:propertyTypeListDataTable:propertyTypeNameFilter:filter")
 		nameFilter.send_keys(SAMPLE_PROPERTY_TYPE_NAME)
 
-		samplePropertyLink = self._wait_for(By.LINK_TEXT, SAMPLE_PROPERTY_TYPE_NAME)
-		samplePropertyLink.click()
+		samplePropertyXpath = "//a[normalize-space()='%s']" % SAMPLE_PROPERTY_TYPE_NAME
+		self._wait_for_xpath(samplePropertyXpath)
+		self._click_on_x_path_with_stale_protection(samplePropertyXpath)
 		self._wait_for_id_and_click('viewPropertyTypeForm:propertyTypeViewDeleteButton')
 
 		confirmDelete = self._wait_for_visible_xpath('//*[@id="viewPropertyTypeForm:confirmDestroyPropertyType"]')

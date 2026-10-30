@@ -126,6 +126,14 @@ INSERT INTO `item` VALUES
 (124,2,'Item With Connectors 2',NULL,'','',NULL),
 (125,9,'TEST CABLE 2',NULL,'KABEL',NULL,NULL),
 (126,6,'Item with Ports 3',NULL,NULL,NULL,NULL),
-(127,2,'Item With Connectors 3',NULL,'','',NULL);
+(127,2,'Item With Connectors 3',NULL,'','',NULL),
+(128,6,'Another Top Level ',NULL,NULL,NULL,NULL),
+(129,6,'Inventory Assignment Test Destination',NULL,NULL,NULL,NULL),
+(130,3,'Machine Assignment Test Inventory',1,NULL,NULL,NULL),
+(131,6,'Machine Assignment Test Source',NULL,NULL,NULL,NULL),
+(132,6,'Machine Assignment Test Component 1',NULL,NULL,NULL,NULL),
+(133,6,'Machine Assignment Test Component 2',NULL,NULL,NULL,NULL),
+(134,6,'Machine Assignment Replacement Root',NULL,NULL,NULL,NULL),
+(135,6,'Machine Assignment Replacement Destination',NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;

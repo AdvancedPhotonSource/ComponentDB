@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <p:dialog id="machineAssignmentDialog"
+              widgetVar="machineAssignmentDialogWidget"
+              header="Update Machine Assignment"
+              modal="true"
+              closable="false"
+              width="90vw">
+        <ui:include src="itemDomainInventoryMachineAssignmentTree.xhtml" />
+
+        <p:panelGrid columns="2">
+            <h:outputText value="Assignment State" />
+            <p:selectBooleanButton id="machineAssignmentInstalled"
+                                   value="#{itemDomainInventoryController.machineAssignmentInstalled}"
+                                   offLabel="Planned"
+                                   onLabel="Installed">
+                <p:tooltip for="machineAssignmentInstalled">
+                    Installed items use the machine location. Planned items retain their current location.
+                </p:tooltip>
+            </p:selectBooleanButton>
+        </p:panelGrid>
+
+        <f:facet name="footer">
+            <p:outputPanel id="machineAssignmentDialogFooter" layout="inline">
+                <p:commandButton value="Save"
+                                 icon="fa fa-save"
+                                 action="#{itemDomainInventoryController.saveMachineAssignment()}"
+                                 update="@form:machineAssignmentReplacementConfirmDialog" />
+                <p:commandButton value="Clear"
+                                 icon="fa fa-eraser"
+                                 rendered="#{itemDomainInventoryController.currentAssignedToMachine}"
+                                 action="#{itemDomainInventoryController.clearMachineAssignment()}"
+                                 update="@form" />
+                <p:commandButton value="Close"
+                                 icon="fa fa-close"
+                                 action="#{itemDomainInventoryController.cancelMachineAssignment()}"
+                                 oncomplete="PF('machineAssignmentDialogWidget').hide()"
+                                 update="@form" />
+            </p:outputPanel>
+        </f:facet>
+    </p:dialog>
+
+    <ui:include src="itemDomainInventoryMachineAssignmentReplacementConfirmDialog.xhtml" />
+    <p:remoteCommand name="showMachineAssignmentDialog"
+                     action="#{itemDomainInventoryController.prepareMachineAssignment()}"
+                     update="@form:machineAssignmentDialog"
+                     onstart="PF('loadingDialog').show()"
+                     oncomplete="PF('loadingDialog').hide(); PF('machineAssignmentDialogWidget').show(); scrollMachineSelectionToSelectedinventoryMachineAssignment()" />
+    <p:remoteCommand name="machineAssignmentUpdateSuccess"
+                     update="@form"
+                     oncomplete="PF('machineAssignmentReplacementConfirmDialogWidget').hide(); PF('machineAssignmentDialogWidget').hide()" />
+</ui:composition>
