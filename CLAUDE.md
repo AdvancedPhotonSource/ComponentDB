@@ -56,6 +56,8 @@ make test                          # runs ./sbin/cdb_test.sh: backs up cdb, swap
 
 ### Test targets in isolation
 
+The agent may run the Maven Java unit tests below after sourcing `setup.sh`; this does not build or deploy the web portal.
+
 ```sh
 # Java unit tests (Arquillian + embedded Glassfish)
 cd tools/developer_tools/code_testing/CdbWebPortalTest && mvn test
