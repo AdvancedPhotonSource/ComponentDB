@@ -98,6 +98,7 @@ public class ItemDomainMachineDesignControllerUtilityTest {
         ItemDomainCatalog part = catalog("Part", project);
         ItemElement represented = child(assembly, part, "Part-1");
         ItemDomainMachineDesign parent = machine("Parent");
+        parent.setAssignedItem(assembly);
         parent.setItemProjectList(Collections.singletonList(project(2, "Parent Project")));
 
         ItemDomainMachineDesign created
@@ -124,8 +125,10 @@ public class ItemDomainMachineDesignControllerUtilityTest {
         ItemElement inventoryElement = child(inventoryAssembly, inventoryPart, "Inventory E1");
         inventoryElement.setDerivedFromItemElement(catalogElement);
 
+        ItemDomainMachineDesign parent = machine("Parent");
+        parent.setAssignedItem(inventoryAssembly);
         ItemDomainMachineDesign created = utility.createRepresentingMachineForAssemblyElement(
-                machine("Parent"), inventoryElement, user);
+                parent, inventoryElement, user);
 
         assertSame(catalogElement, created.getRepresentsCatalogElement());
         assertEquals("Catalog E1", created.getName());
@@ -273,14 +276,25 @@ public class ItemDomainMachineDesignControllerUtilityTest {
     }
 
     @Test
-    public void rejectsNestedRepresentationBelowRepresentedParent() {
-        RepresentationFixture fixture = representationFixture();
-        fixture.parent.setRepresentsCatalogElement(new ItemElement());
+    public void allowsNestedRepresentationBelowRepresentedParent() throws Exception {
+        ItemDomainCatalog rootAssembly = catalog("Root Assembly");
+        ItemDomainCatalog nestedAssembly = catalog("Nested Assembly");
+        ItemElement nestedAssemblyElement = child(rootAssembly, nestedAssembly, "Nested E1");
+        ItemElement nestedPartElement = child(nestedAssembly, catalog("Nested Part"), "Part E1");
+        ItemDomainMachineDesign root = machine("Root");
+        root.setAssignedItem(rootAssembly);
+        ItemDomainMachineDesign representedParent = machine("Represented Parent");
+        child(root, representedParent, "M1");
+        utility.updateRepresentingAssemblyElementForMachine(
+                representedParent, nestedAssemblyElement, false);
+        ItemDomainMachineDesign representedChild = machine("Represented Child");
+        child(representedParent, representedChild, "M2");
 
-        InvalidObjectState error = expect(InvalidObjectState.class,
-                () -> utility.updateRepresentingAssemblyElementForMachine(
-                        fixture.node, fixture.available, false));
-        assertTrue(error.getMessage().contains("with represented element reference"));
+        utility.updateRepresentingAssemblyElementForMachine(
+                representedChild, nestedPartElement, false);
+
+        assertSame(nestedAssemblyElement, representedParent.getRepresentsCatalogElement());
+        assertSame(nestedPartElement, representedChild.getRepresentsCatalogElement());
     }
 
     @Test
