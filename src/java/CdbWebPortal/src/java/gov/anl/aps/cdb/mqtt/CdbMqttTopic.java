@@ -7,7 +7,10 @@ package gov.anl.aps.cdb.mqtt;
 public enum CdbMqttTopic {
     ADD("cdb/entity/add"),
     UPDATE("cdb/entity/update"),
-    DELETE("cdb/entity/delete");
+    DELETE("cdb/entity/delete"),
+    ITEM_PROPERTY_ADD("cdb/item/property/add"),
+    ITEM_PROPERTY_UPDATE("cdb/item/property/update"),
+    ITEM_PROPERTY_DELETE("cdb/item/property/delete");
 
     private final String value;
 
