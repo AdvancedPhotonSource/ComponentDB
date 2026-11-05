@@ -25,9 +25,9 @@ public final class CdbPropertySnapshot {
     private final String units;
     private final String description;
     private final Map<String, String> metadata;
-    private final boolean longText;
+    private final boolean textOmitted;
 
-    public CdbPropertySnapshot(PropertyValue propertyValue, String text) {
+    public CdbPropertySnapshot(PropertyValue propertyValue, String text, boolean textOmitted) {
         Object id = propertyValue.getId();
         propertyValueId = id == null ? null : id.toString();
         PropertyType propertyType = propertyValue.getPropertyType();
@@ -40,7 +40,7 @@ public final class CdbPropertySnapshot {
         units = propertyValue.getUnits();
         description = propertyValue.getDescription();
         metadata = snapshotMetadata(propertyValue);
-        longText = isLongText(propertyValue);
+        this.textOmitted = textOmitted;
     }
 
     public static boolean isLongText(PropertyValue propertyValue) {
@@ -72,5 +72,5 @@ public final class CdbPropertySnapshot {
     public String getUnits() { return units; }
     public String getDescription() { return description; }
     public Map<String, String> getMetadata() { return metadata; }
-    public boolean isLongText() { return longText; }
+    public boolean isTextOmitted() { return textOmitted; }
 }

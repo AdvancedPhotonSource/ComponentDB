@@ -46,17 +46,17 @@ public final class CdbItemPropertyEvent extends MqttEvent {
             String diff = createLineDiff(oldText, newText);
             diffTruncated = diff.length() > MAX_TEXT_LENGTH;
             textDiff = truncate(diff);
-            this.oldProperty = new CdbPropertySnapshot(oldProperty, null);
-            this.newProperty = new CdbPropertySnapshot(newProperty, null);
+            this.oldProperty = new CdbPropertySnapshot(oldProperty, null, true);
+            this.newProperty = new CdbPropertySnapshot(newProperty, null, true);
         } else {
             String boundedOldText = truncate(oldText);
             String boundedNewText = truncate(newText);
             diffTruncated = length(oldText) > MAX_TEXT_LENGTH || length(newText) > MAX_TEXT_LENGTH;
             textDiff = null;
             this.oldProperty = oldProperty == null ? null
-                    : new CdbPropertySnapshot(oldProperty, boundedOldText);
+                    : new CdbPropertySnapshot(oldProperty, boundedOldText, false);
             this.newProperty = newProperty == null ? null
-                    : new CdbPropertySnapshot(newProperty, boundedNewText);
+                    : new CdbPropertySnapshot(newProperty, boundedNewText, false);
         }
     }
 
