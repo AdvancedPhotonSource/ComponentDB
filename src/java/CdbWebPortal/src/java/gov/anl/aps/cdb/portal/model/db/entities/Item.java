@@ -20,6 +20,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.comparator.ItemElementRelevantSortOrderComparator;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility.PropertyValueChange;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
@@ -503,6 +504,8 @@ import org.primefaces.model.TreeNode;
         }
 )
 public class Item extends CdbDomainEntity implements Serializable {
+
+    private transient List<PropertyValueChange> pendingPropertyValueChanges = new ArrayList<>();
 
     private static final Logger LOGGER = LogManager.getLogger(Item.class.getName());
 
@@ -1593,6 +1596,17 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setPropertyValueList(List<PropertyValue> propertyValueList) {
         this.getSelfElement().setPropertyValueList(propertyValueList);
+    }
+
+    @JsonIgnore
+    public void setPendingPropertyValueChanges(List<PropertyValueChange> changes) {
+        pendingPropertyValueChanges = changes == null ? new ArrayList<>() : new ArrayList<>(changes);
+    }
+
+    @JsonIgnore
+    public List<PropertyValueChange> getPendingPropertyValueChanges() {
+        return pendingPropertyValueChanges == null
+                ? new ArrayList<>() : new ArrayList<>(pendingPropertyValueChanges);
     }
 
     @Override
