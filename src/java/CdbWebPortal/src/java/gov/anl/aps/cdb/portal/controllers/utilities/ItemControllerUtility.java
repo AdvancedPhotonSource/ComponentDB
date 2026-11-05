@@ -4,9 +4,11 @@
  */
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
+import gov.anl.aps.cdb.base.mqtt.MqttEvent;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.mqtt.CdbItemPropertyEvent;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.ListName;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
@@ -37,6 +39,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility.PropertyValueChange;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
@@ -139,7 +142,9 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         List<PropertyValue> originalPropertyValueList = originalItem.getPropertyValueList();
         List<PropertyValue> newPropertyValueList = item.getPropertyValueList();
         logger.debug("Verifying properties for item " + item);
-        PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);
+        List<PropertyValueChange> propertyChanges = PropertyValueUtility.preparePropertyValueHistory(
+                originalPropertyValueList, newPropertyValueList, entityInfo);
+        item.setPendingPropertyValueChanges(propertyChanges);
         item.clearPropertyValueCache();
 
         List<Item> derivedFromItemList = item.getDerivedFromItemList();
@@ -154,6 +159,29 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         logger.debug("Updating item " + item.getId()
                 + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
 
+    }
+
+    @Override
+    protected List<MqttEvent> prepareSpecializedUpdateEvents(
+            ItemDomainEntity item, UserInfo userInfo) throws CdbException {
+        List<MqttEvent> events = new ArrayList<>();
+        for (PropertyValueChange change : item.getPendingPropertyValueChanges()) {
+            switch (change.getType()) {
+                case ADD:
+                    events.add(CdbItemPropertyEvent.added(item, change.getNewValue(), userInfo));
+                    break;
+                case UPDATE:
+                    events.add(CdbItemPropertyEvent.updated(item,
+                            change.getOldValue(), change.getNewValue(), userInfo));
+                    break;
+                case DELETE:
+                    events.add(CdbItemPropertyEvent.deleted(item, change.getOldValue(), userInfo));
+                    break;
+                default:
+                    throw new IllegalStateException("Unsupported property change type");
+            }
+        }
+        return events;
     }
 
     @Override
