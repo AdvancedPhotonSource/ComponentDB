@@ -1,0 +1,44 @@
+name: Test CDB Portal
+
+on:
+  pull_request:
+    paths:
+      - 'src/java/CdbWebPortal/src/java/**'
+      - 'tools/developer_tools/code_testing/CdbWebPortalTest/**'
+      - '.github/workflows/test-cdbportal.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Run CDB Portal Java Tests
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: tools/developer_tools/code_testing/CdbWebPortalTest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 11 and Maven cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+          cache: maven
+          cache-dependency-path: tools/developer_tools/code_testing/CdbWebPortalTest/pom.xml
+
+      - name: Run tests
+        run: mvn --batch-mode --no-transfer-progress test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cdb-portal-test-results
+          path: tools/developer_tools/code_testing/CdbWebPortalTest/target/surefire-reports/
+          if-no-files-found: warn

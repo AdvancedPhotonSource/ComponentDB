@@ -35,7 +35,9 @@ See LICENSE file.
             <p:outputPanel styleClass="entityDataText">
                 <p:commandLink styleClass="fa fa-link-icon fa-pencil"
                                rendered="#{isEntityWriteable}"
-                               onclick="PF('iocMachineParentSelectionDialogWidget').show()"/>
+                               action="#{itemDomainMachineDesignIOCController.prepareMachineParentSelection()}"
+                               update="@form:iocMachineParentSelectionDialog"
+                               oncomplete="PF('iocMachineParentSelectionDialogWidget').show(); scrollMachineSelectionToSelectedcreateIocMachineSelectionDialog()"/>
                 <ui:param name="parentMachineDesign" value="#{itemObject.parentMachineDesign}"/>
                 <ui:include src="../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
                     <ui:param name="itemObject" value="#{parentMachineDesign}" />

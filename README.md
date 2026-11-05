@@ -187,6 +187,15 @@ The python web service is deprecated but is still a part of the distribution for
 ./sbin/cdbWebService.sh
 ```
 
+## Running Tests
+
+```sh
+source setup.sh
+make test
+```
+
+See the test setup in `tools/developer_tools/{python-client,portal_testing/PythonSeleniumTest}/README.md`.
+
 ## Preparing a Release
 `make prepare-release` bumps the version string across the repo (`etc/version`, `openapi.yaml`, web asset cache-busters, python-client `packages/*/pyproject.toml`/conda recipes) and scaffolds `docs/release-notes/<VERSION>.md`. Run it, review the diff, then commit.
 ```sh

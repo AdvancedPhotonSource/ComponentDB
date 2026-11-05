@@ -30,6 +30,11 @@ See LICENSE file.
     <ui:param name="renderedShowElementHistory"
               value="#{renderedShowElementHistory != null ? renderedShowElementHistory : false}" /> 
 
+    <ui:param name="renderedAssignedItem"
+              value="#{renderedAssignedItem != null
+                       ? renderedAssignedItem
+                       : hideOptionalColumns and hideSearchColumns}" />
+
     <ui:param name="itemTreeListObject"
               value="#{itemElementListObject.containedItem}" />
 
@@ -209,8 +214,7 @@ See LICENSE file.
               value="#{mdTreeListObject != null ? mdTreeListObject.assignedItem : itemTreeListObject}"/> 
 
     <p:column headerText="Assigned Item" 
-              rendered="#{hideOptionalColumns 
-                          and hideSearchColumns}"
+              rendered="#{renderedAssignedItem}"
               filterBy="#{assignedItem.name}"
               filterable="#{filterable}"
               filterMatchMode="contains">            

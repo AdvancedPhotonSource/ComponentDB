@@ -27,7 +27,7 @@ If you'd rather use uv directly (editable installs into a real virtualenv):
 
 ```sh
 uv sync                               # installs both packages editable + dev deps (pytest)
-uv run pytest test/api_test.py
+uv run pytest test/
 uv run cdb-cli --help
 ```
 
@@ -78,7 +78,7 @@ reminder to upload the resulting `cdb-api-cli-env.txt` with the c2 tool.
 ## Tests
 
 ```sh
-uv run pytest test/api_test.py          # requires the portal running on localhost:8080
+uv run pytest test/                     # requires the portal running on localhost:8080
 ```
 
 `sbin/cdb_test.sh` (invoked by `make test`) regenerates the client and runs this as part of the

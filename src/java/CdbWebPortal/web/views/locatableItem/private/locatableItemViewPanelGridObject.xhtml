@@ -118,10 +118,15 @@ See LICENSE file.
     </p:inplace>
 
     <h:outputLabel for="itemHousing" value="Housing" styleClass="entityDataLabel"/>
-    <ui:include src="locatableItemLocationRelationshipTree.xhtml">
-        <ui:param name="cdbDomainEntityObject" value="#{itemObject}" />
-        <ui:param name="locatableItemTreeValue" value="#{locatableItemController.getHousingRelationshipTree(itemObject)}" />
-    </ui:include>
+    <ui:decorate template="templates/locatableItemLocationRelationshipTreeTemplate.xhtml">
+        <ui:define name="params">
+            <ui:param name="cdbDomainEntityObject" value="#{itemObject}" />
+            <ui:param name="locatableItemTreeValue" value="#{locatableItemController.getHousingRelationshipTree(itemObject)}" />
+        </ui:define>
+        <ui:define name="inplaceContent">
+            <ui:insert name="housingActions" />
+        </ui:define>
+    </ui:decorate>
 
 </ui:composition>
 

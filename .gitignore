@@ -55,3 +55,4 @@ docs/python/_build/
 
 # Temporary testing csv files
 tools/developer_tools/python-client/packages/cli/cdbCli/service/cli/Spreadsheets/
+/tools/developer_tools/portal_testing/PythonSeleniumTest/conda-env

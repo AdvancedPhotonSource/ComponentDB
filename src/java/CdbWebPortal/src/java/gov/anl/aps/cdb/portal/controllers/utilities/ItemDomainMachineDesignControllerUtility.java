@@ -57,22 +57,27 @@ public class ItemDomainMachineDesignControllerUtility extends ItemDomainMachineD
      */
     public ItemDomainMachineDesign createRepresentingMachineForAssemblyElement(ItemDomainMachineDesign parentMachine,
             ItemElement catalogElement, UserInfo creatorUser) throws InvalidArgument, CdbException {
+        if (catalogElement == null) {
+            throw new InvalidArgument("Assembly element provided for representation was not found.");
+        }
+
         Item parentItem = catalogElement.getParentItem();
-        if ((parentItem instanceof ItemDomainCatalog
-                || parentItem instanceof ItemDomainInventory) == false) {
+        if (!(parentItem instanceof ItemDomainCatalog)
+                && !(parentItem instanceof ItemDomainInventory)) {
             throw new InvalidArgument("Cannot create representing machine element for selected item.");
         }
+
+        // Inventory assembly elements represent their source catalog element.
+        ItemElement derivedFromItemElement = catalogElement.getDerivedFromItemElement();
+        if (derivedFromItemElement != null) {
+            catalogElement = derivedFromItemElement;
+        }
+        validateElementAvailableForRepresentation(parentMachine, null, catalogElement);
 
         // Create new machine placeholder       
         ItemElement machinePlaceholder = null;
         machinePlaceholder = prepareMachinePlaceholder(parentMachine, creatorUser);
         parentMachine.getFullItemElementList().add(machinePlaceholder);                
-
-        // Ensure to get catalog element
-        ItemElement derivedFromItemElement = catalogElement.getDerivedFromItemElement();
-        if (derivedFromItemElement != null) {
-            catalogElement = derivedFromItemElement;
-        }
 
         ItemDomainMachineDesign newMachine = (ItemDomainMachineDesign) machinePlaceholder.getContainedItem();
         newMachine.setRepresentsCatalogElement(catalogElement);

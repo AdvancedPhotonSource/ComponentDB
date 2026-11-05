@@ -19,7 +19,8 @@ class ConnectorType(CdbSeleniumModuleBase):
 
     def test_connector_type_pages(self):
         dataTableXpathFormula = '//*[@id="%s:%sListDataTable_data"]/tr[1]/td[%d]/a'
-        self._click_on_xpath(dataTableXpathFormula % (self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, self.COLUMN_IDX))
+        self._click_on_x_path_with_stale_protection(
+            dataTableXpathFormula % (self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, self.COLUMN_IDX))
         self._wait_for_url_contains('%s/view' % self.VIEW_BASE_NAME)
 
         self._click_on_id('%s:%sViewEditButton' % (self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME))

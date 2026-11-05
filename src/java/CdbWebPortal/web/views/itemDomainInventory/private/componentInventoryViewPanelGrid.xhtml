@@ -14,7 +14,16 @@ See LICENSE file.
     <ui:param name="domainEntityObject" value="#{itemDomainInventoryController.selected}" />
 
     <ui:define name="additionalItemInformation">
-        <ui:include src="../../locatableItem/private/locatableItemViewPanelGridObject.xhtml" />
+        <ui:decorate template="../../locatableItem/private/locatableItemViewPanelGridObject.xhtml">
+            <ui:define name="housingActions">
+                <p:commandLink id="machineAssignmentEditButton"
+                               styleClass="fa-link-icon fa-icon fa fa-pencil"
+                               onclick="showMachineAssignmentDialog(); return false;"
+                               rendered="#{isEntityWriteable}">
+                    <p:tooltip for="machineAssignmentEditButton" value="Update Machine Assignment" />
+                </p:commandLink>
+            </ui:define>
+        </ui:decorate>
         <ui:include src="../../itemStatus/private/itemStatusPanelGridObject.xhtml"/>
     </ui:define>
 

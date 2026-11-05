@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+    <p:outputPanel id="inventoryMachineAssignmentTreePanel">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <h:outputLabel for="machineElementScope" value="Show machine elements:" />
+            <p:selectOneButton id="machineElementScope"
+                               value="#{itemDomainInventoryController.machineAssignmentMatchingCatalogOnly}">
+                <f:selectItem itemLabel="All" itemValue="#{false}" />
+                <f:selectItem itemLabel="Catalog matches" itemValue="#{true}" />
+                <p:ajax listener="#{itemDomainInventoryController.updateMachineAssignmentCatalogFilter()}"
+                        update="inventoryMachineAssignmentTreePanel"
+                        onstart="PF('loadingDialog').show()"
+                        oncomplete="PF('loadingDialog').hide(); scrollMachineSelectionToSelectedinventoryMachineAssignment()" />
+            </p:selectOneButton>
+            <h:outputLabel for="catalogMatchNameFilter"
+                           value="Filter matches:"
+                           rendered="#{itemDomainInventoryController.machineAssignmentMatchingCatalogOnly}" />
+            <p:inputText id="catalogMatchNameFilter"
+                         value="#{itemDomainInventoryController.machineAssignmentNameFilter}"
+                         placeholder="Element name (* and ?)"
+                         onkeydown="if (event.keyCode === 13) { event.preventDefault(); this.blur(); }"
+                         rendered="#{itemDomainInventoryController.machineAssignmentMatchingCatalogOnly}">
+                <p:ajax event="change"
+                        listener="#{itemDomainInventoryController.updateMachineAssignmentCatalogFilter()}"
+                        update="inventoryMachineAssignmentTreePanel"
+                        onstart="PF('loadingDialog').show()"
+                        oncomplete="PF('loadingDialog').hide(); scrollMachineSelectionToSelectedinventoryMachineAssignment()" />
+            </p:inputText>
+        </div>
+
+        <ui:decorate template="../../itemDomainMachineDesignBase/private/itemDomainMachineDesignTreeSelection.xhtml">
+            <ui:param name="viewId" value="inventoryMachineAssignment" />
+            <ui:param name="selectionHeight" value="500px" />
+            <ui:param name="valueModel" value="#{itemDomainInventoryController.machineAssignmentTree}" />
+            <ui:param name="selectionModel" value="#{itemDomainInventoryController.selectedMachineAssignmentNode}" />
+            <ui:param name="renderedAssignedItem" value="#{true}" />
+            <ui:param name="includeSearchFields"
+                      value="#{not itemDomainInventoryController.machineAssignmentMatchingCatalogOnly}" />
+            <ui:define name="treeTableEvents">
+                <p:ajax event="select" />
+            </ui:define>
+        </ui:decorate>
+    </p:outputPanel>
+</ui:composition>

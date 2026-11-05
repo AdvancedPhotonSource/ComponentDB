@@ -18,6 +18,22 @@ public class StringUtility {
         return emailPattern.matcher(emailAddress).matches();
     }
 
+    public static Pattern buildWildcardSearchPattern(String searchString, boolean caseInsensitive) {
+        StringBuilder regex = new StringBuilder();
+        for (int i = 0; i < searchString.length(); i++) {
+            char character = searchString.charAt(i);
+            if (character == '*') {
+                regex.append(".*");
+            } else if (character == '?') {
+                regex.append('.');
+            } else {
+                regex.append(Pattern.quote(String.valueOf(character)));
+            }
+        }
+        int flags = caseInsensitive ? Pattern.CASE_INSENSITIVE : 0;
+        return Pattern.compile(regex.toString(), flags);
+    }
+
     /**
      * Verify that two char sequences are the same.
      *
