@@ -23,6 +23,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignDelet
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignIOCControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignPowerControllerUtility;
+import gov.anl.aps.cdb.mqtt.metadata.MachineAssignedItemChange;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
@@ -63,6 +64,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient String importTemplateAndParameters = null;
     private transient Float importSortOrder = null;
     private transient String moveToTrashErrorMsg = null;
+    private transient MachineAssignedItemChange pendingAssignedItemChange;
     private transient String moveToTrashWarningMsg = null;
 
     private transient ItemElement currentHierarchyItemElement;
@@ -571,6 +573,16 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setAssignedItem(Item item) {
         ItemElement selfElement = getSelfElement();
         selfElement.setContainedItem2(item);
+    }
+
+    @JsonIgnore
+    public void setPendingAssignedItemChange(Item oldAssignedItem, boolean oldInstalled) {
+        pendingAssignedItemChange = new MachineAssignedItemChange(oldAssignedItem, oldInstalled);
+    }
+
+    @JsonIgnore
+    public MachineAssignedItemChange getPendingAssignedItemChange() {
+        return pendingAssignedItemChange;
     }
 
     @JsonIgnore
