@@ -25,6 +25,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInven
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignPowerControllerUtility;
 import gov.anl.aps.cdb.mqtt.metadata.MachineAssignedItemChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineRepresentedElementChange;
+import gov.anl.aps.cdb.mqtt.metadata.MachineTrashChange;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
@@ -67,6 +68,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient String moveToTrashErrorMsg = null;
     private transient MachineAssignedItemChange pendingAssignedItemChange;
     private transient MachineRepresentedElementChange pendingRepresentedElementChange;
+    private transient MachineTrashChange pendingTrashChange;
     private transient String moveToTrashWarningMsg = null;
 
     private transient ItemElement currentHierarchyItemElement;
@@ -627,6 +629,14 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public MachineRepresentedElementChange getPendingRepresentedElementChange() {
         return pendingRepresentedElementChange;
     }
+
+    @JsonIgnore
+    public void setPendingTrashChange(MachineTrashChange pendingTrashChange) {
+        this.pendingTrashChange = pendingTrashChange;
+    }
+
+    @JsonIgnore
+    public MachineTrashChange getPendingTrashChange() { return pendingTrashChange; }
 
     public boolean isIsHoused() {
         ItemElement selfElement = getSelfElement();

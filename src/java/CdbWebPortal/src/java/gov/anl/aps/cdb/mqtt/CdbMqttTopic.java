@@ -13,7 +13,9 @@ public enum CdbMqttTopic {
     ITEM_PROPERTY_DELETE("cdb/item/property/delete"),
     MACHINE_DESIGN_ASSIGNED_ITEM_UPDATE("cdb/machine-design/assigned-item/update"),
     MACHINE_DESIGN_MOVE("cdb/machine-design/move"),
-    MACHINE_DESIGN_REPRESENTED_ELEMENT_UPDATE("cdb/machine-design/represented-element/update");
+    MACHINE_DESIGN_REPRESENTED_ELEMENT_UPDATE("cdb/machine-design/represented-element/update"),
+    MACHINE_DESIGN_TRASH("cdb/machine-design/trash"),
+    MACHINE_DESIGN_RESTORE("cdb/machine-design/restore");
 
     private final String value;
 
