@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.base.mqtt.MqttEvent;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.mqtt.CdbInventoryAssemblyElementEvent;
 import gov.anl.aps.cdb.mqtt.CdbItemLocationEvent;
 import gov.anl.aps.cdb.mqtt.CdbItemPropertyEvent;
 import gov.anl.aps.cdb.mqtt.CdbMachineAssignedItemEvent;
@@ -16,6 +17,7 @@ import gov.anl.aps.cdb.mqtt.CdbMachineTrashEvent;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.ListName;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
+import gov.anl.aps.cdb.mqtt.metadata.InventoryAssemblyElementChange;
 import gov.anl.aps.cdb.mqtt.metadata.ItemLocationChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineAssignedItemChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineRepresentedElementChange;
@@ -32,6 +34,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
@@ -202,6 +205,15 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
     protected List<MqttEvent> prepareSpecializedUpdateEvents(
             ItemDomainEntity item, UserInfo userInfo) throws CdbException {
         List<MqttEvent> events = new ArrayList<>();
+        if (item instanceof ItemDomainInventoryBase) {
+            ItemDomainInventoryBase inventoryAssembly = (ItemDomainInventoryBase) item;
+            for (Object value : inventoryAssembly.getPendingAssemblyElementChanges()) {
+                InventoryAssemblyElementChange change = (InventoryAssemblyElementChange) value;
+                events.add(new CdbInventoryAssemblyElementEvent(inventoryAssembly,
+                        change.getAssemblyElement(), change.getOldAssignedInventoryItem(),
+                        change.getNewAssignedInventoryItem(), userInfo));
+            }
+        }
         if (item instanceof LocatableItem) {
             LocatableItem locatableItem = (LocatableItem) item;
             ItemLocationChange locationChange = locatableItem.getPendingLocationChange();

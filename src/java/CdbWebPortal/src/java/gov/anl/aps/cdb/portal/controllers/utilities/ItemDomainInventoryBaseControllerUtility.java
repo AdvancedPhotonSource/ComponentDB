@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.mqtt.metadata.InventoryAssemblyElementChange;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryBaseController;
@@ -300,6 +301,7 @@ public abstract class ItemDomainInventoryBaseControllerUtility<ItemInventoryEnti
                     logger.debug("Creating instance adding element " + currentInventoryItemElement + " to item " + item);
                 }
 
+                Item oldAssignedItem = currentInventoryItemElement.getContainedItem();
                 // User has specified to create a new item for this bill of materials item. 
                 String currentBomState = bomItem.getState();
                 if (currentBomState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())
@@ -336,11 +338,22 @@ public abstract class ItemDomainInventoryBaseControllerUtility<ItemInventoryEnti
                     currentInventoryItemElement.setContainedItem(null);
                 }
 
+                Item newAssignedItem = currentInventoryItemElement.getContainedItem();
+                prepareAssemblyElementChange(item, currentInventoryItemElement,
+                        oldAssignedItem, newAssignedItem);
                 // Use permissions defined in parent of the item for the item element. 
                 updateItemElementPermissionsToItem(currentInventoryItemElement, bomItem.getParentItemInstance());
             }
         }
 
+    }
+
+    protected void prepareAssemblyElementChange(ItemDomainInventoryBase item,
+            ItemElement itemElement, Item oldAssignedItem, Item newAssignedItem) {
+        if (!java.util.Objects.equals(oldAssignedItem, newAssignedItem)) {
+            item.addPendingAssemblyElementChange(new InventoryAssemblyElementChange(
+                    itemElement, oldAssignedItem, newAssignedItem));
+        }
     }
 
     public void updateContainedItemForElement(ItemElement ie, ItemDomainInventoryBase containedItem) throws CdbException {
