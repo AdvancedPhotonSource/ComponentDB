@@ -856,7 +856,14 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
             }
         }
 
+        ItemElement oldRepresentedElement = node.getRepresentsCatalogElement();
         node.setRepresentsCatalogElement(representedElement);
+        if (updateFromTemplate && !Objects.equals(oldRepresentedElement, representedElement)) {
+            Item template = node.getCreatedFromTemplate();
+            node.setPendingRepresentedElementChange(oldRepresentedElement,
+                    template instanceof ItemDomainMachineDesign
+                            ? (ItemDomainMachineDesign) template : null);
+        }
 
         if (node.getIsItemTemplate()) {
             List<ItemDomainMachineDesign> itemsCreatedFromThisTemplateItem

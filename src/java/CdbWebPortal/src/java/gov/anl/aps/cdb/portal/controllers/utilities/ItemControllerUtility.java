@@ -206,13 +206,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
                         change.getOldAssignedItem(), machine.getAssignedItem(),
                         change.isOldInstalled(), machine.isIsHoused(), userInfo));
             }
-            MachineRepresentedElementChange representedChange
-                    = machine.getPendingRepresentedElementChange();
-            if (representedChange != null) {
-                events.add(new CdbMachineRepresentedElementEvent(machine,
-                        representedChange.getOldRepresentedElement(),
-                        machine.getRepresentsCatalogElement(), userInfo));
-            }
+            addRepresentedElementEvents(events, machine, userInfo);
         }
         for (PropertyValueChange change : item.getPendingPropertyValueChanges()) {
             switch (change.getType()) {
@@ -231,6 +225,19 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
             }
         }
         return events;
+    }
+
+    private void addRepresentedElementEvents(List<MqttEvent> events,
+            ItemDomainMachineDesign machine, UserInfo userInfo) {
+        MachineRepresentedElementChange change = machine.getPendingRepresentedElementChange();
+        if (change != null) {
+            events.add(new CdbMachineRepresentedElementEvent(machine,
+                    change.getOldRepresentedElement(), machine.getRepresentsCatalogElement(),
+                    change.getSourceTemplate(), userInfo));
+        }
+        for (ItemDomainMachineDesign itemToUpdate : machine.getItemsToUpdate()) {
+            addRepresentedElementEvents(events, itemToUpdate, userInfo);
+        }
     }
 
     @Override

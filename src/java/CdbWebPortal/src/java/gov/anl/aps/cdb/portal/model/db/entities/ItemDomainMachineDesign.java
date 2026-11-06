@@ -617,6 +617,13 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
 
     @JsonIgnore
+    public void setPendingRepresentedElementChange(ItemElement oldRepresentedElement,
+            ItemDomainMachineDesign sourceTemplate) {
+        pendingRepresentedElementChange = new MachineRepresentedElementChange(
+                oldRepresentedElement, sourceTemplate);
+    }
+
+    @JsonIgnore
     public MachineRepresentedElementChange getPendingRepresentedElementChange() {
         return pendingRepresentedElementChange;
     }
