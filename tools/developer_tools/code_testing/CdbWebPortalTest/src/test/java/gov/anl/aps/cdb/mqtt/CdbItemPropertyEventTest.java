@@ -36,7 +36,7 @@ public class CdbItemPropertyEventTest {
         String json = new ObjectMapper().writeValueAsString(event);
 
         assertEquals("cdb/item/property/add", event.getTopic());
-        assertEquals("add", event.getOperation());
+        assertEquals(CdbMqttOperation.ADD, event.getOperation());
         assertEquals("10", event.getItemId());
         assertEquals("operator", event.getTriggeredByUsername());
         assertEquals("A1", event.getNewProperty().getValue());

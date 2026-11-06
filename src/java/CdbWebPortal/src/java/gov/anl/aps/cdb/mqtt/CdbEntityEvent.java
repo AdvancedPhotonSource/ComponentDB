@@ -10,7 +10,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 /** Scalar snapshot of a completed entity operation. */
 public class CdbEntityEvent extends CdbMqttEvent {
 
-    private final String operation;
+    private final CdbMqttOperation operation;
     private final String entityId;
     private final String entityType;
     private final String entityDescription;
@@ -20,14 +20,14 @@ public class CdbEntityEvent extends CdbMqttEvent {
         if (entity == null) {
             throw new IllegalArgumentException("entity is required");
         }
-        this.operation = topic.name().toLowerCase();
+        this.operation = CdbMqttOperation.valueOf(topic.name());
         Object id = entity.getId();
         this.entityId = id == null ? null : id.toString();
         this.entityType = entity.getClass().getSimpleName();
         this.entityDescription = entity.getSystemLogString();
     }
 
-    public String getOperation() {
+    public CdbMqttOperation getOperation() {
         return operation;
     }
 

@@ -13,7 +13,7 @@ public final class CdbItemPropertyEvent extends CdbMqttEvent {
 
     public static final int MAX_TEXT_LENGTH = 16 * 1024;
 
-    private final String operation;
+    private final CdbMqttOperation operation;
     private final String itemId;
     private final String itemType;
     private final String itemDescription;
@@ -70,11 +70,11 @@ public final class CdbItemPropertyEvent extends CdbMqttEvent {
         return new CdbItemPropertyEvent(CdbMqttTopic.ITEM_PROPERTY_DELETE, item, property, null, user);
     }
 
-    private static String operationFor(CdbMqttTopic topic) {
+    private static CdbMqttOperation operationFor(CdbMqttTopic topic) {
         switch (topic) {
-            case ITEM_PROPERTY_ADD: return "add";
-            case ITEM_PROPERTY_UPDATE: return "update";
-            case ITEM_PROPERTY_DELETE: return "delete";
+            case ITEM_PROPERTY_ADD: return CdbMqttOperation.ADD;
+            case ITEM_PROPERTY_UPDATE: return CdbMqttOperation.UPDATE;
+            case ITEM_PROPERTY_DELETE: return CdbMqttOperation.DELETE;
             default: throw new IllegalArgumentException("Invalid property event topic");
         }
     }
@@ -114,7 +114,7 @@ public final class CdbItemPropertyEvent extends CdbMqttEvent {
                 ? value : value.substring(0, MAX_TEXT_LENGTH);
     }
 
-    public String getOperation() { return operation; }
+    public CdbMqttOperation getOperation() { return operation; }
     public String getItemId() { return itemId; }
     public String getItemType() { return itemType; }
     public String getItemDescription() { return itemDescription; }
