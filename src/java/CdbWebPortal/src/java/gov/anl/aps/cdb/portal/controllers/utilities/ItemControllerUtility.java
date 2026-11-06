@@ -61,8 +61,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
@@ -145,6 +147,8 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         // Full item element list contains self element as well as all the elements 
         List<ItemElement> originalElementList = originalItem.getFullItemElementList();
         List<ItemElement> newElementList = item.getFullItemElementList();
+        prepareInventoryAssemblyElementChanges(originalItem, item,
+                originalElementList, newElementList);
         logger.debug("Verifying elements for item " + item);
         ItemElementUtility.prepareItemElementHistory(originalElementList, newElementList, entityInfo);
         //Verify reverse hierarchy updates
@@ -173,6 +177,28 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         logger.debug("Updating item " + item.getId()
                 + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
 
+    }
+
+    protected void prepareInventoryAssemblyElementChanges(Item originalItem, Item item,
+            List<ItemElement> originalElementList, List<ItemElement> newElementList) {
+        if (!(item instanceof ItemDomainInventoryBase)) {
+            return;
+        }
+        ItemDomainInventoryBase inventoryAssembly = (ItemDomainInventoryBase) item;
+        for (ItemElement newElement : newElementList) {
+            if (newElement.equals(item.getSelfElement())) {
+                continue;
+            }
+            int index = originalElementList.indexOf(newElement);
+            Item oldAssignedItem = index < 0
+                    ? null : originalElementList.get(index).getContainedItem();
+            Item newAssignedItem = newElement.getContainedItem();
+            if (!Objects.equals(oldAssignedItem, newAssignedItem)) {
+                inventoryAssembly.addPendingAssemblyElementChange(
+                        new InventoryAssemblyElementChange(
+                                newElement, oldAssignedItem, newAssignedItem));
+            }
+        }
     }
 
     protected void prepareMachineAssignedItemChange(Item originalItem, Item item) {
@@ -206,13 +232,8 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
             ItemDomainEntity item, UserInfo userInfo) throws CdbException {
         List<MqttEvent> events = new ArrayList<>();
         if (item instanceof ItemDomainInventoryBase) {
-            ItemDomainInventoryBase inventoryAssembly = (ItemDomainInventoryBase) item;
-            for (Object value : inventoryAssembly.getPendingAssemblyElementChanges()) {
-                InventoryAssemblyElementChange change = (InventoryAssemblyElementChange) value;
-                events.add(new CdbInventoryAssemblyElementEvent(inventoryAssembly,
-                        change.getAssemblyElement(), change.getOldAssignedInventoryItem(),
-                        change.getNewAssignedInventoryItem(), userInfo));
-            }
+            addInventoryAssemblyElementEvents(events,
+                    (ItemDomainInventoryBase) item, userInfo, new HashSet<>());
         }
         if (item instanceof LocatableItem) {
             LocatableItem locatableItem = (LocatableItem) item;
@@ -257,6 +278,25 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
             }
         }
         return events;
+    }
+
+    private void addInventoryAssemblyElementEvents(List<MqttEvent> events,
+            ItemDomainInventoryBase inventoryAssembly, UserInfo userInfo,
+            Set<ItemDomainInventoryBase> visited) {
+        if (!visited.add(inventoryAssembly)) {
+            return;
+        }
+        for (Object value : inventoryAssembly.getPendingAssemblyElementChanges()) {
+            InventoryAssemblyElementChange change = (InventoryAssemblyElementChange) value;
+            events.add(new CdbInventoryAssemblyElementEvent(inventoryAssembly,
+                    change.getAssemblyElement(), change.getOldAssignedInventoryItem(),
+                    change.getNewAssignedInventoryItem(), userInfo));
+            if (change.getNewAssignedInventoryItem() instanceof ItemDomainInventoryBase) {
+                addInventoryAssemblyElementEvents(events,
+                        (ItemDomainInventoryBase) change.getNewAssignedInventoryItem(),
+                        userInfo, visited);
+            }
+        }
     }
 
     private void addRepresentedElementEvents(List<MqttEvent> events,

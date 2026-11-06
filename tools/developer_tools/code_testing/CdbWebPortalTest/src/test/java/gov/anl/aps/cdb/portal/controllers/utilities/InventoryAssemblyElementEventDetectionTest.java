@@ -45,21 +45,46 @@ public class InventoryAssemblyElementEventDetectionTest {
     }
 
     @Test
-    public void reconciliationDetectsGeneratedAssignmentAndSuppressesNoOp() throws Exception {
-        ItemDomainInventory assembly = inventory(1, "Assembly");
-        ItemElement element = element(10, assembly);
+    public void persistedElementComparisonDetectsAssignmentAndSuppressesNoOp() throws Exception {
+        ItemDomainInventory original = inventory(1, "Assembly");
+        ItemElement originalElement = element(10, original);
+        original.getFullItemElementList().add(originalElement);
+        ItemDomainInventory edited = inventory(1, "Assembly");
+        ItemElement editedElement = element(10, edited);
         ItemDomainInventory assigned = inventory(2, "Assigned");
+        editedElement.setContainedItem(assigned);
+        edited.getFullItemElementList().add(editedElement);
         TestUtility utility = new TestUtility();
 
-        utility.detect(assembly, element, null, assigned);
-        utility.detect(assembly, element, assigned, assigned);
+        utility.detect(original, edited);
 
-        List<MqttEvent> events = utility.events(assembly);
+        List<MqttEvent> events = utility.events(edited);
         assertEquals(1, events.size());
         CdbInventoryAssemblyElementEvent event
                 = (CdbInventoryAssemblyElementEvent) events.get(0);
         assertNull(event.getOldAssignedInventoryItem());
         assertEquals("2", event.getNewAssignedInventoryItem().getId());
+    }
+
+    @Test
+    public void includesChangesFromNewlyGeneratedChildAssembly() throws Exception {
+        ItemDomainInventory root = inventory(1, "Root");
+        ItemDomainInventory childAssembly = inventory(2, "Child Assembly");
+        ItemDomainInventory grandchild = inventory(3, "Grandchild");
+        ItemElement rootElement = element(10, root);
+        ItemElement childElement = element(11, childAssembly);
+        root.addPendingAssemblyElementChange(
+                new InventoryAssemblyElementChange(rootElement, null, childAssembly));
+        childAssembly.addPendingAssemblyElementChange(
+                new InventoryAssemblyElementChange(childElement, null, grandchild));
+
+        List<MqttEvent> events = new TestUtility().events(root);
+
+        assertEquals(2, events.size());
+        assertEquals("1", ((CdbInventoryAssemblyElementEvent) events.get(0))
+                .getInventoryAssembly().getId());
+        assertEquals("2", ((CdbInventoryAssemblyElementEvent) events.get(1))
+                .getInventoryAssembly().getId());
     }
 
     @Test
@@ -87,9 +112,9 @@ public class InventoryAssemblyElementEventDetectionTest {
     }
 
     private static final class TestUtility extends ItemDomainInventoryControllerUtility {
-        void detect(ItemDomainInventory item, ItemElement element,
-                Item oldAssignedItem, Item newAssignedItem) {
-            prepareAssemblyElementChange(item, element, oldAssignedItem, newAssignedItem);
+        void detect(ItemDomainInventory original, ItemDomainInventory edited) {
+            prepareInventoryAssemblyElementChanges(original, edited,
+                    original.getFullItemElementList(), edited.getFullItemElementList());
         }
 
         List<MqttEvent> events(ItemDomainInventory item) throws Exception {
