@@ -7,6 +7,8 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.constants.CdbRole;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.mqtt.CdbMqttTopic;
+import gov.anl.aps.cdb.mqtt.metadata.MachineTrashChange;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
@@ -3332,6 +3334,8 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         ItemDomainMachineDesign current = getCurrent();
         ItemDomainMachineDesign parentMachineDesign = current.getParentMachineDesign();
 
+        prepareTrashChanges(moveToTrashItemsToUpdate, rootItemToDelete,
+                CdbMqttTopic.MACHINE_DESIGN_TRASH, false);
         // mark items moving to trash as deleted and remove relationship between root item and its parent
         ValidInfo moveValidInfo = handleMoveToTrash(moveToTrashItemsToUpdate, moveToTrashElementsToDelete);
         if (!moveValidInfo.isValid()) {
@@ -3368,6 +3372,24 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     protected void performMoveToTrashOperationsForItem(ItemDomainMachineDesign item) {
         item.setIsDeleted();
+    }
+
+    protected void prepareTrashChanges(List<ItemDomainMachineDesign> items,
+            ItemDomainMachineDesign requestedRoot, CdbMqttTopic topic,
+            boolean expectedDeletedState) {
+        List<ItemDomainMachineDesign> changedItems = new ArrayList<>();
+        for (ItemDomainMachineDesign item : items) {
+            ItemDomainMachineDesign originalItem = findById(item.getId());
+            if (originalItem != null
+                    && originalItem.getIsItemDeleted() == expectedDeletedState) {
+                changedItems.add(item);
+            }
+        }
+        int affectedCount = changedItems.size();
+        for (ItemDomainMachineDesign item : changedItems) {
+            item.setPendingTrashChange(
+                    new MachineTrashChange(topic, requestedRoot, affectedCount));
+        }
     }
 
     // </editor-fold>

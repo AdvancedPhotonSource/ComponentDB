@@ -1,0 +1,45 @@
+name: CDB Base MQTT
+
+on:
+  push:
+    paths:
+      - "tools/developer_tools/cdb-base-mqtt/**"
+      - ".github/workflows/cdb-base-mqtt.yml"
+  pull_request:
+    paths:
+      - "tools/developer_tools/cdb-base-mqtt/**"
+      - ".github/workflows/cdb-base-mqtt.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/developer_tools/cdb-base-mqtt
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 8 and Maven cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "8"
+          cache: maven
+          cache-dependency-path: tools/developer_tools/cdb-base-mqtt/pom.xml
+
+      - name: Run tests
+        run: mvn --batch-mode --no-transfer-progress verify
+
+      - name: Publish test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cdb-base-mqtt-test-results
+          path: tools/developer_tools/cdb-base-mqtt/target/surefire-reports/
+          if-no-files-found: warn
