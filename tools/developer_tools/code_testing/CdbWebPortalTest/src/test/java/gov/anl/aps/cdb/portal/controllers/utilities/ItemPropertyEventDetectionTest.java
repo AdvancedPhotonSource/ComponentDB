@@ -55,6 +55,22 @@ public class ItemPropertyEventDetectionTest {
     }
 
     @Test
+    public void removalLifecycleProducesDeleteEvent() throws Exception {
+        ItemDomainCatalog original = item(1, property(10, "removed", "old"));
+        ItemDomainCatalog edited = item(1);
+        TestUtility utility = new TestUtility(original);
+
+        utility.detectRemoval(edited);
+        List<MqttEvent> events = utility.detectPending(edited);
+
+        assertEquals(1, events.size());
+        CdbItemPropertyEvent event = (CdbItemPropertyEvent) events.get(0);
+        assertEquals("cdb/item/property/delete", event.getTopic());
+        assertEquals("old", event.getOldProperty().getValue());
+        assertNull(event.getNewProperty());
+    }
+
+    @Test
     public void statusPropertyUsesOrdinaryPropertyUpdateEvent() throws Exception {
         ItemDomainCatalog original = item(1, property(10, "inventory_status", "Available"));
         ItemDomainCatalog edited = item(1, property(10, "inventory_status", "Installed"));
@@ -99,6 +115,14 @@ public class ItemPropertyEventDetectionTest {
         @Override
         public ItemDomainCatalog findById(Integer id) {
             return original;
+        }
+
+        void detectRemoval(ItemDomainCatalog edited) throws Exception {
+            prepareEntityUpdateOnRemoval(edited);
+        }
+
+        List<MqttEvent> detectPending(ItemDomainCatalog edited) throws Exception {
+            return prepareSpecializedUpdateEvents(edited, new UserInfo());
         }
 
         List<MqttEvent> detect(ItemDomainCatalog edited) throws Exception {

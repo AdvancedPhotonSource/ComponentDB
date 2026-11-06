@@ -67,6 +67,18 @@ public class CdbEntityControllerUtilityEventLifecycleTest {
     }
 
     @Test
+    public void removalUpdatePublishesSpecializedEventOnlyAfterSuccessfulEdit() throws Exception {
+        TestUtility utility = new TestUtility(new TestFacade());
+        utility.specializedEvents = Collections.singletonList(new TestEvent("specialized/remove"));
+
+        utility.updateOnRemoval(new TestEntity(1), null);
+
+        assertEquals(2, utility.publishedEvents.size());
+        assertTrue(utility.publishedEvents.get(0) instanceof CdbEntityEvent);
+        assertEquals("specialized/remove", utility.publishedEvents.get(1).getTopic());
+    }
+
+    @Test
     public void updateWithoutSpecializedEventsStillPublishesGenericEvent() throws Exception {
         TestUtility utility = new TestUtility(new TestFacade());
 

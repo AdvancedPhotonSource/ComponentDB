@@ -113,7 +113,15 @@ public class PropertyValueUtility {
             }
         }
 
-        // Removed values are absent from the new list and need delete events.
+        changes.addAll(findRemovedPropertyValues(
+                originalPropertyValueList, newPropertyValueList));
+        return changes;
+    }
+
+    public static List<PropertyValueChange> findRemovedPropertyValues(
+            List<PropertyValue> originalPropertyValueList,
+            List<PropertyValue> newPropertyValueList) {
+        List<PropertyValueChange> changes = new ArrayList<>();
         for (PropertyValue originalPropertyValue : originalPropertyValueList) {
             if (!newPropertyValueList.contains(originalPropertyValue)) {
                 changes.add(PropertyValueChange.deleted(originalPropertyValue));

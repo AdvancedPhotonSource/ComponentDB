@@ -273,6 +273,14 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
     }
 
     @Override
+    protected void prepareEntityUpdateOnRemoval(ItemDomainEntity item) throws CdbException {
+        Item originalItem = findById(item.getId());
+        List<PropertyValueChange> propertyChanges = PropertyValueUtility.findRemovedPropertyValues(
+                originalItem.getPropertyValueList(), item.getPropertyValueList());
+        item.setPendingPropertyValueChanges(propertyChanges);
+    }
+
+    @Override
     protected void prepareEntityDestroy(ItemDomainEntity item, UserInfo userInfo) throws CdbException {
         super.prepareEntityDestroy(item, userInfo);
         List<ItemElement> memberList = item.getItemElementMemberList();

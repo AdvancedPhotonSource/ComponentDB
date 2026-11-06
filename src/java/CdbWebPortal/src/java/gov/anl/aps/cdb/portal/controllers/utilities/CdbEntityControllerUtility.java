@@ -139,8 +139,10 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
         try {
             logger.debug("Updating " + getDisplayEntityTypeName() + " " + getEntityInstanceName(entity));
             prepareEntityUpdateOnRemoval(entity);
+            List<MqttEvent> specializedEvents = prepareSpecializedUpdateEvents(entity, updatedByUserInfo);
             EntityType updatedEntity = getEntityDbFacade().edit(entity);
             publishMqttEvent(CdbMqttTopic.UPDATE, updatedEntity, updatedByUserInfo);
+            publishMqttEvents(specializedEvents);
             clearCaches();
             
             return updatedEntity; 
