@@ -11,11 +11,13 @@ import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.mqtt.CdbItemPropertyEvent;
 import gov.anl.aps.cdb.mqtt.CdbMachineAssignedItemEvent;
 import gov.anl.aps.cdb.mqtt.CdbMachineRepresentedElementEvent;
+import gov.anl.aps.cdb.mqtt.CdbMachineTrashEvent;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.ListName;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
 import gov.anl.aps.cdb.mqtt.metadata.MachineAssignedItemChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineRepresentedElementChange;
+import gov.anl.aps.cdb.mqtt.metadata.MachineTrashChange;
 import gov.anl.aps.cdb.mqtt.metadata.PropertyValueChange;
 import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyMetadataValueFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
@@ -207,6 +209,12 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
                         change.isOldInstalled(), machine.isIsHoused(), userInfo));
             }
             addRepresentedElementEvents(events, machine, userInfo);
+            MachineTrashChange trashChange = machine.getPendingTrashChange();
+            if (trashChange != null) {
+                events.add(new CdbMachineTrashEvent(trashChange.getTopic(), machine,
+                        trashChange.getRequestedHierarchyRoot(),
+                        trashChange.getAffectedMachineCount(), userInfo));
+            }
         }
         for (PropertyValueChange change : item.getPendingPropertyValueChanges()) {
             switch (change.getType()) {
