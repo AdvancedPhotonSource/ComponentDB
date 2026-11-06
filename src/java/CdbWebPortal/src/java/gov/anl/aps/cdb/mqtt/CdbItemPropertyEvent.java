@@ -4,22 +4,19 @@
  */
 package gov.anl.aps.cdb.mqtt;
 
-import gov.anl.aps.cdb.base.mqtt.MqttEvent;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 /** Scalar snapshot of a completed item-property change. */
-public final class CdbItemPropertyEvent extends MqttEvent {
+public final class CdbItemPropertyEvent extends CdbMqttEvent {
 
     public static final int MAX_TEXT_LENGTH = 16 * 1024;
 
-    private final String topic;
     private final String operation;
     private final String itemId;
     private final String itemType;
     private final String itemDescription;
-    private final String triggeredByUsername;
     private final CdbPropertySnapshot oldProperty;
     private final CdbPropertySnapshot newProperty;
     private final String textDiff;
@@ -27,16 +24,15 @@ public final class CdbItemPropertyEvent extends MqttEvent {
 
     private CdbItemPropertyEvent(CdbMqttTopic topic, Item item,
             PropertyValue oldProperty, PropertyValue newProperty, UserInfo user) {
-        if (topic == null || item == null || (oldProperty == null && newProperty == null)) {
-            throw new IllegalArgumentException("topic, item, and a property value are required");
+        super(topic, user);
+        if (item == null || (oldProperty == null && newProperty == null)) {
+            throw new IllegalArgumentException("item and a property value are required");
         }
-        this.topic = topic.getValue();
         operation = operationFor(topic);
         Object id = item.getId();
         itemId = id == null ? null : id.toString();
         itemType = item.getClass().getSimpleName();
         itemDescription = item.getSystemLogString();
-        triggeredByUsername = user == null ? null : user.getUsername();
 
         boolean longText = (oldProperty != null && CdbPropertySnapshot.isLongText(oldProperty))
                 || (newProperty != null && CdbPropertySnapshot.isLongText(newProperty));
@@ -118,12 +114,10 @@ public final class CdbItemPropertyEvent extends MqttEvent {
                 ? value : value.substring(0, MAX_TEXT_LENGTH);
     }
 
-    @Override public String getTopic() { return topic; }
     public String getOperation() { return operation; }
     public String getItemId() { return itemId; }
     public String getItemType() { return itemType; }
     public String getItemDescription() { return itemDescription; }
-    public String getTriggeredByUsername() { return triggeredByUsername; }
     public CdbPropertySnapshot getOldProperty() { return oldProperty; }
     public CdbPropertySnapshot getNewProperty() { return newProperty; }
     public String getTextDiff() { return textDiff; }
