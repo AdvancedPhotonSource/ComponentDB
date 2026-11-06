@@ -10,10 +10,12 @@ import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.mqtt.CdbItemPropertyEvent;
 import gov.anl.aps.cdb.mqtt.CdbMachineAssignedItemEvent;
+import gov.anl.aps.cdb.mqtt.CdbMachineRepresentedElementEvent;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.ListName;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
 import gov.anl.aps.cdb.mqtt.metadata.MachineAssignedItemChange;
+import gov.anl.aps.cdb.mqtt.metadata.MachineRepresentedElementChange;
 import gov.anl.aps.cdb.mqtt.metadata.PropertyValueChange;
 import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyMetadataValueFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
@@ -132,6 +134,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         // Prepare history 
         Item originalItem = findById(item.getId());
         prepareMachineAssignedItemChange(originalItem, item);
+        prepareMachineRepresentedElementChange(originalItem, item);
         // Full item element list contains self element as well as all the elements 
         List<ItemElement> originalElementList = originalItem.getFullItemElementList();
         List<ItemElement> newElementList = item.getFullItemElementList();
@@ -179,6 +182,18 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         }
     }
 
+    protected void prepareMachineRepresentedElementChange(Item originalItem, Item item) {
+        if (item instanceof ItemDomainMachineDesign) {
+            ItemDomainMachineDesign machine = (ItemDomainMachineDesign) item;
+            ItemDomainMachineDesign originalMachine = (ItemDomainMachineDesign) originalItem;
+            if (!Objects.equals(originalMachine.getRepresentsCatalogElement(),
+                    machine.getRepresentsCatalogElement())) {
+                machine.setPendingRepresentedElementChange(
+                        originalMachine.getRepresentsCatalogElement());
+            }
+        }
+    }
+
     @Override
     protected List<MqttEvent> prepareSpecializedUpdateEvents(
             ItemDomainEntity item, UserInfo userInfo) throws CdbException {
@@ -190,6 +205,13 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
                 events.add(new CdbMachineAssignedItemEvent(machine,
                         change.getOldAssignedItem(), machine.getAssignedItem(),
                         change.isOldInstalled(), machine.isIsHoused(), userInfo));
+            }
+            MachineRepresentedElementChange representedChange
+                    = machine.getPendingRepresentedElementChange();
+            if (representedChange != null) {
+                events.add(new CdbMachineRepresentedElementEvent(machine,
+                        representedChange.getOldRepresentedElement(),
+                        machine.getRepresentsCatalogElement(), userInfo));
             }
         }
         for (PropertyValueChange change : item.getPendingPropertyValueChanges()) {
