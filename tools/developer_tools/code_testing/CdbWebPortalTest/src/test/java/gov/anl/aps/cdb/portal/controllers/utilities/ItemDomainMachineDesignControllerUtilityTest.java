@@ -4,9 +4,11 @@
  */
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
+import gov.anl.aps.cdb.base.mqtt.MqttEvent;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
+import gov.anl.aps.cdb.mqtt.CdbMachineMoveEvent;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
@@ -51,6 +53,10 @@ public class ItemDomainMachineDesignControllerUtilityTest {
         assertEquals("E1", membership.getName());
         assertTrue(newParent.getFullItemElementList().contains(membership));
         assertEquals(1, utility.updateCount);
+        assertEquals(1, utility.publishedEvents.size());
+        CdbMachineMoveEvent event = (CdbMachineMoveEvent) utility.publishedEvents.get(0);
+        assertEquals(oldParent.getId(), integerId(event.getOldParent().getId()));
+        assertEquals(newParent.getId(), integerId(event.getNewParent().getId()));
     }
 
     @Test
@@ -65,6 +71,36 @@ public class ItemDomainMachineDesignControllerUtilityTest {
         assertEquals("E1", result.getName());
         assertTrue(newParent.getFullItemElementList().contains(result));
         assertEquals(1, utility.updateCount);
+        CdbMachineMoveEvent event = (CdbMachineMoveEvent) utility.publishedEvents.get(0);
+        assertNull(event.getOldParent());
+        assertEquals(newParent.getId(), integerId(event.getNewParent().getId()));
+    }
+
+    @Test
+    public void suppressesNoOpMove() throws Exception {
+        ItemDomainMachineDesign parent = machine("Parent");
+        ItemDomainMachineDesign moved = machine("Moved");
+        ItemElement membership = child(parent, moved, "E1");
+
+        ItemElement result = utility.performMachineMoveWithUpdate(parent, moved, user);
+
+        assertSame(membership, result);
+        assertEquals(0, utility.updateCount);
+        assertTrue(utility.publishedEvents.isEmpty());
+    }
+
+    @Test
+    public void doesNotPublishMoveWhenUpdateFails() {
+        ItemDomainMachineDesign oldParent = machine("Old");
+        ItemDomainMachineDesign newParent = machine("New");
+        ItemDomainMachineDesign moved = machine("Moved");
+        child(oldParent, moved, "E1");
+        utility.failUpdate = true;
+
+        expect(CdbException.class,
+                () -> utility.performMachineMoveWithUpdate(newParent, moved, user));
+
+        assertTrue(utility.publishedEvents.isEmpty());
     }
 
     @Test
@@ -373,6 +409,10 @@ public class ItemDomainMachineDesignControllerUtilityTest {
         assertEquals("sector*", facade.searchString);
     }
 
+    private static Integer integerId(String id) {
+        return id == null ? null : Integer.valueOf(id);
+    }
+
     private static UserInfo user(int id) {
         UserInfo value = new UserInfo();
         value.setId(id);
@@ -388,8 +428,11 @@ public class ItemDomainMachineDesignControllerUtilityTest {
         return new EntityType(id, name);
     }
 
+    private static int nextMachineId = 1;
+
     private static ItemDomainMachineDesign machine(String name) {
         ItemDomainMachineDesign item = new ItemDomainMachineDesign();
+        item.setId(nextMachineId++);
         item.setName(name);
         item.setEntityTypeListFromApi(new ArrayList<>());
         item.setItemProjectList(new ArrayList<>());
@@ -493,6 +536,8 @@ public class ItemDomainMachineDesignControllerUtilityTest {
     private static class TestUtility extends ItemDomainMachineDesignControllerUtility {
 
         private int updateCount;
+        private boolean failUpdate;
+        private final List<MqttEvent> publishedEvents = new ArrayList<>();
 
         void useFacade(ItemDomainMachineDesignFacade facade) {
             itemFacade = facade;
@@ -508,9 +553,17 @@ public class ItemDomainMachineDesignControllerUtilityTest {
 
         @Override
         public ItemDomainMachineDesign update(ItemDomainMachineDesign entity,
-                UserInfo updatedByUserInfo) {
+                UserInfo updatedByUserInfo) throws CdbException {
             updateCount++;
+            if (failUpdate) {
+                throw new CdbException("update failed");
+            }
             return entity;
+        }
+
+        @Override
+        protected void publishMqttEvent(MqttEvent event) {
+            publishedEvents.add(event);
         }
     }
 }
