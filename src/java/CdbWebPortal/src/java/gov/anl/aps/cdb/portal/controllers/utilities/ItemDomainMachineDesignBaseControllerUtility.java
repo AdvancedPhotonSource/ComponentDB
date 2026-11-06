@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.mqtt.CdbMachineMoveEvent;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
@@ -32,6 +33,7 @@ import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.model.DefaultTreeNode;
@@ -342,8 +344,13 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
 
     public ItemElement performMachineMoveWithUpdate(
             ItemDomainMachineDesign newParent, ItemDomainMachineDesign child, UserInfo sessionUser) throws CdbException {
+        ItemDomainMachineDesign oldParent = child.getParentMachineDesign();
+        if (Objects.equals(oldParent, newParent)) {
+            return child.getParentMachineElement();
+        }
         ItemElement currentItemElement = performMachineMove(newParent, child, sessionUser);
         update(newParent, sessionUser);
+        publishMqttEvent(new CdbMachineMoveEvent(child, oldParent, newParent, sessionUser));
         return currentItemElement;
     }
 
