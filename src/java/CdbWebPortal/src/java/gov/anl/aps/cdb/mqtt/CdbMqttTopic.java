@@ -15,7 +15,8 @@ public enum CdbMqttTopic {
     MACHINE_DESIGN_MOVE("cdb/machine-design/move"),
     MACHINE_DESIGN_REPRESENTED_ELEMENT_UPDATE("cdb/machine-design/represented-element/update"),
     MACHINE_DESIGN_TRASH("cdb/machine-design/trash"),
-    MACHINE_DESIGN_RESTORE("cdb/machine-design/restore");
+    MACHINE_DESIGN_RESTORE("cdb/machine-design/restore"),
+    ITEM_LOCATION_UPDATE("cdb/item/location/update");
 
     private final String value;
 
