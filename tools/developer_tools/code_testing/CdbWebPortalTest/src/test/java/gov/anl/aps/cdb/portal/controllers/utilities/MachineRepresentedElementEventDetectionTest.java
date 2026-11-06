@@ -28,6 +28,27 @@ public class MachineRepresentedElementEventDetectionTest {
     }
 
     @Test
+    public void includesPropagatedInstanceEventWithTemplateContext() throws Exception {
+        ItemElement oldElement = element(10, "E1");
+        ItemElement newElement = element(11, "E2");
+        ItemDomainMachineDesign template = machine(1, newElement);
+        ItemDomainMachineDesign instance = machine(2, newElement);
+        instance.setPendingRepresentedElementChange(oldElement, template);
+        template.addItemToUpdate(instance);
+        TestUtility utility = new TestUtility();
+
+        List<MqttEvent> events = utility.events(template);
+
+        assertEquals(1, events.size());
+        CdbMachineRepresentedElementEvent event
+                = (CdbMachineRepresentedElementEvent) events.get(0);
+        assertEquals("2", event.getMachine().getId());
+        assertEquals("1", event.getSourceTemplate().getId());
+        assertEquals("10", event.getOldRepresentedElement().getId());
+        assertEquals("11", event.getNewRepresentedElement().getId());
+    }
+
+    @Test
     public void suppressesNoOp() throws Exception {
         ItemElement represented = element(10, "E1");
         ItemDomainMachineDesign original = machine(1, represented);

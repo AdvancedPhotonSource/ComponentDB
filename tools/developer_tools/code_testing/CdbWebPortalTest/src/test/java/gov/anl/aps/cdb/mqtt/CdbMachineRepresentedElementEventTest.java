@@ -33,7 +33,15 @@ public class CdbMachineRepresentedElementEventTest {
         assertEquals("4", event.getNewRepresentedElement().getId());
         assertEquals("2", event.getNewRepresentedElement().getParentItem().getId());
         assertEquals("3", event.getNewRepresentedElement().getContainedItem().getId());
+        assertNull(event.getSourceTemplate());
         assertFalse(json.contains("\"topic\""));
+    }
+
+    @Test
+    public void includesTemplateContextForPropagatedChange() {
+        CdbMachineRepresentedElementEvent event = new CdbMachineRepresentedElementEvent(
+                machine(1, "Instance"), null, null, machine(2, "Template"), null);
+        assertEquals("2", event.getSourceTemplate().getId());
     }
 
     private static ItemElement element(int id, String name, Item parent, Item contained) {

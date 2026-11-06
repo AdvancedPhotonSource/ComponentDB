@@ -334,6 +334,36 @@ public class ItemDomainMachineDesignControllerUtilityTest {
     }
 
     @Test
+    public void propagatesRepresentedElementChangeToTemplateInstance() throws Exception {
+        ItemDomainCatalog templateAssembly = catalog("Template Assembly");
+        ItemElement templateElement = child(templateAssembly, catalog("Part"), "E1");
+        ItemDomainMachineDesign templateParent = machine("Template Parent");
+        templateParent.setAssignedItem(templateAssembly);
+        TestMachine templateNode = testMachine("Template Node");
+        templateNode.setEntityTypeListFromApi(
+                Collections.singletonList(entityType(1, "Template")));
+        child(templateParent, templateNode, "T1");
+
+        ItemDomainCatalog instanceAssembly = catalog("Instance Assembly");
+        ItemElement instanceElement = child(instanceAssembly, catalog("Part"), "E1");
+        ItemDomainMachineDesign instanceParent = machine("Instance Parent");
+        instanceParent.setAssignedItem(instanceAssembly);
+        TestMachine instanceNode = testMachine("Instance Node");
+        instanceNode.assignCreatedFromTemplate(templateNode);
+        child(instanceParent, instanceNode, "I1");
+        templateNode.addTemplateInstance(instanceNode);
+
+        utility.updateRepresentingAssemblyElementForMachine(
+                templateNode, templateElement, true);
+
+        assertSame(templateElement, templateNode.getRepresentsCatalogElement());
+        assertSame(instanceElement, instanceNode.getRepresentsCatalogElement());
+        assertSame(templateNode,
+                instanceNode.getPendingRepresentedElementChange().getSourceTemplate());
+        assertTrue(templateNode.getItemsToUpdate().contains(instanceNode));
+    }
+
+    @Test
     public void availableElementsExcludeElementsRepresentedBySiblings() {
         RepresentationFixture fixture = representationFixture();
         ItemElement second = child(fixture.catalog, catalog("Second Part"), "E2");
@@ -499,8 +529,19 @@ public class ItemDomainMachineDesignControllerUtilityTest {
 
     private static class TestMachine extends ItemDomainMachineDesign {
 
+        private final List<Item> templateInstances = new ArrayList<>();
+
         void assignCreatedFromTemplate(Item template) {
             createdFromTemplate = template;
+        }
+
+        void addTemplateInstance(Item item) {
+            templateInstances.add(item);
+        }
+
+        @Override
+        public List<Item> getItemsCreatedFromThisTemplateItem() {
+            return templateInstances;
         }
     }
 
