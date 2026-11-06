@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.base.mqtt.MqttEvent;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.mqtt.CdbItemLocationEvent;
 import gov.anl.aps.cdb.mqtt.CdbItemPropertyEvent;
 import gov.anl.aps.cdb.mqtt.CdbMachineAssignedItemEvent;
 import gov.anl.aps.cdb.mqtt.CdbMachineRepresentedElementEvent;
@@ -15,6 +16,7 @@ import gov.anl.aps.cdb.mqtt.CdbMachineTrashEvent;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.ListName;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
+import gov.anl.aps.cdb.mqtt.metadata.ItemLocationChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineAssignedItemChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineRepresentedElementChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineTrashChange;
@@ -200,6 +202,16 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
     protected List<MqttEvent> prepareSpecializedUpdateEvents(
             ItemDomainEntity item, UserInfo userInfo) throws CdbException {
         List<MqttEvent> events = new ArrayList<>();
+        if (item instanceof LocatableItem) {
+            LocatableItem locatableItem = (LocatableItem) item;
+            ItemLocationChange locationChange = locatableItem.getPendingLocationChange();
+            if (locationChange != null) {
+                events.add(new CdbItemLocationEvent(locatableItem,
+                        locationChange.getOldLocation(), locationChange.getNewLocation(),
+                        locationChange.getOldLocationDetails(),
+                        locationChange.getNewLocationDetails(), userInfo));
+            }
+        }
         if (item instanceof ItemDomainMachineDesign) {
             ItemDomainMachineDesign machine = (ItemDomainMachineDesign) item;
             MachineAssignedItemChange change = machine.getPendingAssignedItemChange();
