@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.mqtt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -20,8 +21,10 @@ public class CdbMachineMoveEventTest {
     public void serializesMoveContextAndActorWithoutTopicProperty() throws Exception {
         UserInfo user = new UserInfo();
         user.setUsername("operator");
+        ItemDomainMachineDesign moved = machine(1, "Moved");
+        moved.setEntityTypeListFromApi(Collections.singletonList(new EntityType(9, "ioc")));
         CdbMachineMoveEvent event = new CdbMachineMoveEvent(
-                machine(1, "Moved"), machine(2, "Old"), machine(3, "New"), user);
+                moved, machine(2, "Old"), machine(3, "New"), user);
 
         String json = new ObjectMapper().writeValueAsString(event);
 
@@ -30,6 +33,8 @@ public class CdbMachineMoveEventTest {
         assertEquals("2", event.getOldParent().getId());
         assertEquals("3", event.getNewParent().getId());
         assertEquals("machineDesign", event.getMachine().getDomain());
+        assertEquals(Integer.valueOf(9), event.getMachine().getEntityTypes().get(0).getId());
+        assertEquals("ioc", event.getMachine().getEntityTypes().get(0).getName());
         assertEquals("operator", event.getTriggeredByUsername());
         assertFalse(json.contains("\"topic\""));
         assertTrue(json.contains("\"eventTimestamp\""));
