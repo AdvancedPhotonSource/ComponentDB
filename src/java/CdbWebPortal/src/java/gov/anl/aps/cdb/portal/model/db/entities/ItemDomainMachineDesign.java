@@ -24,6 +24,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignIOCCo
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignPowerControllerUtility;
 import gov.anl.aps.cdb.mqtt.metadata.MachineAssignedItemChange;
+import gov.anl.aps.cdb.mqtt.metadata.MachineRepresentedElementChange;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
@@ -65,6 +66,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient Float importSortOrder = null;
     private transient String moveToTrashErrorMsg = null;
     private transient MachineAssignedItemChange pendingAssignedItemChange;
+    private transient MachineRepresentedElementChange pendingRepresentedElementChange;
     private transient String moveToTrashWarningMsg = null;
 
     private transient ItemElement currentHierarchyItemElement;
@@ -607,6 +609,16 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setRepresentsCatalogElement(ItemElement representsCatalogElement) {
         ItemElement selfElement = getSelfElement();
         selfElement.setRepresentsItemElement(representsCatalogElement);
+    }
+
+    @JsonIgnore
+    public void setPendingRepresentedElementChange(ItemElement oldRepresentedElement) {
+        pendingRepresentedElementChange = new MachineRepresentedElementChange(oldRepresentedElement);
+    }
+
+    @JsonIgnore
+    public MachineRepresentedElementChange getPendingRepresentedElementChange() {
+        return pendingRepresentedElementChange;
     }
 
     public boolean isIsHoused() {
