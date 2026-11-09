@@ -83,3 +83,45 @@ uv run pytest test/                     # requires the portal running on localho
 
 `sbin/cdb_test.sh` (invoked by `make test`) regenerates the client and runs this as part of the
 full suite.
+
+### MQTT integration tests
+
+`test/mqtt_test.py` subscribes to `cdb/#` on a real broker, performs API mutations, and checks
+the MQTT events the portal publishes. It needs `paho-mqtt` (v2) in the active environment. It is
+not a declared dependency, so install it yourself (for example `uv pip install paho-mqtt` or
+`pip install paho-mqtt`).
+
+Prerequisites (developer-owned; nothing here provisions or reconfigures them):
+
+- an MQTT broker reachable from both Payara and your shell;
+- the Payara connector resource `cdb/MQTT/resource` pointing at that broker
+  (`sbin/cdb_create_mqtt_configuration.sh`, then `sbin/cdb_configure_mqtt_service.sh`);
+- the portal deployed with the MQTT changes and running on the test database (`make test-db`).
+
+Run every MQTT test (API, then the serial Selenium trash/restore test) from the repo root:
+
+```sh
+source setup.sh            # optional if already sourced; the runner keeps an existing environment
+sbin/cdb_mqtt_test.sh      # extra args are passed to pytest, e.g. -k location
+```
+
+Or run only the API module:
+
+```sh
+uv run pytest test/mqtt_test.py -rs
+```
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `CDB_TEST_MQTT` | `true` | `false` skips all MQTT tests |
+| `CDB_TEST_MQTT_HOST` | `localhost` | broker host for the test subscriber |
+| `CDB_TEST_MQTT_PORT` | `1883` | broker port |
+| `CDB_TEST_MQTT_USERNAME` / `CDB_TEST_MQTT_PASSWORD` | unset | optional broker credentials |
+| `CDB_TEST_MQTT_TIMEOUT` | `10` | seconds to wait for connect, subscribe and each event |
+| `CDB_TEST_MQTT_SKIP_SELENIUM` | unset | `true` makes `sbin/cdb_mqtt_test.sh` run only the API module |
+
+The tests are skipped, with the reason shown by `-rs`, if `paho-mqtt` is missing or the subscriber
+cannot connect. That keeps `make test` working on hosts without a broker. Once the subscriber is
+connected, a missing event fails the test. The failure message lists the unmatched messages it
+did capture, plus likely connector causes. The runner never builds, deploys, restarts services,
+or replaces the database.
