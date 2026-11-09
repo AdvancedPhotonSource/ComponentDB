@@ -61,8 +61,13 @@ printf "$PRINTF_HEADER" "Selenium"
 cd $CDB_DIST_DIR/tools/developer_tools/portal_testing/PythonSeleniumTest
 
 # Selenium Manager resolves and downloads a compatible driver when Chrome starts.
-# MQTT UI tests mutate shared state; they run serially via sbin/cdb_mqtt_test.sh.
+# MQTT UI tests mutate shared state, so they are excluded here and run serially below.
 pytest tests/ -n auto --dist loadfile --reruns 1 --reruns-delay 1 -rR -m "not mqtt"
+
+# API MQTT tests already ran with the API suite; both skip when CDB_TEST_MQTT=false
+# or the broker is unreachable.
+printf "$PRINTF_HEADER" "Selenium MQTT"
+pytest tests/ -m mqtt -p no:xdist -rsR
 
 if [[ $backup_database == 1 ]]; then
     printf "\n\nRestore the original database from the backup? [Y/n] "

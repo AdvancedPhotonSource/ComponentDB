@@ -25,7 +25,8 @@ source setup.sh
 make test
 ```
 
-The full suite runs in parallel with `-m "not mqtt"`, so the MQTT test below is excluded.
+`make test` runs the suite in parallel with `-m "not mqtt"`, then runs the MQTT tests below
+serially (`pytest tests/ -m mqtt -p no:xdist`). Set `CDB_TEST_MQTT=false` to skip them.
 
 ## MQTT tests
 

@@ -98,7 +98,9 @@ Prerequisites (developer-owned; nothing here provisions or reconfigures them):
   (`sbin/cdb_create_mqtt_configuration.sh`, then `sbin/cdb_configure_mqtt_service.sh`);
 - the portal deployed with the MQTT changes and running on the test database (`make test-db`).
 
-Run every MQTT test (API, then the serial Selenium trash/restore test) from the repo root:
+`make test` (`sbin/cdb_test.sh`) runs these with the API suite and runs the Selenium MQTT tests
+serially after the parallel Selenium run. To run only the MQTT tests (API, then Selenium) from
+the repo root:
 
 ```sh
 source setup.sh            # optional if already sourced; the runner keeps an existing environment
