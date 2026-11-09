@@ -282,42 +282,11 @@ class MachineDesign(CdbSeleniumModuleBase):
 		self._wait_for_invisible_by_xpath(addBtnXpath)
 
 	def assign_catalog_to_machine_design(self, parentListItemXpath, catalogName):
-		self._context_click_x_path(parentListItemXpath, '//*[@id="itemMachineDesignListForm:machineDesignDualViewMachineDesignMemberContextMenu"]/ul/li[2]/a')
-
-		catalogNamefilter = self._wait_for_visible_xpath('//*[@id="itemMachineDesignListForm:itemMachineDesignItemSelectDataTable:itemMachineDesignListObjectNameColumn:filter"]')
-
-		currentFilterText = catalogNamefilter.get_attribute('value')
-
-		if currentFilterText != catalogName:
-			catalogNamefilter.clear()
-			catalogNamefilter.send_keys('@!!!#$#%^#@$%^@#$%%@#$&^#$%R%^#@$%@#$%#$%@#$%@@#$@#$!@%$#@$#@$!@#$%')
-			catalogNamefilter.clear()
-			time.sleep(0.5)
-			catalogNamefilter.send_keys(catalogName)
-			time.sleep(0.5)
-
-		tBody = self._wait_for_id('itemMachineDesignListForm:itemMachineDesignItemSelectDataTable_data')
-		attempts = 0
-		found = False
-		while attempts < 6:
-			resultCount = len(tBody.find_elements(by=By.XPATH, value='./tr'))
-			if resultCount == 1:
-				found = True;
-				break;
-
-			time.sleep(0.5)
-			attempts += 1
-
-		if found:
-			self._click_on_xpath('//*[@id="itemMachineDesignListForm:itemMachineDesignItemSelectDataTable_data"]/tr')
-		else:
-			raise Exception('Couldn\'t find catalog item ' + catalogName)
-
-		time.sleep(1)
-
-		saveButtonId = 'itemMachineDesignListForm:assignCatalogToMachineDesignSave'
-		self._wait_for_id_and_click(saveButtonId)
-		self._wait_for_invisible_by_id(saveButtonId)
+		"""Assign a catalog item to the child machine at ``parentListItemXpath``."""
+		menu_item_xpath = self.MENU_ITEM_BY_INDEX_XPATH_FORMULA % (
+			self.MACHINE_DESIGN_MEMBER_CONTEXT_MENU_ID, self.ASSIGN_CATALOG_MENU_ITEM_IDX)
+		self._context_click_x_path(parentListItemXpath, menu_item_xpath)
+		self.select_item_in_assign_panel(catalogName)
 
 	def input_hierarchy_from_sample_file(self, csvFile='data/Rack-2018-11-06.csv', project='APS-OPS'):
 		with open(csvFile) as csvFile:
