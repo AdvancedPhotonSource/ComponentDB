@@ -120,6 +120,15 @@ uv run pytest test/mqtt_test.py -rs
 | `CDB_TEST_MQTT_TIMEOUT` | `10` | seconds to wait for connect, subscribe and each event |
 | `CDB_TEST_MQTT_SKIP_SELENIUM` | unset | `true` makes `sbin/cdb_mqtt_test.sh` run only the API module |
 
+The subscriber does not read the connector's `$CDB_INSTALL_DIR/etc/<db>.mqtt.conf`. If the broker
+requires authentication, export the same values, or another account allowed to subscribe to
+`cdb/#`, in `CDB_TEST_MQTT_USERNAME`/`CDB_TEST_MQTT_PASSWORD`.
+
+The tests change standard test-database records (inventory item 56, machines 93 and 112) and
+restore them in `finally`. Placeholder machines, locations and properties they create are
+uniquely named and removed afterwards. The broker round-trip check publishes one non-retained
+message on `cdb/test-probe/<uuid>`.
+
 The tests are skipped, with the reason shown by `-rs`, if `paho-mqtt` is missing or the subscriber
 cannot connect. That keeps `make test` working on hosts without a broker. Once the subscriber is
 connected, a missing event fails the test. The failure message lists the unmatched messages it

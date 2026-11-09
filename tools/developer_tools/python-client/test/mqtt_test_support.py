@@ -302,6 +302,11 @@ class MqttEventCollector:
             lines.extend("  " + m.summary() for m in received[-10:])
         else:
             lines.append("No messages were captured on %s." % self.topic_filter)
+        if any(m.topic == topic for m in received):
+            # The topic is flowing, so this is a payload/correlation mismatch, not wiring.
+            lines.append("Messages arrived on %s but none matched; compare the payloads above "
+                         "with the test's expectations." % topic)
+        else:
             lines.append(PUBLISH_FAILURE_HINT)
         return "\n".join(lines)
 

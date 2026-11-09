@@ -54,7 +54,8 @@ if ! command -v pytest > /dev/null; then
     exit 2
 fi
 
-if ! python -c "import paho.mqtt" > /dev/null 2>&1; then
+PYTHON_CMD=`command -v python || command -v python3`
+if ! $PYTHON_CMD -c "import paho.mqtt" > /dev/null 2>&1; then
     echo "Warning: paho-mqtt is not importable; MQTT tests will be skipped."
 fi
 
