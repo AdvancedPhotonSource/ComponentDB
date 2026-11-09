@@ -420,14 +420,14 @@ class MachineDesign(CdbSeleniumModuleBase):
 		self._add_property_to_item(test, self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, "Machine Prop", False)		
 		self._add_image_to_item(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, needs_toggler=False)		
 
-	def filter_machine_by_name(self, name):
+	def filter_machine_by_name(self, name, expected_name=None):
 		"""Replace any existing name filter, unlike filter_machine which appends."""
 		self._wait_for_clickable_id_with_stale_protection(self.NAME_FILTER_ID)
 		filter_box = self._find_by_id(self.NAME_FILTER_ID)
 		filter_box.clear()
 		filter_box.send_keys(name + "\n")
 		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
-		self._wait_for_xpath(self.ROW_BY_NAME_XPATH_FORMULA % name)
+		self._wait_for_xpath(self.ROW_BY_NAME_XPATH_FORMULA % (expected_name or name))
 
 	def add_machine_design_with_child(self, name, child_name, description, project='APS-OPS'):
 		"""Create a top-level machine with one placeholder child from the list page."""
@@ -435,6 +435,16 @@ class MachineDesign(CdbSeleniumModuleBase):
 		self.filter_machine_by_name(name)
 		parent_xpath = self._find_x_path_for_machine_design_item([name])
 		self.add_child_to_machine_design(parent_xpath, child_name, description)
+
+	def assign_catalog_to_child_machine(self, parent_name, child_name, catalog_name, filter_text):
+		"""Assign a catalog item to a child of a top-level machine via the context menu.
+
+		``filter_text`` must match both names so the child is not filtered out.
+		"""
+		self.filter_machine_by_name(filter_text, expected_name=parent_name)
+		child_xpath = self._find_x_path_for_machine_design_item([parent_name, child_name])
+		self.assign_catalog_to_machine_design(child_xpath, catalog_name)
+		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
 
 	def move_top_level_machine_to_trash(self, name):
 		"""Move a top-level machine (and its hierarchy) to trash via the context menu."""
