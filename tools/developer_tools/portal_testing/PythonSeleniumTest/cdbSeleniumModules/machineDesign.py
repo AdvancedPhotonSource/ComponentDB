@@ -12,6 +12,8 @@ from selenium.common.exceptions import NoSuchElementException, StaleElementRefer
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 from cdbSeleniumModules.cdbSeleniumModuleBase import CdbSeleniumModuleBase
 from cdbSeleniumModules.cdbSeleniumModuleDecorators import add_stale_protection
@@ -47,6 +49,17 @@ class MachineDesign(CdbSeleniumModuleBase):
 	
 	IMPORT_FILE_NAME = "Machine Design Import.xlsx"
 	EXPORT_FILE_NAME = "Machine Element Update Export.xlsx"
+
+	NAME_FILTER_ID = 'itemMachineDesignListForm:itemMachineDesignListDataTable:nameMdFilter'
+	# Top-level standard machine without an assignment uses this context menu.
+	MOVE_TO_TRASH_MENU_ITEM_XPATH = '//*[@id="itemMachineDesignListForm:%s"]//a[.//span[text()="Move to Trash"]]' % MACHINE_DESIGN_CONTEXT_MENU_ID
+	MOVE_TO_TRASH_YES_BUTTON_ID = 'itemMachineDesignListForm:moveToTrashDialogYesButton'
+	DELETED_ITEMS_VIEW = 'itemDomainMachineDesign/deletedItemsList'
+	# Deleted-items page ids are matched by suffix so they do not depend on its form name.
+	ROW_BY_NAME_XPATH_FORMULA = '//tbody[contains(@id, "itemMachineDesignListDataTable_data")]/tr[.//div[@class="mdName" and normalize-space(text())="%s"]]'
+	RESTORE_MENU_ITEM_XPATH = '//*[contains(@id, "deletedItemsListContextMenu")]//a[.//span[text()="Put back..."]]'
+	RESTORE_YES_BUTTON_XPATH = '//*[contains(@id, "restoreDeletedItemDialogPanel")]//button[.//span[text()="Yes"]]'
+	UI_ACTION_TIMEOUT = 30
 
 	def __init__(self, driver):
 		super().__init__(driver)
@@ -406,6 +419,52 @@ class MachineDesign(CdbSeleniumModuleBase):
 		self._add_log_to_item(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, 'Machine Design Log!', False)		
 		self._add_property_to_item(test, self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, "Machine Prop", False)		
 		self._add_image_to_item(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, needs_toggler=False)		
+
+	def filter_machine_by_name(self, name):
+		"""Replace any existing name filter, unlike filter_machine which appends."""
+		self._wait_for_clickable_id_with_stale_protection(self.NAME_FILTER_ID)
+		filter_box = self._find_by_id(self.NAME_FILTER_ID)
+		filter_box.clear()
+		filter_box.send_keys(name + "\n")
+		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
+		self._wait_for_xpath(self.ROW_BY_NAME_XPATH_FORMULA % name)
+
+	def add_machine_design_with_child(self, name, child_name, description, project='APS-OPS'):
+		"""Create a top-level machine with one placeholder child from the list page."""
+		self.add_machine_design(name, description, project)
+		self.filter_machine_by_name(name)
+		parent_xpath = self._find_x_path_for_machine_design_item([name])
+		self.add_child_to_machine_design(parent_xpath, child_name, description)
+
+	def move_top_level_machine_to_trash(self, name):
+		"""Move a top-level machine (and its hierarchy) to trash via the context menu."""
+		self.filter_machine_by_name(name)
+		item_xpath = self._find_x_path_for_machine_design_item([name])
+		self._context_click_x_path(item_xpath, self.MOVE_TO_TRASH_MENU_ITEM_XPATH)
+
+		yes_button = WebDriverWait(self.driver, self.UI_ACTION_TIMEOUT).until(
+			EC.element_to_be_clickable((By.ID, self.MOVE_TO_TRASH_YES_BUTTON_ID)))
+		yes_button.click()
+		self._wait_for_invisible_by_id(self.MOVE_TO_TRASH_YES_BUTTON_ID, timeout=self.UI_ACTION_TIMEOUT)
+		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
+
+	def navigate_to_deleted_machine_design(self):
+		base_url = self.driver.current_url.split('/views/')[0]
+		self.driver.get('%s/views/%s.xhtml' % (base_url, self.DELETED_ITEMS_VIEW))
+		self._wait_for_url_contains(self.DELETED_ITEMS_VIEW)
+
+	def restore_deleted_machine(self, name):
+		"""Put back a top-level machine from the deleted-items list."""
+		row_xpath = self.ROW_BY_NAME_XPATH_FORMULA % name
+		WebDriverWait(self.driver, self.UI_ACTION_TIMEOUT).until(
+			EC.presence_of_element_located((By.XPATH, row_xpath)))
+		self._context_click_x_path(row_xpath + '/td[1]', self.RESTORE_MENU_ITEM_XPATH)
+
+		yes_button = WebDriverWait(self.driver, self.UI_ACTION_TIMEOUT).until(
+			EC.element_to_be_clickable((By.XPATH, self.RESTORE_YES_BUTTON_XPATH)))
+		yes_button.click()
+		self._wait_for_invisible_by_xpath(self.RESTORE_YES_BUTTON_XPATH)
+		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
 
 	def filter_machine(self, filter_string='Test Machine'):
 		filterbox_id = 'itemMachineDesignListForm:itemMachineDesignListDataTable:nameMdFilter'
