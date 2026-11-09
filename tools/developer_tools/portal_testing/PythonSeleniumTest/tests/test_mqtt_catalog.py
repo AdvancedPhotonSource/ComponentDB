@@ -29,10 +29,11 @@ class CatalogMqttTest(MqttPortalTestCase):
         super().setUp()
         self.catalog = Catalog(self.driver)
 
-    def test_catalog_add_property_delete(self):
+    def test_catalog_item_and_property_lifecycle(self):
         suffix = uuid.uuid4().hex[:10]
         name = 'MQTT catalog %s' % suffix
         property_value = 'mqtt-%s' % suffix
+        updated_value = property_value + '-updated'
 
         self.mqtt.drain()
         self.catalog.start_create_sample_catalog_item(
@@ -60,6 +61,42 @@ class CatalogMqttTest(MqttPortalTestCase):
             self.assertEqual(prop['operation'], 'add')
             self.assertEqual(prop['itemType'], CATALOG_ENTITY_TYPE)
             self.assertIsNone(prop.get('oldProperty'))
+            self.assert_actor(prop)
+
+            # Saving the property updates the item, which also fires the generic update.
+            updated_item = self.wait_for_ui_event(
+                support.TOPIC_ENTITY_UPDATE,
+                support.all_of(support.id_at('entityId', item_id),
+                               lambda p: p.get('entityType') == CATALOG_ENTITY_TYPE),
+                'update of item %s' % item_id)
+            self.assertEqual(updated_item['operation'], 'update')
+            self.assert_actor(updated_item)
+
+            property_id = prop['newProperty'].get('propertyValueId')
+            on_property = support.all_of(
+                support.id_at('itemId', item_id),
+                lambda p: support.get_path(p, 'oldProperty.value') in (property_value, updated_value))
+
+            self.mqtt.drain()
+            self.catalog.update_first_catalog_property(updated_value)
+            prop = self.wait_for_ui_event(
+                support.TOPIC_PROPERTY_UPDATE, on_property,
+                'property update on item %s' % item_id)
+            self.assertEqual(prop['operation'], 'update')
+            self.assertEqual(prop['oldProperty']['value'], property_value)
+            self.assertEqual(prop['newProperty']['value'], updated_value)
+            if property_id is not None:
+                self.assertEqual(str(prop['newProperty']['propertyValueId']), str(property_id))
+            self.assert_actor(prop)
+
+            self.mqtt.drain()
+            self.catalog.delete_first_catalog_property()
+            prop = self.wait_for_ui_event(
+                support.TOPIC_PROPERTY_DELETE, on_property,
+                'property delete on item %s' % item_id)
+            self.assertEqual(prop['operation'], 'delete')
+            self.assertEqual(prop['oldProperty']['value'], updated_value)
+            self.assertIsNone(prop.get('newProperty'))
             self.assert_actor(prop)
 
             self.mqtt.drain()

@@ -114,6 +114,14 @@ class Catalog(ItemBase):
 
 		self._add_property_to_item(test, self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, prop_value_text)
 
+	def update_first_catalog_property(self, new_value):
+		self._clear_notifications()
+		self._edit_property_value_on_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, new_value)
+
+	def delete_first_catalog_property(self):
+		self._clear_notifications()
+		self._delete_property_on_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME)
+
 	def add_image_to_catalog_item(self):
 		self._add_image_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME)
 

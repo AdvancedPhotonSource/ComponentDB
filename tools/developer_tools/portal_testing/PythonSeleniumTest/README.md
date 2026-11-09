@@ -34,15 +34,19 @@ through the UI with the fewest steps needed, then checks the broker receives the
 
 | Test | UI action | Topics |
 | --- | --- | --- |
-| `test_mqtt_machine_design.py::test_machine_trash_and_restore` | create machine + child, Move to Trash, Put back | `cdb/entity/add`, `cdb/machine-design/trash`, `cdb/machine-design/restore` |
-| `test_mqtt_machine_design.py::test_machine_assign_catalog` | assign catalog `Test Item Assembly` to the child | `cdb/machine-design/assigned-item/update` |
-| `test_mqtt_catalog.py::test_catalog_add_property_delete` | create catalog item, add property, delete item | `cdb/entity/add`, `cdb/item/property/add`, `cdb/entity/delete` |
+| `test_mqtt_catalog.py::test_catalog_item_and_property_lifecycle` | create catalog item, add/edit/delete a property, delete the item | `cdb/entity/add`, `cdb/entity/update`, `cdb/item/property/add`, `/update`, `/delete`, `cdb/entity/delete` |
+| `test_mqtt_machine_design.py::test_machine_trash_and_restore` | create machine + child, Move to Trash, Put back | `cdb/entity/add`, `cdb/machine-design/trash`, `/restore` |
+| `test_mqtt_machine_design.py::test_machine_assign_link_and_move` | assign catalog `Test Item Assembly` to a machine, link its child to an assembly part, drag another machine onto it | `cdb/machine-design/assigned-item/update`, `/represented-element/update`, `/move` |
+| `test_mqtt_inventory.py::test_inventory_location_details` | edit location details in place on inventory item 56 | `cdb/item/location/update` |
+| `test_mqtt_inventory.py::test_inventory_assembly_element` | change element `E1` of inventory item 56 from item 45 to 41 and back | `cdb/inventory/assembly-element/update` |
 
-Trash and restore have no REST route, so they are covered only here. The other topics are also
-covered through the API in `tools/developer_tools/python-client/test/mqtt_test.py`.
+Together these cover all 13 topics. Trash and restore have no REST route, so they are covered
+only here. The other 11 are also covered through the API in
+`tools/developer_tools/python-client/test/mqtt_test.py`.
 
 Everything the tests create is uniquely named (`MQTT ... <id>`). Machine hierarchies are left in
-trash and catalog items are deleted. If cleanup fails, the test prints what to remove by hand.
+trash and catalog items are deleted. Inventory item 56's location details and element `E1` are
+restored in `finally`. If cleanup fails, the test prints what to remove by hand.
 
 They change shared state, so run them serially and never under `-n`. Additional requirements:
 

@@ -42,13 +42,13 @@ class MachineDesignMqttTest(MqttPortalTestCase):
             parent_name, child_name, 'Created by MQTT Selenium test', project=PROJECT)
         return suffix, parent_name, child_name
 
-    def trash_quietly(self, parent_name):
+    def trash_quietly(self, name, menu_id=MachineDesign.MACHINE_DESIGN_CONTEXT_MENU_ID):
         # Leave disposable hierarchies in trash; never mask the original failure.
         try:
             self.machine_design.navigate_to_machine_design()
-            self.machine_design.move_top_level_machine_to_trash(parent_name)
+            self.machine_design.move_top_level_machine_to_trash(name, menu_id)
         except Exception as ex:
-            print('Cleanup failed; move "%s" to trash manually: %s' % (parent_name, ex))
+            print('Cleanup failed; move "%s" to trash manually: %s' % (name, ex))
 
     def assert_trash_event(self, event, operation, machine_name, root_name):
         self.assertEqual(event['operation'], operation)
@@ -98,26 +98,63 @@ class MachineDesignMqttTest(MqttPortalTestCase):
             if active:
                 self.trash_quietly(parent_name)
 
-    def test_machine_assign_catalog(self):
-        suffix, parent_name, child_name = self.create_hierarchy('assign')
+    def test_machine_assign_link_and_move(self):
+        suffix, parent_name, child_name = self.create_hierarchy('chain')
+        mover_name = 'MQTT chain mover %s' % suffix
+        self.machine_design.add_machine_design(
+            mover_name, 'Created by MQTT Selenium test', PROJECT)
+        parent_has_catalog = False
+        mover_moved = False
         try:
+            # Assign a catalog assembly to the parent.
             self.mqtt.drain()
-            self.machine_design.assign_catalog_to_child_machine(
-                parent_name, child_name, CATALOG_NAME, filter_text=suffix)
-
+            self.machine_design.assign_catalog_to_machine(
+                [parent_name], CATALOG_NAME, filter_text=suffix)
+            parent_has_catalog = True
             event = self.wait_for_ui_event(
                 support.TOPIC_MD_ASSIGNED_ITEM,
-                described_as('machine.description', child_name),
-                'assignment on %s' % child_name)
+                described_as('machine.description', parent_name),
+                'assignment on %s' % parent_name)
             self.assertEqual(event['machine']['domain'], MACHINE_DOMAIN)
             self.assertIsNone(event.get('oldAssignedItem'))
             self.assertTrue(described_as('newAssignedItem.description', CATALOG_NAME)(event),
                             msg='Unexpected assigned item: %s' % event.get('newAssignedItem'))
             self.assertEqual(event['newAssignedItem']['domain'], 'Catalog')
             self.assert_actor(event)
-        finally:
-            self.trash_quietly(parent_name)
 
+            # Link the child to one of that assembly's parts.
+            self.mqtt.drain()
+            element_name = self.machine_design.link_child_to_assembly_part(
+                parent_name, child_name, filter_text=suffix)
+            event = self.wait_for_ui_event(
+                support.TOPIC_MD_REPRESENTED_ELEMENT,
+                described_as('machine.description', child_name),
+                'represented element on %s' % child_name)
+            self.assertIsNone(event.get('oldRepresentedElement'))
+            self.assertEqual(event['newRepresentedElement']['name'], element_name)
+            self.assertTrue(
+                described_as('newRepresentedElement.parentItem.description', CATALOG_NAME)(event),
+                msg='Unexpected element parent: %s' % event['newRepresentedElement'].get('parentItem'))
+            self.assert_actor(event)
+
+            # Drag the top-level mover onto the parent.
+            self.mqtt.drain()
+            self.machine_design.drag_machine_onto(mover_name, parent_name, filter_text=suffix)
+            mover_moved = True
+            event = self.wait_for_ui_event(
+                support.TOPIC_MD_MOVE,
+                described_as('machine.description', mover_name),
+                'move of %s' % mover_name)
+            self.assertIsNone(event.get('oldParent'))
+            self.assertTrue(described_as('newParent.description', parent_name)(event),
+                            msg='Unexpected new parent: %s' % event.get('newParent'))
+            self.assert_actor(event)
+        finally:
+            menu_id = (MachineDesign.MACHINE_DESIGN_CATALOG_CONTEXT_MENU_ID if parent_has_catalog
+                       else MachineDesign.MACHINE_DESIGN_CONTEXT_MENU_ID)
+            self.trash_quietly(parent_name, menu_id)
+            if not mover_moved:
+                self.trash_quietly(mover_name)
 
 if __name__ == '__main__':
     unittest.main()

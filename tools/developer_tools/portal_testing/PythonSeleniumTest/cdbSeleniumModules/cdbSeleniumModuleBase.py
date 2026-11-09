@@ -352,6 +352,32 @@ class CdbSeleniumModuleBase:
 
 		test.assertEqual(value_element.text, prop_value_text, msg='%s found but expected %s for new property value.' % (value_element.text,prop_value_text ))
 
+	def _open_property_edit_dialog(self, form_name, entity_name, row_index, needs_toggler):
+		if needs_toggler:
+			self._expand_panel(form_name, '%sViewPropertiesPanel' % entity_name)
+		edit_id = '%s:%sPropertyListDataTable:%d:%sPropertyEditActionButton' % (
+			form_name, entity_name, row_index, entity_name)
+		self._wait_for_id_and_click(edit_id)
+		self._wait_for_visible_id('%s:%sSinglePropertyEditDialog' % (form_name, entity_name))
+
+	def _close_property_edit_dialog(self, form_name, entity_name, button_suffix):
+		self._wait_for_id_and_click('%s:%sSinglePropertyEdit%s' % (form_name, entity_name, button_suffix))
+		self._wait_for_invisible_by_id('%s:%sSinglePropertyEditDialog' % (form_name, entity_name))
+		self._wait_for_invisible_loading_dialog()
+
+	def _edit_property_value_on_item(self, form_name, entity_name, new_value, row_index=0, needs_toggler=True):
+		"""Change a free-form property value through the property edit dialog."""
+		self._open_property_edit_dialog(form_name, entity_name, row_index, needs_toggler)
+		value_input = self._wait_for_visible_id('%s:freeFormTextValue' % form_name)
+		value_input.clear()
+		value_input.send_keys(new_value)
+		self._close_property_edit_dialog(form_name, entity_name, 'SaveButton')
+
+	def _delete_property_on_item(self, form_name, entity_name, row_index=0, needs_toggler=True):
+		"""Delete a property through the property edit dialog."""
+		self._open_property_edit_dialog(form_name, entity_name, row_index, needs_toggler)
+		self._close_property_edit_dialog(form_name, entity_name, 'DeleteButton')
+
 	def _add_image_to_item(self, form_name, entity_name, sample_file_name='AnlLogo.png', needs_toggler=True):
 		if needs_toggler:
 			self._expand_panel(form_name, '%sViewGalleryPanel' % entity_name)
