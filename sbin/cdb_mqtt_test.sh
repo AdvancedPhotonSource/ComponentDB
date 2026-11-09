@@ -44,7 +44,6 @@ fi
 
 API_CLIENT_PATH=$CDB_DIST_DIR/tools/developer_tools/python-client
 SELENIUM_PATH=$CDB_DIST_DIR/tools/developer_tools/portal_testing/PythonSeleniumTest
-SELENIUM_MQTT_MODULE=tests/test_mqtt_machine_design.py
 
 # Shared helper (mqtt_test_support) lives in the API test directory.
 export PYTHONPATH="$API_CLIENT_PATH/packages/api:$API_CLIENT_PATH/packages/cli:$API_CLIENT_PATH/test${PYTHONPATH:+:$PYTHONPATH}"
@@ -71,7 +70,7 @@ pytest test/mqtt_test.py -rs "$@" || result=1
 skip_selenium=`echo "$CDB_TEST_MQTT_SKIP_SELENIUM" | tr "[:upper:]" "[:lower:]"`
 if [[ "$skip_selenium" == "true" ]]; then
     printf "\nSkipping Selenium MQTT tests (CDB_TEST_MQTT_SKIP_SELENIUM=true).\n"
-elif [ -f $SELENIUM_PATH/$SELENIUM_MQTT_MODULE ]; then
+elif ls $SELENIUM_PATH/tests/test_mqtt_*.py > /dev/null 2>&1; then
     printf "$PRINTF_HEADER" "Selenium MQTT Tests"
     cd $SELENIUM_PATH
     # Serial on purpose: the UI test mutates shared machine-design state.

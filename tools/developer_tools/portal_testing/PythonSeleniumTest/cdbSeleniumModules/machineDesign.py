@@ -8,7 +8,7 @@ See LICENSE file.
 import time
 import csv
 
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -60,6 +60,12 @@ class MachineDesign(CdbSeleniumModuleBase):
 	RESTORE_MENU_ITEM_XPATH = '//*[contains(@id, "deletedItemsListContextMenu")]//a[.//span[text()="Put back..."]]'
 	RESTORE_YES_BUTTON_XPATH = '//*[contains(@id, "restoreDeletedItemDialogPanel")]//button[.//span[text()="Yes"]]'
 	UI_ACTION_TIMEOUT = 30
+	ASSIGN_CATALOG_MENU_ITEM_XPATH = '//*[@id="itemMachineDesignListForm:machineDesignDualViewMachineDesignMemberContextMenu"]/ul/li[2]/a'
+	# "Assign Item to Machine Element" panel (item/private/itemSelectDataTable.xhtml, viewName assignCatalogSelection).
+	ASSIGN_PANEL_TABLE_KEY = 'ItemSelectDataTableassignCatalogSelection'
+	ASSIGN_PANEL_NAME_FILTER_XPATH = '//input[contains(@id, "%s:") and contains(@id, "NameColumn:filter")]' % ASSIGN_PANEL_TABLE_KEY
+	ASSIGN_PANEL_ROWS_XPATH = '//tbody[contains(@id, "%s_data")]/tr' % ASSIGN_PANEL_TABLE_KEY
+	ASSIGN_PANEL_SAVE_ID = 'itemMachineDesignListForm:assignCatalogToMachineDesignSave'
 
 	def __init__(self, driver):
 		super().__init__(driver)
@@ -443,7 +449,44 @@ class MachineDesign(CdbSeleniumModuleBase):
 		"""
 		self.filter_machine_by_name(filter_text, expected_name=parent_name)
 		child_xpath = self._find_x_path_for_machine_design_item([parent_name, child_name])
-		self.assign_catalog_to_machine_design(child_xpath, catalog_name)
+		self._context_click_x_path(child_xpath, self.ASSIGN_CATALOG_MENU_ITEM_XPATH)
+		self.select_item_in_assign_panel(catalog_name)
+
+	def select_item_in_assign_panel(self, item_name):
+		"""Filter the assign panel to a uniquely named item, select it, and save."""
+		wait = WebDriverWait(self.driver, self.UI_ACTION_TIMEOUT)
+		name_filter = wait.until(EC.visibility_of_element_located(
+			(By.XPATH, self.ASSIGN_PANEL_NAME_FILTER_XPATH)))
+		name_filter.clear()
+		name_filter.send_keys(item_name)
+
+		def single_matching_row(driver):
+			try:
+				rows = driver.find_elements(By.XPATH, self.ASSIGN_PANEL_ROWS_XPATH)
+				if len(rows) == 1 and item_name in rows[0].text:
+					return rows[0]
+			except StaleElementReferenceException:
+				pass
+			return False
+
+		wait.until(single_matching_row).click()
+		# rowSelect + remote command re-render the panel under the loading dialog.
+		try:
+			WebDriverWait(self.driver, 3).until(
+				EC.visibility_of_element_located((By.ID, self.LOADING_DIALOG_ID)))
+		except TimeoutException:
+			pass
+		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
+
+		def row_selected(driver):
+			row = single_matching_row(driver)
+			return bool(row) and (row.get_attribute('aria-selected') == 'true'
+								  or 'ui-state-highlight' in (row.get_attribute('class') or ''))
+
+		wait.until(row_selected)
+
+		wait.until(EC.element_to_be_clickable((By.ID, self.ASSIGN_PANEL_SAVE_ID))).click()
+		self._wait_for_invisible_by_id(self.ASSIGN_PANEL_SAVE_ID, timeout=self.UI_ACTION_TIMEOUT)
 		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
 
 	def move_top_level_machine_to_trash(self, name):
