@@ -14,8 +14,11 @@ import unittest
 from cdbApi.exceptions import OpenApiException
 from cdbApi.models import (
     NewLocationInformation,
+    NewMachinePlaceholderOptions,
     PropertyValue,
+    RepresentingAssemblyElementForMachineInformation,
     SimpleLocationInformation,
+    UpdateMachineAssignedItemInformation,
 )
 
 from test.cdb_test_base import CdbTestBase
@@ -25,6 +28,9 @@ from test.mqtt_test_support import (
     TOPIC_ENTITY_UPDATE,
     TOPIC_INVENTORY_ASSEMBLY_ELEMENT,
     TOPIC_ITEM_LOCATION,
+    TOPIC_MD_ASSIGNED_ITEM,
+    TOPIC_MD_MOVE,
+    TOPIC_MD_REPRESENTED_ELEMENT,
     TOPIC_PROPERTY_ADD,
     TOPIC_PROPERTY_DELETE,
     TOPIC_PROPERTY_UPDATE,
@@ -35,6 +41,10 @@ from test.mqtt_test_support import (
 )
 
 LOCATION_ENTITY_TYPE = "ItemDomainLocation"
+MACHINE_ENTITY_TYPE = "ItemDomainMachineDesign"
+MACHINE_DOMAIN = "Machine Design"
+# Grace period for asserting that no specialized event follows the generic update.
+NO_EVENT_GRACE_SECONDS = 2.0
 
 
 class MqttIntegrationTest(CdbTestBase):
@@ -240,6 +250,204 @@ class MqttIntegrationTest(CdbTestBase):
                 assembly_id, self.INVENTORY_ITEM_ELEMENT_NAME)
             if current_id != original_id:
                 self.itemApi.update_contained_item(element_id, original_id)
+
+    # -- machine design events ---------------------------------------------
+
+    def set_assigned_item(self, machine_id, item_id, installed=None):
+        # The route rejects isInstalled unless the assignment is an inventory item.
+        return self.machineDesignApi.update_assigned_item(
+            UpdateMachineAssignedItemInformation(
+                md_item_id=machine_id, assigned_item_id=item_id, is_installed=installed))
+
+    def get_assignment(self, machine_id):
+        """Return (assigned item id, is inventory, installed flag) for a machine."""
+        machine = self.machineDesignApi.get_machine_design_item_by_id(machine_id)
+        item = machine.assigned_item
+        is_inventory = bool(item and item.domain and item.domain.name == "Inventory")
+        return (item.id if item else None), is_inventory, bool(machine.is_housed)
+
+    def restore_assignment(self, machine_id, item_id, is_inventory, installed):
+        self.set_assigned_item(machine_id, item_id, installed if is_inventory else None)
+
+    def test_machine_assigned_item_update(self):
+        machine_id = self.MACHINE_DESIGN_ID
+        original_id, original_is_inventory, original_installed = self.get_assignment(machine_id)
+        if original_id == self.INVENTORY_ITEM_ID:
+            new_id, new_installed, expected_new_installed = self.CATALOG_ITEM_ID, None, True
+        else:
+            # Planned (not installed) inventory makes the installed transition observable.
+            new_id, new_installed, expected_new_installed = self.INVENTORY_ITEM_ID, False, False
+
+        self.loginAsAdmin()
+        changed = False
+        try:
+            self.mqtt.drain()
+            self.set_assigned_item(machine_id, new_id, new_installed)
+            changed = True
+            event = self.mqtt.wait_for(
+                TOPIC_MD_ASSIGNED_ITEM,
+                all_of(id_at("machine.id", machine_id), id_at("newAssignedItem.id", new_id)),
+                description="machine %s -> item %s" % (machine_id, new_id))
+            self.assert_item_snapshot(event["machine"], machine_id)
+            self.assertEqual(event["machine"]["domain"], MACHINE_DOMAIN)
+            if original_id is None:
+                self.assertIsNone(event.get("oldAssignedItem"))
+            else:
+                self.assert_item_snapshot(event["oldAssignedItem"], original_id)
+            self.assert_item_snapshot(event["newAssignedItem"], new_id)
+            self.assertEqual(event["oldInstalled"], original_installed)
+            self.assertEqual(event["newInstalled"], expected_new_installed)
+            self.assert_actor(event)
+
+            self.mqtt.drain()
+            self.restore_assignment(machine_id, original_id, original_is_inventory,
+                                    original_installed)
+            changed = False
+            event = self.mqtt.wait_for(
+                TOPIC_MD_ASSIGNED_ITEM,
+                all_of(id_at("machine.id", machine_id), id_at("newAssignedItem.id", original_id)),
+                description="machine %s -> item %s (revert)" % (machine_id, original_id))
+            self.assert_item_snapshot(event["oldAssignedItem"], new_id)
+            self.assertEqual(event["oldInstalled"], expected_new_installed)
+            self.assertEqual(event["newInstalled"], original_installed)
+            self.assert_actor(event)
+        finally:
+            if changed:
+                self.restore_assignment(machine_id, original_id, original_is_inventory,
+                                        original_installed)
+
+    def test_machine_assigned_item_noop_publishes_no_specialized_event(self):
+        machine_id = self.MACHINE_DESIGN_ID
+        current_id, is_inventory, installed = self.get_assignment(machine_id)
+
+        self.loginAsAdmin()
+        self.mqtt.drain()
+        # Re-saving the same assignment still updates the entity, which acts as a barrier.
+        self.restore_assignment(machine_id, current_id, is_inventory, installed)
+        self.wait_for_entity_event(TOPIC_ENTITY_UPDATE, machine_id, MACHINE_ENTITY_TYPE)
+        self.mqtt.assert_no_message(
+            TOPIC_MD_ASSIGNED_ITEM, id_at("machine.id", machine_id),
+            within=NO_EVENT_GRACE_SECONDS,
+            description="no-op assignment on machine %s" % machine_id)
+
+    def create_placeholder(self, parent_id, name):
+        return self.machineDesignApi.create_placeholder(
+            parent_id, NewMachinePlaceholderOptions(name=name))
+
+    def remove_machine_quietly(self, machine_id):
+        try:
+            self.machineDesignApi.detach_machine_from_hierarchy(machine_id)
+        except OpenApiException:
+            pass
+        self.delete_item_quietly(machine_id)
+
+    def wait_for_move(self, machine_id, new_parent_id):
+        return self.mqtt.wait_for(
+            TOPIC_MD_MOVE,
+            all_of(id_at("machine.id", machine_id), id_at("newParent.id", new_parent_id)),
+            description="machine %s -> parent %s" % (machine_id, new_parent_id))
+
+    def test_machine_move(self):
+        root_id = self.MACHINE_DESIGN_ID
+        suffix = self.gen_unique_name()
+        self.loginAsAdmin()
+        created = []
+        try:
+            new_parent = self.create_placeholder(root_id, "MQTT move parent %s" % suffix)
+            created.append(new_parent.id)
+            child = self.create_placeholder(root_id, "MQTT move child %s" % suffix)
+            created.append(child.id)
+
+            self.mqtt.drain()
+            self.machineDesignApi.move_machine(child.id, new_parent.id)
+            event = self.wait_for_move(child.id, new_parent.id)
+            self.assert_item_snapshot(event["machine"], child.id)
+            self.assertEqual(event["machine"]["domain"], MACHINE_DOMAIN)
+            self.assert_item_snapshot(event["oldParent"], root_id)
+            self.assert_item_snapshot(event["newParent"], new_parent.id)
+            self.assert_actor(event)
+
+            self.mqtt.drain()
+            self.machineDesignApi.move_machine(child.id, root_id)
+            event = self.wait_for_move(child.id, root_id)
+            self.assert_item_snapshot(event["oldParent"], new_parent.id)
+            self.assert_item_snapshot(event["newParent"], root_id)
+            self.assert_actor(event)
+        finally:
+            for machine_id in reversed(created):
+                self.remove_machine_quietly(machine_id)
+
+    def find_represented_element(self):
+        """Return the E1 element id of the represented machine's parent assembly."""
+        hierarchy = self.machineDesignApi.get_housing_hierarchy_by_id(
+            self.MACHINE_TO_REPRESENT_ID)
+        parent_id = None
+        child = hierarchy.child_items[0] if hierarchy.child_items else None
+        while child is not None:
+            if child.item.id == self.MACHINE_TO_REPRESENT_ID:
+                parent_id = hierarchy.item.id
+                break
+            hierarchy = child
+            child = hierarchy.child_items[0] if hierarchy.child_items else None
+        self.assertIsNotNone(parent_id, msg="Parent of represented machine not found")
+
+        parent = self.machineDesignApi.get_machine_design_item_by_id(parent_id)
+        assembly = self.itemApi.get_item_hierarchy_by_id(parent.assigned_item.id)
+        for element in assembly.child_items:
+            if element.element_name == self.ELEMENT_NAME_TO_REPRESENT:
+                return element.element_id
+        self.fail("Element %s not found" % self.ELEMENT_NAME_TO_REPRESENT)
+
+    def set_represented_element(self, machine_id, element_id):
+        return self.machineDesignApi.update_representing_assembly_element_for_machine(
+            RepresentingAssemblyElementForMachineInformation(
+                machine_id=machine_id, assembly_element_id=element_id))
+
+    def get_represented_element_id(self, machine_id):
+        machine = self.machineDesignApi.get_machine_design_item_by_id(machine_id)
+        element = machine.assigned_represented_element
+        return element.id if element else None
+
+    def test_machine_represented_element_set_clear(self):
+        machine_id = self.MACHINE_TO_REPRESENT_ID
+        element_id = self.find_represented_element()
+        restore_id = self.get_represented_element_id(machine_id)
+
+        self.loginAsAdmin()
+        try:
+            if restore_id == element_id:
+                self.set_represented_element(machine_id, None)
+            old_id = None if restore_id == element_id else restore_id
+
+            self.mqtt.drain()
+            self.set_represented_element(machine_id, element_id)
+            event = self.mqtt.wait_for(
+                TOPIC_MD_REPRESENTED_ELEMENT,
+                all_of(id_at("machine.id", machine_id),
+                       id_at("newRepresentedElement.id", element_id)),
+                description="machine %s represents element %s" % (machine_id, element_id))
+            self.assert_item_snapshot(event["machine"], machine_id)
+            if old_id is None:
+                self.assertIsNone(event.get("oldRepresentedElement"))
+            else:
+                self.assertEqual(str(event["oldRepresentedElement"]["id"]), str(old_id))
+            new_element = event["newRepresentedElement"]
+            self.assertEqual(new_element["name"], self.ELEMENT_NAME_TO_REPRESENT)
+            self.assertIsNotNone(new_element.get("parentItem"))
+            self.assert_actor(event)
+
+            self.mqtt.drain()
+            self.set_represented_element(machine_id, None)
+            event = self.mqtt.wait_for(
+                TOPIC_MD_REPRESENTED_ELEMENT,
+                all_of(id_at("machine.id", machine_id),
+                       id_at("oldRepresentedElement.id", element_id)),
+                description="machine %s clears element %s" % (machine_id, element_id))
+            self.assertIsNone(event.get("newRepresentedElement"))
+            self.assert_actor(event)
+        finally:
+            if self.get_represented_element_id(machine_id) != restore_id:
+                self.set_represented_element(machine_id, restore_id)
 
     # -- item property events ----------------------------------------------
 
