@@ -23,6 +23,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignDelet
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignIOCControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignPowerControllerUtility;
+import gov.anl.aps.cdb.mqtt.metadata.MachineAddChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineAssignedItemChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineRepresentedElementChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineTrashChange;
@@ -69,6 +70,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient MachineAssignedItemChange pendingAssignedItemChange;
     private transient MachineRepresentedElementChange pendingRepresentedElementChange;
     private transient MachineTrashChange pendingTrashChange;
+    private transient List<MachineAddChange> pendingMachineAddChanges;
     private transient String moveToTrashWarningMsg = null;
 
     private transient ItemElement currentHierarchyItemElement;
@@ -637,6 +639,17 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     @JsonIgnore
     public MachineTrashChange getPendingTrashChange() { return pendingTrashChange; }
+
+    @JsonIgnore
+    public void setPendingMachineAddChanges(List<MachineAddChange> changes) {
+        pendingMachineAddChanges = changes == null ? null : new ArrayList<>(changes);
+    }
+
+    @JsonIgnore
+    public List<MachineAddChange> getPendingMachineAddChanges() {
+        return pendingMachineAddChanges == null
+                ? new ArrayList<>() : new ArrayList<>(pendingMachineAddChanges);
+    }
 
     public boolean isIsHoused() {
         ItemElement selfElement = getSelfElement();
