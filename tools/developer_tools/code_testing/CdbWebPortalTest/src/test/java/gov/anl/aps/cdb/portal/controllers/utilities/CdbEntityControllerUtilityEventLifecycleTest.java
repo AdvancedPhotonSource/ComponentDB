@@ -25,13 +25,13 @@ public class CdbEntityControllerUtilityEventLifecycleTest {
     public void publishesGenericThenSpecializedEventAfterSuccessfulUpdate() throws Exception {
         TestUtility utility = new TestUtility(new TestFacade());
         TestEntity entity = new TestEntity(1);
-        utility.specializedEvents = Collections.singletonList(new TestEvent("specialized"));
+        utility.specializedUpdateEvents = Collections.singletonList(new TestEvent("specialized-update"));
 
         utility.update(entity, null);
 
         assertEquals(2, utility.publishedEvents.size());
         assertTrue(utility.publishedEvents.get(0) instanceof CdbEntityEvent);
-        assertEquals("specialized", utility.publishedEvents.get(1).getTopic());
+        assertEquals("specialized-update", utility.publishedEvents.get(1).getTopic());
         assertTrue(utility.facade.editCalled);
     }
 
@@ -45,8 +45,8 @@ public class CdbEntityControllerUtilityEventLifecycleTest {
         assertEquals(4, utility.publishedEvents.size());
         assertTrue(utility.publishedEvents.get(0) instanceof CdbEntityEvent);
         assertTrue(utility.publishedEvents.get(1) instanceof CdbEntityEvent);
-        assertEquals("specialized/1", utility.publishedEvents.get(2).getTopic());
-        assertEquals("specialized/2", utility.publishedEvents.get(3).getTopic());
+        assertEquals("specialized-update/1", utility.publishedEvents.get(2).getTopic());
+        assertEquals("specialized-update/2", utility.publishedEvents.get(3).getTopic());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class CdbEntityControllerUtilityEventLifecycleTest {
         TestFacade facade = new TestFacade();
         facade.failEdit = true;
         TestUtility utility = new TestUtility(facade);
-        utility.specializedEvents = Collections.singletonList(new TestEvent("specialized"));
+        utility.specializedUpdateEvents = Collections.singletonList(new TestEvent("specialized-update"));
 
         try {
             utility.update(new TestEntity(1), null);
@@ -69,13 +69,13 @@ public class CdbEntityControllerUtilityEventLifecycleTest {
     @Test
     public void removalUpdatePublishesSpecializedEventOnlyAfterSuccessfulEdit() throws Exception {
         TestUtility utility = new TestUtility(new TestFacade());
-        utility.specializedEvents = Collections.singletonList(new TestEvent("specialized/remove"));
+        utility.specializedUpdateEvents = Collections.singletonList(new TestEvent("specialized-update/remove"));
 
         utility.updateOnRemoval(new TestEntity(1), null);
 
         assertEquals(2, utility.publishedEvents.size());
         assertTrue(utility.publishedEvents.get(0) instanceof CdbEntityEvent);
-        assertEquals("specialized/remove", utility.publishedEvents.get(1).getTopic());
+        assertEquals("specialized-update/remove", utility.publishedEvents.get(1).getTopic());
     }
 
     @Test
@@ -86,6 +86,63 @@ public class CdbEntityControllerUtilityEventLifecycleTest {
 
         assertEquals(1, utility.publishedEvents.size());
         assertTrue(utility.publishedEvents.get(0) instanceof CdbEntityEvent);
+    }
+
+    @Test
+    public void createPublishesSpecializedCreateEventsAfterGenericAdd() throws Exception {
+        TestUtility utility = new TestUtility(new TestFacade());
+        utility.specializedCreateEvents = true;
+
+        utility.create(new TestEntity(1), null);
+
+        assertEquals(2, utility.publishedEvents.size());
+        assertTrue(utility.publishedEvents.get(0) instanceof CdbEntityEvent);
+        assertEquals("specialized-create/1", utility.publishedEvents.get(1).getTopic());
+        assertEquals(1, utility.preparedCount);
+    }
+
+    @Test
+    public void createListPreparesOnceAndPublishesSpecializedCreateEventsLast() throws Exception {
+        TestUtility utility = new TestUtility(new TestFacade());
+        utility.specializedCreateEvents = true;
+
+        utility.createList(Arrays.asList(new TestEntity(1), new TestEntity(2)), null);
+
+        assertEquals(4, utility.publishedEvents.size());
+        assertEquals("specialized-create/1", utility.publishedEvents.get(2).getTopic());
+        assertEquals("specialized-create/2", utility.publishedEvents.get(3).getTopic());
+        assertEquals(1, utility.preparedCount);
+    }
+
+    @Test
+    public void updatePublishesSpecializedCreateEventsAfterSpecializedUpdateEvents() throws Exception {
+        TestUtility utility = new TestUtility(new TestFacade());
+        utility.specializedCreateEvents = true;
+        utility.specializedUpdateEvents = Collections.singletonList(new TestEvent("specialized-update"));
+
+        utility.update(new TestEntity(1), null);
+
+        assertEquals(3, utility.publishedEvents.size());
+        assertEquals("specialized-update", utility.publishedEvents.get(1).getTopic());
+        assertEquals("specialized-create/1", utility.publishedEvents.get(2).getTopic());
+    }
+
+    @Test
+    public void failedCreateDoesNotPublishSpecializedCreateEvents() throws Exception {
+        TestFacade facade = new TestFacade();
+        facade.failCreate = true;
+        TestUtility utility = new TestUtility(facade);
+        utility.specializedCreateEvents = true;
+
+        try {
+            utility.create(new TestEntity(1), null);
+            fail("Expected persistence failure");
+        } catch (IllegalStateException expected) {
+            assertEquals("create failed", expected.getMessage());
+        }
+
+        assertEquals(1, utility.preparedCount);
+        assertTrue(utility.publishedEvents.isEmpty());
     }
 
     private static final class TestEvent extends MqttEvent {
@@ -117,6 +174,7 @@ public class CdbEntityControllerUtilityEventLifecycleTest {
     private static final class TestFacade extends CdbEntityFacade<TestEntity> {
         private boolean editCalled;
         private boolean failEdit;
+        private boolean failCreate;
 
         TestFacade() {
             super(TestEntity.class);
@@ -125,6 +183,13 @@ public class CdbEntityControllerUtilityEventLifecycleTest {
         @Override
         protected EntityManager getEntityManager() {
             throw new UnsupportedOperationException("Not used by this test");
+        }
+
+        @Override
+        public void create(TestEntity entity) {
+            if (failCreate) {
+                throw new IllegalStateException("create failed");
+            }
         }
 
         @Override
@@ -149,8 +214,10 @@ public class CdbEntityControllerUtilityEventLifecycleTest {
             extends CdbEntityControllerUtility<TestEntity, TestFacade> {
         private final TestFacade facade;
         private final List<MqttEvent> publishedEvents = new ArrayList<>();
-        private List<MqttEvent> specializedEvents = Collections.emptyList();
+        private List<MqttEvent> specializedUpdateEvents = Collections.emptyList();
         private boolean createEventPerEntity;
+        private boolean specializedCreateEvents;
+        private int preparedCount;
 
         TestUtility(TestFacade facade) {
             this.facade = facade;
@@ -175,9 +242,35 @@ public class CdbEntityControllerUtilityEventLifecycleTest {
         protected List<MqttEvent> prepareSpecializedUpdateEvents(
                 TestEntity entity, UserInfo userInfo) {
             if (createEventPerEntity) {
-                return Collections.singletonList(new TestEvent("specialized/" + entity.getId()));
+                return Collections.singletonList(new TestEvent("specialized-update/" + entity.getId()));
             }
-            return specializedEvents;
+            return specializedUpdateEvents;
+        }
+
+        @Override
+        protected void prepareSpecializedCreateEvents(List<TestEntity> entities, UserInfo userInfo) {
+            preparedCount++;
+        }
+
+        @Override
+        protected List<MqttEvent> createSpecializedCreateEvents(
+                List<TestEntity> entities, UserInfo userInfo) {
+            List<MqttEvent> events = new ArrayList<>();
+            if (specializedCreateEvents) {
+                for (TestEntity entity : entities) {
+                    events.add(new TestEvent("specialized-create/" + entity.getId()));
+                }
+            }
+            return events;
+        }
+
+        @Override
+        protected void addCreatedSystemLog(TestEntity entity, UserInfo createdByUserInfo) {
+        }
+
+        @Override
+        protected void addCreatedWarningSystemLog(Exception exception, TestEntity entity,
+                UserInfo createdByUserInfo) {
         }
 
         @Override

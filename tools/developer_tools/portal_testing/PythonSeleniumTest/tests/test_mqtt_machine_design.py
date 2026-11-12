@@ -59,6 +59,37 @@ class MachineDesignMqttTest(MqttPortalTestCase):
         self.assertEqual(event['affectedMachineCount'], AFFECTED_COUNT)
         self.assert_actor(event)
 
+    def test_machine_add_parent_and_child(self):
+        self.mqtt.drain()
+        _, parent_name, child_name = self.create_hierarchy('add')
+        try:
+            parent = self.wait_for_ui_event(
+                support.TOPIC_MD_ADD,
+                described_as('machine.description', parent_name),
+                'machine add of %s' % parent_name)
+            self.assertEqual(parent['machine']['domain'], MACHINE_DOMAIN)
+            self.assertIn('parent', parent)
+            self.assertIsNone(parent['parent'], msg='Top-level machine must have null parent')
+            self.assertNotIn('oldParent', parent)
+            self.assertNotIn('newParent', parent)
+            self.assert_actor(parent)
+
+            child = self.wait_for_ui_event(
+                support.TOPIC_MD_ADD,
+                described_as('machine.description', child_name),
+                'machine add of %s' % child_name)
+            self.assertEqual(str(child['parent']['id']), str(parent['machine']['id']))
+            self.assertNotEqual(str(child['machine']['id']), str(parent['machine']['id']))
+            self.assert_actor(child)
+
+            # Adding the child must not re-announce the existing parent.
+            self.mqtt.assert_no_message(
+                support.TOPIC_MD_ADD,
+                described_as('machine.description', parent_name),
+                within=2.0, description='parent %s re-announced' % parent_name)
+        finally:
+            self.trash_quietly(parent_name)
+
     def test_machine_trash_and_restore(self):
         self.mqtt.drain()
         _, parent_name, child_name = self.create_hierarchy('trash')
@@ -145,6 +176,9 @@ class MachineDesignMqttTest(MqttPortalTestCase):
                 support.TOPIC_MD_MOVE,
                 described_as('machine.description', mover_name),
                 'move of %s' % mover_name)
+            self.mqtt.assert_no_message(
+                support.TOPIC_MD_ADD, described_as('machine.description', mover_name),
+                within=2.0, description='move announced as new machine %s' % mover_name)
             self.assertIsNone(event.get('oldParent'))
             self.assertTrue(described_as('newParent.description', parent_name)(event),
                             msg='Unexpected new parent: %s' % event.get('newParent'))

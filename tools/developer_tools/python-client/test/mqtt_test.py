@@ -28,6 +28,7 @@ from test.mqtt_test_support import (
     TOPIC_ENTITY_UPDATE,
     TOPIC_INVENTORY_ASSEMBLY_ELEMENT,
     TOPIC_ITEM_LOCATION,
+    TOPIC_MD_ADD,
     TOPIC_MD_ASSIGNED_ITEM,
     TOPIC_MD_MOVE,
     TOPIC_MD_REPRESENTED_ELEMENT,
@@ -341,6 +342,66 @@ class MqttIntegrationTest(CdbTestBase):
             pass
         self.delete_item_quietly(machine_id)
 
+    def wait_for_machine_add(self, machine_id):
+        return self.mqtt.wait_for(
+            TOPIC_MD_ADD, id_at("machine.id", machine_id),
+            description="new machine %s" % machine_id)
+
+    def test_machine_add_nested_placeholders(self):
+        root_id = self.MACHINE_DESIGN_ID
+        suffix = self.gen_unique_name()
+        self.loginAsAdmin()
+        created = []
+        try:
+            self.mqtt.drain()
+            parent = self.create_placeholder(root_id, "MQTT add parent %s" % suffix)
+            created.append(parent.id)
+            event = self.wait_for_machine_add(parent.id)
+            self.assert_item_snapshot(event["machine"], parent.id)
+            self.assertEqual(event["machine"]["domain"], MACHINE_DOMAIN)
+            self.assert_item_snapshot(event["parent"], root_id)
+            self.assertNotIn("oldParent", event)
+            self.assertNotIn("newParent", event)
+            self.assert_actor(event)
+            # Placeholders are cascaded through the parent, so the standard event is its update.
+            self.wait_for_entity_event(TOPIC_ENTITY_UPDATE, root_id, MACHINE_ENTITY_TYPE)
+
+            child = self.create_placeholder(parent.id, "MQTT add child %s" % suffix)
+            created.append(child.id)
+            event = self.wait_for_machine_add(child.id)
+            self.assert_item_snapshot(event["parent"], parent.id)
+            self.assert_actor(event)
+            # The existing parent must not be re-announced when a child is added.
+            self.mqtt.assert_no_message(
+                TOPIC_MD_ADD, id_at("machine.id", parent.id),
+                within=NO_EVENT_GRACE_SECONDS,
+                description="existing parent %s re-announced" % parent.id)
+        finally:
+            for machine_id in reversed(created):
+                self.remove_machine_quietly(machine_id)
+
+    def test_machine_add_root_has_null_parent(self):
+        suffix = self.gen_unique_name()
+        self.loginAsAdmin()
+        machine_id = None
+        try:
+            self.mqtt.drain()
+            # Top-level control node: a direct create with no parent.
+            machine = self.machineDesignApi.create_control_element(NewMachinePlaceholderOptions(
+                name="MQTT add root %s" % suffix, project_id=self.PROJECT_ID))
+            machine_id = machine.id
+            event = self.wait_for_machine_add(machine_id)
+            self.assert_item_snapshot(event["machine"], machine_id)
+            self.assertEqual(event["machine"]["domain"], MACHINE_DOMAIN)
+            self.assertIn("parent", event)
+            self.assertIsNone(event["parent"])
+            self.assert_actor(event)
+            # Standard entity add is still published alongside the specialized event.
+            self.wait_for_entity_event(TOPIC_ENTITY_ADD, machine_id, MACHINE_ENTITY_TYPE)
+        finally:
+            if machine_id is not None:
+                self.delete_item_quietly(machine_id)
+
     def wait_for_move(self, machine_id, new_parent_id):
         return self.mqtt.wait_for(
             TOPIC_MD_MOVE,
@@ -361,6 +422,10 @@ class MqttIntegrationTest(CdbTestBase):
             self.mqtt.drain()
             self.machineDesignApi.move_machine(child.id, new_parent.id)
             event = self.wait_for_move(child.id, new_parent.id)
+            self.mqtt.assert_no_message(
+                TOPIC_MD_ADD, id_at("machine.id", child.id),
+                within=NO_EVENT_GRACE_SECONDS,
+                description="move announced as new machine %s" % child.id)
             self.assert_item_snapshot(event["machine"], child.id)
             self.assertEqual(event["machine"]["domain"], MACHINE_DOMAIN)
             self.assert_item_snapshot(event["oldParent"], root_id)
