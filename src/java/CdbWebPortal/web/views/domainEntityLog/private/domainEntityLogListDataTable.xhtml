@@ -60,7 +60,6 @@ See LICENSE file.
                 <p:commandButton value="Yes" 
                                  id="confirmYesDestroyLogEntryButton"
                                  action="#{entityController.deleteLog(logObject)}" 
-                                 actionListener="#{logController.destroy(logObject)}"
                                  onstart="PF('confirmDeleteLog#{logObject.viewUUID}Widget').hide()"
                                  update="#{entityTypeName}LogListDataTable"/>
                 <p:commandButton value="No" onclick="PF('confirmDeleteLog#{logObject.viewUUID}Widget').hide();" type="button" />
