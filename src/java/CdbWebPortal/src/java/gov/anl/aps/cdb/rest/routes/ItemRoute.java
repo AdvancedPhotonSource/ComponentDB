@@ -23,7 +23,6 @@ import gov.anl.aps.cdb.portal.model.db.beans.AttachmentFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.LogFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
@@ -130,9 +129,6 @@ public class ItemRoute extends ItemBaseRoute {
 
     @EJB
     AttachmentFacade attachmentFacade;
-
-    @EJB
-    LogFacade logFacade;
 
     @GET
     @Path("/ById/{itemId}")
@@ -1028,28 +1024,15 @@ public class ItemRoute extends ItemBaseRoute {
         LOGGER.debug("Uploading log attachment for item: " + itemId + " log: " + logId);
         Item item = getItemByIdBase(itemId);
         UserInfo updatedByUser = verifyCurrentUserPermissionForItem(item);
-
-        Log log = null;
-        for (Log l : item.getLogList()) {
-            if (l.getId() != null && l.getId() == logId) {
-                log = l;
-                break;
-            }
-        }
-        if (log == null) {
-            throw new ObjectNotFound("Could not find log " + logId + " for item " + itemId);
-        }
+        Log log = findItemLog(item, logId);
 
         Attachment attachment = FileUploadUtility.writeLogAttachmentFile(
                 fileUpload.getFileName(), FileUploadUtility.decodeFileUpload(fileUpload));
         attachmentFacade.create(attachment);
-        if (log.getAttachmentList() == null) {
-            log.setAttachmentList(new ArrayList<>());
-        }
-        log.getAttachmentList().add(attachment);
-        logFacade.edit(log);
 
-        return log;
+        ItemControllerUtility controllerUtility = item.getItemControllerUtility();
+        Item updatedItem = (Item) controllerUtility.addLogAttachment(item, log, attachment, updatedByUser);
+        return findItemLog(updatedItem, logId);
     }
 
     @GET

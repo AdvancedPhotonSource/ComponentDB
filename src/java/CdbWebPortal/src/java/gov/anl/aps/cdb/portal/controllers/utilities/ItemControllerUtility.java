@@ -33,6 +33,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import gov.anl.aps.cdb.portal.model.db.entities.Attachment;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
@@ -331,6 +332,23 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
             }
         }
         return events;
+    }
+
+    /**
+     * Associates an attachment with one of the item's log entries and saves it through the
+     * item update, so attachment uploads share the specialized create/update event hooks.
+     */
+    public ItemDomainEntity addLogAttachment(ItemDomainEntity item, Log log,
+            Attachment attachment, UserInfo user) throws CdbException {
+        List<Log> logs = item.getLogList();
+        if (logs == null || !logs.contains(log)) {
+            throw new CdbException("Log " + log.getId() + " does not belong to item " + item.getId());
+        }
+        if (log.getAttachmentList() == null) {
+            log.setAttachmentList(new ArrayList<>());
+        }
+        log.getAttachmentList().add(attachment);
+        return update(item, user);
     }
 
     /**
