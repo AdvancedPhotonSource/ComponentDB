@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.mqtt.metadata.ItemLogChange;
 import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
 import gov.anl.aps.cdb.portal.controllers.utilities.LogControllerUtility;
+import gov.anl.aps.cdb.portal.model.db.entities.Attachment;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -98,6 +99,14 @@ public class LogUtility {
     // java.sql.Timestamp.equals(Date) is false for the same instant.
     private static boolean sameInstant(Date first, Date second) {
         return first == null ? second == null : second != null && first.getTime() == second.getTime();
+    }
+
+    /** Associates an attachment with a log in memory; the owning entity's update persists it. */
+    public static void addAttachment(Log log, Attachment attachment) {
+        if (log.getAttachmentList() == null) {
+            log.setAttachmentList(new ArrayList<>());
+        }
+        log.getAttachmentList().add(attachment);
     }
 
     public static void searchLogList(List<Log> logList, Pattern searchPattern, SearchResult searchResult) {

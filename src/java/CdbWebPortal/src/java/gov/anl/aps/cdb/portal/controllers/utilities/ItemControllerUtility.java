@@ -344,10 +344,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         if (logs == null || !logs.contains(log)) {
             throw new CdbException("Log " + log.getId() + " does not belong to item " + item.getId());
         }
-        if (log.getAttachmentList() == null) {
-            log.setAttachmentList(new ArrayList<>());
-        }
-        log.getAttachmentList().add(attachment);
+        LogUtility.addAttachment(log, attachment);
         return update(item, user);
     }
 

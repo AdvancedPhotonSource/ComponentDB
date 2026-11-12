@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.jsf.beans;
 import gov.anl.aps.cdb.portal.model.db.entities.Attachment;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.common.utilities.FileUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 import java.io.File;
@@ -17,8 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
@@ -68,12 +67,8 @@ public class LogAttachmentUploadBean implements Serializable {
                 Attachment attachment = new Attachment();
                 attachment.setName(originalFile.getName());
                 attachment.setOriginalFilename(fileName);
-                List<Attachment> attachmentList = logEntry.getAttachmentList();
-                if (attachmentList == null) {
-                    attachmentList = new ArrayList<>();
-                    logEntry.setAttachmentList(attachmentList);
-                }
-                attachmentList.add(attachment);
+                // Saved by the owning entity's update when the dialog's Done runs saveLogList.
+                LogUtility.addAttachment(logEntry, attachment);
                 SessionUtility.addInfoMessage("Success", "Uploaded file " + fileName + ".");
             }
         } catch (IOException ex) {
