@@ -9,7 +9,10 @@ import gov.anl.aps.cdb.mqtt.CdbMachineAddEvent;
 import gov.anl.aps.cdb.mqtt.metadata.MachineAddChange;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -133,6 +136,96 @@ public class MachineAddEventDetectionTest {
         assertTrue(root.getPendingMachineAddChanges().isEmpty());
     }
 
+    @Test
+    public void nonTemplateNodesHaveNoTemplateContext() {
+        CdbMachineAddEvent event = (CdbMachineAddEvent) persist(machine(null, "Plain")).get(0);
+
+        assertNull(event.getSourceTemplate());
+        assertNull(event.getTemplateAppliedToMachine());
+        assertNull(event.getTemplateCreatedMachineCount());
+    }
+
+    @Test
+    public void templateInstantiatedUnderExistingParentSharesNewTopNode() {
+        ItemDomainMachineDesign parent = saved(machine(null, "Parent"));
+        ItemDomainMachineDesign templateTop = saved(machine(null, "Template top"));
+        ItemDomainMachineDesign templateChild = saved(machine(null, "Template child"));
+        ItemDomainMachineDesign top = fromTemplate(machine(null, "Instance"), templateTop, false);
+        ItemDomainMachineDesign a = fromTemplate(machine(null, "A"), templateChild, false);
+        ItemDomainMachineDesign b = fromTemplate(machine(null, "B"), templateChild, false);
+        child(parent, top);
+        child(top, a);
+        child(a, b);
+
+        List<MqttEvent> events = persist(parent);
+
+        assertEquals(3, events.size());
+        assertTemplate(events.get(0), templateTop, top, 3);
+        assertTemplate(events.get(1), templateChild, top, 3);
+        assertTemplate(events.get(2), templateChild, top, 3);
+        assertAdd(events.get(0), top, parent);
+    }
+
+    @Test
+    public void templateAssignedToExistingMachineReportsThatMachine() {
+        ItemDomainMachineDesign template = saved(machine(null, "Template"));
+        ItemDomainMachineDesign templateChild = saved(machine(null, "Template child"));
+        ItemDomainMachineDesign existing = fromTemplate(saved(machine(null, "Existing")), template, false);
+        ItemDomainMachineDesign a = fromTemplate(machine(null, "A"), templateChild, false);
+        ItemDomainMachineDesign b = fromTemplate(machine(null, "B"), templateChild, false);
+        child(existing, a);
+        child(existing, b);
+
+        List<MqttEvent> events = persist(existing);
+
+        assertEquals(2, events.size());
+        assertTemplate(events.get(0), templateChild, existing, 2);
+        assertTemplate(events.get(1), templateChild, existing, 2);
+    }
+
+    @Test
+    public void newTemplateUnderOlderTemplateInstanceStartsNewApplication() {
+        ItemDomainMachineDesign oldTemplate = saved(machine(null, "Old template"));
+        ItemDomainMachineDesign newTemplate = saved(machine(null, "New template"));
+        ItemDomainMachineDesign olderInstance = fromTemplate(saved(machine(null, "Older")), oldTemplate, true);
+        ItemDomainMachineDesign added = fromTemplate(machine(null, "Added"), newTemplate, false);
+        child(olderInstance, added);
+
+        List<MqttEvent> events = persist(olderInstance);
+
+        assertEquals(1, events.size());
+        assertTemplate(events.get(0), newTemplate, added, 1);
+    }
+
+    @Test
+    public void templateUnderNewPlaceholderAppliesToTemplateNodeOnly() {
+        ItemDomainMachineDesign template = saved(machine(null, "Template"));
+        ItemDomainMachineDesign placeholder = machine(null, "Placeholder");
+        ItemDomainMachineDesign instance = fromTemplate(machine(null, "Instance"), template, false);
+        child(placeholder, instance);
+
+        List<MqttEvent> events = persist(placeholder);
+
+        assertEquals(2, events.size());
+        assertNull(((CdbMachineAddEvent) events.get(0)).getTemplateAppliedToMachine());
+        assertTemplate(events.get(1), template, instance, 1);
+    }
+
+    @Test
+    public void separateApplicationsInOneListSaveAreCountedSeparately() {
+        ItemDomainMachineDesign template = saved(machine(null, "Template"));
+        ItemDomainMachineDesign first = fromTemplate(machine(null, "First"), template, false);
+        ItemDomainMachineDesign second = fromTemplate(machine(null, "Second"), template, false);
+        child(first, fromTemplate(machine(null, "First child"), template, false));
+
+        List<MqttEvent> events = persist(first, second);
+
+        assertEquals(3, events.size());
+        assertTemplate(events.get(0), template, first, 2);
+        assertTemplate(events.get(1), template, first, 2);
+        assertTemplate(events.get(2), template, second, 1);
+    }
+
     private List<MqttEvent> persist(ItemDomainMachineDesign... roots) {
         List<ItemDomainMachineDesign> entities = Arrays.asList(roots);
         utility.prepareSpecializedCreateEvents(entities, user());
@@ -159,6 +252,29 @@ public class MachineAddEventDetectionTest {
         CdbMachineAddEvent event = (CdbMachineAddEvent) value;
         assertEquals(machine.getId().toString(), event.getMachine().getId());
         assertEquals(parent.getId().toString(), event.getParent().getId());
+    }
+
+    private static void assertTemplate(MqttEvent value, ItemDomainMachineDesign template,
+            ItemDomainMachineDesign appliedTo, int count) {
+        CdbMachineAddEvent event = (CdbMachineAddEvent) value;
+        assertEquals(template.getId().toString(), event.getSourceTemplate().getId());
+        assertEquals(appliedTo.getId().toString(), event.getTemplateAppliedToMachine().getId());
+        assertEquals(Integer.valueOf(count), event.getTemplateCreatedMachineCount());
+    }
+
+    // Mirrors ItemControllerUtility.addCreatedFromTemplateRelationshipToItem.
+    private static ItemDomainMachineDesign fromTemplate(ItemDomainMachineDesign machine,
+            ItemDomainMachineDesign template, boolean relationshipSaved) {
+        ItemElementRelationship relationship = new ItemElementRelationship();
+        relationship.setRelationshipType(new RelationshipType(1,
+                ItemElementRelationshipTypeNames.template.getValue()));
+        relationship.setFirstItemElement(machine.getSelfElement());
+        relationship.setSecondItemElement(template.getSelfElement());
+        if (relationshipSaved) {
+            relationship.setId(900);
+        }
+        machine.setItemElementRelationshipList(new ArrayList<>(Collections.singletonList(relationship)));
+        return machine;
     }
 
     private static UserInfo user() {

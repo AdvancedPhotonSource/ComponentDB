@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.mqtt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.anl.aps.cdb.mqtt.metadata.MachineAddChange;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -47,6 +48,32 @@ public class CdbMachineAddEventTest {
         assertNull(event.getParent());
         assertNull(event.getTriggeredByUsername());
         assertTrue(new ObjectMapper().writeValueAsString(event).contains("\"parent\":null"));
+    }
+
+    @Test
+    public void omitsTemplateFieldsForNonTemplateMachine() throws Exception {
+        String json = new ObjectMapper().writeValueAsString(
+                new CdbMachineAddEvent(machine(1, "Plain"), null, null));
+
+        assertFalse(json.contains("sourceTemplate"));
+        assertFalse(json.contains("templateAppliedToMachine"));
+        assertFalse(json.contains("templateCreatedMachineCount"));
+    }
+
+    @Test
+    public void serializesTemplateContext() throws Exception {
+        MachineAddChange change = new MachineAddChange(machine(3, "Child"), machine(2, "Instance"),
+                machine(10, "Child template"), machine(2, "Instance"), 4);
+        CdbMachineAddEvent event = new CdbMachineAddEvent(change, null);
+
+        String json = new ObjectMapper().writeValueAsString(event);
+
+        assertEquals("10", event.getSourceTemplate().getId());
+        assertEquals("2", event.getTemplateAppliedToMachine().getId());
+        assertEquals(Integer.valueOf(4), event.getTemplateCreatedMachineCount());
+        assertTrue(json.contains("\"sourceTemplate\":{"));
+        assertTrue(json.contains("\"templateAppliedToMachine\":{"));
+        assertTrue(json.contains("\"templateCreatedMachineCount\":4"));
     }
 
     @Test(expected = IllegalArgumentException.class)

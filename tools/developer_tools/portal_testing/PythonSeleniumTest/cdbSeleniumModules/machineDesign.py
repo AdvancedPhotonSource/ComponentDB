@@ -67,6 +67,9 @@ class MachineDesign(CdbSeleniumModuleBase):
 	ROW_BY_NAME_XPATH_FORMULA = '//tbody[contains(@id, "itemMachineDesignListDataTable_data")]/tr[.//div[@class="mdName" and normalize-space(text())="%s"]]'
 	RESTORE_MENU_ITEM_XPATH = '//*[contains(@id, "deletedItemsListContextMenu")]//a[.//span[text()="Put back..."]]'
 	RESTORE_YES_BUTTON_XPATH = '//*[contains(@id, "restoreDeletedItemDialogPanel")]//button[.//span[text()="Yes"]]'
+	TEMPLATE_SELECTION_ROW_XPATH_FORMULA = '//*[@id="itemMachineDesignListForm:itemMachineDesignListDataTabletemplateSelection"]//tr[.//div[@class="mdName" and normalize-space(text())="%s"]]'
+	TEMPLATE_VAR_INPUTS_XPATH = '//*[@id="itemMachineDesignListForm:itemDomainMachineDesignCreateFromTemplatePanelGridUsingTemplate"]//input[@type="text"]'
+	ADD_FROM_TEMPLATE_BUTTON_XPATH = '//*[@id="itemMachineDesignListForm:machineDesignDualListViewAddButtonUsingTemplate"]'
 	UI_ACTION_TIMEOUT = 30
 	# "Assign Item to Machine Element" panel (item/private/itemSelectDataTable.xhtml, viewName assignCatalogSelection).
 	ASSIGN_PANEL_TABLE_KEY = 'ItemSelectDataTableassignCatalogSelection'
@@ -417,6 +420,29 @@ class MachineDesign(CdbSeleniumModuleBase):
 		self.filter_machine_by_name(name)
 		parent_xpath = self._find_x_path_for_machine_design_item([name])
 		self.add_child_to_machine_design(parent_xpath, child_name, description)
+
+	def add_child_from_template(self, parent_name, template_name, var_value):
+		"""Instantiate ``template_name`` under top-level ``parent_name``, filling every name variable."""
+		self.filter_machine_by_name(parent_name)
+		parent_xpath = self._find_x_path_for_machine_design_item([parent_name])
+		menu_item_xpath = self.MENU_ITEM_BY_TEXT_XPATH_FORMULA % (
+			self.MACHINE_DESIGN_CONTEXT_MENU_ID, 'From Template')
+		self._context_click_x_path(parent_xpath, menu_item_xpath)
+
+		wait = WebDriverWait(self.driver, self.UI_ACTION_TIMEOUT)
+		wait.until(EC.element_to_be_clickable(
+			(By.XPATH, self.TEMPLATE_SELECTION_ROW_XPATH_FORMULA % template_name))).click()
+		# Selection re-renders the panel with one input per template name variable.
+		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
+		inputs = wait.until(EC.visibility_of_all_elements_located(
+			(By.XPATH, self.TEMPLATE_VAR_INPUTS_XPATH)))
+		for var_input in inputs:
+			var_input.clear()
+			var_input.send_keys(var_value)
+
+		add_button = self._wait_until_enabled_by_xpath(self.ADD_FROM_TEMPLATE_BUTTON_XPATH)
+		add_button.click()
+		self._wait_for_invisible_by_xpath(self.ADD_FROM_TEMPLATE_BUTTON_XPATH)
 
 	def _context_menu_id_for(self, hierarchy):
 		# Machines without an assignment: top-level vs member menu.

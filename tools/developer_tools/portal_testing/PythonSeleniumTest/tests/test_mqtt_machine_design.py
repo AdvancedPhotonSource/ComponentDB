@@ -24,6 +24,9 @@ MACHINE_ENTITY_TYPE = 'ItemDomainMachineDesign'
 PROJECT = 'APS-U'
 CATALOG_NAME = 'Test Item Assembly'  # unique catalog item (id 2) in the test database
 AFFECTED_COUNT = 2  # parent + one child
+# Test-database template with one template child; both names use the {nn} variable.
+TEMPLATE_NAME = 'Template_Test {nn}'
+TEMPLATE_CHILD_NAME = 'child {nn}'
 
 
 @pytest.mark.mqtt
@@ -72,6 +75,9 @@ class MachineDesignMqttTest(MqttPortalTestCase):
             self.assertIsNone(parent['parent'], msg='Top-level machine must have null parent')
             self.assertNotIn('oldParent', parent)
             self.assertNotIn('newParent', parent)
+            self.assertNotIn('sourceTemplate', parent)
+            self.assertNotIn('templateAppliedToMachine', parent)
+            self.assertNotIn('templateCreatedMachineCount', parent)
             self.assert_actor(parent)
 
             child = self.wait_for_ui_event(
@@ -87,6 +93,47 @@ class MachineDesignMqttTest(MqttPortalTestCase):
                 support.TOPIC_MD_ADD,
                 described_as('machine.description', parent_name),
                 within=2.0, description='parent %s re-announced' % parent_name)
+        finally:
+            self.trash_quietly(parent_name)
+
+    def test_machine_add_from_template(self):
+        suffix = uuid.uuid4().hex[:10]
+        parent_name = 'MQTT template parent %s' % suffix
+        top_name = TEMPLATE_NAME.replace('{nn}', suffix)
+        child_name = TEMPLATE_CHILD_NAME.replace('{nn}', suffix)
+        self.machine_design.navigate_to_machine_design()
+        self.machine_design.add_machine_design(
+            parent_name, 'Created by MQTT Selenium test', PROJECT)
+        try:
+            self.mqtt.drain()
+            self.machine_design.add_child_from_template(parent_name, TEMPLATE_NAME, suffix)
+
+            top = self.wait_for_ui_event(
+                support.TOPIC_MD_ADD, described_as('machine.description', top_name),
+                'machine add of %s' % top_name)
+            self.assertTrue(described_as('parent.description', parent_name)(top),
+                            msg='Unexpected parent: %s' % top.get('parent'))
+            self.assertTrue(described_as('sourceTemplate.description', TEMPLATE_NAME)(top),
+                            msg='Unexpected template: %s' % top.get('sourceTemplate'))
+            # The new top node is the machine the template was applied to.
+            self.assertEqual(str(top['templateAppliedToMachine']['id']), str(top['machine']['id']))
+            self.assertEqual(top['templateCreatedMachineCount'], 2)
+            self.assert_actor(top)
+
+            child = self.wait_for_ui_event(
+                support.TOPIC_MD_ADD, described_as('machine.description', child_name),
+                'machine add of %s' % child_name)
+            self.assertEqual(str(child['parent']['id']), str(top['machine']['id']))
+            self.assertTrue(described_as('sourceTemplate.description', TEMPLATE_CHILD_NAME)(child),
+                            msg='Unexpected template: %s' % child.get('sourceTemplate'))
+            self.assertEqual(str(child['templateAppliedToMachine']['id']), str(top['machine']['id']))
+            self.assertEqual(child['templateCreatedMachineCount'], 2)
+            self.assert_actor(child)
+
+            # The existing parent is neither announced nor treated as the template target.
+            self.mqtt.assert_no_message(
+                support.TOPIC_MD_ADD, described_as('machine.description', parent_name),
+                within=2.0, description='existing parent %s announced' % parent_name)
         finally:
             self.trash_quietly(parent_name)
 

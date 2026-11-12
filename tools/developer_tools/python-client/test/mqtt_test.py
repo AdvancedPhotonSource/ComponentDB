@@ -362,6 +362,10 @@ class MqttIntegrationTest(CdbTestBase):
             self.assert_item_snapshot(event["parent"], root_id)
             self.assertNotIn("oldParent", event)
             self.assertNotIn("newParent", event)
+            # Template fields are omitted for non-template machines.
+            self.assertNotIn("sourceTemplate", event)
+            self.assertNotIn("templateAppliedToMachine", event)
+            self.assertNotIn("templateCreatedMachineCount", event)
             self.assert_actor(event)
             # Placeholders are cascaded through the parent, so the standard event is its update.
             self.wait_for_entity_event(TOPIC_ENTITY_UPDATE, root_id, MACHINE_ENTITY_TYPE)
