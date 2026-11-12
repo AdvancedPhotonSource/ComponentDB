@@ -964,7 +964,8 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
     }
 
     @Override
-    protected void preparePostPersistenceEvents(List<ItemDomainMachineDesign> entities) {
+    protected void prepareSpecializedCreateEvents(
+            List<ItemDomainMachineDesign> entities, UserInfo userInfo) {
         // Identity set: unsaved items compare equal by identifiers; one node may be reachable via several roots.
         Set<ItemDomainMachineDesign> visited = Collections.newSetFromMap(new IdentityHashMap<>());
         for (ItemDomainMachineDesign entity : entities) {
@@ -1011,7 +1012,7 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
     }
 
     @Override
-    protected List<MqttEvent> createPostPersistenceEvents(
+    protected List<MqttEvent> createSpecializedCreateEvents(
             List<ItemDomainMachineDesign> entities, UserInfo userInfo) {
         List<MqttEvent> events = new ArrayList<>();
         for (ItemDomainMachineDesign entity : entities) {

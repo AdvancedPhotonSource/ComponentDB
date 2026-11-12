@@ -58,13 +58,13 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
         try {            
             prepareEntityInsert(entity, createdByUserInfo);
             List<EntityType> persisted = Collections.singletonList(entity);
-            preparePostPersistenceEvents(persisted);
+            prepareSpecializedCreateEvents(persisted, createdByUserInfo);
             getEntityDbFacade().create(entity);
            
             addCreatedSystemLog(entity, createdByUserInfo);
             entity.setPersitanceErrorMessage(null);
             publishMqttEvent(CdbMqttTopic.ADD, entity, createdByUserInfo);
-            publishMqttEvents(createPostPersistenceEvents(persisted, createdByUserInfo));
+            publishMqttEvents(createSpecializedCreateEvents(persisted, createdByUserInfo));
             
             clearCaches();
             return entity; 
@@ -87,14 +87,14 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             for (EntityType entity : entities) {
                 prepareEntityInsert(entity, createdByUserInfo);
             }
-            preparePostPersistenceEvents(entities);
+            prepareSpecializedCreateEvents(entities, createdByUserInfo);
             getEntityDbFacade().create(entities);            
             
             addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Created " + entities.size() + " entities.", createdByUserInfo);
             for (EntityType entity : entities) {
                 publishMqttEvent(CdbMqttTopic.ADD, entity, createdByUserInfo);
             }
-            publishMqttEvents(createPostPersistenceEvents(entities, createdByUserInfo));
+            publishMqttEvents(createSpecializedCreateEvents(entities, createdByUserInfo));
             setPersistenceErrorMessageForList(entities, null);
             clearCaches();
         } catch (CdbException ex) {
@@ -115,15 +115,15 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
         try {            
             logger.debug("Updating " + getDisplayEntityTypeName() + " " + getEntityInstanceName(entity));
             prepareEntityUpdate(entity, updatedByUserInfo);
-            List<MqttEvent> specializedEvents = prepareSpecializedUpdateEvents(entity, updatedByUserInfo);
+            List<MqttEvent> specializedUpdateEvents = prepareSpecializedUpdateEvents(entity, updatedByUserInfo);
             List<EntityType> persisted = Collections.singletonList(entity);
-            preparePostPersistenceEvents(persisted);
+            prepareSpecializedCreateEvents(persisted, updatedByUserInfo);
             EntityType updatedEntity = getEntityDbFacade().edit(entity);
             addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Updated: " + entity.getSystemLogString(), updatedByUserInfo);
             entity.setPersitanceErrorMessage(null);
             publishMqttEvent(CdbMqttTopic.UPDATE, updatedEntity, updatedByUserInfo);
-            publishMqttEvents(specializedEvents);
-            publishMqttEvents(createPostPersistenceEvents(persisted, updatedByUserInfo));
+            publishMqttEvents(specializedUpdateEvents);
+            publishMqttEvents(createSpecializedCreateEvents(persisted, updatedByUserInfo));
             
             clearCaches();
             return updatedEntity; 
@@ -147,13 +147,13 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
         try {
             logger.debug("Updating " + getDisplayEntityTypeName() + " " + getEntityInstanceName(entity));
             prepareEntityUpdateOnRemoval(entity);
-            List<MqttEvent> specializedEvents = prepareSpecializedUpdateEvents(entity, updatedByUserInfo);
+            List<MqttEvent> specializedUpdateEvents = prepareSpecializedUpdateEvents(entity, updatedByUserInfo);
             List<EntityType> persisted = Collections.singletonList(entity);
-            preparePostPersistenceEvents(persisted);
+            prepareSpecializedCreateEvents(persisted, updatedByUserInfo);
             EntityType updatedEntity = getEntityDbFacade().edit(entity);
             publishMqttEvent(CdbMqttTopic.UPDATE, updatedEntity, updatedByUserInfo);
-            publishMqttEvents(specializedEvents);
-            publishMqttEvents(createPostPersistenceEvents(persisted, updatedByUserInfo));
+            publishMqttEvents(specializedUpdateEvents);
+            publishMqttEvents(createSpecializedCreateEvents(persisted, updatedByUserInfo));
             clearCaches();
             
             return updatedEntity; 
@@ -175,21 +175,21 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
     
     public void updateList(List<EntityType> entities, UserInfo updatedByUserInfo) throws CdbException, RuntimeException {
         try {
-            List<MqttEvent> specializedEvents = new ArrayList<>();
+            List<MqttEvent> specializedUpdateEvents = new ArrayList<>();
             for (EntityType entity : entities) {
                 logger.debug("Updating " + getDisplayEntityTypeName() + " " + getEntityInstanceName(entity));
                 prepareEntityUpdate(entity, updatedByUserInfo);
-                specializedEvents.addAll(prepareSpecializedUpdateEvents(entity, updatedByUserInfo));
+                specializedUpdateEvents.addAll(prepareSpecializedUpdateEvents(entity, updatedByUserInfo));
             }
-            preparePostPersistenceEvents(entities);
+            prepareSpecializedCreateEvents(entities, updatedByUserInfo);
             getEntityDbFacade().edit(entities);
             for (EntityType entity : entities) {                
                 entity.setPersitanceErrorMessage(null);
                 addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Updated: " + entity.getSystemLogString(), updatedByUserInfo);
                 publishMqttEvent(CdbMqttTopic.UPDATE, entity, updatedByUserInfo);
             }
-            publishMqttEvents(specializedEvents);
-            publishMqttEvents(createPostPersistenceEvents(entities, updatedByUserInfo));
+            publishMqttEvents(specializedUpdateEvents);
+            publishMqttEvents(createSpecializedCreateEvents(entities, updatedByUserInfo));
             clearCaches();
         } catch (CdbException ex) {
             logger.error("Could not update " + getDisplayEntityTypeName() + " entities: " + ex.getMessage());
@@ -277,14 +277,16 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
     }
 
     /**
-     * Captures pre-persistence state for events that need DB-assigned values (e.g. new IDs).
-     * Called once per facade call with every entity passed to it.
+     * Captures entities about to be newly persisted (directly or nested); runs before every
+     * create and update facade call since updates can cascade new children. Events are built
+     * by createSpecializedCreateEvents once DB-assigned IDs exist.
      */
-    protected void preparePostPersistenceEvents(List<EntityType> entities) throws CdbException {
+    protected void prepareSpecializedCreateEvents(
+            List<EntityType> entities, UserInfo userInfo) throws CdbException {
     }
 
-    /** Builds events from state captured by preparePostPersistenceEvents after a successful facade call. */
-    protected List<MqttEvent> createPostPersistenceEvents(
+    /** Builds create events from state captured by prepareSpecializedCreateEvents after a successful facade call. */
+    protected List<MqttEvent> createSpecializedCreateEvents(
             List<EntityType> entities, UserInfo userInfo) {
         return Collections.emptyList();
     }
