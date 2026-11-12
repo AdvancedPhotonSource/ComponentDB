@@ -11,12 +11,28 @@ public final class MachineAddChange {
 
     private final ItemDomainMachineDesign machine;
     private final ItemDomainMachineDesign parent;
+    private final ItemDomainMachineDesign sourceTemplate;
+    private final ItemDomainMachineDesign templateAppliedToMachine;
+    private final Integer templateCreatedMachineCount;
 
     public MachineAddChange(ItemDomainMachineDesign machine, ItemDomainMachineDesign parent) {
+        this(machine, parent, null, null, null);
+    }
+
+    public MachineAddChange(ItemDomainMachineDesign machine, ItemDomainMachineDesign parent,
+            ItemDomainMachineDesign sourceTemplate,
+            ItemDomainMachineDesign templateAppliedToMachine,
+            Integer templateCreatedMachineCount) {
         this.machine = machine;
         this.parent = parent;
+        this.sourceTemplate = sourceTemplate;
+        this.templateAppliedToMachine = templateAppliedToMachine;
+        this.templateCreatedMachineCount = templateCreatedMachineCount;
     }
 
     public ItemDomainMachineDesign getMachine() { return machine; }
     public ItemDomainMachineDesign getParent() { return parent; }
+    public ItemDomainMachineDesign getSourceTemplate() { return sourceTemplate; }
+    public ItemDomainMachineDesign getTemplateAppliedToMachine() { return templateAppliedToMachine; }
+    public Integer getTemplateCreatedMachineCount() { return templateCreatedMachineCount; }
 }
