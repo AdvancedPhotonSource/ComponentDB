@@ -68,7 +68,8 @@ class MachineDesign(CdbSeleniumModuleBase):
 	RESTORE_MENU_ITEM_XPATH = '//*[contains(@id, "deletedItemsListContextMenu")]//a[.//span[text()="Put back..."]]'
 	RESTORE_YES_BUTTON_XPATH = '//*[contains(@id, "restoreDeletedItemDialogPanel")]//button[.//span[text()="Yes"]]'
 	TEMPLATE_SELECTION_ROW_XPATH_FORMULA = '//*[@id="itemMachineDesignListForm:itemMachineDesignListDataTabletemplateSelection"]//tr[.//div[@class="mdName" and normalize-space(text())="%s"]]'
-	TEMPLATE_VAR_INPUTS_XPATH = '//*[@id="itemMachineDesignListForm:itemDomainMachineDesignCreateFromTemplatePanelGridUsingTemplate"]//input[@type="text"]'
+	# The grid include gets no viewName, so match by id substring within the add-from-template panel.
+	TEMPLATE_VAR_INPUTS_XPATH = '//*[contains(@id, "addMachineDesignUsingTemplate")]//*[contains(@id, "itemDomainMachineDesignCreateFromTemplatePanelGrid")]//input[@type="text"]'
 	ADD_FROM_TEMPLATE_BUTTON_XPATH = '//*[@id="itemMachineDesignListForm:machineDesignDualListViewAddButtonUsingTemplate"]'
 	UI_ACTION_TIMEOUT = 30
 	# "Assign Item to Machine Element" panel (item/private/itemSelectDataTable.xhtml, viewName assignCatalogSelection).
