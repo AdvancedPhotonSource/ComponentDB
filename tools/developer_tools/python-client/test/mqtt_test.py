@@ -13,6 +13,7 @@ import unittest
 
 from cdbApi.exceptions import OpenApiException
 from cdbApi.models import (
+    LogEntryEditInformation,
     NewLocationInformation,
     NewMachinePlaceholderOptions,
     PropertyValue,
@@ -28,6 +29,9 @@ from test.mqtt_test_support import (
     TOPIC_ENTITY_UPDATE,
     TOPIC_INVENTORY_ASSEMBLY_ELEMENT,
     TOPIC_ITEM_LOCATION,
+    TOPIC_LOG_ADD,
+    TOPIC_LOG_DELETE,
+    TOPIC_LOG_UPDATE,
     TOPIC_MD_ADD,
     TOPIC_MD_ASSIGNED_ITEM,
     TOPIC_MD_MOVE,
@@ -584,6 +588,88 @@ class MqttIntegrationTest(CdbTestBase):
                     self.propertyValueApi.delete_property_by_id(property_id)
                 except OpenApiException:
                     pass
+
+
+    # -- item log events ---------------------------------------------------
+
+    def add_item_log(self, item_id, text):
+        return self.itemApi.add_log_entry_to_item(
+            log_entry_edit_information=LogEntryEditInformation(item_id=item_id, log_entry=text))
+
+    def delete_item_log_quietly(self, item_id, log_id):
+        try:
+            self.itemApi.delete_log_entry_from_item(item_id, log_id)
+        except OpenApiException:
+            pass
+
+    def wait_for_log_event(self, topic, item_id, log_path, log_id):
+        return self.mqtt.wait_for(
+            topic, all_of(id_at("itemId", item_id), id_at(log_path, log_id)),
+            description="log %s on item %s" % (log_id, item_id))
+
+    def test_item_log_add_update_delete(self):
+        item_id = self.CATALOG_ITEM_ID
+        text = "MQTT log %s" % self.gen_unique_name()
+        updated_text = text + "\nsecond line"
+        self.loginAsAdmin()
+        log_id = None
+        try:
+            self.mqtt.drain()
+            log_id = self.add_item_log(item_id, text).id
+            event = self.wait_for_log_event(TOPIC_LOG_ADD, item_id, "newLog.logId", log_id)
+            self.assertEqual(event["operation"], "add")
+            self.assertIsNone(event.get("oldLog"))
+            self.assertEqual(event["newLog"]["text"], text)
+            self.assertFalse(event["newLog"]["textOmitted"])
+            self.assertEqual(event["newLog"]["enteredByUsername"], self.ADMIN_USERNAME)
+            self.assertIsNone(event.get("textDiff"))
+            self.assertNotIn("attachmentList", event["newLog"])
+            self.assert_actor(event)
+            # A new entry is an add only, never also an update.
+            self.mqtt.assert_no_message(
+                TOPIC_LOG_UPDATE, id_at("newLog.logId", log_id),
+                within=NO_EVENT_GRACE_SECONDS, description="update for new log %s" % log_id)
+
+            self.mqtt.drain()
+            self.itemApi.update_log_entry_for_item(
+                log_id, log_entry_edit_information=LogEntryEditInformation(
+                    item_id=item_id, log_entry=updated_text))
+            event = self.wait_for_log_event(TOPIC_LOG_UPDATE, item_id, "newLog.logId", log_id)
+            self.assertEqual(event["operation"], "update")
+            self.assertEqual(str(event["oldLog"]["logId"]), str(log_id))
+            self.assertEqual(event["textDiff"], "+second line\n")
+            self.assertFalse(event["diffTruncated"])
+            self.assertTrue(event["oldLog"]["textOmitted"])
+            self.assertIsNone(event["newLog"].get("text"))
+            self.assert_actor(event)
+
+            self.mqtt.drain()
+            self.itemApi.delete_log_entry_from_item(item_id, log_id)
+            deleted_id, log_id = log_id, None
+            event = self.wait_for_log_event(TOPIC_LOG_DELETE, item_id, "oldLog.logId", deleted_id)
+            self.assertEqual(event["operation"], "delete")
+            self.assertEqual(event["oldLog"]["text"], updated_text)
+            self.assertIsNone(event.get("newLog"))
+            self.assert_actor(event)
+        finally:
+            if log_id is not None:
+                self.delete_item_log_quietly(item_id, log_id)
+
+    def test_item_log_long_text_is_bounded(self):
+        item_id = self.CATALOG_ITEM_ID
+        limit = 16 * 1024
+        text = ("MQTT long log %s " % self.gen_unique_name()).ljust(limit + 100, "x")
+        self.loginAsAdmin()
+        log_id = None
+        try:
+            self.mqtt.drain()
+            log_id = self.add_item_log(item_id, text).id
+            event = self.wait_for_log_event(TOPIC_LOG_ADD, item_id, "newLog.logId", log_id)
+            self.assertEqual(event["newLog"]["text"], text[:limit])
+            self.assertTrue(event["diffTruncated"])
+        finally:
+            if log_id is not None:
+                self.delete_item_log_quietly(item_id, log_id)
 
 
 if __name__ == "__main__":

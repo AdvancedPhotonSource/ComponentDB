@@ -104,10 +104,17 @@ class Catalog(ItemBase):
 		sampleItemLink.click()
 		self._wait_for_id_and_click('componentViewForm:componentViewInfoButton')
 
-	def add_log_to_catalog_item(self):
-		logEntryText = 'My Awesome New Log Entry!!!'
+	def add_log_to_catalog_item(self, log_entry_text='My Awesome New Log Entry!!!'):
+		self._clear_notifications()
+		self._add_log_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, log_entry_text)
 
-		self._add_log_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, logEntryText)
+	def update_first_catalog_log(self, new_text):
+		self._clear_notifications()
+		self._edit_log_on_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, new_text)
+
+	def delete_first_catalog_log(self, log_text):
+		self._clear_notifications()
+		self._delete_log_on_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, log_text)
 
 	def add_property_to_catalog_item(self, test, prop_value_text="Catalog Test Property"):
 		self._clear_notifications()
