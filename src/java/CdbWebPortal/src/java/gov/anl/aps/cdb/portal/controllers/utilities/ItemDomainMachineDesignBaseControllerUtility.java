@@ -967,6 +967,7 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
     @Override
     protected void prepareSpecializedCreateEvents(
             List<ItemDomainMachineDesign> entities, UserInfo userInfo) {
+        super.prepareSpecializedCreateEvents(entities, userInfo);
         // Identity set: unsaved items compare equal by identifiers; one node may be reachable via several roots.
         Set<ItemDomainMachineDesign> visited = Collections.newSetFromMap(new IdentityHashMap<>());
         List<List<MachineAddChange>> changesPerEntity = new ArrayList<>();
@@ -1119,6 +1120,8 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
             }
             entity.setPendingMachineAddChanges(null);
         }
+        // Machine adds precede log adds so a new machine is announced before its logs.
+        events.addAll(super.createSpecializedCreateEvents(entities, userInfo));
         return events;
     }
 

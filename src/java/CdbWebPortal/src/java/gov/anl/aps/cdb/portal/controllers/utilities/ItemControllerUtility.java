@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.mqtt.CdbInventoryAssemblyElementEvent;
+import gov.anl.aps.cdb.mqtt.CdbItemLogEvent;
 import gov.anl.aps.cdb.mqtt.CdbItemLocationEvent;
 import gov.anl.aps.cdb.mqtt.CdbItemPropertyEvent;
 import gov.anl.aps.cdb.mqtt.CdbMachineAssignedItemEvent;
@@ -19,6 +20,7 @@ import gov.anl.aps.cdb.portal.constants.ListName;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
 import gov.anl.aps.cdb.mqtt.metadata.InventoryAssemblyElementChange;
 import gov.anl.aps.cdb.mqtt.metadata.ItemLocationChange;
+import gov.anl.aps.cdb.mqtt.metadata.ItemLogChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineAssignedItemChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineRepresentedElementChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineTrashChange;
@@ -41,6 +43,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
+import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
@@ -51,6 +54,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
@@ -164,6 +168,8 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
                 originalPropertyValueList, newPropertyValueList, entityInfo);
         item.setPendingPropertyValueChanges(propertyChanges);
         item.clearPropertyValueCache();
+        item.setPendingLogChanges(LogUtility.prepareLogChanges(
+                originalItem.getLogList(), item.getLogList()));
 
         List<Item> derivedFromItemList = item.getDerivedFromItemList();
         if (derivedFromItemList != null) {
@@ -277,7 +283,111 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
                     throw new IllegalStateException("Unsupported property change type");
             }
         }
+        for (ItemLogChange change : item.getPendingLogChanges()) {
+            if (change.getType() == ItemLogChange.Type.UPDATE) {
+                events.add(CdbItemLogEvent.updated(item,
+                        change.getOldLog(), change.getNewLog(), userInfo));
+            } else {
+                events.add(CdbItemLogEvent.deleted(item, change.getOldLog(), userInfo));
+            }
+        }
+        item.setPendingLogChanges(null);
         return events;
+    }
+
+    @Override
+    protected void prepareSpecializedCreateEvents(
+            List<ItemDomainEntity> entities, UserInfo userInfo) {
+        for (ItemDomainEntity item : entities) {
+            List<Log> addedLogs = new ArrayList<>();
+            List<Log> logs = item.getLogList();
+            if (logs != null) {
+                for (Log log : logs) {
+                    if (log.getId() == null) {
+                        addedLogs.add(log);
+                    }
+                }
+            }
+            item.setPendingAddedLogs(addedLogs);
+        }
+    }
+
+    @Override
+    protected List<MqttEvent> createSpecializedCreateEvents(
+            List<ItemDomainEntity> entities, UserInfo userInfo) {
+        List<MqttEvent> events = new ArrayList<>();
+        for (ItemDomainEntity item : entities) {
+            List<Log> addedLogs = item.getPendingAddedLogs();
+            item.setPendingAddedLogs(null);
+            if (addedLogs.isEmpty()) {
+                continue;
+            }
+            try {
+                for (Log log : resolvePersistedLogs(item, addedLogs)) {
+                    events.add(CdbItemLogEvent.added(item, log, userInfo));
+                }
+            } catch (RuntimeException ex) {
+                logger.error("Failed to create item log add MQTT events", ex);
+            }
+        }
+        return events;
+    }
+
+    /**
+     * Create persists the submitted logs (IDs assigned in place); update merges them, so IDs
+     * exist only on managed copies and are read back like ItemRoute does for new properties.
+     */
+    private List<Log> resolvePersistedLogs(ItemDomainEntity item, List<Log> addedLogs) {
+        List<Log> unresolved = new ArrayList<>();
+        for (Log log : addedLogs) {
+            if (log.getId() == null) {
+                unresolved.add(log);
+            }
+        }
+        if (unresolved.isEmpty()) {
+            return addedLogs;
+        }
+
+        Set<Integer> knownIds = new HashSet<>();
+        if (item.getLogList() != null) {
+            for (Log log : item.getLogList()) {
+                if (log.getId() != null) {
+                    knownIds.add(log.getId());
+                }
+            }
+        }
+        List<Log> candidates = new ArrayList<>();
+        ItemDomainEntity persistedItem = item.getId() == null ? null : findById(item.getId());
+        if (persistedItem != null && persistedItem.getLogList() != null) {
+            for (Log log : persistedItem.getLogList()) {
+                if (log.getId() != null && !knownIds.contains(log.getId())) {
+                    candidates.add(log);
+                }
+            }
+        }
+
+        List<Log> resolved = new ArrayList<>();
+        for (Log log : addedLogs) {
+            if (log.getId() != null) {
+                resolved.add(log);
+                continue;
+            }
+            Log match = null;
+            for (Log candidate : candidates) {
+                if (Objects.equals(candidate.getText(), log.getText())
+                        && Objects.equals(candidate.getEnteredByUser(), log.getEnteredByUser())) {
+                    match = candidate;
+                    break;
+                }
+            }
+            if (match == null) {
+                logger.warn("Could not resolve persisted log for MQTT add event on " + item);
+            } else {
+                candidates.remove(match);
+                resolved.add(match);
+            }
+        }
+        return resolved;
     }
 
     private void addInventoryAssemblyElementEvents(List<MqttEvent> events,
@@ -318,6 +428,9 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         List<PropertyValueChange> propertyChanges = PropertyValueUtility.findRemovedPropertyValues(
                 originalItem.getPropertyValueList(), item.getPropertyValueList());
         item.setPendingPropertyValueChanges(propertyChanges);
+        // Full diff: the merge also persists any edits made alongside the removal.
+        item.setPendingLogChanges(LogUtility.prepareLogChanges(
+                originalItem.getLogList(), item.getLogList()));
     }
 
     @Override
