@@ -8,7 +8,10 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.base.mqtt.MqttEvent;
+import gov.anl.aps.cdb.mqtt.CdbMachineAddEvent;
 import gov.anl.aps.cdb.mqtt.CdbMachineMoveEvent;
+import gov.anl.aps.cdb.mqtt.metadata.MachineAddChange;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
@@ -31,9 +34,12 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.model.DefaultTreeNode;
@@ -955,6 +961,75 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
 
         updateList(machinesToUpdate, updateUser);
         ieru.destroyList(relationshipsToDestroy, null, updateUser);
+    }
+
+    @Override
+    protected void preparePostPersistenceEvents(List<ItemDomainMachineDesign> entities) {
+        // Identity set: unsaved items compare equal by identifiers; one node may be reachable via several roots.
+        Set<ItemDomainMachineDesign> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (ItemDomainMachineDesign entity : entities) {
+            List<MachineAddChange> changes = new ArrayList<>();
+            collectNewMachines(entity, entity.getParentMachineDesign(), true, changes, visited);
+            entity.setPendingMachineAddChanges(changes);
+        }
+    }
+
+    // Mirrors ItemFacadeBase.populateItemsToAdd: only recurse below roots and unsaved nodes.
+    private void collectNewMachines(ItemDomainMachineDesign machine,
+            ItemDomainMachineDesign parent, boolean persistenceRoot,
+            List<MachineAddChange> changes, Set<ItemDomainMachineDesign> visited) {
+        if (machine == null || !visited.add(machine)) {
+            return;
+        }
+        boolean persisted = isMachinePersisted(machine);
+        if (!persisted) {
+            changes.add(new MachineAddChange(machine, parent));
+        } else if (!persistenceRoot) {
+            return;
+        }
+        ItemElement selfElement = machine.getSelfElement();
+        List<ItemElement> elements = machine.getFullItemElementList();
+        if (elements != null) {
+            for (ItemElement element : elements) {
+                Item child = element == selfElement ? null : element.getContainedItem();
+                if (child instanceof ItemDomainMachineDesign) {
+                    collectNewMachines((ItemDomainMachineDesign) child, machine, false,
+                            changes, visited);
+                }
+            }
+        }
+        // ItemDomainMachineDesignFacade.edit cascades into itemsToUpdate as further roots.
+        for (ItemDomainMachineDesign itemToUpdate : machine.getItemsToUpdate()) {
+            collectNewMachines(itemToUpdate, itemToUpdate.getParentMachineDesign(), true,
+                    changes, visited);
+        }
+    }
+
+    /** Mirrors ItemFacadeBase.populateItemsToAdd: an ID alone does not mean the row exists. */
+    protected boolean isMachinePersisted(ItemDomainMachineDesign machine) {
+        return machine.getId() != null && getEntityDbFacade().findItem(machine.getId()) != null;
+    }
+
+    @Override
+    protected List<MqttEvent> createPostPersistenceEvents(
+            List<ItemDomainMachineDesign> entities, UserInfo userInfo) {
+        List<MqttEvent> events = new ArrayList<>();
+        for (ItemDomainMachineDesign entity : entities) {
+            for (MachineAddChange change : entity.getPendingMachineAddChanges()) {
+                // Skip nodes that did not receive an ID (not actually persisted).
+                if (change.getMachine().getId() == null) {
+                    continue;
+                }
+                try {
+                    events.add(new CdbMachineAddEvent(
+                            change.getMachine(), change.getParent(), userInfo));
+                } catch (RuntimeException ex) {
+                    logger.error("Failed to create machine add MQTT event", ex);
+                }
+            }
+            entity.setPendingMachineAddChanges(null);
+        }
+        return events;
     }
 
 }
