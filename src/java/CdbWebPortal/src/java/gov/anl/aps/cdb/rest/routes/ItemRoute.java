@@ -18,6 +18,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControlle
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.LocatableItemControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.LogControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.AttachmentFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
@@ -860,6 +861,65 @@ public class ItemRoute extends ItemBaseRoute {
         Item updatedItem = (Item) controllerUtility.update(itemById, updateUser);
         Log latestLog = updatedItem.getLogList().get(0);
         return latestLog; 
+    }
+
+    @POST
+    @Path("/updateLogEntry/{logId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Update text and/or effective date of an existing item log entry.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public Log updateLogEntryForItem(
+            @PathParam("logId") int logId,
+            @RequestBody(required = true) LogEntryEditInformation logEntryEditInformation) throws ObjectNotFound, CdbException {
+        int itemId = logEntryEditInformation.getItemId();
+        LOGGER.debug("Updating log " + logId + " for item with id: " + itemId);
+        Item item = getItemByIdBase(itemId);
+        UserInfo updateUser = verifyCurrentUserPermissionForItem(item);
+        Log log = findItemLog(item, logId);
+
+        if (logEntryEditInformation.getLogEntry() != null) {
+            log.setText(logEntryEditInformation.getLogEntry());
+        }
+        if (logEntryEditInformation.getEffectiveDate() != null) {
+            log.setEffectiveFromDateTime(logEntryEditInformation.getEffectiveDate());
+        }
+
+        ItemControllerUtility controllerUtility = item.getItemControllerUtility();
+        Item updatedItem = (Item) controllerUtility.update(item, updateUser);
+        return findItemLog(updatedItem, logId);
+    }
+
+    @DELETE
+    @Path("/deleteLogEntry/{itemId}/{logId}")
+    @Operation(summary = "Delete an item log entry.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public void deleteLogEntryFromItem(
+            @PathParam("itemId") int itemId,
+            @PathParam("logId") int logId) throws ObjectNotFound, CdbException {
+        LOGGER.debug("Deleting log " + logId + " for item with id: " + itemId);
+        Item item = getItemByIdBase(itemId);
+        UserInfo updateUser = verifyCurrentUserPermissionForItem(item);
+        Log log = findItemLog(item, logId);
+
+        // Mirrors the portal: unlink through the item update, then delete the log row.
+        item.getLogList().remove(log);
+        ItemControllerUtility controllerUtility = item.getItemControllerUtility();
+        controllerUtility.updateOnRemoval(item, updateUser);
+        new LogControllerUtility().destroy(log, updateUser);
+    }
+
+    private Log findItemLog(Item item, int logId) throws ObjectNotFound {
+        if (item.getLogList() != null) {
+            for (Log log : item.getLogList()) {
+                if (log.getId() != null && log.getId() == logId) {
+                    return log;
+                }
+            }
+        }
+        throw new ObjectNotFound("Could not find log " + logId + " for item " + item.getId());
     }
 
     @POST
