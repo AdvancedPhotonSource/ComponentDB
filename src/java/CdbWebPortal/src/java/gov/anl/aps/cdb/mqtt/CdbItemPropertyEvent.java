@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.mqtt;
 
+import gov.anl.aps.cdb.mqtt.utilities.CdbMqttTextUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -11,7 +12,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 /** Scalar snapshot of a completed item-property change. */
 public final class CdbItemPropertyEvent extends CdbMqttEvent {
 
-    public static final int MAX_TEXT_LENGTH = 16 * 1024;
+    public static final int MAX_TEXT_LENGTH = CdbMqttTextUtility.MAX_TEXT_LENGTH;
 
     private final CdbMqttOperation operation;
     private final String itemId;
@@ -39,15 +40,16 @@ public final class CdbItemPropertyEvent extends CdbMqttEvent {
         String oldText = oldProperty == null ? null : oldProperty.getText();
         String newText = newProperty == null ? null : newProperty.getText();
         if (longText && oldProperty != null && newProperty != null) {
-            String diff = createLineDiff(oldText, newText);
-            diffTruncated = diff.length() > MAX_TEXT_LENGTH;
-            textDiff = truncate(diff);
+            String diff = CdbMqttTextUtility.createLineDiff(oldText, newText);
+            diffTruncated = CdbMqttTextUtility.exceedsLimit(diff);
+            textDiff = CdbMqttTextUtility.truncate(diff);
             this.oldProperty = new CdbPropertySnapshot(oldProperty, null, true);
             this.newProperty = new CdbPropertySnapshot(newProperty, null, true);
         } else {
-            String boundedOldText = truncate(oldText);
-            String boundedNewText = truncate(newText);
-            diffTruncated = length(oldText) > MAX_TEXT_LENGTH || length(newText) > MAX_TEXT_LENGTH;
+            String boundedOldText = CdbMqttTextUtility.truncate(oldText);
+            String boundedNewText = CdbMqttTextUtility.truncate(newText);
+            diffTruncated = CdbMqttTextUtility.exceedsLimit(oldText)
+                    || CdbMqttTextUtility.exceedsLimit(newText);
             textDiff = null;
             this.oldProperty = oldProperty == null ? null
                     : new CdbPropertySnapshot(oldProperty, boundedOldText, false);
@@ -77,41 +79,6 @@ public final class CdbItemPropertyEvent extends CdbMqttEvent {
             case ITEM_PROPERTY_DELETE: return CdbMqttOperation.DELETE;
             default: throw new IllegalArgumentException("Invalid property event topic");
         }
-    }
-
-    private static String createLineDiff(String oldText, String newText) {
-        String[] oldLines = lines(oldText);
-        String[] newLines = lines(newText);
-        int prefix = 0;
-        while (prefix < oldLines.length && prefix < newLines.length
-                && oldLines[prefix].equals(newLines[prefix])) {
-            prefix++;
-        }
-        int suffix = 0;
-        while (suffix < oldLines.length - prefix && suffix < newLines.length - prefix
-                && oldLines[oldLines.length - suffix - 1]
-                        .equals(newLines[newLines.length - suffix - 1])) {
-            suffix++;
-        }
-
-        StringBuilder result = new StringBuilder();
-        for (int i = prefix; i < oldLines.length - suffix; i++) {
-            result.append('-').append(oldLines[i]).append('\n');
-        }
-        for (int i = prefix; i < newLines.length - suffix; i++) {
-            result.append('+').append(newLines[i]).append('\n');
-        }
-        return result.toString();
-    }
-
-    private static String[] lines(String value) {
-        return value == null || value.isEmpty() ? new String[0] : value.split("\\R", -1);
-    }
-
-    private static int length(String value) { return value == null ? 0 : value.length(); }
-    private static String truncate(String value) {
-        return value == null || value.length() <= MAX_TEXT_LENGTH
-                ? value : value.substring(0, MAX_TEXT_LENGTH);
     }
 
     public CdbMqttOperation getOperation() { return operation; }

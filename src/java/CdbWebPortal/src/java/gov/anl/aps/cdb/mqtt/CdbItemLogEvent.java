@@ -4,19 +4,20 @@
  */
 package gov.anl.aps.cdb.mqtt;
 
+import gov.anl.aps.cdb.mqtt.utilities.CdbMqttTextUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.Objects;
 
 /**
- * Scalar snapshot of a completed item log-entry change. Follows CdbItemPropertyEvent
- * text conventions: add/delete carry text bounded at MAX_TEXT_LENGTH; updates carry a
+ * Scalar snapshot of a completed item log-entry change. Uses CdbMqttTextUtility
+ * conventions: add/delete carry text bounded at MAX_TEXT_LENGTH; updates carry a
  * bounded line diff (null when the text is unchanged) and omit full text.
  */
 public final class CdbItemLogEvent extends CdbMqttEvent {
 
-    public static final int MAX_TEXT_LENGTH = CdbItemPropertyEvent.MAX_TEXT_LENGTH;
+    public static final int MAX_TEXT_LENGTH = CdbMqttTextUtility.MAX_TEXT_LENGTH;
 
     private final CdbMqttOperation operation;
     private final String itemId;
@@ -46,20 +47,20 @@ public final class CdbItemLogEvent extends CdbMqttEvent {
                 textDiff = null;
                 diffTruncated = false;
             } else {
-                String diff = CdbItemPropertyEvent.createLineDiff(oldText, newText);
-                diffTruncated = diff.length() > MAX_TEXT_LENGTH;
-                textDiff = CdbItemPropertyEvent.truncate(diff);
+                String diff = CdbMqttTextUtility.createLineDiff(oldText, newText);
+                diffTruncated = CdbMqttTextUtility.exceedsLimit(diff);
+                textDiff = CdbMqttTextUtility.truncate(diff);
             }
             this.oldLog = new CdbLogSnapshot(oldLog, null, true);
             this.newLog = new CdbLogSnapshot(newLog, null, true);
         } else {
             textDiff = null;
-            diffTruncated = CdbItemPropertyEvent.length(oldText) > MAX_TEXT_LENGTH
-                    || CdbItemPropertyEvent.length(newText) > MAX_TEXT_LENGTH;
+            diffTruncated = CdbMqttTextUtility.exceedsLimit(oldText)
+                    || CdbMqttTextUtility.exceedsLimit(newText);
             this.oldLog = oldLog == null ? null
-                    : new CdbLogSnapshot(oldLog, CdbItemPropertyEvent.truncate(oldText), false);
+                    : new CdbLogSnapshot(oldLog, CdbMqttTextUtility.truncate(oldText), false);
             this.newLog = newLog == null ? null
-                    : new CdbLogSnapshot(newLog, CdbItemPropertyEvent.truncate(newText), false);
+                    : new CdbLogSnapshot(newLog, CdbMqttTextUtility.truncate(newText), false);
         }
     }
 
