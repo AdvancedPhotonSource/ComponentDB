@@ -321,6 +321,58 @@ class CdbSeleniumModuleBase:
 		newLogEntrySelector = "#%s\\3a %sLogListDataTable\\3a 0\\3a logEntryColumnCellEditor > div.ui-cell-editor-output" % (form_name, entity_name)
 		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, newLogEntrySelector), log_entry))
 
+	def _log_row_xpath(self, form_name, entity_name, row_index):
+		return '//tbody[@id="%s:%sLogListDataTable_data"]/tr[%d]' % (form_name, entity_name, row_index + 1)
+
+	def _edit_log_on_item(self, form_name, entity_name, new_text, row_index=0, needs_toggler=True):
+		"""Replace a log entry's text through the log table row editor."""
+		if needs_toggler:
+			self._expand_panel(form_name, '%sViewLogEntriesPanel' % entity_name)
+		row_xpath = self._log_row_xpath(form_name, entity_name, row_index)
+		self._click_using_javascript(self._wait_for_visible_xpath(
+			row_xpath + '//a[contains(@class, "ui-row-editor-pencil")]'))
+		text_area = self._wait_for_visible_id('%s:%sLogListDataTable:%d:logEntry' % (form_name, entity_name, row_index))
+		text_area.clear()
+		text_area.send_keys(new_text)
+		self._click_using_javascript(self._wait_for_visible_xpath(
+			row_xpath + '//a[contains(@class, "ui-row-editor-check")]'))
+		output_selector = "#%s\\3a %sLogListDataTable\\3a %d\\3a logEntryColumnCellEditor > div.ui-cell-editor-output" % (form_name, entity_name, row_index)
+		first_line = new_text.splitlines()[0]
+		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(
+			EC.text_to_be_present_in_element((By.CSS_SELECTOR, output_selector), first_line))
+
+	def _delete_log_on_item(self, form_name, entity_name, log_text, row_index=0, needs_toggler=True):
+		"""Delete a log entry through its trash link and confirmation dialog."""
+		if needs_toggler:
+			self._expand_panel(form_name, '%sViewLogEntriesPanel' % entity_name)
+		table_id = '%s:%sLogListDataTable' % (form_name, entity_name)
+		self._click_using_javascript(self._wait_for_id(
+			'%s:%d:%sLogDestroyButton' % (table_id, row_index, entity_name)))
+		confirm = self._wait_for_visible_id('%s:%d:confirmYesDestroyLogEntryButton' % (table_id, row_index))
+		self._click_using_javascript(confirm)
+		first_line = log_text.splitlines()[0]
+		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(
+			lambda driver: first_line not in driver.find_element(By.ID, table_id).text)
+
+	def _upload_attachment_to_log_on_item(self, form_name, entity_name, sample_file_name='AnlLogo.png', row_index=0, needs_toggler=True):
+		"""Attach a file through the log upload dialog; Done saves the item."""
+		if needs_toggler:
+			self._expand_panel(form_name, '%sViewLogEntriesPanel' % entity_name)
+		self._click_using_javascript(self._wait_for_id('%s:%sLogListDataTable:%d:%sLogUploadAttachmentButton'
+			% (form_name, entity_name, row_index, entity_name)))
+		dialog_xpath = '//*[contains(@id, "logAttachmentUploadDialog") and contains(@class, "ui-dialog")]'
+		self._wait_for_visible_xpath(dialog_xpath)
+		upload_input = self._find_by_xpath(dialog_xpath + '//input[@type="file"]')
+		upload_input.send_keys(os.path.abspath('data/' + sample_file_name))
+		self._click_using_javascript(self._wait_for_visible_xpath(
+			dialog_xpath + '//button[contains(@class, "ui-fileupload-upload")]'))
+		# PrimeFaces drops the pending file row once the upload listener has run.
+		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(
+			lambda driver: not driver.find_elements(By.XPATH, dialog_xpath + '//*[contains(@class, "ui-fileupload-row")]'))
+		self._click_using_javascript(self._wait_for_visible_xpath(
+			dialog_xpath + '//button[.//span[text()="Done"]]'))
+		self._wait_for_invisible_by_xpath(dialog_xpath)
+
 	def _add_property_to_item(self, test, form_name, entity_name, prop_value_text, needs_toggler=True):
 		if needs_toggler:
 			self._expand_panel(form_name, '%sViewPropertiesPanel' % entity_name)
@@ -351,6 +403,32 @@ class CdbSeleniumModuleBase:
 		value_element = self._find_by_id(expected_value_box_id)
 
 		test.assertEqual(value_element.text, prop_value_text, msg='%s found but expected %s for new property value.' % (value_element.text,prop_value_text ))
+
+	def _open_property_edit_dialog(self, form_name, entity_name, row_index, needs_toggler):
+		if needs_toggler:
+			self._expand_panel(form_name, '%sViewPropertiesPanel' % entity_name)
+		edit_id = '%s:%sPropertyListDataTable:%d:%sPropertyEditActionButton' % (
+			form_name, entity_name, row_index, entity_name)
+		self._wait_for_id_and_click(edit_id)
+		self._wait_for_visible_id('%s:%sSinglePropertyEditDialog' % (form_name, entity_name))
+
+	def _close_property_edit_dialog(self, form_name, entity_name, button_suffix):
+		self._wait_for_id_and_click('%s:%sSinglePropertyEdit%s' % (form_name, entity_name, button_suffix))
+		self._wait_for_invisible_by_id('%s:%sSinglePropertyEditDialog' % (form_name, entity_name))
+		self._wait_for_invisible_loading_dialog()
+
+	def _edit_property_value_on_item(self, form_name, entity_name, new_value, row_index=0, needs_toggler=True):
+		"""Change a free-form property value through the property edit dialog."""
+		self._open_property_edit_dialog(form_name, entity_name, row_index, needs_toggler)
+		value_input = self._wait_for_visible_id('%s:freeFormTextValue' % form_name)
+		value_input.clear()
+		value_input.send_keys(new_value)
+		self._close_property_edit_dialog(form_name, entity_name, 'SaveButton')
+
+	def _delete_property_on_item(self, form_name, entity_name, row_index=0, needs_toggler=True):
+		"""Delete a property through the property edit dialog."""
+		self._open_property_edit_dialog(form_name, entity_name, row_index, needs_toggler)
+		self._close_property_edit_dialog(form_name, entity_name, 'DeleteButton')
 
 	def _add_image_to_item(self, form_name, entity_name, sample_file_name='AnlLogo.png', needs_toggler=True):
 		if needs_toggler:

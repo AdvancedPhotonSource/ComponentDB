@@ -34,15 +34,17 @@ class Catalog(ItemBase):
 	def navigate_to_catalog_list(self):
 		self._navigate_to_dropdown('catalogDropdownButton', 'componentCatalogButton', 'itemDomainCatalog/list')
 
-	def start_create_sample_catalog_item(self):
+	def start_create_sample_catalog_item(self, name=SAMPLE_CATALOG_ITEM_NAME,
+										 model=SAMPLE_CATALOG_ITEM_MODEL,
+										 alternate_name=SAMPLE_CATALOG_ITEM_ALTERNATE_NAME):
 		self.navigate_to_catalog_list()
 		self._wait_for_id_and_click('componentListForm:componentAddButton')
 
 		nameInput = self._wait_for_id('addComponentForm:nameInputTextCreateWizard')
-		nameInput.send_keys(SAMPLE_CATALOG_ITEM_NAME)
+		nameInput.send_keys(name)
 
-		self._type_in_id('addComponentForm:itemIdentifier1ITCreateWizard', SAMPLE_CATALOG_ITEM_MODEL)
-		self._type_in_id('addComponentForm:itemIdentifier2ITCreateWizard', SAMPLE_CATALOG_ITEM_ALTERNATE_NAME)
+		self._type_in_id('addComponentForm:itemIdentifier1ITCreateWizard', model)
+		self._type_in_id('addComponentForm:itemIdentifier2ITCreateWizard', alternate_name)
 		self._type_in_id('addComponentForm:descriptionITACreateWizard', 'Description')
 
 	def finish_create_sample_catalog_item(self):
@@ -102,16 +104,34 @@ class Catalog(ItemBase):
 		sampleItemLink.click()
 		self._wait_for_id_and_click('componentViewForm:componentViewInfoButton')
 
-	def add_log_to_catalog_item(self):
-		logEntryText = 'My Awesome New Log Entry!!!'
+	def add_log_to_catalog_item(self, log_entry_text='My Awesome New Log Entry!!!'):
+		self._clear_notifications()
+		self._add_log_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, log_entry_text)
 
-		self._add_log_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, logEntryText)
+	def upload_attachment_to_first_catalog_log(self, sample_file_name='AnlLogo.png'):
+		self._clear_notifications()
+		self._upload_attachment_to_log_on_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, sample_file_name)
 
-	def add_property_to_catalog_item(self, test):
-		self._clear_notifications()		
-		prop_value_text = "Catalog Test Property"
+	def update_first_catalog_log(self, new_text):
+		self._clear_notifications()
+		self._edit_log_on_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, new_text)
+
+	def delete_first_catalog_log(self, log_text):
+		self._clear_notifications()
+		self._delete_log_on_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, log_text)
+
+	def add_property_to_catalog_item(self, test, prop_value_text="Catalog Test Property"):
+		self._clear_notifications()
 
 		self._add_property_to_item(test, self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, prop_value_text)
+
+	def update_first_catalog_property(self, new_value):
+		self._clear_notifications()
+		self._edit_property_value_on_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, new_value)
+
+	def delete_first_catalog_property(self):
+		self._clear_notifications()
+		self._delete_property_on_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME)
 
 	def add_image_to_catalog_item(self):
 		self._add_image_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME)

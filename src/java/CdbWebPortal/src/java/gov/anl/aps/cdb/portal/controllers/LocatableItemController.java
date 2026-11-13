@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.mqtt.metadata.ItemLocationChange;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
@@ -1005,6 +1006,10 @@ public class LocatableItemController implements Serializable {
         }
 
         if (newItemWithNewLocation || locationDifferentOnCurrentItem) {
+            Item oldLocation = existingItem == null ? null : existingItem.getLocationItem();
+            String oldLocationDetails = existingItem == null
+                    ? null : normalizeLocationDetails(existingItem.getLocationDetails());
+            String newLocationDetails = normalizeLocationDetails(item.getLocationDetails());
             // Verify that the location can be changed. 
             if ((existingItem != null) && (locationEditable(existingItem)) == false) {
                 Item location = existingItem.getActiveLocation();
@@ -1064,11 +1069,17 @@ public class LocatableItemController implements Serializable {
                 }
 
                 ierhList.add(ierh);
+                item.setPendingLocationChange(new ItemLocationChange(
+                        oldLocation, oldLocationDetails, item.getLocationItem(), newLocationDetails));
 
             } else {
                 logger.error("updateItemLocation(): item location relationship unexpectedly null for item: " + item.toString());
             }
         }
+    }
+
+    private static String normalizeLocationDetails(String details) {
+        return details == null || details.isEmpty() ? null : details;
     }
 
     private RelationshipType getLocationRelationshipType() {

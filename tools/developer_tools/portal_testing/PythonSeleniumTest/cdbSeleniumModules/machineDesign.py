@@ -8,10 +8,12 @@ See LICENSE file.
 import time
 import csv
 
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 from cdbSeleniumModules.cdbSeleniumModuleBase import CdbSeleniumModuleBase
 from cdbSeleniumModules.cdbSeleniumModuleDecorators import add_stale_protection
@@ -47,6 +49,34 @@ class MachineDesign(CdbSeleniumModuleBase):
 	
 	IMPORT_FILE_NAME = "Machine Design Import.xlsx"
 	EXPORT_FILE_NAME = "Machine Element Update Export.xlsx"
+
+	NAME_FILTER_ID = 'itemMachineDesignListForm:itemMachineDesignListDataTable:nameMdFilter'
+	# Top-level standard machine without an assignment uses this context menu.
+	MACHINE_DESIGN_MEMBER_CONTEXT_MENU_ID = 'machineDesignDualViewMachineDesignMemberContextMenu'
+	MENU_ITEM_BY_TEXT_XPATH_FORMULA = '//*[@id="itemMachineDesignListForm:%s"]//a[.//span[text()="%s"]]'
+	MENU_ITEM_BY_INDEX_XPATH_FORMULA = '//*[@id="itemMachineDesignListForm:%s"]/ul/li[%d]/a'
+	ASSIGN_CATALOG_MENU_ITEM_IDX = 2
+	LINK_ASSEMBLY_PART_TEXT = 'Link to assembly part'
+	SET_REP_ELEMENT_DIALOG_ID = 'itemMachineDesignListForm:setRepElementDialog'
+	SET_REP_ELEMENT_ITEMS_XPATH = '//*[@id="%s"]//*[contains(@class, "ui-selectlistbox-item")]' % SET_REP_ELEMENT_DIALOG_ID
+	SET_REP_ELEMENT_SAVE_XPATH = '//*[@id="%s"]//button[.//span[text()="Save"]]' % SET_REP_ELEMENT_DIALOG_ID
+	DROP_CONFIRM_YES_XPATH = '//div[contains(@class, "ui-confirm-dialog")][.//div[@id="machineDesignDropConfirmDialogMessage"]]//button[.//span[text()="Yes"]]'
+	MOVE_TO_TRASH_YES_BUTTON_ID = 'itemMachineDesignListForm:moveToTrashDialogYesButton'
+	DELETED_ITEMS_VIEW = 'itemDomainMachineDesign/deletedItemsList'
+	# Deleted-items page ids are matched by suffix so they do not depend on its form name.
+	ROW_BY_NAME_XPATH_FORMULA = '//tbody[contains(@id, "itemMachineDesignListDataTable_data")]/tr[.//div[@class="mdName" and normalize-space(text())="%s"]]'
+	RESTORE_MENU_ITEM_XPATH = '//*[contains(@id, "deletedItemsListContextMenu")]//a[.//span[text()="Put back..."]]'
+	RESTORE_YES_BUTTON_XPATH = '//*[contains(@id, "restoreDeletedItemDialogPanel")]//button[.//span[text()="Yes"]]'
+	TEMPLATE_SELECTION_ROW_XPATH_FORMULA = '//*[@id="itemMachineDesignListForm:itemMachineDesignListDataTabletemplateSelection"]//tr[.//div[@class="mdName" and normalize-space(text())="%s"]]'
+	# The grid include gets no viewName, so match by id substring within the add-from-template panel.
+	TEMPLATE_VAR_INPUTS_XPATH = '//*[contains(@id, "addMachineDesignUsingTemplate")]//*[contains(@id, "itemDomainMachineDesignCreateFromTemplatePanelGrid")]//input[@type="text"]'
+	ADD_FROM_TEMPLATE_BUTTON_XPATH = '//*[@id="itemMachineDesignListForm:machineDesignDualListViewAddButtonUsingTemplate"]'
+	UI_ACTION_TIMEOUT = 30
+	# "Assign Item to Machine Element" panel (item/private/itemSelectDataTable.xhtml, viewName assignCatalogSelection).
+	ASSIGN_PANEL_TABLE_KEY = 'ItemSelectDataTableassignCatalogSelection'
+	ASSIGN_PANEL_NAME_FILTER_XPATH = '//input[contains(@id, "%s:") and contains(@id, "NameColumn:filter")]' % ASSIGN_PANEL_TABLE_KEY
+	ASSIGN_PANEL_ROWS_XPATH = '//tbody[contains(@id, "%s_data")]/tr' % ASSIGN_PANEL_TABLE_KEY
+	ASSIGN_PANEL_SAVE_ID = 'itemMachineDesignListForm:assignCatalogToMachineDesignSave'
 
 	def __init__(self, driver):
 		super().__init__(driver)
@@ -256,42 +286,11 @@ class MachineDesign(CdbSeleniumModuleBase):
 		self._wait_for_invisible_by_xpath(addBtnXpath)
 
 	def assign_catalog_to_machine_design(self, parentListItemXpath, catalogName):
-		self._context_click_x_path(parentListItemXpath, '//*[@id="itemMachineDesignListForm:machineDesignDualViewMachineDesignMemberContextMenu"]/ul/li[2]/a')
-
-		catalogNamefilter = self._wait_for_visible_xpath('//*[@id="itemMachineDesignListForm:itemMachineDesignItemSelectDataTable:itemMachineDesignListObjectNameColumn:filter"]')
-
-		currentFilterText = catalogNamefilter.get_attribute('value')
-
-		if currentFilterText != catalogName:
-			catalogNamefilter.clear()
-			catalogNamefilter.send_keys('@!!!#$#%^#@$%^@#$%%@#$&^#$%R%^#@$%@#$%#$%@#$%@@#$@#$!@%$#@$#@$!@#$%')
-			catalogNamefilter.clear()
-			time.sleep(0.5)
-			catalogNamefilter.send_keys(catalogName)
-			time.sleep(0.5)
-
-		tBody = self._wait_for_id('itemMachineDesignListForm:itemMachineDesignItemSelectDataTable_data')
-		attempts = 0
-		found = False
-		while attempts < 6:
-			resultCount = len(tBody.find_elements(by=By.XPATH, value='./tr'))
-			if resultCount == 1:
-				found = True;
-				break;
-
-			time.sleep(0.5)
-			attempts += 1
-
-		if found:
-			self._click_on_xpath('//*[@id="itemMachineDesignListForm:itemMachineDesignItemSelectDataTable_data"]/tr')
-		else:
-			raise Exception('Couldn\'t find catalog item ' + catalogName)
-
-		time.sleep(1)
-
-		saveButtonId = 'itemMachineDesignListForm:assignCatalogToMachineDesignSave'
-		self._wait_for_id_and_click(saveButtonId)
-		self._wait_for_invisible_by_id(saveButtonId)
+		"""Assign a catalog item to the child machine at ``parentListItemXpath``."""
+		menu_item_xpath = self.MENU_ITEM_BY_INDEX_XPATH_FORMULA % (
+			self.MACHINE_DESIGN_MEMBER_CONTEXT_MENU_ID, self.ASSIGN_CATALOG_MENU_ITEM_IDX)
+		self._context_click_x_path(parentListItemXpath, menu_item_xpath)
+		self.select_item_in_assign_panel(catalogName)
 
 	def input_hierarchy_from_sample_file(self, csvFile='data/Rack-2018-11-06.csv', project='APS-OPS'):
 		with open(csvFile) as csvFile:
@@ -406,6 +405,170 @@ class MachineDesign(CdbSeleniumModuleBase):
 		self._add_log_to_item(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, 'Machine Design Log!', False)		
 		self._add_property_to_item(test, self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, "Machine Prop", False)		
 		self._add_image_to_item(self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME, needs_toggler=False)		
+
+	def filter_machine_by_name(self, name, expected_name=None):
+		"""Replace any existing name filter, unlike filter_machine which appends."""
+		self._wait_for_clickable_id_with_stale_protection(self.NAME_FILTER_ID)
+		filter_box = self._find_by_id(self.NAME_FILTER_ID)
+		filter_box.clear()
+		filter_box.send_keys(name + "\n")
+		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
+		self._wait_for_xpath(self.ROW_BY_NAME_XPATH_FORMULA % (expected_name or name))
+
+	def add_machine_design_with_child(self, name, child_name, description, project='APS-OPS'):
+		"""Create a top-level machine with one placeholder child from the list page."""
+		self.add_machine_design(name, description, project)
+		self.filter_machine_by_name(name)
+		parent_xpath = self._find_x_path_for_machine_design_item([name])
+		self.add_child_to_machine_design(parent_xpath, child_name, description)
+
+	def add_child_from_template(self, parent_name, template_name, var_value):
+		"""Instantiate ``template_name`` under top-level ``parent_name``, filling every name variable."""
+		self.filter_machine_by_name(parent_name)
+		parent_xpath = self._find_x_path_for_machine_design_item([parent_name])
+		menu_item_xpath = self.MENU_ITEM_BY_TEXT_XPATH_FORMULA % (
+			self.MACHINE_DESIGN_CONTEXT_MENU_ID, 'From Template')
+		self._context_click_x_path(parent_xpath, menu_item_xpath)
+
+		wait = WebDriverWait(self.driver, self.UI_ACTION_TIMEOUT)
+		wait.until(EC.element_to_be_clickable(
+			(By.XPATH, self.TEMPLATE_SELECTION_ROW_XPATH_FORMULA % template_name))).click()
+		# Selection re-renders the panel with one input per template name variable.
+		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
+		inputs = wait.until(EC.visibility_of_all_elements_located(
+			(By.XPATH, self.TEMPLATE_VAR_INPUTS_XPATH)))
+		for var_input in inputs:
+			var_input.clear()
+			var_input.send_keys(var_value)
+
+		add_button = self._wait_until_enabled_by_xpath(self.ADD_FROM_TEMPLATE_BUTTON_XPATH)
+		add_button.click()
+		self._wait_for_invisible_by_xpath(self.ADD_FROM_TEMPLATE_BUTTON_XPATH)
+
+	def _context_menu_id_for(self, hierarchy):
+		# Machines without an assignment: top-level vs member menu.
+		return self.MACHINE_DESIGN_CONTEXT_MENU_ID if len(hierarchy) == 1 \
+			else self.MACHINE_DESIGN_MEMBER_CONTEXT_MENU_ID
+
+	def assign_catalog_to_machine(self, hierarchy, catalog_name, filter_text):
+		"""Assign a catalog item to an unassigned machine via the context menu.
+
+		``filter_text`` must match every name in ``hierarchy`` so none is filtered out.
+		"""
+		self.filter_machine_by_name(filter_text, expected_name=hierarchy[0])
+		item_xpath = self._find_x_path_for_machine_design_item(hierarchy)
+		menu_item_xpath = self.MENU_ITEM_BY_INDEX_XPATH_FORMULA % (
+			self._context_menu_id_for(hierarchy), self.ASSIGN_CATALOG_MENU_ITEM_IDX)
+		self._context_click_x_path(item_xpath, menu_item_xpath)
+		self.select_item_in_assign_panel(catalog_name)
+
+	def link_child_to_assembly_part(self, parent_name, child_name, filter_text):
+		"""Link an unassigned child to the first assembly part of its parent's catalog.
+
+		Returns the selected element name.
+		"""
+		self.filter_machine_by_name(filter_text, expected_name=parent_name)
+		child_xpath = self._find_x_path_for_machine_design_item([parent_name, child_name])
+		menu_item_xpath = self.MENU_ITEM_BY_TEXT_XPATH_FORMULA % (
+			self.MACHINE_DESIGN_MEMBER_CONTEXT_MENU_ID, self.LINK_ASSEMBLY_PART_TEXT)
+		self._context_click_x_path(child_xpath, menu_item_xpath)
+
+		wait = WebDriverWait(self.driver, self.UI_ACTION_TIMEOUT)
+		wait.until(EC.visibility_of_element_located((By.ID, self.SET_REP_ELEMENT_DIALOG_ID)))
+		element_item = wait.until(EC.element_to_be_clickable((By.XPATH, self.SET_REP_ELEMENT_ITEMS_XPATH)))
+		element_name = element_item.text.strip()
+		element_item.click()
+		self._click_on_xpath(self.SET_REP_ELEMENT_SAVE_XPATH)
+		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
+		# Save only refreshes the dialog contents; close it explicitly.
+		self.driver.execute_script("PF('setRepElementDialogWidget').hide()")
+		return element_name
+
+	def drag_machine_onto(self, source_name, target_name, filter_text):
+		"""Drag a top-level machine onto another machine and confirm the move."""
+		self.filter_machine_by_name(filter_text, expected_name=target_name)
+		drag_xpath = '%s//*[contains(@id, "draggableMachineDesign")]'
+		source = self._wait_for_visible_xpath(drag_xpath % (self.ROW_BY_NAME_XPATH_FORMULA % source_name))
+		target = self._wait_for_visible_xpath(drag_xpath % (self.ROW_BY_NAME_XPATH_FORMULA % target_name))
+
+		# Step through moves so jQuery UI registers a drag rather than a click.
+		ActionChains(self.driver).click_and_hold(source).move_by_offset(5, 5) \
+			.move_to_element(target).move_by_offset(1, 1).release().perform()
+
+		WebDriverWait(self.driver, self.UI_ACTION_TIMEOUT).until(
+			EC.element_to_be_clickable((By.XPATH, self.DROP_CONFIRM_YES_XPATH))).click()
+		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
+
+	def select_item_in_assign_panel(self, item_name):
+		"""Filter the assign panel to a uniquely named item, select it, and save."""
+		wait = WebDriverWait(self.driver, self.UI_ACTION_TIMEOUT)
+		name_filter = wait.until(EC.visibility_of_element_located(
+			(By.XPATH, self.ASSIGN_PANEL_NAME_FILTER_XPATH)))
+		name_filter.clear()
+		name_filter.send_keys(item_name)
+
+		def single_matching_row(driver):
+			try:
+				rows = driver.find_elements(By.XPATH, self.ASSIGN_PANEL_ROWS_XPATH)
+				if len(rows) == 1 and item_name in rows[0].text:
+					return rows[0]
+			except StaleElementReferenceException:
+				pass
+			return False
+
+		wait.until(single_matching_row).click()
+		# rowSelect + remote command re-render the panel under the loading dialog.
+		try:
+			WebDriverWait(self.driver, 3).until(
+				EC.visibility_of_element_located((By.ID, self.LOADING_DIALOG_ID)))
+		except TimeoutException:
+			pass
+		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
+
+		def row_selected(driver):
+			row = single_matching_row(driver)
+			return bool(row) and (row.get_attribute('aria-selected') == 'true'
+								  or 'ui-state-highlight' in (row.get_attribute('class') or ''))
+
+		wait.until(row_selected)
+
+		wait.until(EC.element_to_be_clickable((By.ID, self.ASSIGN_PANEL_SAVE_ID))).click()
+		self._wait_for_invisible_by_id(self.ASSIGN_PANEL_SAVE_ID, timeout=self.UI_ACTION_TIMEOUT)
+		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
+
+	def move_top_level_machine_to_trash(self, name, menu_id=MACHINE_DESIGN_CONTEXT_MENU_ID):
+		"""Move a top-level machine (and its hierarchy) to trash via the context menu.
+
+		Pass MACHINE_DESIGN_CATALOG_CONTEXT_MENU_ID when the machine has a catalog assigned.
+		"""
+		self.filter_machine_by_name(name)
+		item_xpath = self._find_x_path_for_machine_design_item([name])
+		self._context_click_x_path(
+			item_xpath, self.MENU_ITEM_BY_TEXT_XPATH_FORMULA % (menu_id, 'Move to Trash'))
+
+		yes_button = WebDriverWait(self.driver, self.UI_ACTION_TIMEOUT).until(
+			EC.element_to_be_clickable((By.ID, self.MOVE_TO_TRASH_YES_BUTTON_ID)))
+		yes_button.click()
+		self._wait_for_invisible_by_id(self.MOVE_TO_TRASH_YES_BUTTON_ID, timeout=self.UI_ACTION_TIMEOUT)
+		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
+
+	def navigate_to_deleted_machine_design(self):
+		base_url = self.driver.current_url.split('/views/')[0]
+		self.driver.get('%s/views/%s.xhtml' % (base_url, self.DELETED_ITEMS_VIEW))
+		self._wait_for_url_contains(self.DELETED_ITEMS_VIEW)
+
+	def restore_deleted_machine(self, name):
+		"""Put back a top-level machine from the deleted-items list."""
+		row_xpath = self.ROW_BY_NAME_XPATH_FORMULA % name
+		WebDriverWait(self.driver, self.UI_ACTION_TIMEOUT).until(
+			EC.presence_of_element_located((By.XPATH, row_xpath)))
+		self._context_click_x_path(row_xpath + '/td[1]', self.RESTORE_MENU_ITEM_XPATH)
+
+		yes_button = WebDriverWait(self.driver, self.UI_ACTION_TIMEOUT).until(
+			EC.element_to_be_clickable((By.XPATH, self.RESTORE_YES_BUTTON_XPATH)))
+		yes_button.click()
+		self._wait_for_invisible_by_xpath(self.RESTORE_YES_BUTTON_XPATH)
+		self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
 
 	def filter_machine(self, filter_string='Test Machine'):
 		filterbox_id = 'itemMachineDesignListForm:itemMachineDesignListDataTable:nameMdFilter'

@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
+import gov.anl.aps.cdb.mqtt.metadata.PropertyValueChange;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -16,6 +17,7 @@ import gov.anl.aps.cdb.portal.utilities.GalleryUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -78,14 +80,16 @@ public class PropertyValueUtility {
         return imagePropertyValueList;
     }
 
-    public static void preparePropertyValueHistory(List<PropertyValue> originalPropertyValueList,
+    public static List<PropertyValueChange> preparePropertyValueHistory(List<PropertyValue> originalPropertyValueList,
             List<PropertyValue> newPropertyValueList, EntityInfo entityInfo) {
+        List<PropertyValueChange> changes = new ArrayList<>();
         for (PropertyValue newPropertyValue : newPropertyValueList) {
             int index = originalPropertyValueList.indexOf(newPropertyValue);
             if (index >= 0) {
                 // Original property was there.
                 PropertyValue originalPropertyValue = originalPropertyValueList.get(index);
-                if (!newPropertyValue.equalsByTagAndValueAndUnitsAndDescriptionAndMetadata(originalPropertyValue)) {
+                if (!newPropertyValue.equalsByTagAndValueAndUnitsAndDescriptionAndMetadata(originalPropertyValue)
+                        || !Objects.equals(newPropertyValue.getText(), originalPropertyValue.getText())) {
                     // Property value was modified.
                     logger.debug("Property value for type " + originalPropertyValue.getPropertyType()
                             + " was modified (original value: " + originalPropertyValue + "; new value: " + newPropertyValue + ")");
@@ -97,6 +101,7 @@ public class PropertyValueUtility {
                     PropertyValueHistory propertyValueHistory = new PropertyValueHistory();
                     propertyValueHistory.updateFromPropertyValue(originalPropertyValue);
                     propertyValueHistoryList.add(propertyValueHistory);
+                    changes.add(PropertyValueChange.updated(originalPropertyValue, newPropertyValue));
                 }
             } else {
                 // New property value.
@@ -104,9 +109,25 @@ public class PropertyValueUtility {
                         + ": " + newPropertyValue);
                 newPropertyValue.setEnteredByUser(entityInfo.getLastModifiedByUser());
                 newPropertyValue.setEnteredOnDateTime(entityInfo.getLastModifiedOnDateTime());
+                changes.add(PropertyValueChange.added(newPropertyValue));
             }
         }
 
+        changes.addAll(findRemovedPropertyValues(
+                originalPropertyValueList, newPropertyValueList));
+        return changes;
+    }
+
+    public static List<PropertyValueChange> findRemovedPropertyValues(
+            List<PropertyValue> originalPropertyValueList,
+            List<PropertyValue> newPropertyValueList) {
+        List<PropertyValueChange> changes = new ArrayList<>();
+        for (PropertyValue originalPropertyValue : originalPropertyValueList) {
+            if (!newPropertyValueList.contains(originalPropertyValue)) {
+                changes.add(PropertyValueChange.deleted(originalPropertyValue));
+            }
+        }
+        return changes;
     }
 
     public static PropertyTypeHandlerInterface getPropertyTypeHandler(PropertyValue propertyValue) {

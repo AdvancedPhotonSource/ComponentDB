@@ -4,12 +4,29 @@
  */
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
+import gov.anl.aps.cdb.base.mqtt.MqttEvent;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.mqtt.CdbInventoryAssemblyElementEvent;
+import gov.anl.aps.cdb.mqtt.CdbItemLogEvent;
+import gov.anl.aps.cdb.mqtt.CdbItemLogAttachmentEvent;
+import gov.anl.aps.cdb.mqtt.CdbItemLocationEvent;
+import gov.anl.aps.cdb.mqtt.CdbItemPropertyEvent;
+import gov.anl.aps.cdb.mqtt.CdbMachineAssignedItemEvent;
+import gov.anl.aps.cdb.mqtt.CdbMachineRepresentedElementEvent;
+import gov.anl.aps.cdb.mqtt.CdbMachineTrashEvent;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.ListName;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
+import gov.anl.aps.cdb.mqtt.metadata.InventoryAssemblyElementChange;
+import gov.anl.aps.cdb.mqtt.metadata.ItemLocationChange;
+import gov.anl.aps.cdb.mqtt.metadata.ItemLogChange;
+import gov.anl.aps.cdb.mqtt.metadata.LogAttachmentChange;
+import gov.anl.aps.cdb.mqtt.metadata.MachineAssignedItemChange;
+import gov.anl.aps.cdb.mqtt.metadata.MachineRepresentedElementChange;
+import gov.anl.aps.cdb.mqtt.metadata.MachineTrashChange;
+import gov.anl.aps.cdb.mqtt.metadata.PropertyValueChange;
 import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyMetadataValueFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
@@ -18,14 +35,18 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import gov.anl.aps.cdb.portal.model.db.entities.Attachment;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
+import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
@@ -36,6 +57,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
@@ -46,8 +68,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
@@ -125,9 +151,13 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
 
         // Prepare history 
         Item originalItem = findById(item.getId());
+        prepareMachineAssignedItemChange(originalItem, item);
+        prepareMachineRepresentedElementChange(originalItem, item);
         // Full item element list contains self element as well as all the elements 
         List<ItemElement> originalElementList = originalItem.getFullItemElementList();
         List<ItemElement> newElementList = item.getFullItemElementList();
+        prepareInventoryAssemblyElementChanges(originalItem, item,
+                originalElementList, newElementList);
         logger.debug("Verifying elements for item " + item);
         ItemElementUtility.prepareItemElementHistory(originalElementList, newElementList, entityInfo);
         //Verify reverse hierarchy updates
@@ -139,8 +169,14 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         List<PropertyValue> originalPropertyValueList = originalItem.getPropertyValueList();
         List<PropertyValue> newPropertyValueList = item.getPropertyValueList();
         logger.debug("Verifying properties for item " + item);
-        PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);
+        List<PropertyValueChange> propertyChanges = PropertyValueUtility.preparePropertyValueHistory(
+                originalPropertyValueList, newPropertyValueList, entityInfo);
+        item.setPendingPropertyValueChanges(propertyChanges);
         item.clearPropertyValueCache();
+        item.setPendingLogChanges(LogUtility.prepareLogChanges(
+                originalItem.getLogList(), item.getLogList()));
+        item.setPendingLogAttachmentChanges(LogUtility.findAddedAttachments(
+                originalItem.getLogList(), item.getLogList()));
 
         List<Item> derivedFromItemList = item.getDerivedFromItemList();
         if (derivedFromItemList != null) {
@@ -154,6 +190,293 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         logger.debug("Updating item " + item.getId()
                 + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
 
+    }
+
+    protected void prepareInventoryAssemblyElementChanges(Item originalItem, Item item,
+            List<ItemElement> originalElementList, List<ItemElement> newElementList) {
+        if (!(item instanceof ItemDomainInventoryBase)) {
+            return;
+        }
+        ItemDomainInventoryBase inventoryAssembly = (ItemDomainInventoryBase) item;
+        for (ItemElement newElement : newElementList) {
+            if (newElement.equals(item.getSelfElement())) {
+                continue;
+            }
+            int index = originalElementList.indexOf(newElement);
+            Item oldAssignedItem = index < 0
+                    ? null : originalElementList.get(index).getContainedItem();
+            Item newAssignedItem = newElement.getContainedItem();
+            if (!Objects.equals(oldAssignedItem, newAssignedItem)) {
+                inventoryAssembly.addPendingAssemblyElementChange(
+                        new InventoryAssemblyElementChange(
+                                newElement, oldAssignedItem, newAssignedItem));
+            }
+        }
+    }
+
+    protected void prepareMachineAssignedItemChange(Item originalItem, Item item) {
+        if (item instanceof ItemDomainMachineDesign) {
+            ItemDomainMachineDesign machine = (ItemDomainMachineDesign) item;
+            ItemDomainMachineDesign originalMachine = (ItemDomainMachineDesign) originalItem;
+            Item oldAssignedItem = originalMachine.getAssignedItem();
+            Item newAssignedItem = machine.getAssignedItem();
+            if (!Objects.equals(oldAssignedItem, newAssignedItem)
+                    || originalMachine.isIsHoused() != machine.isIsHoused()) {
+                machine.setPendingAssignedItemChange(
+                        oldAssignedItem, originalMachine.isIsHoused());
+            }
+        }
+    }
+
+    protected void prepareMachineRepresentedElementChange(Item originalItem, Item item) {
+        if (item instanceof ItemDomainMachineDesign) {
+            ItemDomainMachineDesign machine = (ItemDomainMachineDesign) item;
+            ItemDomainMachineDesign originalMachine = (ItemDomainMachineDesign) originalItem;
+            if (!Objects.equals(originalMachine.getRepresentsCatalogElement(),
+                    machine.getRepresentsCatalogElement())) {
+                machine.setPendingRepresentedElementChange(
+                        originalMachine.getRepresentsCatalogElement());
+            }
+        }
+    }
+
+    @Override
+    protected List<MqttEvent> prepareSpecializedUpdateEvents(
+            ItemDomainEntity item, UserInfo userInfo) throws CdbException {
+        List<MqttEvent> events = new ArrayList<>();
+        if (item instanceof ItemDomainInventoryBase) {
+            addInventoryAssemblyElementEvents(events,
+                    (ItemDomainInventoryBase) item, userInfo, new HashSet<>());
+        }
+        if (item instanceof LocatableItem) {
+            LocatableItem locatableItem = (LocatableItem) item;
+            ItemLocationChange locationChange = locatableItem.getPendingLocationChange();
+            if (locationChange != null) {
+                events.add(new CdbItemLocationEvent(locatableItem,
+                        locationChange.getOldLocation(), locationChange.getNewLocation(),
+                        locationChange.getOldLocationDetails(),
+                        locationChange.getNewLocationDetails(), userInfo));
+            }
+        }
+        if (item instanceof ItemDomainMachineDesign) {
+            ItemDomainMachineDesign machine = (ItemDomainMachineDesign) item;
+            MachineAssignedItemChange change = machine.getPendingAssignedItemChange();
+            if (change != null) {
+                events.add(new CdbMachineAssignedItemEvent(machine,
+                        change.getOldAssignedItem(), machine.getAssignedItem(),
+                        change.isOldInstalled(), machine.isIsHoused(), userInfo));
+            }
+            addRepresentedElementEvents(events, machine, userInfo);
+            MachineTrashChange trashChange = machine.getPendingTrashChange();
+            if (trashChange != null) {
+                events.add(new CdbMachineTrashEvent(trashChange.getTopic(), machine,
+                        trashChange.getRequestedHierarchyRoot(),
+                        trashChange.getAffectedMachineCount(), userInfo));
+            }
+        }
+        for (PropertyValueChange change : item.getPendingPropertyValueChanges()) {
+            switch (change.getType()) {
+                case ADD:
+                    events.add(CdbItemPropertyEvent.added(item, change.getNewValue(), userInfo));
+                    break;
+                case UPDATE:
+                    events.add(CdbItemPropertyEvent.updated(item,
+                            change.getOldValue(), change.getNewValue(), userInfo));
+                    break;
+                case DELETE:
+                    events.add(CdbItemPropertyEvent.deleted(item, change.getOldValue(), userInfo));
+                    break;
+                default:
+                    throw new IllegalStateException("Unsupported property change type");
+            }
+        }
+        for (ItemLogChange change : item.getPendingLogChanges()) {
+            if (change.getType() == ItemLogChange.Type.UPDATE) {
+                events.add(CdbItemLogEvent.updated(item,
+                        change.getOldLog(), change.getNewLog(), userInfo));
+            } else {
+                events.add(CdbItemLogEvent.deleted(item, change.getOldLog(), userInfo));
+            }
+        }
+        item.setPendingLogChanges(null);
+        Set<Attachment> publishedAttachments = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (LogAttachmentChange change : item.getPendingLogAttachmentChanges()) {
+            if (publishedAttachments.add(change.getAttachment())) {
+                events.add(new CdbItemLogAttachmentEvent(item,
+                        change.getLog(), change.getAttachment(), userInfo));
+            }
+        }
+        item.setPendingLogAttachmentChanges(null);
+        return events;
+    }
+
+    @Override
+    protected void prepareSpecializedCreateEvents(
+            List<ItemDomainEntity> entities, UserInfo userInfo) {
+        for (ItemDomainEntity item : entities) {
+            List<Log> addedLogs = new ArrayList<>();
+            List<Log> logs = item.getLogList();
+            if (logs != null) {
+                for (Log log : logs) {
+                    if (log.getId() == null) {
+                        addedLogs.add(log);
+                    }
+                }
+            }
+            item.setPendingAddedLogs(addedLogs);
+        }
+    }
+
+    @Override
+    protected List<MqttEvent> createSpecializedCreateEvents(
+            List<ItemDomainEntity> entities, UserInfo userInfo) {
+        List<MqttEvent> events = new ArrayList<>();
+        for (ItemDomainEntity item : entities) {
+            List<Log> addedLogs = item.getPendingAddedLogs();
+            item.setPendingAddedLogs(null);
+            if (addedLogs.isEmpty()) {
+                continue;
+            }
+            try {
+                Map<Log, Log> resolvedLogs = resolvePersistedLogs(item, addedLogs);
+                for (Log log : addedLogs) {
+                    Log persistedLog = resolvedLogs.get(log);
+                    if (persistedLog == null) {
+                        continue;
+                    }
+                    events.add(CdbItemLogEvent.added(item, persistedLog, userInfo));
+                    // A new log's attachments need its DB-assigned ID, so they follow its add.
+                    addLogAttachmentEvents(events, item, persistedLog,
+                            log.getAttachmentList(), userInfo);
+                }
+            } catch (RuntimeException ex) {
+                logger.error("Failed to create item log add MQTT events", ex);
+            }
+        }
+        return events;
+    }
+
+    private void addLogAttachmentEvents(List<MqttEvent> events, ItemDomainEntity item,
+            Log log, List<Attachment> attachments, UserInfo userInfo) {
+        if (attachments == null) {
+            return;
+        }
+        Set<Attachment> published = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (Attachment attachment : attachments) {
+            if (published.add(attachment)) {
+                events.add(new CdbItemLogAttachmentEvent(item, log, attachment, userInfo));
+            }
+        }
+    }
+
+    /**
+     * Associates an attachment with one of the item's log entries and saves it through the
+     * item update, so attachment uploads share the specialized create/update event hooks.
+     */
+    public ItemDomainEntity addLogAttachment(ItemDomainEntity item, Log log,
+            Attachment attachment, UserInfo user) throws CdbException {
+        List<Log> logs = item.getLogList();
+        if (logs == null || !logs.contains(log)) {
+            throw new CdbException("Log " + log.getId() + " does not belong to item " + item.getId());
+        }
+        LogUtility.addAttachment(log, attachment);
+        return update(item, user);
+    }
+
+    /**
+     * Maps each submitted new log (by identity) to its persisted log. Create persists the
+     * submitted logs (IDs assigned in place); update merges them, so IDs exist only on
+     * managed copies and are read back like ItemRoute does for new properties.
+     */
+    private Map<Log, Log> resolvePersistedLogs(ItemDomainEntity item, List<Log> addedLogs) {
+        Map<Log, Log> resolved = new IdentityHashMap<>();
+        Set<Integer> knownIds = new HashSet<>();
+        if (item.getLogList() != null) {
+            for (Log log : item.getLogList()) {
+                if (log.getId() != null) {
+                    knownIds.add(log.getId());
+                }
+            }
+        }
+        List<Log> candidates = null;
+        for (Log log : addedLogs) {
+            if (log.getId() != null) {
+                resolved.put(log, log);
+                continue;
+            }
+            if (candidates == null) {
+                candidates = new ArrayList<>();
+                ItemDomainEntity persistedItem = item.getId() == null ? null : findById(item.getId());
+                List<Log> persistedLogs = persistedItem == null ? null : persistedItem.getLogList();
+                if (persistedLogs != null) {
+                    for (Log candidate : persistedLogs) {
+                        if (candidate.getId() != null && !knownIds.contains(candidate.getId())) {
+                            candidates.add(candidate);
+                        }
+                    }
+                }
+            }
+            Log match = null;
+            for (Log candidate : candidates) {
+                if (Objects.equals(candidate.getText(), log.getText())
+                        && Objects.equals(candidate.getEnteredByUser(), log.getEnteredByUser())) {
+                    match = candidate;
+                    break;
+                }
+            }
+            if (match == null) {
+                logger.warn("Could not resolve persisted log for MQTT add event on " + item);
+            } else {
+                candidates.remove(match);
+                resolved.put(log, match);
+            }
+        }
+        return resolved;
+    }
+
+    private void addInventoryAssemblyElementEvents(List<MqttEvent> events,
+            ItemDomainInventoryBase inventoryAssembly, UserInfo userInfo,
+            Set<ItemDomainInventoryBase> visited) {
+        if (!visited.add(inventoryAssembly)) {
+            return;
+        }
+        for (Object value : inventoryAssembly.getPendingAssemblyElementChanges()) {
+            InventoryAssemblyElementChange change = (InventoryAssemblyElementChange) value;
+            events.add(new CdbInventoryAssemblyElementEvent(inventoryAssembly,
+                    change.getAssemblyElement(), change.getOldAssignedInventoryItem(),
+                    change.getNewAssignedInventoryItem(), userInfo));
+            if (change.getNewAssignedInventoryItem() instanceof ItemDomainInventoryBase) {
+                addInventoryAssemblyElementEvents(events,
+                        (ItemDomainInventoryBase) change.getNewAssignedInventoryItem(),
+                        userInfo, visited);
+            }
+        }
+    }
+
+    private void addRepresentedElementEvents(List<MqttEvent> events,
+            ItemDomainMachineDesign machine, UserInfo userInfo) {
+        MachineRepresentedElementChange change = machine.getPendingRepresentedElementChange();
+        if (change != null) {
+            events.add(new CdbMachineRepresentedElementEvent(machine,
+                    change.getOldRepresentedElement(), machine.getRepresentsCatalogElement(),
+                    change.getSourceTemplate(), userInfo));
+        }
+        for (ItemDomainMachineDesign itemToUpdate : machine.getItemsToUpdate()) {
+            addRepresentedElementEvents(events, itemToUpdate, userInfo);
+        }
+    }
+
+    @Override
+    protected void prepareEntityUpdateOnRemoval(ItemDomainEntity item) throws CdbException {
+        Item originalItem = findById(item.getId());
+        List<PropertyValueChange> propertyChanges = PropertyValueUtility.findRemovedPropertyValues(
+                originalItem.getPropertyValueList(), item.getPropertyValueList());
+        item.setPendingPropertyValueChanges(propertyChanges);
+        // Full diff: the merge also persists any edits made alongside the removal.
+        item.setPendingLogChanges(LogUtility.prepareLogChanges(
+                originalItem.getLogList(), item.getLogList()));
+        item.setPendingLogAttachmentChanges(LogUtility.findAddedAttachments(
+                originalItem.getLogList(), item.getLogList()));
     }
 
     @Override

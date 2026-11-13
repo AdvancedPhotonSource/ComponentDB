@@ -83,3 +83,82 @@ uv run pytest test/                     # requires the portal running on localho
 
 `sbin/cdb_test.sh` (invoked by `make test`) regenerates the client and runs this as part of the
 full suite.
+
+### MQTT integration tests
+
+`test/mqtt_test.py` subscribes to `cdb/#` on a real broker, performs API mutations, and checks
+the MQTT events the portal publishes. It needs `paho-mqtt` (v2) in the active environment. It is
+not a declared dependency, so install it yourself (for example `uv pip install paho-mqtt` or
+`pip install paho-mqtt`).
+
+Prerequisites (developer-owned; nothing here provisions or reconfigures them):
+
+- an MQTT broker reachable from both Payara and your shell;
+- the Payara connector resource `cdb/MQTT/resource` pointing at that broker
+  (`sbin/cdb_create_mqtt_configuration.sh`, then `sbin/cdb_configure_mqtt_service.sh`);
+- the portal deployed with the MQTT changes and running on the test database (`make test-db`).
+
+`make test` (`sbin/cdb_test.sh`) runs these with the API suite and runs the Selenium MQTT tests
+serially after the parallel Selenium run. To run only the MQTT tests (API, then Selenium) from
+the repo root:
+
+```sh
+source setup.sh            # optional if already sourced; the runner keeps an existing environment
+sbin/cdb_mqtt_test.sh      # extra args are passed to pytest, e.g. -k location
+```
+
+Or run only the API module:
+
+```sh
+uv run pytest test/mqtt_test.py -rs
+```
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `CDB_TEST_MQTT` | `true` | `false` skips all MQTT tests |
+| `CDB_TEST_MQTT_HOST` | `localhost` | broker host for the test subscriber |
+| `CDB_TEST_MQTT_PORT` | `1883` | broker port |
+| `CDB_TEST_MQTT_USERNAME` / `CDB_TEST_MQTT_PASSWORD` | unset | optional broker credentials |
+| `CDB_TEST_MQTT_TIMEOUT` | `10` | seconds to wait for connect, subscribe and each event |
+| `CDB_TEST_MQTT_SKIP_SELENIUM` | unset | `true` makes `sbin/cdb_mqtt_test.sh` run only the API module |
+
+The subscriber does not read the connector's `$CDB_INSTALL_DIR/etc/<db>.mqtt.conf`. If the broker
+requires authentication, export the same values, or another account allowed to subscribe to
+`cdb/#`, in `CDB_TEST_MQTT_USERNAME`/`CDB_TEST_MQTT_PASSWORD`.
+
+#### MQTT event payloads
+
+All events carry `triggeredByUsername` and `eventTimestamp`; the topic is never repeated in the
+payload. Item references are snapshots with `id`, `description`, `domain`, `domain_id` and
+`entityTypes`. Free text is capped at 16 KiB; `diffTruncated` is `true` when text or a diff was cut.
+
+| Topic | Payload |
+| --- | --- |
+| `cdb/machine-design/add` | `machine`, `parent` (`null` for a top-level machine). Only for nodes cloned from a template: `sourceTemplate`, `templateAppliedToMachine` (the new top node, or the existing machine a template was assigned to) and `templateCreatedMachineCount` (add events from that template application). Published alongside `cdb/entity/add` for directly created machines; nodes saved through a parent update get only this event. Moves never publish it. |
+| `cdb/item/log/add` | `operation`, `itemId`, `itemType`, `itemDescription`, `newLog` |
+| `cdb/item/log/update` | as above with `oldLog` and `newLog` (text omitted, `textOmitted: true`) and `textDiff` (`-`/`+` lines; `null` when only dates or topic changed). Attachment-only edits publish no update. |
+| `cdb/item/log/delete` | as above with `oldLog` |
+| `cdb/item/log/attachment/add` | `operation`, `itemId`, `itemType`, `itemDescription`, `logId`, `attachment` (`name`, the unique stored file name, and `originalFilename`; never the file contents or DB id). A new log with attachments publishes its `cdb/item/log/add` first, then one event per attachment. |
+
+Order within one save: the generic `cdb/entity/*` event, then property, log update/delete and
+existing-log attachment events, then `cdb/machine-design/add` (in tree order), then each new log
+followed by its attachment events. Each machine, log and attachment is announced once per save.
+
+Log snapshots contain `logId`, `text` (bounded; omitted on updates), `textOmitted`,
+`enteredOnDateTime`, `effectiveFromDateTime`, `effectiveToDateTime`, `enteredByUsername`,
+`logTopicId` and `logTopicName`. Only logs on the item itself are reported, never system logs.
+
+The log edit/delete tests use `itemApi.update_log_entry_for_item` and
+`itemApi.delete_log_entry_from_item`. Regenerate the client after deploying
+(`./generatePyClient.sh http://localhost:8080/cdb`) if those methods are missing.
+
+The tests change standard test-database records (inventory item 56, machines 93 and 112) and
+restore them in `finally`. Placeholder and top-level control machines, locations, properties and
+log entries (on catalog item 2) they create are uniquely named and removed afterwards. The
+broker round-trip check publishes one non-retained message on `cdb/test-probe/<uuid>`.
+
+The tests are skipped, with the reason shown by `-rs`, if `paho-mqtt` is missing or the subscriber
+cannot connect. That keeps `make test` working on hosts without a broker. Once the subscriber is
+connected, a missing event fails the test. The failure message lists the unmatched messages it
+did capture, plus likely connector causes. The runner never builds, deploys, restarts services,
+or replaces the database.

@@ -20,6 +20,9 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.comparator.ItemElementRelevantSortOrderComparator;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
+import gov.anl.aps.cdb.mqtt.metadata.ItemLogChange;
+import gov.anl.aps.cdb.mqtt.metadata.LogAttachmentChange;
+import gov.anl.aps.cdb.mqtt.metadata.PropertyValueChange;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
@@ -503,6 +506,12 @@ import org.primefaces.model.TreeNode;
         }
 )
 public class Item extends CdbDomainEntity implements Serializable {
+
+    private transient List<PropertyValueChange> pendingPropertyValueChanges = new ArrayList<>();
+    private transient List<ItemLogChange> pendingLogChanges = new ArrayList<>();
+    // Self-element logs without IDs at save time; resolved to persisted logs afterward.
+    private transient List<Log> pendingAddedLogs = new ArrayList<>();
+    private transient List<LogAttachmentChange> pendingLogAttachmentChanges = new ArrayList<>();
 
     private static final Logger LOGGER = LogManager.getLogger(Item.class.getName());
 
@@ -1593,6 +1602,48 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setPropertyValueList(List<PropertyValue> propertyValueList) {
         this.getSelfElement().setPropertyValueList(propertyValueList);
+    }
+
+    @JsonIgnore
+    public void setPendingPropertyValueChanges(List<PropertyValueChange> changes) {
+        pendingPropertyValueChanges = changes == null ? new ArrayList<>() : new ArrayList<>(changes);
+    }
+
+    @JsonIgnore
+    public List<PropertyValueChange> getPendingPropertyValueChanges() {
+        return pendingPropertyValueChanges == null
+                ? new ArrayList<>() : new ArrayList<>(pendingPropertyValueChanges);
+    }
+
+    @JsonIgnore
+    public void setPendingLogChanges(List<ItemLogChange> changes) {
+        pendingLogChanges = changes == null ? new ArrayList<>() : new ArrayList<>(changes);
+    }
+
+    @JsonIgnore
+    public List<ItemLogChange> getPendingLogChanges() {
+        return pendingLogChanges == null ? new ArrayList<>() : new ArrayList<>(pendingLogChanges);
+    }
+
+    @JsonIgnore
+    public void setPendingAddedLogs(List<Log> logs) {
+        pendingAddedLogs = logs == null ? new ArrayList<>() : new ArrayList<>(logs);
+    }
+
+    @JsonIgnore
+    public List<Log> getPendingAddedLogs() {
+        return pendingAddedLogs == null ? new ArrayList<>() : new ArrayList<>(pendingAddedLogs);
+    }
+
+    @JsonIgnore
+    public void setPendingLogAttachmentChanges(List<LogAttachmentChange> changes) {
+        pendingLogAttachmentChanges = changes == null ? new ArrayList<>() : new ArrayList<>(changes);
+    }
+
+    @JsonIgnore
+    public List<LogAttachmentChange> getPendingLogAttachmentChanges() {
+        return pendingLogAttachmentChanges == null
+                ? new ArrayList<>() : new ArrayList<>(pendingLogAttachmentChanges);
     }
 
     @Override
