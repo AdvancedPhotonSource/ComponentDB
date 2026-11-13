@@ -21,6 +21,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.comparator.ItemElementRelevantSortOrderComparator;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.mqtt.metadata.ItemLogChange;
+import gov.anl.aps.cdb.mqtt.metadata.LogAttachmentChange;
 import gov.anl.aps.cdb.mqtt.metadata.PropertyValueChange;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
@@ -510,6 +511,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient List<ItemLogChange> pendingLogChanges = new ArrayList<>();
     // Self-element logs without IDs at save time; resolved to persisted logs afterward.
     private transient List<Log> pendingAddedLogs = new ArrayList<>();
+    private transient List<LogAttachmentChange> pendingLogAttachmentChanges = new ArrayList<>();
 
     private static final Logger LOGGER = LogManager.getLogger(Item.class.getName());
 
@@ -1631,6 +1633,17 @@ public class Item extends CdbDomainEntity implements Serializable {
     @JsonIgnore
     public List<Log> getPendingAddedLogs() {
         return pendingAddedLogs == null ? new ArrayList<>() : new ArrayList<>(pendingAddedLogs);
+    }
+
+    @JsonIgnore
+    public void setPendingLogAttachmentChanges(List<LogAttachmentChange> changes) {
+        pendingLogAttachmentChanges = changes == null ? new ArrayList<>() : new ArrayList<>(changes);
+    }
+
+    @JsonIgnore
+    public List<LogAttachmentChange> getPendingLogAttachmentChanges() {
+        return pendingLogAttachmentChanges == null
+                ? new ArrayList<>() : new ArrayList<>(pendingLogAttachmentChanges);
     }
 
     @Override

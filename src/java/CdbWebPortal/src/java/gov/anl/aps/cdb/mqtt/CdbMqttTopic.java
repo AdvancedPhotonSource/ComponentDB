@@ -14,6 +14,7 @@ public enum CdbMqttTopic {
     ITEM_LOG_ADD("cdb/item/log/add"),
     ITEM_LOG_UPDATE("cdb/item/log/update"),
     ITEM_LOG_DELETE("cdb/item/log/delete"),
+    ITEM_LOG_ATTACHMENT_ADD("cdb/item/log/attachment/add"),
     MACHINE_DESIGN_ADD("cdb/machine-design/add"),
     MACHINE_DESIGN_ASSIGNED_ITEM_UPDATE("cdb/machine-design/assigned-item/update"),
     MACHINE_DESIGN_MOVE("cdb/machine-design/move"),
