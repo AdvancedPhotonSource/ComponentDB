@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.mqtt.CdbInventoryAssemblyElementEvent;
 import gov.anl.aps.cdb.mqtt.CdbItemLogEvent;
+import gov.anl.aps.cdb.mqtt.CdbItemLogAttachmentEvent;
 import gov.anl.aps.cdb.mqtt.CdbItemLocationEvent;
 import gov.anl.aps.cdb.mqtt.CdbItemPropertyEvent;
 import gov.anl.aps.cdb.mqtt.CdbMachineAssignedItemEvent;
@@ -21,6 +22,7 @@ import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
 import gov.anl.aps.cdb.mqtt.metadata.InventoryAssemblyElementChange;
 import gov.anl.aps.cdb.mqtt.metadata.ItemLocationChange;
 import gov.anl.aps.cdb.mqtt.metadata.ItemLogChange;
+import gov.anl.aps.cdb.mqtt.metadata.LogAttachmentChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineAssignedItemChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineRepresentedElementChange;
 import gov.anl.aps.cdb.mqtt.metadata.MachineTrashChange;
@@ -67,7 +69,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -170,6 +174,8 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         item.setPendingPropertyValueChanges(propertyChanges);
         item.clearPropertyValueCache();
         item.setPendingLogChanges(LogUtility.prepareLogChanges(
+                originalItem.getLogList(), item.getLogList()));
+        item.setPendingLogAttachmentChanges(LogUtility.findAddedAttachments(
                 originalItem.getLogList(), item.getLogList()));
 
         List<Item> derivedFromItemList = item.getDerivedFromItemList();
@@ -293,6 +299,14 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
             }
         }
         item.setPendingLogChanges(null);
+        Set<Attachment> publishedAttachments = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (LogAttachmentChange change : item.getPendingLogAttachmentChanges()) {
+            if (publishedAttachments.add(change.getAttachment())) {
+                events.add(new CdbItemLogAttachmentEvent(item,
+                        change.getLog(), change.getAttachment(), userInfo));
+            }
+        }
+        item.setPendingLogAttachmentChanges(null);
         return events;
     }
 
@@ -324,14 +338,35 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
                 continue;
             }
             try {
-                for (Log log : resolvePersistedLogs(item, addedLogs)) {
-                    events.add(CdbItemLogEvent.added(item, log, userInfo));
+                Map<Log, Log> resolvedLogs = resolvePersistedLogs(item, addedLogs);
+                for (Log log : addedLogs) {
+                    Log persistedLog = resolvedLogs.get(log);
+                    if (persistedLog == null) {
+                        continue;
+                    }
+                    events.add(CdbItemLogEvent.added(item, persistedLog, userInfo));
+                    // A new log's attachments need its DB-assigned ID, so they follow its add.
+                    addLogAttachmentEvents(events, item, persistedLog,
+                            log.getAttachmentList(), userInfo);
                 }
             } catch (RuntimeException ex) {
                 logger.error("Failed to create item log add MQTT events", ex);
             }
         }
         return events;
+    }
+
+    private void addLogAttachmentEvents(List<MqttEvent> events, ItemDomainEntity item,
+            Log log, List<Attachment> attachments, UserInfo userInfo) {
+        if (attachments == null) {
+            return;
+        }
+        Set<Attachment> published = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (Attachment attachment : attachments) {
+            if (published.add(attachment)) {
+                events.add(new CdbItemLogAttachmentEvent(item, log, attachment, userInfo));
+            }
+        }
     }
 
     /**
@@ -349,20 +384,12 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
     }
 
     /**
-     * Create persists the submitted logs (IDs assigned in place); update merges them, so IDs
-     * exist only on managed copies and are read back like ItemRoute does for new properties.
+     * Maps each submitted new log (by identity) to its persisted log. Create persists the
+     * submitted logs (IDs assigned in place); update merges them, so IDs exist only on
+     * managed copies and are read back like ItemRoute does for new properties.
      */
-    private List<Log> resolvePersistedLogs(ItemDomainEntity item, List<Log> addedLogs) {
-        List<Log> unresolved = new ArrayList<>();
-        for (Log log : addedLogs) {
-            if (log.getId() == null) {
-                unresolved.add(log);
-            }
-        }
-        if (unresolved.isEmpty()) {
-            return addedLogs;
-        }
-
+    private Map<Log, Log> resolvePersistedLogs(ItemDomainEntity item, List<Log> addedLogs) {
+        Map<Log, Log> resolved = new IdentityHashMap<>();
         Set<Integer> knownIds = new HashSet<>();
         if (item.getLogList() != null) {
             for (Log log : item.getLogList()) {
@@ -371,21 +398,23 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
                 }
             }
         }
-        List<Log> candidates = new ArrayList<>();
-        ItemDomainEntity persistedItem = item.getId() == null ? null : findById(item.getId());
-        if (persistedItem != null && persistedItem.getLogList() != null) {
-            for (Log log : persistedItem.getLogList()) {
-                if (log.getId() != null && !knownIds.contains(log.getId())) {
-                    candidates.add(log);
-                }
-            }
-        }
-
-        List<Log> resolved = new ArrayList<>();
+        List<Log> candidates = null;
         for (Log log : addedLogs) {
             if (log.getId() != null) {
-                resolved.add(log);
+                resolved.put(log, log);
                 continue;
+            }
+            if (candidates == null) {
+                candidates = new ArrayList<>();
+                ItemDomainEntity persistedItem = item.getId() == null ? null : findById(item.getId());
+                List<Log> persistedLogs = persistedItem == null ? null : persistedItem.getLogList();
+                if (persistedLogs != null) {
+                    for (Log candidate : persistedLogs) {
+                        if (candidate.getId() != null && !knownIds.contains(candidate.getId())) {
+                            candidates.add(candidate);
+                        }
+                    }
+                }
             }
             Log match = null;
             for (Log candidate : candidates) {
@@ -399,7 +428,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
                 logger.warn("Could not resolve persisted log for MQTT add event on " + item);
             } else {
                 candidates.remove(match);
-                resolved.add(match);
+                resolved.put(log, match);
             }
         }
         return resolved;
@@ -445,6 +474,8 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         item.setPendingPropertyValueChanges(propertyChanges);
         // Full diff: the merge also persists any edits made alongside the removal.
         item.setPendingLogChanges(LogUtility.prepareLogChanges(
+                originalItem.getLogList(), item.getLogList()));
+        item.setPendingLogAttachmentChanges(LogUtility.findAddedAttachments(
                 originalItem.getLogList(), item.getLogList()));
     }
 
