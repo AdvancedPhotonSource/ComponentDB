@@ -9,6 +9,7 @@ Skipped when CDB_TEST_MQTT=false, when paho-mqtt is missing, or when the broker
 cannot be reached. See README.md ("MQTT integration tests").
 """
 
+import os
 import unittest
 
 from cdbApi.exceptions import OpenApiException
@@ -30,6 +31,7 @@ from test.mqtt_test_support import (
     TOPIC_INVENTORY_ASSEMBLY_ELEMENT,
     TOPIC_ITEM_LOCATION,
     TOPIC_LOG_ADD,
+    TOPIC_LOG_ATTACHMENT_ADD,
     TOPIC_LOG_DELETE,
     TOPIC_LOG_UPDATE,
     TOPIC_MD_ADD,
@@ -667,6 +669,43 @@ class MqttIntegrationTest(CdbTestBase):
             event = self.wait_for_log_event(TOPIC_LOG_ADD, item_id, "newLog.logId", log_id)
             self.assertEqual(event["newLog"]["text"], text[:limit])
             self.assertTrue(event["diffTruncated"])
+        finally:
+            if log_id is not None:
+                self.delete_item_log_quietly(item_id, log_id)
+
+
+    def test_item_log_attachment_add(self):
+        item_id = self.CATALOG_ITEM_ID
+        file_name = os.path.basename(self.SAMPLE_DOC_PATH)
+        self.loginAsAdmin()
+        log_id = None
+        try:
+            log_id = self.add_item_log(item_id, "MQTT attachment log %s" % self.gen_unique_name()).id
+            self.wait_for_log_event(TOPIC_LOG_ADD, item_id, "newLog.logId", log_id)
+
+            self.mqtt.drain()
+            upload = self.factory.createFileUploadObject(self.SAMPLE_DOC_PATH)
+            result = self.itemApi.upload_log_attachment_for_item(
+                item_id, log_id, file_upload_object=upload)
+            stored_name = result.attachment_list[-1].name
+            event = self.mqtt.wait_for(
+                TOPIC_LOG_ATTACHMENT_ADD,
+                all_of(id_at("itemId", item_id), id_at("logId", log_id)),
+                description="attachment on log %s" % log_id)
+            self.assertEqual(event["operation"], "add")
+            self.assertEqual(event["attachment"]["name"], stored_name)
+            self.assertEqual(event["attachment"]["originalFilename"], file_name)
+            # Scalar metadata only: no file bytes, DB id or path.
+            self.assertEqual(set(event["attachment"]), {"name", "originalFilename"})
+            self.assertNotIn("fileUploadObject", event)
+            self.assert_actor(event)
+            # Attachment-only edits are not log-entry updates, and the attachment is announced once.
+            self.mqtt.assert_no_message(
+                TOPIC_LOG_UPDATE, id_at("newLog.logId", log_id),
+                within=NO_EVENT_GRACE_SECONDS, description="log update for attachment upload")
+            self.mqtt.assert_no_message(
+                TOPIC_LOG_ATTACHMENT_ADD, id_at("logId", log_id),
+                within=NO_EVENT_GRACE_SECONDS, description="duplicate attachment event")
         finally:
             if log_id is not None:
                 self.delete_item_log_quietly(item_id, log_id)

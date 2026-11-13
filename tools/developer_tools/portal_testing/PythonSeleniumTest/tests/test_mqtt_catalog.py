@@ -20,6 +20,7 @@ from cdbSeleniumModules.catalog import Catalog
 from tests.mqtt_base import MqttPortalTestCase, described_as, mqtt_test_support as support
 
 CATALOG_ENTITY_TYPE = 'ItemDomainCatalog'
+ATTACHMENT_FILE = 'AnlLogo.png'  # in PythonSeleniumTest/data
 
 
 @pytest.mark.mqtt
@@ -147,6 +148,24 @@ class CatalogMqttTest(MqttPortalTestCase):
             log_id = added['newLog']['logId']
             self.assertIsNotNone(log_id, msg='Added log has no id')
             self.assert_actor(added)
+
+            self.mqtt.drain()
+            self.catalog.upload_attachment_to_first_catalog_log(ATTACHMENT_FILE)
+            attached = self.wait_for_ui_event(
+                support.TOPIC_LOG_ATTACHMENT_ADD,
+                support.all_of(support.id_at('itemId', item_id),
+                               support.id_at('logId', log_id)),
+                'attachment on log %s' % log_id)
+            self.assertEqual(attached['operation'], 'add')
+            self.assertTrue(attached['attachment']['name'], msg='Attachment has no stored name')
+            self.assertEqual(attached['attachment']['originalFilename'], ATTACHMENT_FILE)
+            # Scalar metadata only: no file bytes, DB id or path.
+            self.assertEqual(set(attached['attachment']), {'name', 'originalFilename'})
+            self.assert_actor(attached)
+            # Attachment-only saves are not log-entry updates.
+            self.mqtt.assert_no_message(
+                support.TOPIC_LOG_UPDATE, support.id_at('newLog.logId', log_id),
+                within=2.0, description='log update for attachment upload')
 
             self.mqtt.drain()
             self.catalog.update_first_catalog_log(updated_text)

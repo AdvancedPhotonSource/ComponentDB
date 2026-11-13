@@ -108,6 +108,10 @@ class Catalog(ItemBase):
 		self._clear_notifications()
 		self._add_log_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, log_entry_text)
 
+	def upload_attachment_to_first_catalog_log(self, sample_file_name='AnlLogo.png'):
+		self._clear_notifications()
+		self._upload_attachment_to_log_on_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, sample_file_name)
+
 	def update_first_catalog_log(self, new_text):
 		self._clear_notifications()
 		self._edit_log_on_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, new_text)
