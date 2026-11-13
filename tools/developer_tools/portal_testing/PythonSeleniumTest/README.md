@@ -36,14 +36,19 @@ through the UI with the fewest steps needed, then checks the broker receives the
 | Test | UI action | Topics |
 | --- | --- | --- |
 | `test_mqtt_catalog.py::test_catalog_item_and_property_lifecycle` | create catalog item, add/edit/delete a property, delete the item | `cdb/entity/add`, `cdb/entity/update`, `cdb/item/property/add`, `/update`, `/delete`, `cdb/entity/delete` |
+| `test_mqtt_catalog.py::test_catalog_item_log_lifecycle` | create catalog item, add a log, attach `AnlLogo.png`, edit and delete the log, delete the item | `cdb/item/log/add`, `cdb/item/log/attachment/add`, `cdb/item/log/update`, `/delete` |
+| `test_mqtt_machine_design.py::test_machine_add_parent_and_child` | create machine + child placeholder | `cdb/machine-design/add` (top level has `parent: null`; no template fields) |
+| `test_mqtt_machine_design.py::test_machine_add_from_template` | create machine, add child From Template `Template_Test {nn}` | `cdb/machine-design/add` with `sourceTemplate`, `templateAppliedToMachine`, `templateCreatedMachineCount` |
 | `test_mqtt_machine_design.py::test_machine_trash_and_restore` | create machine + child, Move to Trash, Put back | `cdb/entity/add`, `cdb/machine-design/trash`, `/restore` |
-| `test_mqtt_machine_design.py::test_machine_assign_link_and_move` | assign catalog `Test Item Assembly` to a machine, link its child to an assembly part, drag another machine onto it | `cdb/machine-design/assigned-item/update`, `/represented-element/update`, `/move` |
+| `test_mqtt_machine_design.py::test_machine_assign_link_and_move` | assign catalog `Test Item Assembly` to a machine, link its child to an assembly part, drag another machine onto it | `cdb/machine-design/assigned-item/update`, `/represented-element/update`, `/move` (and no `/add` for the move) |
 | `test_mqtt_inventory.py::test_inventory_location_details` | edit location details in place on inventory item 56 | `cdb/item/location/update` |
 | `test_mqtt_inventory.py::test_inventory_assembly_element` | change element `E1` of inventory item 56 from item 45 to 41 and back | `cdb/inventory/assembly-element/update` |
 
-Together these cover all 13 topics. Trash and restore have no REST route, so they are covered
-only here. The other 11 are also covered through the API in
-`tools/developer_tools/python-client/test/mqtt_test.py`.
+Together these cover all 18 topics. Trash and restore have no REST route, so they are covered
+only here. The other 16 are also covered through the API in
+`tools/developer_tools/python-client/test/mqtt_test.py`. Payloads of the newer topics are
+described in `tools/developer_tools/python-client/README.md` ("MQTT event payloads"). Template instantiation has no REST
+route, so the template fields of `cdb/machine-design/add` are covered only here.
 
 Everything the tests create is uniquely named (`MQTT ... <id>`). Machine hierarchies are left in
 trash and catalog items are deleted. Inventory item 56's location details and element `E1` are

@@ -126,10 +126,36 @@ The subscriber does not read the connector's `$CDB_INSTALL_DIR/etc/<db>.mqtt.con
 requires authentication, export the same values, or another account allowed to subscribe to
 `cdb/#`, in `CDB_TEST_MQTT_USERNAME`/`CDB_TEST_MQTT_PASSWORD`.
 
+#### MQTT event payloads
+
+All events carry `triggeredByUsername` and `eventTimestamp`; the topic is never repeated in the
+payload. Item references are snapshots with `id`, `description`, `domain`, `domain_id` and
+`entityTypes`. Free text is capped at 16 KiB; `diffTruncated` is `true` when text or a diff was cut.
+
+| Topic | Payload |
+| --- | --- |
+| `cdb/machine-design/add` | `machine`, `parent` (`null` for a top-level machine). Only for nodes cloned from a template: `sourceTemplate`, `templateAppliedToMachine` (the new top node, or the existing machine a template was assigned to) and `templateCreatedMachineCount` (add events from that template application). Published alongside `cdb/entity/add` for directly created machines; nodes saved through a parent update get only this event. Moves never publish it. |
+| `cdb/item/log/add` | `operation`, `itemId`, `itemType`, `itemDescription`, `newLog` |
+| `cdb/item/log/update` | as above with `oldLog` and `newLog` (text omitted, `textOmitted: true`) and `textDiff` (`-`/`+` lines; `null` when only dates or topic changed). Attachment-only edits publish no update. |
+| `cdb/item/log/delete` | as above with `oldLog` |
+| `cdb/item/log/attachment/add` | `operation`, `itemId`, `itemType`, `itemDescription`, `logId`, `attachment` (`name`, the unique stored file name, and `originalFilename`; never the file contents or DB id). A new log with attachments publishes its `cdb/item/log/add` first, then one event per attachment. |
+
+Order within one save: the generic `cdb/entity/*` event, then property, log update/delete and
+existing-log attachment events, then `cdb/machine-design/add` (in tree order), then each new log
+followed by its attachment events. Each machine, log and attachment is announced once per save.
+
+Log snapshots contain `logId`, `text` (bounded; omitted on updates), `textOmitted`,
+`enteredOnDateTime`, `effectiveFromDateTime`, `effectiveToDateTime`, `enteredByUsername`,
+`logTopicId` and `logTopicName`. Only logs on the item itself are reported, never system logs.
+
+The log edit/delete tests use `itemApi.update_log_entry_for_item` and
+`itemApi.delete_log_entry_from_item`. Regenerate the client after deploying
+(`./generatePyClient.sh http://localhost:8080/cdb`) if those methods are missing.
+
 The tests change standard test-database records (inventory item 56, machines 93 and 112) and
-restore them in `finally`. Placeholder machines, locations and properties they create are
-uniquely named and removed afterwards. The broker round-trip check publishes one non-retained
-message on `cdb/test-probe/<uuid>`.
+restore them in `finally`. Placeholder and top-level control machines, locations, properties and
+log entries (on catalog item 2) they create are uniquely named and removed afterwards. The
+broker round-trip check publishes one non-retained message on `cdb/test-probe/<uuid>`.
 
 The tests are skipped, with the reason shown by `-rs`, if `paho-mqtt` is missing or the subscriber
 cannot connect. That keeps `make test` working on hosts without a broker. Once the subscriber is
