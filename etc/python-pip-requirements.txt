@@ -1,4 +1,4 @@
-sqlAlchemy==0.9.8
+sqlAlchemy==1.2.19
 CherryPy==8.1.2
 routes==2.3.1
 mysql-python==1.2.5 
