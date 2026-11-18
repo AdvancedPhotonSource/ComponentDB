@@ -1,33 +1,10 @@
-# BELY MQTT Framework Documentation
+# CDB/BELY MQTT Message Broker Base Documentation
 
-This directory contains the complete documentation for the BELY MQTT Framework.
-
-## Documentation Structure
-
-### Getting Started
-- **[index.md](index.md)** - Documentation home page with overview
-- **[getting-started.md](getting-started.md)** - Quick start guide for new users
-- **[examples.md](examples.md)** - Working examples of different handler types
-
-### Reference
-- **[api-reference.md](api-reference.md)** - Complete API documentation
-- **[configuration.md](configuration.md)** - All configuration options
-
-### Guides
-- **[faq.md](faq.md)** - Frequently asked questions
-- **[troubleshooting.md](troubleshooting.md)** - Common issues and solutions
-- **[migration-guide.md](migration-guide.md)** - Migrating from raw MQTT clients
+- **[api-reference.md](api-reference.md)**: classes for building an application broker and writing handlers.
+- **[configuration.md](configuration.md)**: CLI options, environment variables and the YAML config file.
 
 ## Key Concepts
 
-1. **Handlers** - Python classes that process specific MQTT events
-2. **Event Models** - Type-safe Pydantic models for all BELY events
-3. **Topic Patterns** - MQTT topic matching with wildcard support
-4. **API Integration** - Optional BELY API client for enriched data
-
-## Quick Links
-
-- [Create your first handler](getting-started.md)
-- [View example handlers](examples.md)
-- [Configure the framework](configuration.md)
-- [Troubleshoot issues](troubleshooting.md)
+1. **Application layer**: an application package (e.g. `cdb_mqtt`) defines its event enum, pydantic models, `EventRegistry`, a handler base class and an `AppProfile`.
+2. **Handlers**: plugin classes that subclass the application handler base and implement `handle_<event>` methods.
+3. **Dispatch**: each message goes to every handler whose `topic_pattern` matches. The handler gets it through its specific method if it implements one, otherwise through `handle()` → `handle_generic()`.

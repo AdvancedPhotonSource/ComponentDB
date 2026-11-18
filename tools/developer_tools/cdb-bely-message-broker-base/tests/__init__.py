@@ -1,1 +1,1 @@
-"""Tests for BELY MQTT Framework."""
+"""Tests for the CDB/BELY MQTT Message Broker Base."""

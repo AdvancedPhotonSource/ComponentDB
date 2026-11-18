@@ -3,7 +3,7 @@
 MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
 ROOT_DIR=$MY_DIR
 
-ENV_NAME=bely-mqtt-env
+ENV_NAME=cdb-bely-message-broker-base-env
 CONDA_DIR=$CONDA_PREFIX_1
 echo $CONDA_DIR
 
@@ -30,7 +30,7 @@ rm -rvf src
 mkdir -p src
 cp -Rv ../src src/
 cp -Rv ../tests src/
-cp -v ../pyproject.toml ../setup.py ../README.md ../LICENSE ../CHANGELOG.md ../pytest.ini src/
+cp -v ../pyproject.toml ../README.md ../LICENSE ../CHANGELOG.md ../pytest.ini src/
 
 # Build
 conda build . --output-folder ./build || exit 1
@@ -38,7 +38,7 @@ conda build . --output-folder ./build || exit 1
 # Install build into a new env
 conda create -n $ENV_NAME -y || exit 1
 conda activate $ENV_NAME || exit 1
-conda install bely-mqtt-message-broker -c ./build -y || exit 1
+conda install cdb-bely-message-broker-base -c ./build -y || exit 1
 
 
 # Export

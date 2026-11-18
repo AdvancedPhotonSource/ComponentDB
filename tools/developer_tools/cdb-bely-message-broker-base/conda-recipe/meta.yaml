@@ -1,5 +1,5 @@
-{% set name = "bely-mqtt-message-broker" %}
-{% set version = "2026.10.0" %}
+{% set name = "cdb-bely-message-broker-base" %}
+{% set version = "1.0.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -22,16 +22,13 @@ requirements:
     - python>3.10
     - click
     - paho-mqtt >=2.0.0
-    - pydantic
+    - pydantic >=2.0.0
     - python-dotenv
-    - pluggy
     - pyyaml
-    - apprise
-    - bely-api
 
 test:
   imports:
-    - bely_mqtt
+    - cdb_bely_message_broker_base
   source_files:
     - tests
     - pytest.ini
@@ -42,6 +39,6 @@ test:
     - pytest tests -v
 
 about:
-  home: "https://git.aps.anl.gov/controls/hla/bely"
+  home: "https://github.com/AdvancedPhotonSource/ComponentDB"
   license: "Copyright (c) UChicago Argonne, LLC. All rights reserved."
-  summary: "Pluggable Python framework for handling BELY MQTT events"
+  summary: "Shared pluggable MQTT message broker framework for ComponentDB and BELY"

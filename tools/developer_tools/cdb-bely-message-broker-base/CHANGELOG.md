@@ -1,28 +1,17 @@
 # Changelog
 
-All notable changes to the BELY MQTT Framework will be documented in this file.
+All notable changes to the CDB/BELY MQTT Message Broker Base will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0] - 2024-01-01
+## [1.0.0]
 
 ### Added
-- Initial release
-- Pluggable handler system for MQTT events
-- Pydantic models for all BELY event types
-- MQTT topic pattern matching with wildcards
-- BELY API client integration
-- CLI interface with `start` and `version` commands
-- Async/await support
-- Comprehensive logging
-- Configuration via command-line options
-- Handler hot-reloading support
-- Systemd service example
-- Documentation and examples
-
-### Security
-- Secure MQTT authentication support
-- API key handling for BELY API
-
-[0.1.0]: https://github.com/bely-org/bely-mqtt-framework/releases/tag/v0.1.0
+- Initial release, extracted from the BELY MQTT Framework (`bely_mqtt`).
+- `EventRegistry`/`EventSpec`: applications map topics to typed handler methods and pydantic models.
+- `MQTTHandler` with `event_registry`/`default_topic_pattern` class attributes and a single `dispatch()` path.
+- `PluginManager(handler_base=...)` only discovers subclasses of the application handler base.
+- `GlobalConfig.PUBLIC_URL_KEY`/`public_url`; `ConfigManager(global_config_class=...)`.
+- `AppProfile` + `build_cli()` CLI factory (`start`, `list-handlers`) with a per-application env var prefix.
+- `EventModel` base and `JavaDateTime` type for Jackson-serialized payloads.

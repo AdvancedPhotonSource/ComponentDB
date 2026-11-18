@@ -1,172 +1,39 @@
 # Configuration
 
-The BELY MQTT Framework can be configured through command-line options, environment variables, or configuration files.
+Examples use `PREFIX` for the application's `AppProfile.env_prefix` (`CDB`, `BELY`, …) and `<prog>` for its CLI name.
 
-## Command-Line Options
+## `<prog> start` options
 
-```bash
-bely-mqtt start [OPTIONS]
-```
+| Option | Env var | Default |
+|---|---|---|
+| `--broker-host` | `MQTT_BROKER_HOST` | `localhost` |
+| `--broker-port` | `MQTT_BROKER_PORT` | `1883` |
+| `--client-id` | `MQTT_CLIENT_ID` | `profile.default_client_id` |
+| `--username` / `--password` | `MQTT_USERNAME` / `MQTT_PASSWORD` | none |
+| `--topic`, `-t` (repeatable) | n/a | `profile.default_topic` |
+| `--handlers-dir` | `PREFIX_HANDLERS_DIR` | none |
+| `--api-url` | `PREFIX_API_URL` | falls back to `global.api_url`, then the public URL |
+| `--api-key` | `PREFIX_API_KEY` | none |
+| `--config` | `PREFIX_CONFIG` | none |
+| `--lock-file` | `PREFIX_LOCK_FILE` | `profile.default_lock_file` |
+| `--log-level` | `LOG_LEVEL` | `INFO` |
+| `--env-file` | n/a | none (loads a `.env` file) |
 
-### MQTT Options
+Only one instance runs per lock file. To run several brokers on one host, give each its own `--lock-file`.
 
-- `--broker-host TEXT` - MQTT broker hostname (default: localhost)
-- `--broker-port INTEGER` - MQTT broker port (default: 1883)
-- `--username TEXT` - MQTT username for authentication
-- `--password TEXT` - MQTT password for authentication
-- `--topic TEXT` - MQTT topic pattern to subscribe (default: bely/#)
+`<prog> list-handlers --handlers-dir DIR` lists the handlers that would be loaded.
 
-### Handler Options
-
-- `--handlers-dir PATH` - Directory containing handler files (default: ./handlers)
-- `--config PATH` - YAML configuration file for handlers
-
-### API Options
-
-- `--api-url TEXT` - Internal BELY API URL for server-to-server API calls.
-  Takes precedence over `api_url` in the config file, which in turn falls back
-  to `bely_url`. Set when the broker runs on the same host as BELY and internal
-  access is preferred over going through the public URL.
-- `--api-key TEXT` - BELY API authentication key
-
-### Logging Options
-
-- `--log-level TEXT` - Logging level: DEBUG, INFO, WARNING, ERROR (default: INFO)
-
-## Environment Variables
-
-All command-line options can be set via environment variables:
-
-```bash
-export MQTT_BROKER_HOST=broker.example.com
-export MQTT_BROKER_PORT=1883
-export MQTT_CLIENT_ID=bely-mqtt-client
-export MQTT_USERNAME=myuser
-export MQTT_PASSWORD=mypass
-export BELY_API_URL=https://api.bely.dev
-export BELY_API_KEY=your-api-key
-export BELY_HANDLERS_DIR=./handlers
-export BELY_CONFIG=./config.yaml
-export LOG_LEVEL=DEBUG
-```
-
-## Configuration Files
-
-### Environment File (.env)
-
-Create a `.env` file in your project root for environment variables:
-
-```bash
-# MQTT Configuration
-MQTT_BROKER_HOST=localhost
-MQTT_BROKER_PORT=1883
-MQTT_CLIENT_ID=bely-mqtt-client
-MQTT_USERNAME=
-MQTT_PASSWORD=
-
-# BELY API Configuration
-BELY_API_URL=https://api.bely.dev
-BELY_API_KEY=your-api-key-here
-
-# Logging
-LOG_LEVEL=INFO
-
-# Handler Configuration
-BELY_HANDLERS_DIR=./handlers
-BELY_CONFIG=./config.yaml
-```
-
-### Handler Configuration (YAML)
-
-Handlers can be configured via a YAML file to provide both global and handler-specific settings:
+## YAML config file
 
 ```yaml
-# Global configuration shared across all handlers
 global:
-  # Public-facing URL for notification links (log entry permalinks, unsubscribe URLs).
-  # Must be reachable by end-users who receive notifications.
-  bely_url: https://bely.example.com/bely
-  # (Optional) Internal API URL for broker-to-BELY server API calls.
-  # Defaults to bely_url. Set when broker runs on the same host as BELY.
-  # api_url: http://localhost:8080/bely
-  # Add any other global parameters here
-  shared_param: value
+  cdb_url: https://cdb.example.com/cdb   # key = GlobalConfig.PUBLIC_URL_KEY
+  api_url: http://localhost:8080/cdb     # optional, defaults to the public URL
 
-# Handler-specific configurations
 handlers:
-  # Configure the AdvancedLoggingHandler
-  AdvancedLoggingHandler:
-    logging_dir: /var/log/bely
-    log_level: DEBUG
-    rotate_logs: true
-    max_size_mb: 100
-  
-  # Configure the NotificationHandler
-  NotificationHandler:
-    webhook_url: https://hooks.slack.com/services/YOUR/WEBHOOK
-    enabled: true
-    timeout: 30
-  
-  # Configure the AppriseSmartNotificationHandler
-  AppriseSmartNotificationHandler:
-    config_path: /path/to/apprise_notification_config.yaml
+  MyHandler:          # handler class name
+    output_dir: /tmp  # passed as MyHandler(output_dir="/tmp", ...)
 ```
 
-Use with: `--config config.yaml`
-
-## SSL/TLS Configuration
-
-For secure MQTT connections:
-
-```bash
-bely-mqtt start \
-    --mqtt-host broker.example.com \
-    --mqtt-port 8883 \
-    --mqtt-tls \
-    --mqtt-ca-cert /path/to/ca.crt \
-    --mqtt-client-cert /path/to/client.crt \
-    --mqtt-client-key /path/to/client.key
-```
-
-## Logging Configuration
-
-### Log Levels
-
-- `DEBUG` - Detailed information for debugging
-- `INFO` - General informational messages
-- `WARNING` - Warning messages for potentially harmful situations
-- `ERROR` - Error messages for serious problems
-
-### Log Format
-
-The default log format includes:
-- Timestamp
-- Log level
-- Handler name
-- Message
-
-Example:
-```
-2024-01-01 12:00:00 INFO [LogHandler] New log entry added: ID=123
-```
-
-## Production Configuration
-
-For production deployments:
-
-1. Use environment variables for sensitive data
-2. Enable appropriate log level (INFO or WARNING)
-3. Configure log rotation
-4. Use SSL/TLS for MQTT connections
-5. Set up monitoring and alerting
-
-Example production command:
-
-```bash
-bely-mqtt start \
-    --handlers-dir /opt/bely-handlers \
-    --log-level INFO \
-    --log-file /var/log/bely-mqtt/app.log \
-    --mqtt-tls \
-    --mqtt-ca-cert /etc/ssl/mqtt/ca.crt
-```
+- `global` becomes `handler.global_config`, an instance of the application's `GlobalConfig` subclass.
+- `handlers.<ClassName>` entries are passed as keyword arguments to that handler's constructor.
