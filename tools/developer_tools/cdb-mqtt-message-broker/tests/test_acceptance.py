@@ -1,10 +1,11 @@
 """
 End-to-end acceptance tests for ``cdb-mqtt-message-broker``.
 
-Uses the ComponentDB REST API (and Selenium for UI-only machine-design trash/restore
-and template instantiation) to trigger all 18 ``CdbEventType`` events on a live
-portal instance and verifies that ``CdbMQTTClient``, ``CdbPluginManager``,
-``CdbMQTTHandler``, and the example handlers receive and validate every event.
+Spawns the real ``cdb-mqtt start`` CLI process configured with ``--handlers-dir`` and
+``--config``, uses the ComponentDB REST API (and Selenium for UI-only machine-design
+trash/restore and template instantiation) to trigger all 18 ``CdbEventType`` events on
+a live portal instance, and verifies that ``cdb-mqtt`` receives, parses, and dispatches
+every event to its typed handler method.
 
 Excluded from default unit test runs via ``-m "not acceptance"`` in ``pytest.ini``.
 Run with ``make test-acceptance`` or ``sbin/cdb_mqtt_test.sh``.
@@ -12,41 +13,39 @@ Run with ``make test-acceptance`` or ``sbin/cdb_mqtt_test.sh``.
 
 from __future__ import annotations
 
-import asyncio
 import json
 import os
+import shutil
+import subprocess
 import sys
 import tempfile
+import textwrap
 import threading
 import time
 import unittest
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any, Callable, Dict, List, Optional, Set
 
 import pytest
 from pydantic import BaseModel
 
 from cdb_mqtt import (
     CDB_EVENT_MODELS,
-    CdbConfigManager,
     CdbEventType,
     CdbMachineAddEvent,
     CdbMachineTrashEvent,
-    CdbMQTTClient,
-    CdbMQTTHandler,
     CdbOperation,
-    CdbPluginManager,
-    MQTTMessage,
 )
-from tests.conftest import EXAMPLE_HANDLERS_DIR, REPO_ROOT
+from tests.conftest import EXAMPLE_HANDLERS_DIR, PACKAGE_DIR, REPO_ROOT
 
 PYTHON_CLIENT_DIR = REPO_ROOT / "tools" / "developer_tools" / "python-client"
 PYTHON_CLIENT_API_DIR = PYTHON_CLIENT_DIR / "packages" / "api"
 PYTHON_CLIENT_CLI_DIR = PYTHON_CLIENT_DIR / "packages" / "cli"
 PYTHON_CLIENT_TEST_DIR = PYTHON_CLIENT_DIR / "test"
 SELENIUM_DIR = REPO_ROOT / "tools" / "developer_tools" / "portal_testing" / "PythonSeleniumTest"
+BASE_BROKER_SRC = REPO_ROOT / "tools" / "developer_tools" / "cdb-bely-message-broker-base" / "src"
 
 for extra_path in (
     PYTHON_CLIENT_API_DIR,
@@ -117,10 +116,113 @@ API_EVENT_TYPES: Set[CdbEventType] = set(CdbEventType) - {
     CdbEventType.MACHINE_DESIGN_RESTORE,
 }
 
+RECORDER_HANDLER_SOURCE = textwrap.dedent("""\
+    import json
+    from pathlib import Path
+    from typing import Any, Optional
+    from pydantic import BaseModel
+    from cdb_mqtt import CDB_EVENT_MODELS, CdbEventType, CdbMQTTHandler, MQTTMessage
+
+
+    def _make_event_method(event_type: CdbEventType):
+        method_name = event_type.handler_method_name
+
+        async def _handle(self, event: BaseModel) -> None:
+            self._write_typed_event(event_type, method_name, event)
+
+        _handle.__name__ = method_name
+        return _handle
+
+
+    class AcceptanceRecordingHandler(CdbMQTTHandler):
+        \"\"\"Records every CDB MQTT event dispatched by ``cdb-mqtt start`` to a JSONL file.\"\"\"
+
+        def __init__(
+            self,
+            events_file: Optional[str] = None,
+            api_factory: Any = None,
+            global_config: Optional[Any] = None,
+        ):
+            super().__init__(api_factory=api_factory, global_config=global_config)
+            self.events_file = Path(events_file) if events_file else None
+            if self.events_file is not None:
+                self.events_file.parent.mkdir(parents=True, exist_ok=True)
+            self._current_message: Optional[MQTTMessage] = None
+
+        async def dispatch(self, message: MQTTMessage) -> None:
+            self._current_message = message
+            try:
+                await super().dispatch(message)
+            except Exception as ex:
+                self._append_record(
+                    {
+                        "kind": "error",
+                        "topic": message.topic,
+                        "error": f"{type(ex).__name__}: {ex}",
+                    }
+                )
+                raise
+            finally:
+                self._current_message = None
+
+        def _write_typed_event(
+            self, event_type: CdbEventType, method_name: str, event: BaseModel
+        ) -> None:
+            expected_cls = CDB_EVENT_MODELS[event_type]
+            if not isinstance(event, expected_cls):
+                self._append_record(
+                    {
+                        "kind": "error",
+                        "topic": event_type.value,
+                        "error": (
+                            f"Expected {expected_cls.__name__}, got {type(event).__name__}"
+                        ),
+                    }
+                )
+                return
+            msg = self._current_message
+            assert msg is not None
+            self._append_record(
+                {
+                    "kind": "typed",
+                    "topic": msg.topic,
+                    "event_type": event_type.value,
+                    "handler_method": method_name,
+                    "model_name": type(event).__name__,
+                    "payload": msg.payload,
+                    "has_global_config": self.global_config is not None,
+                }
+            )
+
+        async def handle_generic(self, message: MQTTMessage) -> None:
+            self._append_record(
+                {
+                    "kind": "generic",
+                    "topic": message.topic,
+                    "payload": message.payload,
+                }
+            )
+
+        def _append_record(self, data: dict) -> None:
+            if self.events_file is None:
+                return
+            with self.events_file.open("a", encoding="utf-8") as f:
+                f.write(json.dumps(data) + "\\n")
+                f.flush()
+
+
+    for _event_type in CdbEventType:
+        setattr(
+            AcceptanceRecordingHandler,
+            _event_type.handler_method_name,
+            _make_event_method(_event_type),
+        )
+    """)
+
 
 @dataclass
 class DispatchedRecord:
-    """A single MQTT message processed through CdbMQTTClient and CdbPluginManager."""
+    """A single MQTT message processed by the ``cdb-mqtt start`` CLI process."""
 
     topic: str
     payload: Dict[str, Any]
@@ -137,50 +239,10 @@ class DispatchedRecord:
         return f"{self.topic} [{model_name}] {text}"
 
 
-def _build_recording_handler_class(
-    on_typed_event: Callable[[CdbEventType, str, BaseModel, MQTTMessage], None],
-    on_generic_message: Callable[[MQTTMessage], None],
-):
-    """Build a CdbMQTTHandler subclass implementing all 18 typed event handler methods."""
-
-    def make_event_method(event_type: CdbEventType):
-        method_name = event_type.handler_method_name
-
-        async def _handle(self, event: BaseModel) -> None:
-            msg = getattr(self, "_current_message", None)
-            assert msg is not None, "Expected _current_message to be set during dispatch"
-            on_typed_event(event_type, method_name, event, msg)
-
-        _handle.__name__ = method_name
-        return _handle
-
-    async def dispatch(self, message: MQTTMessage) -> None:
-        self._current_message = message
-        try:
-            await super(CdbMQTTHandler, self).dispatch(message)
-        finally:
-            self._current_message = None
-
-    async def handle_generic(self, message: MQTTMessage) -> None:
-        on_generic_message(message)
-
-    attrs: Dict[str, Any] = {
-        "dispatch": dispatch,
-        "handle_generic": handle_generic,
-    }
-    for event_type in CdbEventType:
-        attrs[event_type.handler_method_name] = make_event_method(event_type)
-
-    return type("AcceptanceRecordingHandler", (CdbMQTTHandler,), attrs)
-
-
 class CdbBrokerCollector:
     """
-    Live subscriber backed by ``CdbMQTTClient``, ``CdbPluginManager``, and ``CdbMQTTHandler``.
-
-    Drop-in replacement for ``mqtt_test_support.MqttEventCollector`` that routes every
-    broker message through the ``cdb_mqtt`` plugin framework and validates the resulting
-    Pydantic event models.
+    Live subscriber that spawns the real ``cdb-mqtt start`` CLI process and tails the
+    events dispatched through ``CdbMQTTClient``, ``CdbPluginManager``, and ``CdbMQTTHandler``.
     """
 
     def __init__(self, settings: Any, topic_filter: str = "cdb/#"):
@@ -191,218 +253,307 @@ class CdbBrokerCollector:
         self.seen_event_types: Set[CdbEventType] = set()
         self.handler_errors: List[str] = []
         self._lock = threading.Condition()
-        self._connected = threading.Event()
-        self._subscribed = threading.Event()
-        self._failure: Optional[str] = None
+        self._stop_tail = threading.Event()
+        self._tail_thread: Optional[threading.Thread] = None
+        self._process: Optional[subprocess.Popen[str]] = None
+        self._pub_client: Optional[Any] = None
 
         self._temp_dir = tempfile.TemporaryDirectory(prefix="cdb-mqtt-acceptance-")
-        self.audit_file = Path(self._temp_dir.name) / "machine-design-audit.jsonl"
+        temp_root = Path(self._temp_dir.name)
+        self.handlers_dir = temp_root / "handlers"
+        self.handlers_dir.mkdir(parents=True, exist_ok=True)
+        self.events_file = temp_root / "dispatched-events.jsonl"
+        self.events_file.touch()
+        self.audit_file = temp_root / "machine-design-audit.jsonl"
+        self.config_file = temp_root / "config.yaml"
+        self.lock_file = temp_root / "cdb-mqtt.lock"
+        self.process_log_file = temp_root / "cdb-mqtt.log"
 
-        self.config_manager = CdbConfigManager()
-        self.config_manager.load_from_dict(
-            {
-                "global": {
-                    "cdb_url": os.getenv("CDB_TEST_PORTAL_URL", "http://localhost:8080/cdb"),
-                },
-                "handlers": {
-                    "MachineDesignAuditHandler": {"audit_file": str(self.audit_file)},
-                },
-            }
-        )
-
-        self.plugin_manager = CdbPluginManager(config_manager=self.config_manager)
-        recorder_cls = _build_recording_handler_class(
-            self._record_typed_event,
-            self._record_generic_message,
-        )
-        self.recording_handler = recorder_cls(global_config=self.config_manager.get_global_config())
-        self.plugin_manager.register_handler(self.recording_handler)
         if EXAMPLE_HANDLERS_DIR.exists():
-            self.plugin_manager.load_handlers_from_directory(EXAMPLE_HANDLERS_DIR)
+            for handler_file in EXAMPLE_HANDLERS_DIR.glob("*.py"):
+                if not handler_file.name.startswith("_"):
+                    shutil.copy2(handler_file, self.handlers_dir / handler_file.name)
 
-        self._orig_handle_message = self.plugin_manager.handle_message
-        self.plugin_manager.handle_message = self._checked_handle_message  # type: ignore[method-assign]
-
-        self._loop: Optional[asyncio.AbstractEventLoop] = None
-        self._loop_thread: Optional[threading.Thread] = None
-        self.mqtt_client: Optional[CdbMQTTClient] = None
-
-    async def _checked_handle_message(self, message: MQTTMessage) -> None:
-        for handler in self.plugin_manager.get_handlers_for_topic(message.topic):
-            try:
-                await handler.dispatch(message)
-            except Exception as ex:
-                err = f"{handler.__class__.__name__} failed on {message.topic}: {ex}"
-                with self._lock:
-                    self.handler_errors.append(err)
-                    self._lock.notify_all()
-                raise
-
-    def _record_typed_event(
-        self,
-        event_type: CdbEventType,
-        method_name: str,
-        event: BaseModel,
-        message: MQTTMessage,
-    ) -> None:
-        expected_model = CDB_EVENT_MODELS[event_type]
-        if not isinstance(event, expected_model):
-            with self._lock:
-                self.handler_errors.append(
-                    f"Expected {expected_model.__name__} for {event_type.value}, "
-                    f"got {type(event).__name__}"
-                )
-        record = DispatchedRecord(
-            topic=message.topic,
-            payload=message.payload,
-            received_at=time.monotonic(),
-            event_type=event_type,
-            handler_method=method_name,
-            typed_event=event,
+        (self.handlers_dir / "acceptance_recorder_handler.py").write_text(
+            RECORDER_HANDLER_SOURCE, encoding="utf-8"
         )
-        with self._lock:
-            self._records.append(record)
-            self._all_typed_records.append(record)
-            self.seen_event_types.add(event_type)
-            self._lock.notify_all()
 
-    def _record_generic_message(self, message: MQTTMessage) -> None:
-        record = DispatchedRecord(
-            topic=message.topic,
-            payload=message.payload,
-            received_at=time.monotonic(),
-        )
-        with self._lock:
-            self._records.append(record)
-            self._lock.notify_all()
+        portal_url = os.getenv("CDB_TEST_PORTAL_URL", "http://localhost:8080/cdb")
+        config_data = {
+            "global": {
+                "cdb_url": portal_url,
+            },
+            "handlers": {
+                "AcceptanceRecordingHandler": {
+                    "events_file": str(self.events_file),
+                },
+                "MachineDesignAuditHandler": {
+                    "audit_file": str(self.audit_file),
+                },
+            },
+        }
+        self.config_file.write_text(json.dumps(config_data, indent=2), encoding="utf-8")
 
-    def start(self) -> "CdbBrokerCollector":
-        self._loop = asyncio.new_event_loop()
-        self._loop_thread = threading.Thread(
-            target=self._loop.run_forever,
-            name="cdb-mqtt-acceptance-loop",
-            daemon=True,
-        )
-        self._loop_thread.start()
+    def _build_subprocess_env(self) -> Dict[str, str]:
+        env = os.environ.copy()
+        py_paths = [
+            str(PACKAGE_DIR / "src"),
+            str(BASE_BROKER_SRC),
+            str(PYTHON_CLIENT_API_DIR),
+            str(PYTHON_CLIENT_CLI_DIR),
+        ]
+        existing = env.get("PYTHONPATH")
+        if existing:
+            py_paths.append(existing)
+        env["PYTHONPATH"] = os.pathsep.join(py_paths)
+        return env
 
-        client_id = f"cdb-mqtt-acceptance-{uuid.uuid4().hex[:8]}"
-        self.mqtt_client = CdbMQTTClient(
-            broker_host=self.settings.host,
-            broker_port=self.settings.port,
-            client_id=client_id,
-            username=self.settings.username,
-            password=self.settings.password,
-            plugin_manager=self.plugin_manager,
-        )
+    def _start_publisher(self) -> None:
+        try:
+            import paho.mqtt.client as mqtt
+        except ImportError as ex:
+            raise MqttUnavailable(f"paho-mqtt is not installed ({ex})") from ex
+
+        client_id = f"cdb-mqtt-acceptance-pub-{uuid.uuid4().hex[:8]}"
+        callback_api = getattr(mqtt, "CallbackAPIVersion", None)
+        if callback_api is not None:
+            client = mqtt.Client(callback_api.VERSION2, client_id=client_id)
+        else:
+            client = mqtt.Client(client_id=client_id)
         if self.settings.username:
-            self.mqtt_client.client.username_pw_set(self.settings.username, self.settings.password)
-        self.mqtt_client._loop = self._loop
+            client.username_pw_set(self.settings.username, self.settings.password)
 
-        orig_on_connect = self.mqtt_client._on_connect
-        orig_on_subscribe = self.mqtt_client._on_subscribe
+        connected = threading.Event()
+        failure: List[str] = []
 
         def on_connect(
-            client: Any, userdata: Any, flags: Any, reason_code: Any, properties: Any = None
+            _client: Any, _userdata: Any, _flags: Any, reason_code: Any, _props: Any = None
         ) -> None:
             if _is_failure(reason_code):
-                self._failure = (
+                failure.append(
                     f"broker {self.settings.describe()} refused connection: {reason_code}"
                 )
-            else:
-                orig_on_connect(client, userdata, flags, reason_code, properties)
-            self._connected.set()
+            connected.set()
 
-        def on_subscribe(
-            client: Any, userdata: Any, mid: Any, reason_codes: Any, properties: Any = None
-        ) -> None:
-            orig_on_subscribe(client, userdata, mid, reason_codes, properties)
-            codes = reason_codes if isinstance(reason_codes, (list, tuple)) else [reason_codes]
-            for code in codes:
-                if _is_failure(code, subscribe=True):
-                    self._failure = f"broker refused subscription to {self.topic_filter}: {code}"
-            self._subscribed.set()
-
-        self.mqtt_client.client.on_connect = on_connect  # type: ignore[assignment]
-        self.mqtt_client.client.on_subscribe = on_subscribe  # type: ignore[assignment]
-        self.mqtt_client.subscribe(self.topic_filter)
-
+        client.on_connect = on_connect
         try:
-            self.mqtt_client.connect()
+            client.connect(self.settings.host, self.settings.port, keepalive=30)
         except (OSError, ValueError) as ex:
-            self.stop()
             raise MqttUnavailable(
                 f"cannot connect to broker {self.settings.describe()}: {ex}"
             ) from ex
 
-        self.mqtt_client.client.loop_start()
-        if not self._connected.wait(self.settings.timeout):
-            self.stop()
+        client.loop_start()
+        if not connected.wait(self.settings.timeout):
+            client.loop_stop()
             raise MqttUnavailable(
                 f"no CONNACK from broker {self.settings.describe()} within "
-                f"{self.settings.timeout}s ({self._failure or 'timeout'})"
+                f"{self.settings.timeout}s"
             )
-        if self._failure:
-            failure = self._failure
-            self.stop()
-            raise MqttUnavailable(failure)
+        if failure:
+            client.loop_stop()
+            raise MqttUnavailable(failure[0])
 
-        if not self._subscribed.wait(self.settings.timeout):
+        self._pub_client = client
+
+    def _tail_events_file(self) -> None:
+        with self.events_file.open("r", encoding="utf-8") as f:
+            while not self._stop_tail.is_set():
+                line = f.readline()
+                if not line:
+                    time.sleep(0.01)
+                    continue
+                line = line.strip()
+                if not line:
+                    continue
+                self._ingest_line(line)
+
+    def _ingest_line(self, line: str) -> None:
+        data = json.loads(line)
+        kind = data.get("kind")
+        if kind == "error":
+            with self._lock:
+                self.handler_errors.append(data.get("error", "Unknown handler error"))
+                self._lock.notify_all()
+            return
+
+        if kind == "typed":
+            event_type = CdbEventType(data["event_type"])
+            model_cls = CDB_EVENT_MODELS[event_type]
+            typed_event = model_cls.model_validate(data["payload"])
+            record = DispatchedRecord(
+                topic=data["topic"],
+                payload=data["payload"],
+                received_at=time.monotonic(),
+                event_type=event_type,
+                handler_method=data["handler_method"],
+                typed_event=typed_event,
+            )
+            with self._lock:
+                self._records.append(record)
+                self._all_typed_records.append(record)
+                self.seen_event_types.add(event_type)
+                self._lock.notify_all()
+            return
+
+        if kind == "generic":
+            record = DispatchedRecord(
+                topic=data["topic"],
+                payload=data["payload"],
+                received_at=time.monotonic(),
+            )
+            with self._lock:
+                self._records.append(record)
+                self._lock.notify_all()
+
+    def start(self) -> "CdbBrokerCollector":
+        self._start_publisher()
+        env = self._build_subprocess_env()
+
+        # Verify ``cdb-mqtt list-handlers`` discovers our handlers from --handlers-dir
+        list_res = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "cdb_mqtt.cli",
+                "list-handlers",
+                "--handlers-dir",
+                str(self.handlers_dir),
+            ],
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
+        )
+        if list_res.returncode != 0 or "AcceptanceRecordingHandler" not in list_res.stdout:
+            self.stop()
+            raise RuntimeError(
+                f"cdb-mqtt list-handlers failed (rc={list_res.returncode}):\n"
+                f"stdout: {list_res.stdout}\nstderr: {list_res.stderr}"
+            )
+
+        client_id = f"cdb-mqtt-acceptance-{uuid.uuid4().hex[:8]}"
+        cmd = [
+            sys.executable,
+            "-m",
+            "cdb_mqtt.cli",
+            "start",
+            "--broker-host",
+            self.settings.host,
+            "--broker-port",
+            str(self.settings.port),
+            "--client-id",
+            client_id,
+            "--topic",
+            self.topic_filter,
+            "--handlers-dir",
+            str(self.handlers_dir),
+            "--config",
+            str(self.config_file),
+            "--lock-file",
+            str(self.lock_file),
+            "--log-level",
+            "DEBUG",
+        ]
+        if self.settings.username:
+            cmd.extend(["--username", self.settings.username])
+        if self.settings.password:
+            cmd.extend(["--password", self.settings.password])
+
+        log_fh = self.process_log_file.open("w", encoding="utf-8")
+        self._process = subprocess.Popen(
+            cmd,
+            env=env,
+            stdout=log_fh,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+        log_fh.close()
+
+        self._tail_thread = threading.Thread(
+            target=self._tail_events_file,
+            name="cdb-mqtt-acceptance-tail",
+            daemon=True,
+        )
+        self._tail_thread.start()
+
+        # Wait until ``cdb-mqtt start`` connects, subscribes, and processes a probe message.
+        deadline = time.monotonic() + self.settings.timeout
+        ready = False
+        while time.monotonic() < deadline:
+            if self._process.poll() is not None:
+                logs = self.process_log_file.read_text(encoding="utf-8")
+                self.stop()
+                raise MqttUnavailable(
+                    f"cdb-mqtt start exited prematurely (rc={self._process.returncode}):\n{logs}"
+                )
+            try:
+                self.probe(timeout=0.25)
+                ready = True
+                break
+            except AssertionError:
+                pass
+
+        if not ready:
+            logs = self.process_log_file.read_text(encoding="utf-8")
             self.stop()
             raise MqttUnavailable(
-                f"no SUBACK for {self.topic_filter} within {self.settings.timeout}s"
+                f"cdb-mqtt start did not respond to broker probe within "
+                f"{self.settings.timeout}s:\n{logs}"
             )
-        if self._failure:
-            failure = self._failure
-            self.stop()
-            raise MqttUnavailable(failure)
 
+        with self._lock:
+            self._records.clear()
         return self
 
     def stop(self) -> None:
-        if self.mqtt_client is not None:
-            try:
-                self.mqtt_client.disconnect()
-            finally:
-                self.mqtt_client.client.loop_stop()
-                self.mqtt_client = None
+        self._stop_tail.set()
+        if self._tail_thread is not None:
+            self._tail_thread.join(timeout=2.0)
+            self._tail_thread = None
 
-        if self._loop is not None:
-            self._loop.call_soon_threadsafe(self._loop.stop)
-            if self._loop_thread is not None:
-                self._loop_thread.join(timeout=5.0)
-                self._loop_thread = None
-            self._loop.close()
-            self._loop = None
+        if self._process is not None:
+            if self._process.poll() is None:
+                self._process.terminate()
+                try:
+                    self._process.wait(timeout=5.0)
+                except subprocess.TimeoutExpired:
+                    self._process.kill()
+                    self._process.wait(timeout=2.0)
+            self._process = None
+
+        if self._pub_client is not None:
+            try:
+                self._pub_client.disconnect()
+            finally:
+                self._pub_client.loop_stop()
+                self._pub_client = None
 
         self._temp_dir.cleanup()
 
     def probe(self, timeout: Optional[float] = None) -> Dict[str, Any]:
-        """Round-trip a probe message through the broker and CdbMQTTClient.handle_generic."""
-        assert self.mqtt_client is not None
+        """Round-trip a probe message through the broker and the ``cdb-mqtt start`` process."""
+        assert self._pub_client is not None
         topic = f"cdb/test-probe/{uuid.uuid4().hex}"
         marker = uuid.uuid4().hex
-        self.mqtt_client.client.publish(topic, json.dumps({"probe": marker}), qos=1)
+        self._pub_client.publish(topic, json.dumps({"probe": marker}), qos=1)
         record = self._wait(topic, lambda payload: payload.get("probe") == marker, timeout)
         if record is None:
             raise AssertionError(
-                f"Probe message on {topic} was not echoed back by broker "
+                f"Probe message on {topic} was not echoed back by cdb-mqtt via broker "
                 f"{self.settings.describe()}"
             )
         return record.payload
 
-    def _flush_loop(self) -> None:
-        """Wait for all pending broker deliveries and asyncio handler tasks to finish."""
-        if self.mqtt_client is not None and self.mqtt_client.is_connected():
-            topic = f"cdb/test-probe/{uuid.uuid4().hex}"
-            marker = uuid.uuid4().hex
-            self.mqtt_client.client.publish(topic, json.dumps({"probe": marker}), qos=1)
-            self._wait(topic, lambda payload: payload.get("probe") == marker, self.settings.timeout)
-        if self._loop is not None and self._loop.is_running():
-            fut = asyncio.run_coroutine_threadsafe(asyncio.sleep(0), self._loop)
-            fut.result(timeout=self.settings.timeout)
-
     def drain(self) -> List[DispatchedRecord]:
-        self._flush_loop()
+        """Flush all pending broker deliveries through ``cdb-mqtt`` and clear the buffer."""
+        if (
+            self._pub_client is not None
+            and self._process is not None
+            and self._process.poll() is None
+        ):
+            self.probe(timeout=self.settings.timeout)
         with self._lock:
             drained = self._records
             self._records = []
@@ -481,7 +632,7 @@ class CdbBrokerCollector:
         desc = f" matching {description}" if description else ""
         lines = [
             f"No MQTT message on {topic}{desc} within {wait_timeout}s "
-            f"from broker {self.settings.describe()} (via CdbMQTTClient)."
+            f"from broker {self.settings.describe()} (via cdb-mqtt CLI)."
         ]
         if self.handler_errors:
             lines.append(f"Handler errors: {self.handler_errors}")
@@ -529,8 +680,8 @@ def tearDownModule() -> None:
 @pytest.mark.acceptance
 class TestCdbBrokerApiAcceptance(_BaseApiMqttTest):
     """
-    Triggers all 16 REST-API-accessible CDB events and verifies that ``CdbMQTTClient``
-    and ``CdbPluginManager`` parse and dispatch every one as its typed Pydantic model.
+    Triggers all 16 REST-API-accessible CDB events and verifies that the ``cdb-mqtt start``
+    CLI process parses and dispatches every one as its typed Pydantic model.
     """
 
     __test__ = True
@@ -558,6 +709,9 @@ class TestCdbBrokerApiAcceptance(_BaseApiMqttTest):
 
     def test_zzz_all_api_event_types_dispatched_as_typed_models(self) -> None:
         collector: CdbBrokerCollector = self.mqtt  # type: ignore[assignment]
+        self.assertIsNotNone(collector._process)
+        assert collector._process is not None
+        self.assertIsNone(collector._process.poll(), msg="cdb-mqtt CLI process is not running")
         self.assertEqual(collector.handler_errors, [])
         missing = API_EVENT_TYPES - collector.seen_event_types
         self.assertEqual(
@@ -593,11 +747,16 @@ class TestCdbBrokerSeleniumAcceptance(_BaseSeleniumMachineDesignTest):
     """
     Triggers machine-design template instantiation, trash, and restore via Selenium
     and verifies ``CdbMachineTrashEvent`` and template ``CdbMachineAddEvent`` dispatch
-    through ``CdbMQTTClient`` and ``CdbPluginManager``.
+    through the ``cdb-mqtt start`` CLI process.
     """
 
     __test__ = True
     DATA_PATH = str(SELENIUM_DIR / "data-dw")
+
+    # Hide redundant UI tests already covered by TestCdbBrokerApiAcceptance so pytest
+    # does not collect or report them as skipped.
+    test_machine_add_parent_and_child = None  # type: ignore[assignment]
+    test_machine_assign_link_and_move = None  # type: ignore[assignment]
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -613,11 +772,6 @@ class TestCdbBrokerSeleniumAcceptance(_BaseSeleniumMachineDesignTest):
     @classmethod
     def tearDownClass(cls) -> None:
         pass
-
-    # Hide redundant UI tests already covered by TestCdbBrokerApiAcceptance so pytest
-    # does not collect or report them as skipped.
-    test_machine_add_parent_and_child = None  # type: ignore[assignment]
-    test_machine_assign_link_and_move = None  # type: ignore[assignment]
 
     def test_machine_add_from_template(self) -> None:
         super().test_machine_add_from_template()
