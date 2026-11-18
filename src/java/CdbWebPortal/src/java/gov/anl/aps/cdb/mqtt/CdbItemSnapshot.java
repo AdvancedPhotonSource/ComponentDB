@@ -4,7 +4,6 @@
  */
 package gov.anl.aps.cdb.mqtt;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import java.util.ArrayList;
@@ -44,7 +43,6 @@ public final class CdbItemSnapshot {
 
     public String getId() { return id; }
     public String getDomain() { return domain; }
-    @JsonProperty("domain_id")
     public Integer getDomainId() { return domainId; }
     public String getDescription() { return description; }
     public List<CdbEntityTypeSnapshot> getEntityTypes() { return entityTypes; }

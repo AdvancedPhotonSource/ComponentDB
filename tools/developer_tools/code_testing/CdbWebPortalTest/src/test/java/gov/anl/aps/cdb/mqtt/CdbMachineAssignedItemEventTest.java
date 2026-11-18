@@ -36,7 +36,7 @@ public class CdbMachineAssignedItemEventTest {
         assertNull(event.getOldAssignedItem());
         assertEquals("2", event.getNewAssignedItem().getId());
         assertEquals("catalog", event.getNewAssignedItem().getDomain());
-        assertTrue(json.contains("\"domain_id\":1"));
+        assertTrue(json.contains("\"domainId\":1"));
         assertTrue(event.isOldInstalled());
         assertFalse(event.isNewInstalled());
         assertEquals("operator", event.getTriggeredByUsername());

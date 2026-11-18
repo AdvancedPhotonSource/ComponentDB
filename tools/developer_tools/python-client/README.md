@@ -129,7 +129,7 @@ requires authentication, export the same values, or another account allowed to s
 #### MQTT event payloads
 
 All events carry `triggeredByUsername` and `eventTimestamp`; the topic is never repeated in the
-payload. Item references are snapshots with `id`, `description`, `domain`, `domain_id` and
+payload. Item references are snapshots with `id`, `description`, `domain`, `domainId` and
 `entityTypes`. Free text is capped at 16 KiB; `diffTruncated` is `true` when text or a diff was cut.
 
 | Topic | Payload |

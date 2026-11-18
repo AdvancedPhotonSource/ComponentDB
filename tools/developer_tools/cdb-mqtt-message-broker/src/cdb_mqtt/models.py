@@ -27,7 +27,7 @@ class CdbItemSnapshot(EventModel):
 
     id: Optional[str] = None
     domain: Optional[str] = None
-    domain_id: Optional[int] = None
+    domain_id: Optional[int] = Field(None, alias="domainId")
     description: Optional[str] = None
     entity_types: List[CdbEntityTypeSnapshot] = Field(default_factory=list, alias="entityTypes")
 
