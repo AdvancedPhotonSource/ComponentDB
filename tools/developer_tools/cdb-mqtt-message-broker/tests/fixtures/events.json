@@ -1,0 +1,409 @@
+{
+  "cdb/entity/add": {
+    "eventTimestamp": "2026-11-18T16:38:06.157+00:00",
+    "triggeredByUsername": "cdb",
+    "operation": "add",
+    "entityId": "1001",
+    "entityType": "ItemDomainCatalog",
+    "entityDescription": "Catalog Item: QF Quadrupole (id: 1001)"
+  },
+  "cdb/entity/update": {
+    "eventTimestamp": "2026-11-18T16:38:06.157+0000",
+    "triggeredByUsername": "cdb",
+    "operation": "update",
+    "entityId": "1001",
+    "entityType": "ItemDomainCatalog",
+    "entityDescription": "Catalog Item: QF Quadrupole (id: 1001)"
+  },
+  "cdb/entity/delete": {
+    "eventTimestamp": "2026-11-18T16:38:06.157+00:00",
+    "triggeredByUsername": null,
+    "operation": "delete",
+    "entityId": "1001",
+    "entityType": "ItemDomainCatalog",
+    "entityDescription": "Catalog Item: QF Quadrupole (id: 1001)"
+  },
+  "cdb/item/property/add": {
+    "eventTimestamp": "2026-11-18T16:38:06.157+00:00",
+    "triggeredByUsername": "cdb",
+    "operation": "add",
+    "itemId": "1001",
+    "itemType": "ItemDomainCatalog",
+    "itemDescription": "Catalog Item: QF Quadrupole (id: 1001)",
+    "oldProperty": null,
+    "newProperty": {
+      "propertyValueId": "501",
+      "propertyTypeId": "12",
+      "propertyTypeName": "Serial Number",
+      "tag": null,
+      "value": "SN-001",
+      "text": null,
+      "units": null,
+      "description": null,
+      "metadata": {},
+      "textOmitted": false
+    },
+    "textDiff": null,
+    "diffTruncated": false
+  },
+  "cdb/item/property/update": {
+    "eventTimestamp": "2026-11-18T16:38:06.157+00:00",
+    "triggeredByUsername": "cdb",
+    "operation": "update",
+    "itemId": "1001",
+    "itemType": "ItemDomainCatalog",
+    "itemDescription": "Catalog Item: QF Quadrupole (id: 1001)",
+    "oldProperty": {
+      "propertyValueId": "502",
+      "propertyTypeId": "13",
+      "propertyTypeName": "Notes",
+      "tag": "doc",
+      "value": null,
+      "text": null,
+      "units": null,
+      "description": "Long text property",
+      "metadata": {"source": "import", "reviewed": null},
+      "textOmitted": true
+    },
+    "newProperty": {
+      "propertyValueId": "502",
+      "propertyTypeId": "13",
+      "propertyTypeName": "Notes",
+      "tag": "doc",
+      "value": null,
+      "text": null,
+      "units": null,
+      "description": "Long text property",
+      "metadata": {"source": "import", "reviewed": "yes"},
+      "textOmitted": true
+    },
+    "textDiff": "-old line\n+new line",
+    "diffTruncated": false
+  },
+  "cdb/item/property/delete": {
+    "eventTimestamp": "2026-11-18T16:38:06.157+00:00",
+    "triggeredByUsername": "cdb",
+    "operation": "delete",
+    "itemId": "1001",
+    "itemType": "ItemDomainCatalog",
+    "itemDescription": "Catalog Item: QF Quadrupole (id: 1001)",
+    "oldProperty": {
+      "propertyValueId": "501",
+      "propertyTypeId": "12",
+      "propertyTypeName": "Serial Number",
+      "tag": null,
+      "value": "SN-001",
+      "text": null,
+      "units": null,
+      "description": null,
+      "metadata": {},
+      "textOmitted": false
+    },
+    "newProperty": null,
+    "textDiff": null,
+    "diffTruncated": false
+  },
+  "cdb/item/log/add": {
+    "eventTimestamp": "2026-11-18T16:38:06.157+00:00",
+    "triggeredByUsername": "cdb",
+    "operation": "add",
+    "itemId": "2002",
+    "itemType": "ItemDomainInventory",
+    "itemDescription": "Inventory Item: QF Quadrupole - Unit 1 (id: 2002)",
+    "oldLog": null,
+    "newLog": {
+      "logId": "77",
+      "text": "Installed in sector 1",
+      "textOmitted": false,
+      "enteredOnDateTime": "2026-11-18T16:38:05.000+00:00",
+      "effectiveFromDateTime": null,
+      "effectiveToDateTime": null,
+      "enteredByUsername": "cdb",
+      "logTopicId": "3",
+      "logTopicName": "Installation"
+    },
+    "textDiff": null,
+    "diffTruncated": false
+  },
+  "cdb/item/log/update": {
+    "eventTimestamp": "2026-11-18T16:40:00.000+00:00",
+    "triggeredByUsername": "cdb",
+    "operation": "update",
+    "itemId": "2002",
+    "itemType": "ItemDomainInventory",
+    "itemDescription": "Inventory Item: QF Quadrupole - Unit 1 (id: 2002)",
+    "oldLog": {
+      "logId": "77",
+      "text": null,
+      "textOmitted": true,
+      "enteredOnDateTime": "2026-11-18T16:38:05.000+00:00",
+      "effectiveFromDateTime": "2026-11-01T00:00:00.000+0000",
+      "effectiveToDateTime": null,
+      "enteredByUsername": "cdb",
+      "logTopicId": null,
+      "logTopicName": null
+    },
+    "newLog": {
+      "logId": "77",
+      "text": null,
+      "textOmitted": true,
+      "enteredOnDateTime": "2026-11-18T16:38:05.000+00:00",
+      "effectiveFromDateTime": "2026-11-01T00:00:00.000+0000",
+      "effectiveToDateTime": "2026-12-01T00:00:00.000+0000",
+      "enteredByUsername": "cdb",
+      "logTopicId": null,
+      "logTopicName": null
+    },
+    "textDiff": "-Installed in sector 1\n+Installed in sector 2",
+    "diffTruncated": false
+  },
+  "cdb/item/log/delete": {
+    "eventTimestamp": "2026-11-18T16:41:00.000+00:00",
+    "triggeredByUsername": "cdb",
+    "operation": "delete",
+    "itemId": "2002",
+    "itemType": "ItemDomainInventory",
+    "itemDescription": "Inventory Item: QF Quadrupole - Unit 1 (id: 2002)",
+    "oldLog": {
+      "logId": "77",
+      "text": "Installed in sector 2",
+      "textOmitted": false,
+      "enteredOnDateTime": "2026-11-18T16:38:05.000+00:00",
+      "effectiveFromDateTime": null,
+      "effectiveToDateTime": null,
+      "enteredByUsername": "cdb",
+      "logTopicId": null,
+      "logTopicName": null
+    },
+    "newLog": null,
+    "textDiff": null,
+    "diffTruncated": false
+  },
+  "cdb/item/log/attachment/add": {
+    "eventTimestamp": "2026-11-18T16:38:06.200+00:00",
+    "triggeredByUsername": "cdb",
+    "operation": "add",
+    "itemId": "2002",
+    "itemType": "ItemDomainInventory",
+    "itemDescription": "Inventory Item: QF Quadrupole - Unit 1 (id: 2002)",
+    "logId": "77",
+    "attachment": {
+      "name": "20261118163806_photo.jpg",
+      "originalFilename": "photo.jpg"
+    }
+  },
+  "cdb/machine-design/add": {
+    "eventTimestamp": "2026-11-18T16:38:06.157+00:00",
+    "triggeredByUsername": "cdb",
+    "machine": {
+      "id": "3003",
+      "domain": "Machine Design",
+      "domainId": 6,
+      "description": "Machine Design Item: S01-QF1 (id: 3003)",
+      "entityTypes": []
+    },
+    "parent": {
+      "id": "3000",
+      "domain": "Machine Design",
+      "domainId": 6,
+      "description": "Machine Design Item: Sector 1 (id: 3000)",
+      "entityTypes": []
+    },
+    "sourceTemplate": {
+      "id": "3100",
+      "domain": "Machine Design",
+      "domainId": 6,
+      "description": "Machine Design Item: QF Template (id: 3100)",
+      "entityTypes": [{"id": 1, "name": "Template"}]
+    },
+    "templateAppliedToMachine": {
+      "id": "3003",
+      "domain": "Machine Design",
+      "domainId": 6,
+      "description": "Machine Design Item: S01-QF1 (id: 3003)",
+      "entityTypes": []
+    },
+    "templateCreatedMachineCount": 3
+  },
+  "cdb/machine-design/assigned-item/update": {
+    "eventTimestamp": "2026-11-18T16:38:06.157+00:00",
+    "triggeredByUsername": "cdb",
+    "machine": {
+      "id": "3003",
+      "domain": "Machine Design",
+      "domainId": 6,
+      "description": "Machine Design Item: S01-QF1 (id: 3003)",
+      "entityTypes": []
+    },
+    "oldAssignedItem": {
+      "id": "1001",
+      "domain": "Catalog",
+      "domainId": 2,
+      "description": "Catalog Item: QF Quadrupole (id: 1001)",
+      "entityTypes": []
+    },
+    "newAssignedItem": {
+      "id": "2002",
+      "domain": "Inventory",
+      "domainId": 3,
+      "description": "Inventory Item: QF Quadrupole - Unit 1 (id: 2002)",
+      "entityTypes": []
+    },
+    "oldInstalled": false,
+    "newInstalled": true
+  },
+  "cdb/machine-design/move": {
+    "eventTimestamp": "2026-11-18T16:38:06.157+00:00",
+    "triggeredByUsername": "cdb",
+    "machine": {
+      "id": "3003",
+      "domain": "Machine Design",
+      "domainId": 6,
+      "description": "Machine Design Item: S01-QF1 (id: 3003)",
+      "entityTypes": []
+    },
+    "oldParent": null,
+    "newParent": {
+      "id": "3001",
+      "domain": "Machine Design",
+      "domainId": 6,
+      "description": "Machine Design Item: Sector 2 (id: 3001)",
+      "entityTypes": []
+    }
+  },
+  "cdb/machine-design/represented-element/update": {
+    "eventTimestamp": "2026-11-18T16:38:06.157+00:00",
+    "triggeredByUsername": "cdb",
+    "machine": {
+      "id": "3003",
+      "domain": "Machine Design",
+      "domainId": 6,
+      "description": "Machine Design Item: S01-QF1 (id: 3003)",
+      "entityTypes": []
+    },
+    "oldRepresentedElement": null,
+    "newRepresentedElement": {
+      "id": "450",
+      "name": "Coil",
+      "parentItem": {
+        "id": "1001",
+        "domain": "Catalog",
+        "domainId": 2,
+        "description": "Catalog Item: QF Quadrupole (id: 1001)",
+        "entityTypes": []
+      },
+      "containedItem": null
+    },
+    "sourceTemplate": null
+  },
+  "cdb/machine-design/trash": {
+    "eventTimestamp": "2026-11-18T16:38:06.157+00:00",
+    "triggeredByUsername": "cdb",
+    "operation": "trash",
+    "affectedMachine": {
+      "id": "3003",
+      "domain": "Machine Design",
+      "domainId": 6,
+      "description": "Machine Design Item: S01-QF1 (id: 3003)",
+      "entityTypes": []
+    },
+    "requestedHierarchyRoot": {
+      "id": "3000",
+      "domain": "Machine Design",
+      "domainId": 6,
+      "description": "Machine Design Item: Sector 1 (id: 3000)",
+      "entityTypes": []
+    },
+    "affectedMachineCount": 2
+  },
+  "cdb/machine-design/restore": {
+    "eventTimestamp": "2026-11-18T16:39:06.157+00:00",
+    "triggeredByUsername": "cdb",
+    "operation": "restore",
+    "affectedMachine": {
+      "id": "3003",
+      "domain": "Machine Design",
+      "domainId": 6,
+      "description": "Machine Design Item: S01-QF1 (id: 3003)",
+      "entityTypes": []
+    },
+    "requestedHierarchyRoot": {
+      "id": "3000",
+      "domain": "Machine Design",
+      "domainId": 6,
+      "description": "Machine Design Item: Sector 1 (id: 3000)",
+      "entityTypes": []
+    },
+    "affectedMachineCount": 2
+  },
+  "cdb/item/location/update": {
+    "eventTimestamp": "2026-11-18T16:38:06.157+00:00",
+    "triggeredByUsername": "cdb",
+    "item": {
+      "id": "2002",
+      "domain": "Inventory",
+      "domainId": 3,
+      "description": "Inventory Item: QF Quadrupole - Unit 1 (id: 2002)",
+      "entityTypes": []
+    },
+    "oldLocation": {
+      "id": "4000",
+      "domain": "Location",
+      "domainId": 1,
+      "description": "Location Item: Building 401 (id: 4000)",
+      "entityTypes": []
+    },
+    "newLocation": null,
+    "oldLocationDetails": "Shelf A",
+    "newLocationDetails": null
+  },
+  "cdb/inventory/assembly-element/update": {
+    "eventTimestamp": "2026-11-18T16:38:06.157+00:00",
+    "triggeredByUsername": "cdb",
+    "inventoryAssembly": {
+      "id": "2002",
+      "domain": "Inventory",
+      "domainId": 3,
+      "description": "Inventory Item: QF Quadrupole - Unit 1 (id: 2002)",
+      "entityTypes": []
+    },
+    "assemblyElement": {
+      "id": "460",
+      "name": "Coil",
+      "parentItem": {
+        "id": "2002",
+        "domain": "Inventory",
+        "domainId": 3,
+        "description": "Inventory Item: QF Quadrupole - Unit 1 (id: 2002)",
+        "entityTypes": []
+      },
+      "containedItem": {
+        "id": "2010",
+        "domain": "Inventory",
+        "domainId": 3,
+        "description": "Inventory Item: Coil - Unit 7 (id: 2010)",
+        "entityTypes": []
+      }
+    },
+    "catalogElement": {
+      "id": "450",
+      "name": "Coil",
+      "parentItem": {
+        "id": "1001",
+        "domain": "Catalog",
+        "domainId": 2,
+        "description": "Catalog Item: QF Quadrupole (id: 1001)",
+        "entityTypes": []
+      },
+      "containedItem": null
+    },
+    "oldAssignedInventoryItem": null,
+    "newAssignedInventoryItem": {
+      "id": "2010",
+      "domain": "Inventory",
+      "domainId": 3,
+      "description": "Inventory Item: Coil - Unit 7 (id: 2010)",
+      "entityTypes": []
+    }
+  }
+}

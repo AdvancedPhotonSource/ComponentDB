@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import gov.anl.aps.cdb.mqtt.metadata.ItemLocationChange;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.view.objects.LocationHistoryObject;
 import java.util.List;
@@ -33,6 +34,7 @@ public abstract class LocatableItem extends Item {
     private transient boolean loadedImportLocationItem = false;
     private transient boolean loadedImportLocationDetails = false;
     private transient List<LocationHistoryObject> locationHistoryListObject = null;
+    private transient ItemLocationChange pendingLocationChange;
 
     // Needed to determine whenever location was removed in edit process. 
     private transient Boolean originalLocationLoaded = false;
@@ -244,5 +246,13 @@ public abstract class LocatableItem extends Item {
     public void setLocationHistoryListObject(List<LocationHistoryObject> locationHistoryListObject) {
         this.locationHistoryListObject = locationHistoryListObject;
     }
+
+    @JsonIgnore
+    public void setPendingLocationChange(ItemLocationChange pendingLocationChange) {
+        this.pendingLocationChange = pendingLocationChange;
+    }
+
+    @JsonIgnore
+    public ItemLocationChange getPendingLocationChange() { return pendingLocationChange; }
 
 }

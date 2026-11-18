@@ -1,0 +1,57 @@
+name: CDB MQTT Message Broker
+
+on:
+  push:
+    paths:
+      - "tools/developer_tools/cdb-mqtt-message-broker/**"
+      - "tools/developer_tools/cdb-bely-message-broker-base/**"
+      - "src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/mqtt/CdbMqttTopic.java"
+      - "src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/mqtt/CdbMqttOperation.java"
+      - ".github/workflows/cdb-mqtt-message-broker.yml"
+  pull_request:
+    paths:
+      - "tools/developer_tools/cdb-mqtt-message-broker/**"
+      - "tools/developer_tools/cdb-bely-message-broker-base/**"
+      - "src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/mqtt/CdbMqttTopic.java"
+      - "src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/mqtt/CdbMqttOperation.java"
+      - ".github/workflows/cdb-mqtt-message-broker.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Run CDB MQTT message broker tests
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: tools/developer_tools/cdb-mqtt-message-broker
+
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies (base from this checkout)
+        run: |
+          python -m pip install --upgrade pip
+          make install-dev
+
+      - name: Lint
+        run: make lint
+
+      - name: Type check
+        run: make type-check
+
+      - name: Run tests with coverage
+        run: make test-cov
