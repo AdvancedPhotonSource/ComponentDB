@@ -1,4 +1,4 @@
-.PHONY: help install install-base install-dev test test-cov lint format fix type-check clean quality quality-fix run-example list-handlers
+.PHONY: help install install-base install-dev test test-cov test-acceptance lint format fix type-check clean quality quality-fix run-example list-handlers
 
 BASE_DIR := ../cdb-bely-message-broker-base
 
@@ -12,6 +12,7 @@ help:
 	@echo "Testing:"
 	@echo "  make test             Run tests"
 	@echo "  make test-cov         Run tests with coverage"
+	@echo "  make test-acceptance  Run live acceptance tests against local portal and broker"
 	@echo ""
 	@echo "Code Quality:"
 	@echo "  make lint             Run linting checks"
@@ -44,6 +45,10 @@ test-cov:
 		--cov=src/cdb_mqtt \
 		--cov-report=html \
 		--cov-report=term-missing
+
+test-acceptance:
+	PYTHONPATH="src:$(BASE_DIR)/src:../python-client/packages/api:../python-client/packages/cli:../python-client/test:../portal_testing/PythonSeleniumTest:$${PYTHONPATH:+:$$PYTHONPATH}" \
+		pytest tests/test_acceptance.py -m acceptance -rs
 
 lint:
 	ruff check src/ tests/ examples/

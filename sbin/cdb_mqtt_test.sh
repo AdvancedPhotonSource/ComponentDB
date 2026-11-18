@@ -44,9 +44,11 @@ fi
 
 API_CLIENT_PATH=$CDB_DIST_DIR/tools/developer_tools/python-client
 SELENIUM_PATH=$CDB_DIST_DIR/tools/developer_tools/portal_testing/PythonSeleniumTest
+BROKER_PATH=$CDB_DIST_DIR/tools/developer_tools/cdb-mqtt-message-broker
+BROKER_BASE_PATH=$CDB_DIST_DIR/tools/developer_tools/cdb-bely-message-broker-base
 
 # Shared helper (mqtt_test_support) lives in the API test directory.
-export PYTHONPATH="$API_CLIENT_PATH/packages/api:$API_CLIENT_PATH/packages/cli:$API_CLIENT_PATH/test${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH="$BROKER_PATH/src:$BROKER_BASE_PATH/src:$API_CLIENT_PATH/packages/api:$API_CLIENT_PATH/packages/cli:$API_CLIENT_PATH/test${PYTHONPATH:+:$PYTHONPATH}"
 
 if ! command -v pytest > /dev/null; then
     echo "pytest is not on PATH; activate the test environment first."
@@ -75,6 +77,12 @@ elif ls $SELENIUM_PATH/tests/test_mqtt_*.py > /dev/null 2>&1; then
     cd $SELENIUM_PATH
     # Serial on purpose: the UI test mutates shared machine-design state.
     pytest tests/ -m mqtt -p no:xdist -rs "$@" || result=1
+fi
+
+if [ -f $BROKER_PATH/tests/test_acceptance.py ]; then
+    printf "$PRINTF_HEADER" "CDB MQTT Message Broker Acceptance Tests"
+    cd $BROKER_PATH
+    pytest tests/test_acceptance.py -m acceptance -p no:xdist -rs "$@" || result=1
 fi
 
 exit $result
