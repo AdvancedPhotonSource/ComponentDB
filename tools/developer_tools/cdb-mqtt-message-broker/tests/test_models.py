@@ -91,9 +91,7 @@ def test_log_events(event_payloads):
 
 
 def test_log_attachment_event(event_payloads):
-    event = CdbItemLogAttachmentEvent.model_validate(
-        event_payloads["cdb/item/log/attachment/add"]
-    )
+    event = CdbItemLogAttachmentEvent.model_validate(event_payloads["cdb/item/log/attachment/add"])
     assert event.operation is CdbOperation.ADD
     assert event.log_id == "77"
     assert event.attachment.original_filename == "photo.jpg"

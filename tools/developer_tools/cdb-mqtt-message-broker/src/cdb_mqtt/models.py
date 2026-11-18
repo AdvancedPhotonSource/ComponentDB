@@ -141,9 +141,7 @@ class CdbMachineAddEvent(CdbEventBase):
     template_applied_to_machine: Optional[CdbItemSnapshot] = Field(
         None, alias="templateAppliedToMachine"
     )
-    template_created_machine_count: Optional[int] = Field(
-        None, alias="templateCreatedMachineCount"
-    )
+    template_created_machine_count: Optional[int] = Field(None, alias="templateCreatedMachineCount")
 
 
 class CdbMachineAssignedItemEvent(CdbEventBase):
