@@ -1,0 +1,33 @@
+# BELY MQTT Framework Configuration
+# This file configures global settings and handler-specific parameters
+
+# Global configuration shared across all handlers
+global:
+  # Public-facing URL that end-users access in their browser.
+  # Used to generate clickable links in notifications (log entry permalinks,
+  # unsubscribe URLs). Must be reachable by notification recipients.
+  bely_url: https://bely.gov/bely
+
+  # (Optional) Internal API URL for broker-to-server API calls.
+  # Set this when the broker runs on the same machine as BELY and should
+  # use localhost for API calls, while bely_url remains the public URL.
+  # Defaults to bely_url if not specified.
+  # api_url: http://localhost:8080/bely
+
+# Handler-specific configurations
+handlers:
+  # Advanced logging handler with custom directory
+  AdvancedLoggingHandler:
+    logging_dir: /var/log/bely
+
+  # Basic logging handler (no configuration needed)
+  LoggingHandler: {}
+
+  # Notification handler with webhook
+  NotificationHandler:
+    webhook_url: https://example.com/webhook
+
+  # Apprise smart notification handler
+  AppriseSmartNotificationHandler:
+    config:
+      config_path: /path/to/apprise_notification_config.yaml

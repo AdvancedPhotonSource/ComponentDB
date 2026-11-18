@@ -1,0 +1,47 @@
+{% set name = "bely-mqtt-message-broker" %}
+{% set version = "2026.10.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  path: ./src
+
+build:
+  number: 0
+  noarch: python
+
+requirements:
+  build:
+    - pip
+    - python>3.10
+    - pytest-asyncio
+    - python-dotenv
+  run:
+    - python>3.10
+    - click
+    - paho-mqtt >=2.0.0
+    - pydantic
+    - python-dotenv
+    - pluggy
+    - pyyaml
+    - apprise
+    - bely-api
+
+test:
+  imports:
+    - bely_mqtt
+  source_files:
+    - tests
+    - pytest.ini
+  requires:
+    - pytest
+    - pytest-asyncio
+  commands:
+    - pytest tests -v
+
+about:
+  home: "https://git.aps.anl.gov/controls/hla/bely"
+  license: "Copyright (c) UChicago Argonne, LLC. All rights reserved."
+  summary: "Pluggable Python framework for handling BELY MQTT events"
