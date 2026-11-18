@@ -1,0 +1,17 @@
+[Unit]
+Description=CDB MQTT Message Broker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# All options are read from the environment (MQTT_*, CDB_*, LOG_LEVEL).
+EnvironmentFile=%h/.config/cdb-mqtt/cdb-mqtt.env
+Restart=on-failure
+RestartSec=5
+
+# Adjust to the installed cdb-mqtt executable (e.g. a venv or conda env bin directory).
+ExecStart=%h/.local/bin/cdb-mqtt start
+
+[Install]
+WantedBy=default.target
