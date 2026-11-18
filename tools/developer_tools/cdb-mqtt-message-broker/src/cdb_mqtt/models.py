@@ -197,7 +197,7 @@ class CdbItemLocationEvent(CdbEventBase):
 
 
 class CdbInventoryAssemblyElementEvent(CdbEventBase):
-    """Inventory assembly element assigned or cleared (``cdb/inventory/assembly-element/update``)."""
+    """Assembly element assigned or cleared (``cdb/inventory/assembly-element/update``)."""
 
     inventory_assembly: CdbItemSnapshot = Field(alias="inventoryAssembly")
     assembly_element: CdbItemElementSnapshot = Field(alias="assemblyElement")
