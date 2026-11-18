@@ -7,11 +7,13 @@ EventRegistry; the framework uses it to route messages to typed handler methods.
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Iterator, Mapping, Optional, Type
+from typing import Dict, Iterator, Mapping, Optional, Type, TypeVar
 
 from pydantic import BaseModel
 
 from cdb_bely_message_broker_base.models import MQTTMessage
+
+E = TypeVar("E", bound=Enum)
 
 
 def handler_method_name(event_type: Enum) -> str:
@@ -69,8 +71,8 @@ class EventRegistry:
     @classmethod
     def from_enum(
         cls,
-        enum_cls: Type[Enum],
-        model_map: Mapping[Enum, Type[BaseModel]],
+        enum_cls: Type[E],
+        model_map: Mapping[E, Type[BaseModel]],
     ) -> "EventRegistry":
         """
         Build a registry from an enum whose values are topics.

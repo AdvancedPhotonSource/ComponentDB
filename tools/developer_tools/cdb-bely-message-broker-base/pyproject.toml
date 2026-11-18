@@ -53,6 +53,9 @@ dev = [
     "types-PyYAML>=6.0.0",
 ]
 
+[tool.setuptools.package-data]
+cdb_bely_message_broker_base = ["py.typed"]
+
 [tool.black]
 line-length = 100
 target-version = ['py310']
