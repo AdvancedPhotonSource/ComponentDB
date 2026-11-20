@@ -7,7 +7,7 @@ package gov.anl.aps.cdb.common.utilities;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import java.util.Map;
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 
 /**
  * Utility class for processing and checking function arguments.

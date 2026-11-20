@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
+import org.primefaces.model.TreeNodeChildren;
 
 /**
  *
@@ -120,7 +121,7 @@ public abstract class ItemBaseLazyTreeNode<ItemEntity extends Item, ItemEntityFa
     }
 
     @Override
-    public List<TreeNode> getChildren() {
+    public TreeNodeChildren getChildren() {
         fetchChildren();
         return super.getChildren();
     }

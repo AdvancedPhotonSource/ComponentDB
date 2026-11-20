@@ -29,7 +29,7 @@ import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueMarkdownDocumentUploa
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  *

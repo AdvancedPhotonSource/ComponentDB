@@ -4,7 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers.util;
 
-import javax.faces.model.DataModel;
+import jakarta.faces.model.DataModel;
 
 public abstract class PaginationHelper {
 

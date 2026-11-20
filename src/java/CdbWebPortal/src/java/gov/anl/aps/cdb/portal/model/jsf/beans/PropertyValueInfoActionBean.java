@@ -5,11 +5,11 @@
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
 import java.io.Serializable;
-import javax.inject.Named;
+import jakarta.inject.Named;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.plugins.CdbPluginManager;
-import javax.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.SessionScoped;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

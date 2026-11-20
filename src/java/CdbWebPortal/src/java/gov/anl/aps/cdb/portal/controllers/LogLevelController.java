@@ -11,14 +11,14 @@ import gov.anl.aps.cdb.portal.controllers.utilities.LogLevelControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.LogLevelFacade;
 
 import java.io.Serializable;
-import javax.ejb.EJB;
-import javax.inject.Named;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
+import jakarta.ejb.EJB;
+import jakarta.inject.Named;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.convert.Converter;
+import jakarta.faces.convert.FacesConverter;
+import jakarta.faces.model.DataModel;
 
 @Named("logLevelController")
 @SessionScoped

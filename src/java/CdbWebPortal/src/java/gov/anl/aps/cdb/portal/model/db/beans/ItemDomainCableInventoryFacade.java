@@ -8,7 +8,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
-import javax.ejb.Stateless;
+import jakarta.ejb.Stateless;
 
 /**
  *

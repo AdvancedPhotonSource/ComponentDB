@@ -7,7 +7,7 @@ package gov.anl.aps.cdb.common.utilities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import javax.faces.model.SelectItem;
+import jakarta.faces.model.SelectItem;
 
 /**
  * Utility class for manipulating collections.

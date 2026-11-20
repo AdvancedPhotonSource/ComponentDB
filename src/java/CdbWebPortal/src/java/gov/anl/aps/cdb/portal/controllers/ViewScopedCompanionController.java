@@ -8,8 +8,8 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.PreDestroy;
-import javax.inject.Named;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Named;
 import org.omnifaces.cdi.ViewScoped;
 
 /**

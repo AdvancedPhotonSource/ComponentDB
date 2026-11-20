@@ -6,8 +6,8 @@ package gov.anl.aps.cdb.portal.model.jsf.beans;
 
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
 
 /**
  * JSF bean for handling errors.

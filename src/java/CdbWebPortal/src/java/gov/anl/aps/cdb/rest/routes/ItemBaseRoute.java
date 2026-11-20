@@ -11,8 +11,8 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
-import javax.ejb.EJB;
-import javax.ws.rs.PathParam;
+import jakarta.ejb.EJB;
+import jakarta.ws.rs.PathParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

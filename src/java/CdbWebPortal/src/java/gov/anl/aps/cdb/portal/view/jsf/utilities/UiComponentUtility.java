@@ -6,8 +6,8 @@ package gov.anl.aps.cdb.portal.view.jsf.utilities;
 
 import java.util.Iterator;
 import java.util.Map;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
 
 /**
  * Utility class for manipulating UI components.

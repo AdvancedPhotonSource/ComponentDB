@@ -4,7 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers.settings;
 
-import javax.faces.event.ActionEvent;
+import jakarta.faces.event.ActionEvent;
 import org.primefaces.component.datatable.DataTable;
 
 public interface ICdbSettings {
