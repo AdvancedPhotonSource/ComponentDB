@@ -49,7 +49,15 @@ if [ -z $masterPassword ]; then
 fi
 
 CDB_DOMAIN_NAME=production
-GLASSFISH_KEYSTORE_PATH=$CDB_GLASSFISH_DIR/glassfish/domains/$CDB_DOMAIN_NAME/config/keystore.jks
+GLASSFISH_CONFIG_DIR=$CDB_GLASSFISH_DIR/glassfish/domains/$CDB_DOMAIN_NAME/config
+# Payara 6+ uses a PKCS12 keystore; Payara 5 used JKS.
+if [ -f $GLASSFISH_CONFIG_DIR/keystore.p12 ]; then
+    GLASSFISH_KEYSTORE_PATH=$GLASSFISH_CONFIG_DIR/keystore.p12
+    GLASSFISH_KEYSTORE_TYPE=pkcs12
+else
+    GLASSFISH_KEYSTORE_PATH=$GLASSFISH_CONFIG_DIR/keystore.jks
+    GLASSFISH_KEYSTORE_TYPE=jks
+fi
 
 # Test entered password
 failed=0
@@ -72,7 +80,7 @@ keytool -importkeystore \
 -srckeystore $PKCS12_CERT_STORE \
 -srcstoretype pkcs12 \
 -srcstorepass $masterPassword \
--deststoretype jks \
+-deststoretype $GLASSFISH_KEYSTORE_TYPE \
 -destkeystore $GLASSFISH_KEYSTORE_PATH \
 -deststorepass $masterPassword
 

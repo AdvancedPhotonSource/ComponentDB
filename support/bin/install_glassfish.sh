@@ -7,19 +7,18 @@
 
 CDB_HOST_ARCH=$(uname -sm | tr -s '[:upper:][:blank:]' '[:lower:][\-]')
 CDB_HOSTNAME=`hostname -f`
-PAYARA_VERSION=5.192
-PAYARA_ZIP_FILE=payara-$PAYARA_VERSION.zip
-PAYARA_DOWNLOAD_URL=https://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/$PAYARA_VERSION/$PAYARA_ZIP_FILE
 PAYARA_DN_NAME="CN=${CDB_HOSTNAME}"
 
 currentDir=`pwd`
 cd `dirname $0`/.. && topDir=`pwd`
+. $topDir/bin/versions.sh
+
+PAYARA_ZIP_FILE=payara-$PAYARA_VERSION.zip
+PAYARA_DOWNLOAD_URL=https://repo1.maven.org/maven2/fish/payara/distributions/payara/$PAYARA_VERSION/$PAYARA_ZIP_FILE
 
 srcDir=$topDir/src
 buildDir=$topDir/build
 binDir=$topDir/bin
-glassfishMasterPasswordExpectScript=$binDir/glassfish_master_password.expect
-glassfishAdminPasswordExpectScript=$binDir/glassfish_admin_password.expect
 glassfishAutoLoginExpectScript=$binDir/glassfish_auto_login.expect
 javaInstallDir=$topDir/java/$CDB_HOST_ARCH
 if [ ! -z $1 ]; then
@@ -43,7 +42,7 @@ mkdir -p $srcDir
 cd $srcDir
 if [ ! -f $PAYARA_ZIP_FILE ]; then
     echo "Retrieving $PAYARA_DOWNLOAD_URL"
-    curl -L -O $PAYARA_DOWNLOAD_URL
+    curl -f -L -O $PAYARA_DOWNLOAD_URL || { rm -f $PAYARA_ZIP_FILE; exit 1; }
 fi
 
 if [ ! -f $PAYARA_ZIP_FILE ]; then
@@ -75,79 +74,52 @@ chmod -R o-rwx $payaraInstallDir/bin
 chmod -R o-rwx $payaraInstallDir/glassfish/bin
 
 export PAYARA_DOMAIN_NAME=production
+KEYSTORE_FILE=keystore.p12
+CACERTS_FILE=cacerts.p12
 
-# backup passwords
-echo "Backing up original passwords"
-cd $payaraInstallDir/glassfish
-PASSWORD_FILES="domains/$PAYARA_DOMAIN_NAME/config/domain-passwords domains/$PAYARA_DOMAIN_NAME/config/keystore.jks domains/$PAYARA_DOMAIN_NAME/config/cacerts.jks"
-for f in domains/$PAYARA_DOMAIN_NAME/master-password domains/$PAYARA_DOMAIN_NAME/local-password; do
-    if [ -f $f ]; then
-        PASSWORD_FILES="$PASSWORD_FILES $f"
-    fi
-done
-PASSWORD_TAR_FILE=passwords.orig.tar
-tar cf $PASSWORD_TAR_FILE $PASSWORD_FILES
-
-# Change master password
-# Enter the current master password> [By default this is 'changeit']
-# Enter the new master password> [e.g. 'myMasterPwd']
-# Enter the new master password again>
-# After entering the new master password twice, there is a pause of several
-# seconds. Then you will find new versions of 'master-password'
-# 'domain-passwords' 'keystore.jks' and 'cacerts.jks'.
-#echo "Changing master password ['changeit']:"
-#$ASADMIN_CMD change-master-password --savemasterpassword=true $PAYARA_DOMAIN_NAME || exit 1
-
-# Read new master password
+# Read passwords up front
 echo
-echo "Changing payara master password"
 sttyOrig=`stty -g`
 stty -echo
-read -p "Enter master password: " MASTER_PASSWORD
+read -p "Enter payara master password: " MASTER_PASSWORD
+echo
+read -p "Enter glassfish admin password: " ADMIN_PASSWORD
 stty $sttyOrig
 echo
 
-# Change master password
-tmpFile=/tmp/`basename $0`.`id -u`.tmp
-eval "cat $glassfishMasterPasswordExpectScript | sed 's?OLD_PASSWORD?changeit?' | sed 's?MASTER_PASSWORD?$MASTER_PASSWORD?' | sed 's?PAYARA_DOMAIN_NAME?$PAYARA_DOMAIN_NAME?' > $tmpFile"
-chmod a+x $tmpFile
-cd `dirname $ASADMIN_CMD`
-$tmpFile
+# Payara 6+ ships only domain1, so the production domain is created here.
+# Passwords are passed via a private password file instead of interactive prompts.
+passwordFile=`mktemp /tmp/$(basename $0).XXXXXX`
+chmod 600 $passwordFile
+trap "rm -f $passwordFile" EXIT
+
+echo "Creating domain $PAYARA_DOMAIN_NAME"
+printf "AS_ADMIN_PASSWORD=%s\n" "$ADMIN_PASSWORD" > $passwordFile
+# Hazelcast's default start port 5900 collides with VNC/macOS Screen Sharing ("Unknown protocol: RFB")
+# and hangs startup, so it must be set before the first start.
+$ASADMIN_CMD --user admin --passwordfile $passwordFile create-domain --checkports=false \
+    --domainproperties hazelcast.start.port=$PAYARA_HAZELCAST_START_PORT \
+    --keytooloptions "$PAYARA_DN_NAME" $PAYARA_DOMAIN_NAME || exit 1
+
+# Keystores are created with the default 'changeit' master password; replace it.
+echo "Changing payara master password"
+printf "AS_ADMIN_MASTERPASSWORD=changeit\nAS_ADMIN_NEWMASTERPASSWORD=%s\n" "$MASTER_PASSWORD" > $passwordFile
+$ASADMIN_CMD --passwordfile $passwordFile change-master-password --savemasterpassword=true $PAYARA_DOMAIN_NAME || exit 1
+rm -f $passwordFile
 
 # Your chosen master password should unlock both keystores, and reveal
-# two certificates in keystore.jks, and many additional ones in cacerts.jks.
+# two certificates in the keystore, and many additional ones in cacerts.
 echo
 echo "Checking master password: list keystore certificates"
-$KEYTOOL_CMD -list -v -keystore $payaraInstallDir/glassfish/domains/$PAYARA_DOMAIN_NAME/config/keystore.jks --storepass $MASTER_PASSWORD > /dev/null || exit 1
+$KEYTOOL_CMD -list -v -keystore $payaraInstallDir/glassfish/domains/$PAYARA_DOMAIN_NAME/config/$KEYSTORE_FILE --storepass $MASTER_PASSWORD > /dev/null || exit 1
 echo "Checking master password: list ca certificates"
-$KEYTOOL_CMD -list -v -keystore $payaraInstallDir/glassfish/domains/$PAYARA_DOMAIN_NAME/config/cacerts.jks --storepass $MASTER_PASSWORD > /dev/null || exit 1
+$KEYTOOL_CMD -list -v -keystore $payaraInstallDir/glassfish/domains/$PAYARA_DOMAIN_NAME/config/$CACERTS_FILE --storepass $MASTER_PASSWORD > /dev/null || exit 1
 
 # start glassfish
 echo
 echo "Starting glassfish"
 $ASADMIN_CMD start-domain $PAYARA_DOMAIN_NAME
-
-# read new glassfish admin password
-echo
-echo "Changing payara admin password"
-sttyOrig=`stty -g`
-stty -echo
-read -p "Enter glassfish admin password: " ADMIN_PASSWORD
-stty $sttyOrig
-echo
-
-# change admin password
-eval "cat $glassfishAdminPasswordExpectScript | sed 's?OLD_PASSWORD??' | sed 's?ADMIN_PASSWORD?$ADMIN_PASSWORD?' > $tmpFile"
-chmod a+x $tmpFile
-cd `dirname $ASADMIN_CMD`
-$tmpFile
-
-# $ASADMIN_CMD change-admin-password
-# Enter admin user name [default: admin]> [Just press Enter]
-# Enter admin password> [By default this is blank, so just press Enter]
-# Enter new admin password> [Must contain at least 8 chars (e.g. 'myAdminPwd')]
-# Enter new admin password again>
-# There will now be a new version of '$GLASSFISH_HOME/domains/$PAYARA_DOMAIN_NAME/config/admin-keyfile'
+tmpFile=/tmp/`basename $0`.`id -u`.tmp
 
 # Store admin password, to enable automatic login to localhost:4848
 #$ASADMIN_CMD --host localhost --port 4848 login
@@ -169,45 +141,45 @@ $tmpFile
 $ASADMIN_CMD stop-domain $PAYARA_DOMAIN_NAME
 rm -f $tmpFile
 
-# inspect keystore.jks
+# inspect keystore
 echo
 echo "Inspecting keystore"
 cd $payaraInstallDir/glassfish/domains/$PAYARA_DOMAIN_NAME/config/
-$KEYTOOL_CMD -list -keystore keystore.jks -storepass $MASTER_PASSWORD
+$KEYTOOL_CMD -list -keystore $KEYSTORE_FILE -storepass $MASTER_PASSWORD
 
-# update keystore.jks
+# update keystore
 echo
 echo "Updating keystore"
-$KEYTOOL_CMD -delete -alias s1as -keystore keystore.jks -storepass $MASTER_PASSWORD
-$KEYTOOL_CMD -delete -alias glassfish-instance -keystore keystore.jks -storepass $MASTER_PASSWORD
+$KEYTOOL_CMD -delete -alias s1as -keystore $KEYSTORE_FILE -storepass $MASTER_PASSWORD
+$KEYTOOL_CMD -delete -alias glassfish-instance -keystore $KEYSTORE_FILE -storepass $MASTER_PASSWORD
 
-$KEYTOOL_CMD -genkeypair -alias s1as -dname "$PAYARA_DN_NAME" -keyalg RSA -keysize 2048 -validity 3650 -keystore keystore.jks -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
-$KEYTOOL_CMD -genkeypair -alias glassfish-instance -dname "$PAYARA_DN_NAME" -keyalg RSA -keysize 2048 -validity 3650 -keystore keystore.jks -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
+$KEYTOOL_CMD -genkeypair -alias s1as -dname "$PAYARA_DN_NAME" -keyalg RSA -keysize 2048 -validity 3650 -keystore $KEYSTORE_FILE -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
+$KEYTOOL_CMD -genkeypair -alias glassfish-instance -dname "$PAYARA_DN_NAME" -keyalg RSA -keysize 2048 -validity 3650 -keystore $KEYSTORE_FILE -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
 
-# check keystore.jks
+# check keystore
 echo
 echo "Checking keystore"
-$KEYTOOL_CMD -list -keystore keystore.jks -storepass $MASTER_PASSWORD
+$KEYTOOL_CMD -list -keystore $KEYSTORE_FILE -storepass $MASTER_PASSWORD
 
-# export certificates from keystore.jks
+# export certificates from keystore
 echo
 echo "Exporting certificates"
-$KEYTOOL_CMD -exportcert -alias s1as -file s1as.cert -keystore keystore.jks -storepass $MASTER_PASSWORD
-$KEYTOOL_CMD -exportcert -alias glassfish-instance -file glassfish-instance.cert -keystore keystore.jks -storepass $MASTER_PASSWORD
+$KEYTOOL_CMD -exportcert -alias s1as -file s1as.cert -keystore $KEYSTORE_FILE -storepass $MASTER_PASSWORD
+$KEYTOOL_CMD -exportcert -alias glassfish-instance -file glassfish-instance.cert -keystore $KEYSTORE_FILE -storepass $MASTER_PASSWORD
 
-# update cacerts.jks
+# update cacerts
 echo
-echo "Updating cacerts.jks, using master password as key password"
-$KEYTOOL_CMD -delete -alias s1as -keystore cacerts.jks -storepass $MASTER_PASSWORD
-$KEYTOOL_CMD -delete -alias glassfish-instance -keystore cacerts.jks -storepass $MASTER_PASSWORD
+echo "Updating $CACERTS_FILE, using master password as key password"
+$KEYTOOL_CMD -delete -alias s1as -keystore $CACERTS_FILE -storepass $MASTER_PASSWORD
+$KEYTOOL_CMD -delete -alias glassfish-instance -keystore $CACERTS_FILE -storepass $MASTER_PASSWORD
 
-$KEYTOOL_CMD -importcert -noprompt -alias s1as -file s1as.cert -keystore cacerts.jks -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
-$KEYTOOL_CMD -importcert -noprompt -alias glassfish-instance -file glassfish-instance.cert -keystore cacerts.jks -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
+$KEYTOOL_CMD -importcert -noprompt -alias s1as -file s1as.cert -keystore $CACERTS_FILE -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
+$KEYTOOL_CMD -importcert -noprompt -alias glassfish-instance -file glassfish-instance.cert -keystore $CACERTS_FILE -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
 
-# check cacerts.jks and tidy up
+# check cacerts and tidy up
 echo
-echo "Checking cacerts.jks"
-$KEYTOOL_CMD -list -keystore cacerts.jks -storepass $MASTER_PASSWORD > /dev/null || exit 1
+echo "Checking $CACERTS_FILE"
+$KEYTOOL_CMD -list -keystore $CACERTS_FILE -storepass $MASTER_PASSWORD > /dev/null || exit 1
 rm -f s1as.cert glassfish-instance.cert
 
 # The commands here change the file at

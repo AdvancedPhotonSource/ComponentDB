@@ -6,12 +6,14 @@
 CDB_HOST_ARCH=$(uname -sm | tr -s '[:upper:][:blank:]' '[:lower:][\-]')
 CDB_HOSTNAME=`hostname -f`
 
-NETBEANS_VERSION=16
-NETBEANS_ZIP_FILE=netbeans-$NETBEANS_VERSION-bin.zip
-DOWNLOAD_URL=https://dlcdn.apache.org/netbeans/netbeans/$NETBEANS_VERSION/$NETBEANS_ZIP_FILE
-
 currentDir=`pwd`
 cd `dirname $0`/.. && topDir=`pwd`
+. $topDir/bin/versions.sh
+
+NETBEANS_ZIP_FILE=netbeans-$NETBEANS_VERSION-bin.zip
+# archive.apache.org keeps every release; dlcdn only carries the latest.
+DOWNLOAD_URL=https://archive.apache.org/dist/netbeans/netbeans/$NETBEANS_VERSION/$NETBEANS_ZIP_FILE
+
 srcDir=$topDir/src
 buildDir=$topDir/build
 binDir=$topDir/bin
@@ -25,7 +27,7 @@ mkdir -p $netbeansDir
 cd $srcDir
 if [ ! -f $NETBEANS_ZIP_FILE ]; then
     echo "Retrieving $DOWNLOAD_URL"
-    curl -L -O $DOWNLOAD_URL
+    curl -f -L -O $DOWNLOAD_URL || { rm -f $NETBEANS_ZIP_FILE; exit 1; }
 fi
 
 if [ ! -f $NETBEANS_ZIP_FILE ]; then
