@@ -178,6 +178,15 @@ cp src/java/CdbWebPortal/lib/mariadb-java-client-3.1.0.jar ../support-`hostname`
 ```
 10. Run the project
 
+> **Optional (macOS):** Payara's Hazelcast data grid defaults to port 5900, which is also used by macOS Screen Sharing (VNC). If startup hangs and `server.log` repeats `Unknown protocol: RFB`, move Hazelcast to another port. The `make support` domain already uses 6900; the NetBeans-installed copy needs this once. Stop the server first (a running server keeps the old value and can write it back), then use the domain path shown in NetBeans under Services → Servers → Payara → Properties:
+> ```sh
+> DOMAIN_XML=../support-`hostname`/netbeans/payara/glassfish/domains/domain1/config/domain.xml
+> # Sets or adds start-port; the element may have no attributes when Payara relies on the 5900 default.
+> sed -i '' -E 's#<hazelcast-runtime-configuration( start-port="[0-9]+")?#<hazelcast-runtime-configuration start-port="6900"#' $DOMAIN_XML   # GNU sed on Linux: sed -i -E ...
+> grep hazelcast-runtime-configuration $DOMAIN_XML                     # should show start-port="6900"
+> ```
+> If the server is running, `asadmin set-hazelcast-configuration --enabled=true --startport 6900` followed by a restart does the same.
+
 ## ~~Python Web Service Development~~
 The python web service is deprecated but is still a part of the distribution for legacy integrations. 
 
