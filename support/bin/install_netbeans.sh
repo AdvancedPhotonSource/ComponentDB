@@ -45,6 +45,13 @@ rm -rf `basename $netbeansInstallDir`
 unzip -q $srcDir/$NETBEANS_ZIP_FILE
 mv netbeans `basename $netbeansInstallDir`
 
+# Run the IDE on the support JDK so the project's default platform can compile --release $JAVA_FEATURE_VERSION.
+supportJdkDir=$topDir/java/$CDB_HOST_ARCH
+if [ -d $supportJdkDir ]; then
+    echo "Setting netbeans_jdkhome to $supportJdkDir"
+    sed -i.bak "s?^#netbeans_jdkhome=.*?netbeans_jdkhome=\"$supportJdkDir\"?" $netbeansInstallDir/etc/netbeans.conf && rm -f $netbeansInstallDir/etc/netbeans.conf.bak
+fi
+
 # Create symlink to current netbeans
 rm currentNetbeans
 ln -s $netbeansInstallDir currentNetbeans
