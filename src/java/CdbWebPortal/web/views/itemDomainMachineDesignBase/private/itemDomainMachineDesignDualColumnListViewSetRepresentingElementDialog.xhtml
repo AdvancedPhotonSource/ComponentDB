@@ -14,7 +14,7 @@ See LICENSE file.
               header="Set Represeting Catalog Element for Machine #{entityController.current}."
               widgetVar="setRepElementDialogWidget"
               onShow="#{entityController.elementsAvaiableForNodeRepresentation == null ? 'PF(\'setRepElementDialogWidget\').hide()' : '' }"
-              styleClass="viewTransparentBackgroundDialog">
+              boxStyleClass="viewTransparentBackgroundDialog">
         
         <p:outputPanel id="setRepElementDialogOutputpanel">
             <p:selectOneListbox value="#{entityController.selectedElementForNodeRepresentation}"
