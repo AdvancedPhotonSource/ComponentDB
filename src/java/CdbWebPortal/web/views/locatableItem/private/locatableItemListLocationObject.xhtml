@@ -21,16 +21,14 @@ See LICENSE file.
               value="#{renderedDomain != null ? renderedDomain : false}" /> 
     <!-- specify ui:param alternateLocationString to add string when no location string exists. --> 
 
-    <p:column styleClass="locationColumnStyleClassWatermark"
-              headerText="Location"
+    <p:column headerText="Location"
+              filterPlaceholder="Immediate location only (e.g. Cabinet/Room) and not derived from housing membership."
               rendered="#{settingObject.displayLocation and renderedLocation}"
               filterBy="#{itemListObject.locationString}"
               sortBy="#{itemListObject.locationString}"
               filterMatchMode="contains"
               exportFunction="#{locatableItemController.getLocationStringForItem(itemListObject)}"
               filterable="#{filterable}">
-        <p:watermark for="@(.locationColumnStyleClassWatermark)" 
-                     value="Immediate location only (e.g. Cabinet/Room) and not derived from housing membership." />
         <ui:include src="templateDefaults/locatableItemLocationListColumnObject.xhtml" /> 
     </p:column>
 

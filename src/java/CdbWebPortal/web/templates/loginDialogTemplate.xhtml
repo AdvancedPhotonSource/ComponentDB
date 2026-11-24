@@ -15,11 +15,9 @@ See LICENSE file.
                   styleClass="viewTransparentBackgroundDialog" 
                   header="Login" widgetVar="loginDialogWidget"
                   resizable="false">
-            <h:panelGrid styleClass="loginInput" columns="2">
-                <p:inputText id="username" value="#{loginController.username}" title="Username"/>
-                <p:watermark for="username" value="Username"/>
-                <p:password id="password" value="#{loginController.password}" title="Password"/>
-                <p:watermark for="password" value="Password"/>
+            <h:panelGrid styleClass="loginInput" columns="1">
+                <p:inputText id="username" value="#{loginController.username}" title="Username" placeholder="Username"/>
+                <p:password id="password" value="#{loginController.password}" title="Password" placeholder="Password"/>
             </h:panelGrid>
 
             <f:facet name="footer">
