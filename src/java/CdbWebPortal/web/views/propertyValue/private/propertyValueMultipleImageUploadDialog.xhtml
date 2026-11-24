@@ -18,7 +18,7 @@ See LICENSE file.
               resizable="false"
               closable="true">        
 
-        <p:panelGrid columns="2" rendered="#{propertyValueImageUploadBean.showPropertyTypeSelectOneMenu()}">
+        <p:panelGrid layout="tabular" columns="2" rendered="#{propertyValueImageUploadBean.showPropertyTypeSelectOneMenu()}">
             <h:outputLabel value="Image Property Type: " />
             <p:column>
                 <p:selectOneMenu id="propertyValueImageUploadSelectOne"

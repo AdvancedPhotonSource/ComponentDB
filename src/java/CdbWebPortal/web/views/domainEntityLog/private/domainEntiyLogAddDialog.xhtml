@@ -19,7 +19,7 @@ See LICENSE file.
 
         <ui:param name="logObject" value="#{entityController.newLogEdit}" />
 
-        <p:panelGrid columns="2" rendered="#{logObject != null}">
+        <p:panelGrid layout="tabular" columns="2" rendered="#{logObject != null}">
 
             <h:outputLabel for="logEntryValue" value="Log Entry" styleClass="entityDataEmphasizedLabel"/>
             <p:inputTextarea id="logEntryValue" value="#{logObject.text}" autoResize="false" />

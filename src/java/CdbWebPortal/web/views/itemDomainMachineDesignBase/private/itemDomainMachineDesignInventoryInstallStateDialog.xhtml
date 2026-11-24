@@ -18,7 +18,7 @@ See LICENSE file.
         <p:outputPanel rendered="#{entityController.displayUpdateInstalledInventoryStateDialogContents}">
             <ui:param name="currentMd"
                       value="#{entityController.current}" /> 
-            <p:panelGrid columns="2">
+            <p:panelGrid layout="tabular" columns="2">
                 <h:outputText value="Machine Design"/>
                 <h:outputText value="#{currentMd.name}"/>
                 <h:outputText value="Inventory Item"/>

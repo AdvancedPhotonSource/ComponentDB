@@ -14,7 +14,7 @@ See LICENSE file.
     <p:outputPanel id="#{entityTypeName}ListDisplayModeOptionsPanel#{viewName}"
                    styleClass="leftAlignedText">
 
-        <p:panelGrid columns="2"
+        <p:panelGrid layout="tabular" columns="2"
                      styleClass="noCellPaddingPanelGrid" 
                      rendered="#{entitySettingObject.displayListDataModelScopePropertyTypeSelection}">
             <h:outputText value="Property Type" />            
@@ -28,7 +28,7 @@ See LICENSE file.
             </p:selectOneMenu>   
         </p:panelGrid>
 
-        <p:panelGrid columns="2"
+        <p:panelGrid layout="tabular" columns="2"
                      styleClass="noCellPaddingPanelGrid" 
                      rendered="#{entitySettingObject.displayListDataModelScopeAdvancedFilter}">
             <h:outputText value="Filter Name" />            
@@ -47,7 +47,7 @@ See LICENSE file.
 
         <p:outputPanel id="#{entityTypeName}AdvancedFilterParams#{viewName}"
                        rendered="#{entitySettingObject.displayListDataModelScopeAdvancedFilter}">
-            <p:panelGrid columns="2"
+            <p:panelGrid layout="tabular" columns="2"
                          styleClass="noCellPaddingPanelGrid">
                 <c:forEach items="#{entityController.selectedFilter.parameters}"
                            var="parameter">

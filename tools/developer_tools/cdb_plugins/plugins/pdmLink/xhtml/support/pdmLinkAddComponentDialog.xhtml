@@ -24,7 +24,7 @@ See LICENSE file.
               resizable="false"
               modal="true">
         <h:form id="addPdmComonentForm">
-            <p:panelGrid id="addPdmComonentPanelGrid" rendered="#{pdmLinkDrawingBean.pdmLinkComponent != null}">
+            <p:panelGrid layout="tabular" columns="0" id="addPdmComonentPanelGrid" rendered="#{pdmLinkDrawingBean.pdmLinkComponent != null}">
                 <!-- Component name value --> 
                 <p:row>
                     <p:column>
@@ -131,7 +131,7 @@ See LICENSE file.
                     </p:column>
                     <p:column>
 
-                        <p:panelGrid columns="4" id="permissionsPanel">
+                        <p:panelGrid layout="tabular" columns="4" id="permissionsPanel">
                             <ui:include src="../../entityInfo/private/entityInfoEditObject.xhtml" rendered="#{componentObject.entityInfo != null}">
                                 <ui:param name="entityInfoObject" value="#{componentObject.entityInfo}"/>
                             </ui:include>

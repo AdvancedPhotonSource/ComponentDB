@@ -9,7 +9,7 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">  
 
     <p:outputPanel rendered="#{newInventoryObject != null}" >                    
-        <p:panelGrid columns="3">
+        <p:panelGrid layout="tabular" columns="3">
             <ui:param name="viewName"
                       value="newInventory"/> 
             <ui:param name="itemObject"

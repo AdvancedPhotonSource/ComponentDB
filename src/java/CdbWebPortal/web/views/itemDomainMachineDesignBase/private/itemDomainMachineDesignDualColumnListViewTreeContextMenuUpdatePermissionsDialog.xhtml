@@ -22,7 +22,7 @@ See LICENSE file.
             <h:outputText value="Update permissions for element #{entityController.current} and all the children." /> 
             <br/>
 
-            <p:panelGrid columns="2">
+            <p:panelGrid layout="tabular" columns="2">
                 <ui:include src="../../entityInfo/private/entityInfoEditObject.xhtml">                
                     <ui:param name="renderHelpFragments" value="#{false}" />
                 </ui:include>

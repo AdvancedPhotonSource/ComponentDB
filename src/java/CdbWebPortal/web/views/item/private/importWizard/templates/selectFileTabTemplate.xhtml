@@ -17,7 +17,7 @@ See LICENSE file.
     <p:tab id="#{rootViewId}SelectFileTab">
         <p:panel header="Choose spreadsheet file and sheet, then click 'Next Step'.">
             <p:outputPanel id="#{rootViewId}SelectFilePanel">
-                <p:panelGrid>
+                <p:panelGrid layout="tabular" columns="0">
                     
                     <p:row>
                         <p:column>
@@ -42,7 +42,7 @@ See LICENSE file.
                         </p:column>
                     </p:row>
 
-                    <p:panelGrid columns="2">
+                    <p:panelGrid layout="tabular" columns="2">
                        
                         <p:outputLabel value="Successfully opened file:" 
                                        styleClass="entityDataEmphasizedLabel"

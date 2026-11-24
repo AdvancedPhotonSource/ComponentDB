@@ -12,7 +12,7 @@ See LICENSE file.
 
     <p:tab title="Machine Design Specific">
         Select desired item columns to edit    
-        <p:panelGrid columns="2">
+        <p:panelGrid layout="tabular" columns="2">
             <p:selectBooleanCheckbox onchange="onUpdateOptionsChange()"
                              value="#{entityController.updateFulfillment}"/>
             <h:outputText value="Machine Fulfillment" />

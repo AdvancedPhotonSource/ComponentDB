@@ -15,7 +15,7 @@ See LICENSE file.
     <ui:param name="parentDialogWidgetVar" value="#{parentDialogWidgetVar != null ? parentDialogWidgetVar : 'pdmLinkDrawingSearchDialogWidget'}"/>
 
     <p:outputPanel styleClass="centeredContent">
-        <p:panelGrid columns="1">
+        <p:panelGrid layout="tabular" columns="1">
             <p:column>
                 <h:inputText id="searchKeywords" value="#{pdmLinkDrawingBean.searchKeywords}" 
                              title="Use ? to replace one character and * to replace many. Example: 2101-1601*.???" 

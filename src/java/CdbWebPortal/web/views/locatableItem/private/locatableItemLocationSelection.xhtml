@@ -15,7 +15,7 @@ See LICENSE file.
     <h:outputLabel for="location#{viewName}" value="Location" styleClass="entityDataEmphasizedLabel"/>
     <p:column id="location#{viewName}"
               rendered="#{locationEditable}">
-        <p:panelGrid columns="2" styleClass="noCellPaddingPanelGrid">      
+        <p:panelGrid layout="tabular" columns="2" styleClass="noCellPaddingPanelGrid">      
             <p:column>
                 <p:outputPanel styleClass="locationTieredMenuPickerContainer" rendered="#{displayLocationSelectionTieredMenu}">
                     <p:tieredMenu model="#{locatableItemController.getItemLocataionDefaultMenuModel(itemObject)}"

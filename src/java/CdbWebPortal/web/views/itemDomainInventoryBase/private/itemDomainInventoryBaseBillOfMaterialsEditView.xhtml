@@ -15,7 +15,7 @@ See LICENSE file.
         <p:outputPanel rendered="#{entityController.currentHasPartsToDisplay}">      
             <!-- TODO: Remove columns option and render header and row in primefaces 6.2 --> 
 
-            <p:panelGrid id="inventoryItemEditBOMViewPanelGrid"
+            <p:panelGrid layout="tabular" id="inventoryItemEditBOMViewPanelGrid"
                          columns="2">          
 
                 <p:outputPanel>

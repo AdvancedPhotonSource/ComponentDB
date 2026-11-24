@@ -17,7 +17,7 @@ See LICENSE file.
 
     <ui:define name="customizeDisplayDialogConent">
         <ui:param name="itemDomainInventorySettingObject" value="#{inventoryController.settingObject}" />
-        <p:panelGrid columns="2">
+        <p:panelGrid layout="tabular" columns="2">
             
             <p:selectBooleanCheckbox id="componentInstanceDisplayDescription" value="#{itemDomainInventorySettingObject.displayDescription}"/>  
             <h:outputLabel for="componentInstanceDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>

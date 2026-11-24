@@ -22,7 +22,7 @@ See LICENSE file.
             <p:commandButton value="Select Property Types"
                              oncomplete="#{entityTypeName}ShowPropertySelectDialog()"/>
 
-            <p:panelGrid columns="3" >
+            <p:panelGrid layout="tabular" columns="3" >
                 <c:forEach items="#{entityController.selectedPropertyTypesForEditing}"
                            var="selectedPropertyType">
 

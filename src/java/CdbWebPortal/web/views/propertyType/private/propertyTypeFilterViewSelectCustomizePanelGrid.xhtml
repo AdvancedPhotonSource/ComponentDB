@@ -9,7 +9,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
     <ui:param name="propertyTypeSettingObject" value="#{propertyTypeController.settingObject}" />
-    <p:panelGrid columns="2">
+    <p:panelGrid layout="tabular" columns="2">
         <p:selectBooleanCheckbox id="selectDisplayDescription" value="#{propertyTypeSettingObject.selectDisplayDescription}"/>  
         <h:outputLabel for="selectDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 

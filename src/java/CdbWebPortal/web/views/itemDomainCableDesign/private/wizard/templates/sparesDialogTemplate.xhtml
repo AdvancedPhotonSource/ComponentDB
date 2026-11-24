@@ -21,9 +21,9 @@ See LICENSE file.
               modal="true"
               closable="false">
         
-        <p:panelGrid columns="1">
+        <p:panelGrid layout="tabular" columns="1">
             
-            <p:panelGrid columns="2">
+            <p:panelGrid layout="tabular" columns="2">
                 <p:outputLabel for="#{viewName}QuantityInputText" value="Quantity"/>
                 <p:inputText id="#{viewName}QuantityInputText" 
                              value="#{wizardController.dialogSpares.valueModelQuantity}"

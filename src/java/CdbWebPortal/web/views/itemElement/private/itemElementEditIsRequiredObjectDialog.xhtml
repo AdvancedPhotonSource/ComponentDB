@@ -20,7 +20,7 @@ See LICENSE file.
               #{itemElementController.current != null ? itemElementController.current : 'ERROR(Not Set Correctly)'}"
               boxStyleClass="viewTransparentBackgroundDialog" >
         
-        <p:panelGrid columns="2" id="itemElementEditIsRequiredDialogContentsPanelGrid">
+        <p:panelGrid layout="tabular" columns="2" id="itemElementEditIsRequiredDialogContentsPanelGrid">
             <p:outputLabel value="Required:" />
             <p:outputPanel rendered="#{itemElementController.current != null}">
                 <p:commandButton update="@this"

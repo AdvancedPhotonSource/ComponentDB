@@ -13,7 +13,7 @@ See LICENSE file.
              id="addMachineDesignPlaceholderItem"
              rendered="#{entityController.displayAddMDPlaceholderListConfigurationPanel}">
 
-        <p:panelGrid columns="2">
+        <p:panelGrid layout="tabular" columns="2">
             <ui:include src="itemDomainMachineDesignItemDetailsEditObject.xhtml" >
                 <ui:param name="newMachineDesignCreation"
                           value="#{true}" />

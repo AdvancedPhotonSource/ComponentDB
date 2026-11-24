@@ -11,7 +11,7 @@ See LICENSE file.
 
     <ui:param name="propertyTypeObject" value="#{propertyTypeController.selected}"/>
 
-    <p:panelGrid columns="4" style="editEntityDetails">
+    <p:panelGrid layout="tabular" columns="4" style="editEntityDetails">
         
         <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
         <h:outputText id="id" value="#{propertyTypeObject.id}" title="Id" styleClass="entityDataText"/>

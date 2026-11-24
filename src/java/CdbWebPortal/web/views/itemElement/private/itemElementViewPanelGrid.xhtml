@@ -13,7 +13,7 @@ See LICENSE file.
     <ui:param name="itemElementObject" value="#{itemElementController.selected}"/>
     <ui:param name="breadcrumb" value="#{itemElementController.currentViewId}"/>    
     <ui:param name="breadcrumbObjectId" value="#{itemElementObject.id}"/>  
-    <p:panelGrid columns="2" styleClass="viewEntityDetails">
+    <p:panelGrid layout="tabular" columns="2" styleClass="viewEntityDetails">
 
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
         <p:inplace id="name" editor="#{isEntityWriteable}" toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataEmphasizedText">

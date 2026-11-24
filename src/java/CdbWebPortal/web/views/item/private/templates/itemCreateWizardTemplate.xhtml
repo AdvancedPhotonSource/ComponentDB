@@ -44,7 +44,7 @@ See LICENSE file.
         <p:tab id="basicItemInformationTab"
                title="Basic Information">
             <p:panel header="Item Details" styleClass="createWizardPanel">
-                <p:panelGrid columns="3">
+                <p:panelGrid layout="tabular" columns="3">
                     <ui:include src="../templateDefaults/itemFieldLabels/itemName.xhtml">
                         <ui:param name="additionalValue" value="*"/> 
                     </ui:include>
@@ -122,7 +122,7 @@ See LICENSE file.
                     Set the classification information about the item.
                 </div>
                 <p/>
-                <p:panelGrid columns="3">
+                <p:panelGrid layout="tabular" columns="3">
                     <ui:include src="../templateDefaults/itemFieldLabels/itemItemProject.xhtml">
                         <ui:param name="additionalValue"
                                   value="#{entityController.isItemProjectRequired() ? '*' : ''}" />
@@ -172,7 +172,7 @@ See LICENSE file.
                     Please set all of the item permissions.
                 </div>
                 <p/>
-                <p:panelGrid columns="3">
+                <p:panelGrid layout="tabular" columns="3">
                     <ui:include src="../../../entityInfo/private/entityInfoEditObject.xhtml">
                         <ui:param name="entityInfoObject" value="#{itemObject.entityInfo}"/>
                         <ui:param name="renderHelpFragments" value="#{true}" />

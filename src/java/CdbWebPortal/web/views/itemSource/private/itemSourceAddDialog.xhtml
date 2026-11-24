@@ -25,7 +25,7 @@ See LICENSE file.
         
         <ui:param name="inputStyleClass" value="longCellInput" />
 
-        <p:panelGrid columns="2" rendered="#{itemSourceObject != null}"
+        <p:panelGrid layout="tabular" columns="2" rendered="#{itemSourceObject != null}"
                      id="#{entityTypeName}ItemSourceAddDialogPanelGrid"
                      styleClass="leftAlignedText">
             <h:outputText value="Name"/>

@@ -37,7 +37,7 @@ See LICENSE file.
         <div class="dialog">
             <div class="actionButton"> 
                 <ui:remove>
-                    <p:panelGrid columns="2" rendered="#{renderDomainSelection}">
+                    <p:panelGrid layout="tabular" columns="2" rendered="#{renderDomainSelection}">
                         <h:outputLabel value="Domain" />
                         <p:selectOneMenu id="#{entityTypeName}selectItemSelectionDomain" 
                                          value="#{entityController.selectionDomain}" 

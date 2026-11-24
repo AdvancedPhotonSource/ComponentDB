@@ -29,7 +29,7 @@ See LICENSE file.
                     <p:growl id="messages" showDetail="true">
                         <p:autoUpdate/>
                     </p:growl>
-                    <p:panelGrid columns="3" styleClass="editEntityDetails">
+                    <p:panelGrid layout="tabular" columns="3" styleClass="editEntityDetails">
                         <h:outputLabel for="searchString" value="Search String" styleClass="entityDataLabel"/>
                         <p:inputText id="searchString" value="#{searchController.searchString}" title="Search String" styleClass="entityDataText"/>
                         <p:message for="searchString"/> 

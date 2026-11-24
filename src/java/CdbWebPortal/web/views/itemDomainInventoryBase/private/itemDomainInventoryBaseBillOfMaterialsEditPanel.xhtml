@@ -18,7 +18,7 @@ See LICENSE file.
 
         <p:outputPanel rendered="#{!entityController.isRenderBomOptionalUnspecified(billOfMaterialItem)}" >
             <!-- Temp disabled... prior rendered.. billOfMaterialItem.partItem and loginController.loggedInAsAdmin -->
-            <p:panelGrid columns="2" rendered="#{false}">   
+            <p:panelGrid layout="tabular" columns="2" rendered="#{false}">   
                 <p:selectOneButton id="newInstanceAddOptions#{viewName}"
                                    value="#{billOfMaterialItem.stateSelection}"
                                    styleClass="entityDataEmphasizedText">

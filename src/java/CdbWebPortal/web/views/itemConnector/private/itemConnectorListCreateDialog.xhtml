@@ -19,7 +19,7 @@ See LICENSE file.
 
         <ui:param name="currentItemConnector" value="#{itemConnectorController.current}" />
 
-        <p:panelGrid columns="2"
+        <p:panelGrid layout="tabular" columns="2"
                      rendered="#{currentItemConnector != null}">
 
             <ui:include src="itemConnectorSimpleEditObject.xhtml" />                                                

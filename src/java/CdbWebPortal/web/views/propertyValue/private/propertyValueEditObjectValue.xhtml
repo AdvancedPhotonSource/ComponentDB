@@ -31,7 +31,7 @@ See LICENSE file.
                 <p:tooltip for="freeFormTextValue" value="Enter property value."/>
 
                 <p:outputPanel rendered="#{propertyValueController.displayMarkdownValue(propertyValueObject)}">
-                    <p:panelGrid columns="3">
+                    <p:panelGrid layout="tabular" columns="3">
                         <p:row>
                             <p:column>
                                 <p:outputLabel value="Title" />
@@ -71,7 +71,7 @@ See LICENSE file.
                              rendered="#{propertyValueController.displayDownloadActionValue(propertyValueObject)}" />
                 <p:tooltip for="DownloadActionValue" value="Enter identifier property value."/>              
 
-                <p:panelGrid columns="2" rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"
+                <p:panelGrid layout="tabular" columns="2" rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"
                              styleClass="inlineOutputPanel">
                     <p:column>
                         <p:graphicImage id="imageValue" value="/propertyValue/images/#{propertyValueObject.value}.thumbnail" 
@@ -86,7 +86,7 @@ See LICENSE file.
                                                      value="#{propertyValueObject}" />
                     </p:commandButton>
                 </p:panelGrid>
-                <p:panelGrid columns="3" 
+                <p:panelGrid layout="tabular" columns="3" 
                              rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}">
                     <p:outputLabel value="Link" />
                     <p:inputText id="httpLinkValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"/>

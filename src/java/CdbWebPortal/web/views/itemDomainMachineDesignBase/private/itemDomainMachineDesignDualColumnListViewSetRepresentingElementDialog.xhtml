@@ -28,7 +28,7 @@ See LICENSE file.
                 </p:column>
             </p:selectOneListbox>
             
-            <p:panelGrid columns="2"
+            <p:panelGrid layout="tabular" columns="2"
                          rendered="#{entityController.currentViewIsTemplate}" >            
                 <p:selectBooleanCheckbox value="#{entityController.matchElementNamesForTemplateInstances}"/>
                 <h:outputText value="Match element name for custom assambly instances." />

@@ -24,7 +24,7 @@ See LICENSE file.
 
         <p:outputPanel rendered="#{binder != null}">
             <h3>Binder Details</h3>
-            <p:panelGrid columns="2" styleClass="centeredContent">
+            <p:panelGrid layout="tabular" columns="2" styleClass="centeredContent">
 
                 <h:outputLabel value="Title"/>
                 <h:inputText value="#{binder.title}"/>
@@ -34,7 +34,7 @@ See LICENSE file.
 
             </p:panelGrid>
             <h3>Travelers For Binder</h3>
-            <p:panelGrid columns="2" styleClass="centeredContent">
+            <p:panelGrid layout="tabular" columns="2" styleClass="centeredContent">
                 <h:outputText value="Select Traveler Templates" />
                 <p:dataTable id="travelerBinderTemplateSelectionListDataTable"
                              value="#{travelerDomainInstanceController.availableTemplates}"

@@ -17,7 +17,7 @@ See LICENSE file.
               resizable="false"
               boxStyleClass="viewTransparentBackgroundDialog">
         <p:outputPanel styleClass="leftAlignedText">
-            <p:panelGrid> 
+            <p:panelGrid layout="tabular" columns="0"> 
                 <f:facet name="header">
                     <p:row>
                         <p:column colspan="2" styleClass="panelGridBorderedCell">#{constraintInfo.itemElement} element overview</p:column>
@@ -74,7 +74,7 @@ See LICENSE file.
         <p:tooltip for="itemElementConstraintInformationDataTable" 
                    styleClass="viewTransparentBackground"
                    hideDelay="500">
-            <p:panelGrid columns="1">
+            <p:panelGrid layout="tabular" columns="1">
                 <f:facet name="header">
                     <h:outputText styleClass="padded" value="Row Colors:" />
                 </f:facet>
@@ -88,7 +88,7 @@ See LICENSE file.
                 </ui:insert>
             </p:panelGrid>
 
-            <p:panelGrid columns="2">
+            <p:panelGrid layout="tabular" columns="2">
                 <f:facet name="header">
                     <h:outputText styleClass="padded" value="How constraints are applied:" />
                 </f:facet>

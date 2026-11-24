@@ -12,7 +12,7 @@ See LICENSE file.
 
     <ui:param name="withSequence"
               value="#{entityController.hasSequenceValueToSet}" />
-    <p:panelGrid columns="2"
+    <p:panelGrid layout="tabular" columns="2"
                  styleClass="leftAlignedText">
         <h:outputText value="#{withSequence ? 'Prefix' : 'Value for All'}" />
         <p:inputText value="#{entityController.currentPrefixValueToColumn}"/>

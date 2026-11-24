@@ -19,10 +19,10 @@ See LICENSE file.
         <p:panel header="Enter format options, then click 'Next Step'.">
             <p:outputPanel id="#{rootViewId}FormatOptionsPanel"
                            rendered="#{wizardController.renderOptions}">
-                <p:panelGrid>
+                <p:panelGrid layout="tabular" columns="0">
                     <p:row>
                         <p:column>
-                            <p:panelGrid columns="2">
+                            <p:panelGrid layout="tabular" columns="2">
 
                                 <c:forEach items="#{wizardController.wizardOptions}"
                                            var="option">  

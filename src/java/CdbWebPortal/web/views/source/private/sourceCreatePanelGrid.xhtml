@@ -11,7 +11,7 @@ See LICENSE file.
 
     <ui:param name="sourceObject" value="#{sourceController.selected}"/>
 
-    <p:panelGrid columns="4">
+    <p:panelGrid layout="tabular" columns="4">
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
         <p:inputText id="name" value="#{sourceObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
         <p:message for="name"/> 

@@ -11,7 +11,7 @@ See LICENSE file.
 
     <ui:param name="propertyTypeObject" value="#{propertyTypeController.selected}"/>
 
-    <p:panelGrid columns="2" style="viewEntityDetails">
+    <p:panelGrid layout="tabular" columns="2" style="viewEntityDetails">
 
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
         <h:outputText id="name" value="#{propertyTypeObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>

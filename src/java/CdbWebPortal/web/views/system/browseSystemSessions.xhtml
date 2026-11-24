@@ -26,7 +26,7 @@ See LICENSE file.
                              action="#{sessionController.updateStats()}"
                              update="sessionStats" /> 
 
-            <p:panelGrid columns="2"
+            <p:panelGrid layout="tabular" columns="2"
                          id="sessionStats">
                 <h:outputLabel value="Total Active Sessions:"/>
                 <h:outputText value="#{sessionController.countActiveSessions}"/>

@@ -46,7 +46,7 @@ See LICENSE file.
                     <p:autoUpdate/> 
                 </p:growl>
 
-                <p:panelGrid columns="2">
+                <p:panelGrid layout="tabular" columns="2">
 
                     <p:outputLabel for="numberOfUsers" value="Registered Users" styleClass="sectionText"/>
                     <h:outputText id="numberOfUsers" styleClass="sectionText" 
@@ -112,7 +112,7 @@ See LICENSE file.
             <div class="sectionTitle">
                 <h2>Administrative Tools</h2>
                 <h:form id="adminToolsForm">
-                    <p:panelGrid columns="1">
+                    <p:panelGrid layout="tabular" columns="1">
                         <div class="commandLink">
                             <h:commandLink action="#{loginController.dropAdminRole()}" 
                                            rendered="#{loginController.loggedInAsAdmin}"

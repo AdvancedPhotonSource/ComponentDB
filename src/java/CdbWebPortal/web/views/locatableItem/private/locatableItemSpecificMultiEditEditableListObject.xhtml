@@ -39,7 +39,7 @@ See LICENSE file.
         </p:outputPanel>
 
         <p:outputPanel rendered="#{rowItemViewUUID == activeLocationEditViewUUID}" >
-            <p:panelGrid columns="3">            
+            <p:panelGrid layout="tabular" columns="3">            
                 <p:tieredMenu model="#{locatableItemController.getItemLocataionDefaultMenuModel(itemListObject, 'locationSelectMultiEditInplaceEdit')}"
                               id="locationSelectMultiEditInplaceEdit"
                               toggleEvent="hover"

@@ -13,7 +13,7 @@ See LICENSE file.
         <p:outputPanel rendered="#{entityController.entityDisplayDerivedFromItem}">
             <h2>Select #{entityController.derivedFromItemTitle}.</h2>
 
-            <p:panelGrid columns="2" >
+            <p:panelGrid layout="tabular" columns="2" >
                 <h:outputText value="#{entityController.derivedFromItemTitle}"
                               rendered="#{entityController.entityDisplayDerivedFromItem}"/>
                 <p:column rendered="#{entityController.entityDisplayDerivedFromItem}"
@@ -30,7 +30,7 @@ See LICENSE file.
             </p:panelGrid>
         </p:outputPanel>
 
-        <p:panelGrid columns="2" >
+        <p:panelGrid layout="tabular" columns="2" >
             <h:outputText value="Quantity" />
             <p:inputNumber minValue="#{entityController.minNewItemsToCreate}"
                            maxValue="500"
@@ -40,7 +40,7 @@ See LICENSE file.
         <p:outputPanel id='defaultValuesConfigurationOutputPanel' >
             <h2>Default Values for new items.</h2>
 
-            <p:panelGrid columns="2" >                
+            <p:panelGrid layout="tabular" columns="2" >                
 
                 <ui:include src="../itemMultiCreateConfigurationProjectObject.xhtml" />
 

@@ -13,7 +13,7 @@ See LICENSE file.
     <f:subview id="propertyValueInputSubview">
         <ui:param name="propertyValueObject"
                   value="#{entityController.currentMockPropertyValueApplyValuesToColumn}"/>
-        <p:panelGrid id="propertyValueInputPanelGrid"
+        <p:panelGrid layout="tabular" id="propertyValueInputPanelGrid"
                      columns="2"
                      styleClass="leftAlignedText"
                      rendered="#{propertyValueObject != null}">

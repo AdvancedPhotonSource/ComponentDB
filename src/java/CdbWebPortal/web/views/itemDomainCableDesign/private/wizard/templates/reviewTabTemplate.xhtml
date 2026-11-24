@@ -15,7 +15,7 @@ See LICENSE file.
     <p:tab id="#{rootViewId}CableReviewTab">
         <p:panel header="Review and save cable">
             <p:outputPanel id="#{rootViewId}ReviewPanel">
-                <p:panelGrid columns="1">
+                <p:panelGrid layout="tabular" columns="1">
                     
                     <p:panel>
                         <f:facet name="header" >
@@ -26,7 +26,7 @@ See LICENSE file.
                             </p:row>
                         </f:facet>
                         <p:row>
-                            <p:panelGrid columns="2">
+                            <p:panelGrid layout="tabular" columns="2">
 
                                 <p:outputLabel for="cableReviewName#{rootViewId}" 
                                                value="Name" 
@@ -64,7 +64,7 @@ See LICENSE file.
                             </p:row>
                         </f:facet>
                         <p:row>
-                            <p:panelGrid columns="2">
+                            <p:panelGrid layout="tabular" columns="2">
 
                                 <p:outputLabel value="Endpoint1" 
                                                styleClass="entityDataEmphasizedLabel"/>
@@ -96,7 +96,7 @@ See LICENSE file.
                             </p:row>
                         </f:facet>
                         <p:row>
-                            <p:panelGrid columns="2">
+                            <p:panelGrid layout="tabular" columns="2">
                                 <p:outputLabel value="Endpoint2" 
                                                styleClass="entityDataEmphasizedLabel"/>
                                 <h:outputLink value="../item/view.xhtml?id=#{cableWizard.endpoint2.id}"

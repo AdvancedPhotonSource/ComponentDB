@@ -11,7 +11,7 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
 
-    <p:panelGrid columns="3">
+    <p:panelGrid layout="tabular" columns="3">
         <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemName.xhtml"/>
         <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemName.xhtml" />
         <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemName.xhtml" />
@@ -40,7 +40,7 @@ See LICENSE file.
 
     <p:panel header="Additional Attributes" collapsed="true" toggleable="true"
              binding="#{facesUtility.autoCollapsePanel}">
-        <p:panelGrid columns="3">            
+        <p:panelGrid layout="tabular" columns="3">            
             <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemItemIdentifier1.xhtml"/>
             <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier1.xhtml" />
             <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
@@ -72,7 +72,7 @@ See LICENSE file.
                       value="#{!billOfMaterialItem.partItem and entityController.currentHasPartsToDisplay}"
                       />
 
-            <p:panelGrid columns="3">
+            <p:panelGrid layout="tabular" columns="3">
                 <ui:include src="../../entityInfo/private/entityInfoEditObject.xhtml">
                     <ui:param name="entityInfoObject" value="#{itemObject.entityInfo}"/>
                     <ui:param name="renderHelpFragments" value="#{true}" />
@@ -97,7 +97,7 @@ See LICENSE file.
                 </ui:include>
 
             </p:panelGrid>
-            <p:panelGrid columns="2" rendered="#{renderedPermissionsEditPanelApplyAll}">
+            <p:panelGrid layout="tabular" columns="2" rendered="#{renderedPermissionsEditPanelApplyAll}">
 
             </p:panelGrid>
         </p:outputPanel>

@@ -13,7 +13,7 @@ See LICENSE file.
     <ui:param name="userInfoObject" value="#{userInfoController.selected}"/>
     <ui:param name="isFieldWriteable" value="#{loginController.loggedInAsAdmin}"/>
 
-    <p:panelGrid columns="4" styleClass="editEntityDetails"> 
+    <p:panelGrid layout="tabular" columns="4" styleClass="editEntityDetails"> 
 
         <h:outputLabel for="username" value="Username" styleClass="entityDataEmphasizedLabel"/>
         <p:inputText id="username" value="#{userInfoObject.username}" rendered="#{isFieldWriteable}" title="Username" required="true" styleClass="entityDataEmphasizedText"/>

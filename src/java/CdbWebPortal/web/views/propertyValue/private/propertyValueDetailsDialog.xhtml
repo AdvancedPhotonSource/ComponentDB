@@ -20,7 +20,7 @@ See LICENSE file.
         <ui:param name="propertyValueObject" value="#{propertyValueController.current}"/>
 
         <p:outputPanel rendered="#{propertyValueObject != null}">
-            <p:panelGrid styleClass="ui-noborder">
+            <p:panelGrid layout="tabular" columns="0" styleClass="ui-noborder">
                 <p:row>
                     <p:column styleClass="ui-panelgrid-bold">Type</p:column>
                     <p:column><h:outputText value="#{propertyValueObject.propertyType.name}"/></p:column>

@@ -49,7 +49,7 @@ See LICENSE file.
                        rendered="#{propertyValueObject != null}">
             <div>
 
-                <p:panelGrid styleClass="createEntityDetails">
+                <p:panelGrid layout="tabular" columns="0" styleClass="createEntityDetails">
                     <p:row>
                         <p:column>
                             <h:outputLabel for="propertyTypeName" value="Property Type" styleClass="entityDataEmphasizedLabel"/>
@@ -87,7 +87,7 @@ See LICENSE file.
                             <p:panel toggleable="true"
                                      collapsed="true"
                                      header="Additional Attributes">
-                                <p:panelGrid>
+                                <p:panelGrid layout="tabular" columns="0">
                                      <p:row>
                                         <p:column>
                                             <h:outputLabel for="effectiveFromDateUserInput" value="Effective Date" styleClass="entityDataEmphasizedLabel"/>

@@ -11,7 +11,7 @@ See LICENSE file.
 
     <ui:param name="userInfoObject" value="#{userInfoController.selected}"/>
 
-    <p:panelGrid columns="4" styleClass="createEntityDetails">
+    <p:panelGrid layout="tabular" columns="4" styleClass="createEntityDetails">
 
         <h:outputLabel for="username" value="Username" styleClass="entityDataEmphasizedLabel"/>
         <p:inputText id="username" value="#{userInfoObject.username}" title="Username" required="true" styleClass="entityDataEmphasizedText"/>

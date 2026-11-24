@@ -17,7 +17,7 @@ See LICENSE file.
     <p:tab id="#{rootViewId}SelectModeTab">
         <p:panel header="Select desired output style, then click 'Next Step'.">
             <p:outputPanel id="#{rootViewId}SelectModePanel">
-                <p:panelGrid>
+                <p:panelGrid layout="tabular" columns="0">
                     <p:row>
                         <p:column>
 
@@ -35,7 +35,7 @@ See LICENSE file.
 
                             </p:selectOneRadio>
 
-                            <p:panelGrid columns="2">
+                            <p:panelGrid layout="tabular" columns="2">
 
                                 <p:radioButton id="#{rootViewId}RadioExport" 
                                                for="#{rootViewId}SelectModeRadio"
