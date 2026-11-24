@@ -23,6 +23,7 @@ See LICENSE file.
             <p:dataTable value="#{currentMultiEditPropertyRecord.relatedPropertyValueList}"
                          var="relatedPropertyValue"
                          selection="#{currentMultiEditPropertyRecord.propertyValue}"
+                         selectionMode="single"
                          sortMode="single"
                          stripedRows="true"
                          rowKey="#{relatedPropertyValue.viewUUID}">
@@ -33,7 +34,7 @@ See LICENSE file.
                         oncomplete="PF('loadingDialog').hide();
                         PF('multiEditSelectSpecificPropertyValueDialogWidget').hide()"/>
 
-                <p:column selectionMode="single" />
+                <p:column selectionBox="true" />
 
                 <p:column headerText="Tag">
                     <h:outputText value="#{relatedPropertyValue.tag}" />

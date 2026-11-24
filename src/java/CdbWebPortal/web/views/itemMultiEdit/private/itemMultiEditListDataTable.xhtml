@@ -10,7 +10,7 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
     
     <ui:define name="selectionColumn">
-        <p:column selectionMode="multiple" rendered="#{dataTableSelectionList != null}" />
+        <p:column selectionBox="true" rendered="#{dataTableSelectionList != null}" />
     </ui:define>
     
     <ui:param name="dataTableSelectionList"

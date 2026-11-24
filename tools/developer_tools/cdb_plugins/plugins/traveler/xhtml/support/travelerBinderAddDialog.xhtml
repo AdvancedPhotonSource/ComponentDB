@@ -39,6 +39,7 @@ See LICENSE file.
                 <p:dataTable id="travelerBinderTemplateSelectionListDataTable"
                              value="#{travelerDomainInstanceController.availableTemplates}"
                              selection="#{travelerDomainInstanceController.newBinderTemplateSelection}"
+                             selectionMode="multiple"
                              rowKey="#{travelerTemplateObject.id}"
                              sortMode="single"
                              stripedRows="true"
@@ -54,7 +55,7 @@ See LICENSE file.
                     <p:ajax event="rowUnselectCheckbox"
                             onstart="updateTravelerBinderTemplateSelectionListDataTable()"/>
 
-                    <p:column selectionMode="multiple" />
+                    <p:column selectionBox="true" />
 
                     <p:column sortBy="#{travelerTemplateObject.title}"
                               headerText="Template Title" >

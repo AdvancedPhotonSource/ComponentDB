@@ -18,10 +18,11 @@ See LICENSE file.
                  var="itemListObject"
                  rowKey="#{itemListObject.id}"
                  selection="#{selectionModel}"
+                 selectionMode="multiple"
                  rows="#{resources.SelectDataTableNumberOfRows}"
                  paginator="true">         
 
-        <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+        <p:column selectionBox="true" style="width:16px;text-align:center"/>
 
         <ui:include src="../../../item/private/itemListObject.xhtml" >
             <ui:param name="entityController"
