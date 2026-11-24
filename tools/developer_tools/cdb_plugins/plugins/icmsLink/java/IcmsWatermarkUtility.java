@@ -11,7 +11,6 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
-import com.sun.xml.wss.impl.misc.Base64;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -20,11 +19,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.Iterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import javax.xml.soap.*;
-import org.apache.xml.security.exceptions.Base64DecodingException;
+import jakarta.xml.soap.*;
 
 /**
  *
@@ -120,7 +119,8 @@ public class IcmsWatermarkUtility {
         } catch (IOException ex) {
             logger.error("ERROR: " + ex.getMessage());
             throw new CdbException(ex); 
-        } catch (Base64DecodingException ex) {
+        } catch (IllegalArgumentException ex) {
+            // Invalid base64 content returned by ICMS.
             logger.error("ERROR: " + ex.getMessage());
             throw new CdbException(ex); 
         } catch (DocumentException ex) {
@@ -155,10 +155,11 @@ public class IcmsWatermarkUtility {
      * @return byte array ologgerf the stamped PDF file
      * @throws DocumentException - Error loading pdfstamper or creating font
      * @throws IOException - Error performing IO operation 
-     * @throws Base64DecodingException - Error converting downloadContent string to byte[]
+     * @throws IllegalArgumentException - Error converting downloadContent string to byte[]
      */            
-    private byte[] addWatermarkToPDFFile() throws   Base64DecodingException, DocumentException, IOException {
-        byte[] pdfBytes = Base64.decode(downloadContentBase64Encoded);
+    private byte[] addWatermarkToPDFFile() throws DocumentException, IOException {
+        // JDK MIME decoder: tolerant of line breaks like the server-internal Metro Base64 it replaces.
+        byte[] pdfBytes = Base64.getMimeDecoder().decode(downloadContentBase64Encoded);
         
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yy hh:mm:ss a");  
         LocalDateTime now = LocalDateTime.now();  
@@ -376,7 +377,7 @@ public class IcmsWatermarkUtility {
         MimeHeaders headers = soapMessage.getMimeHeaders();
         headers.addHeader("SOAPAction", soapGetFileByNameActionUrl);
         String usernamePass = soapUsername + ":" + soapPassword;
-        String authString = new String(Base64.encode(usernamePass.getBytes()));
+        String authString = Base64.getEncoder().encodeToString(usernamePass.getBytes());
         headers.addHeader("Authorization", "basic " + authString);
 
         soapMessage.saveChanges();
