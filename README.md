@@ -186,7 +186,19 @@ Once netbeans is open a few steps need to be taken to prepare netbeans for CDB d
 # cd into the $desired_dev_directory/$distribution_directory
 cp src/java/CdbWebPortal/lib/mariadb-java-client-3.1.0.jar ../support-`hostname`/netbeans/payara/glassfish/domains/domain1/lib/
 ```
-10. Run the project
+10. Increase the server heap. The NetBeans-installed domain defaults to `-Xmx512m`, which runs out of memory (`OutOfMemoryError: Java heap space`) under the parallel Selenium suite and after repeated redeploys. With the server running:
+```sh
+ASADMIN=../support-`hostname`/netbeans/payara/bin/asadmin
+$ASADMIN list-jvm-options | grep Xm          # remove every existing -Xmx/-Xms value shown
+$ASADMIN delete-jvm-options -- -Xmx512m
+$ASADMIN create-jvm-options -- -Xmx4g
+$ASADMIN create-jvm-options -- -Xms1g
+$ASADMIN list-jvm-options | grep Xm          # should show only -Xmx4g and -Xms1g
+$ASADMIN restart-domain
+```
+11. Run the project
+
+> Repeated NetBeans redeploys leak memory (old application class loaders are not fully released). Restart Payara before running the test suite or when the server slows down.
 
 > **Optional (macOS):** Payara's Hazelcast data grid defaults to port 5900, which is also used by macOS Screen Sharing (VNC). If startup hangs and `server.log` repeats `Unknown protocol: RFB`, move Hazelcast to another port. The `make support` domain already uses 6900; the NetBeans-installed copy needs this once. Stop the server first (a running server keeps the old value and can write it back), then use the domain path shown in NetBeans under Services → Servers → Payara → Properties:
 > ```sh
@@ -212,6 +224,8 @@ The python web service is deprecated but is still a part of the distribution for
 source setup.sh
 make test
 ```
+
+The Selenium suite runs several browsers in parallel against the portal; give Payara at least a 4 GB heap (see step 10 of Preparing Netbeans) and restart it after a long redeploy session. Failure logs, screenshots, and page source are written to `tools/developer_tools/portal_testing/PythonSeleniumTest/test-failures/` (see `tools/developer_tools/portal_testing/PythonSeleniumTest/README.md`).
 
 See the test setup in `tools/developer_tools/{python-client,portal_testing/PythonSeleniumTest}/README.md`.
 
