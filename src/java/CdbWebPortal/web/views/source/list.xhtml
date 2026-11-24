@@ -11,12 +11,12 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:define name="pageTitle">: Sources</ui:define>        
-    <ui:define name="middleCenter">
+    <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
+        <f:viewAction action="#{sourceController.processPreRenderList()}"/>
+    </f:metadata>
 
-        <f:metadata>
-            <f:viewAction action="#{settingController.updateGlobalSettings()}" />
-            <f:viewAction action="#{sourceController.processPreRenderList()}"/>
-        </f:metadata>
+    <ui:define name="middleCenter">
 
         <h:form id="viewSourceListForm">      
             <div class="pageTitle">

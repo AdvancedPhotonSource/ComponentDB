@@ -11,12 +11,12 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:define name="pageTitle">: Registered Users</ui:define>            
+    <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
+        <f:viewAction action="#{userInfoController.processPreRenderList()}"/>
+    </f:metadata>
+
     <ui:define name="middleCenter">
-        
-        <f:metadata>
-            <f:viewAction action="#{settingController.updateGlobalSettings()}" />
-            <f:viewAction action="#{userInfoController.processPreRenderList()}"/>
-        </f:metadata>
 
         <h:form id="viewUserInfoListForm">
             <div class="pageTitle">
