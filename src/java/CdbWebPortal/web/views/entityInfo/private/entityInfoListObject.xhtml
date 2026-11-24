@@ -5,6 +5,7 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
@@ -19,9 +20,14 @@ See LICENSE file.
               filterable="#{filterable}"
               sortable="#{sortable}"
               filterBy="#{entityInfoObject.ownerUserGroup.name}" filterMatchMode="exact"
-              filterOptions="#{userGroupController.availableItemsForSelectOne}"
               filterValue="#{entitySettingObject.filterByOwnerGroup}"
               rendered="#{rendered and entitySettingObject.displayOwnerGroup}">
+        <f:facet name="filter">
+            <p:selectOneMenu value="#{entitySettingObject.filterByOwnerGroup}"
+                             onchange="PrimeFaces.getWidgetById($(this).closest('.ui-datatable').attr('id')).filter()">
+                <f:selectItems value="#{facesUtility.getFilterSelectItems(userGroupController.availableItemsForSelectOne)}" />
+            </p:selectOneMenu>
+        </f:facet>
         <h:outputText value="#{entityInfoObject.ownerUserGroup.name}"/>
     </p:column>
 

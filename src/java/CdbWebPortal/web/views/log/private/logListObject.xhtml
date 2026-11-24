@@ -88,13 +88,17 @@ See LICENSE file.
 
     <p:column sortBy="#{logObject.logTopic.name}" headerText="Topic" 
               filterBy="#{logObject.logTopic.name}" filterMatchMode="exact"
-              filterOptions="#{logTopicController.availableItemsForSelectOne}"
               filterValue="#{logSettingObject.filterByTopic}"
-              filterStyle="width:40px"
               filterable="#{filterable}"
               sortable="#{sortable}"
               style="width:50px"
               rendered="#{logSettingObject.displayTopic}">
+        <f:facet name="filter">
+            <p:selectOneMenu value="#{logSettingObject.filterByTopic}" style="width:40px"
+                             onchange="PrimeFaces.getWidgetById($(this).closest('.ui-datatable').attr('id')).filter()">
+                <f:selectItems value="#{facesUtility.getFilterSelectItems(logTopicController.availableItemsForSelectOne)}" />
+            </p:selectOneMenu>
+        </f:facet>
         <p:cellEditor>
             <f:facet name="output">
                 <h:outputText value="#{logObject.logTopic.name}"/>
