@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -319,10 +320,14 @@ public class PropertyType extends CdbEntity implements Serializable {
         return allowedPropertyValueList;
     }
 
+    // Derived list: read-only for JSON, otherwise Jackson fills it via the getter (getters-as-setters) on request bodies.
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public List<AllowedPropertyValue> getSortedAllowedPropertyValueList() {
         if (sortedAllowedPropertyValueList == null) {
             sortedAllowedPropertyValueList = new ArrayList<>();
-            sortedAllowedPropertyValueList.addAll(allowedPropertyValueList);
+            if (allowedPropertyValueList != null) {
+                sortedAllowedPropertyValueList.addAll(allowedPropertyValueList);
+            }
 
             Collections.sort(sortedAllowedPropertyValueList, new Comparator<AllowedPropertyValue>() {
                 @Override

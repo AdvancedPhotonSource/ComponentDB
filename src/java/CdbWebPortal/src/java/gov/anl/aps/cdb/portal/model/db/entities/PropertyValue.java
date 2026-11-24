@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
@@ -729,6 +730,8 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
         this.editModeWidgets = editModeWidgets;
     }
 
+    // Derived from the property type metadata; read-only for JSON (no setter).
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public List<PropertyValueMetadata> getPropertyValueMetadataList() {
         if (propertyValueMetadataList == null) {
             if (propertyType != null) {
