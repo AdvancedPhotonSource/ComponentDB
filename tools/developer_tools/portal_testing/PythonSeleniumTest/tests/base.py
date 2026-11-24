@@ -28,6 +28,8 @@ class CdbPortalTestCase(unittest.TestCase):
         opts = webdriver.ChromeOptions()
         prefs = {"download.default_directory": self.DATA_PATH}
         opts.add_experimental_option("prefs", prefs)
+        # Expose browser console errors to timeout diagnostics.
+        opts.set_capability("goog:loggingPrefs", {"browser": "SEVERE"})
 
         headless = os.getenv("CDB_TEST_HEADLESS", 'True').lower() in ('true', '1', 't', 'y', 'yes')
         if headless:

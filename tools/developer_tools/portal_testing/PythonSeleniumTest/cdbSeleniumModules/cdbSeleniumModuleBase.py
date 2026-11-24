@@ -10,7 +10,8 @@ import time
 from selenium import webdriver
 from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException, NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver import ActionChains
-from selenium.webdriver.support.wait import WebDriverWait
+# Timeouts include page diagnostics (URL, messages, console errors) and save a screenshot.
+from cdbSeleniumModules.diagnosticWait import DiagnosticWebDriverWait as WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
@@ -444,11 +445,13 @@ class CdbSeleniumModuleBase:
 		abs_path = os.path.abspath(rel_path)
 		upload_input.send_keys(abs_path)
 
-		upload_btn_xpath = '//*[@id="%s:propertyValueMultipleImageFileUpload"]/div[1]/button[1]' % form_name
+		# Class-based: PF16 changed the button bar position inside the fileUpload.
+		upload_btn_xpath = '//*[@id="%s:propertyValueMultipleImageFileUpload"]//button[contains(@class,"ui-fileupload-upload")]' % form_name
 		self._wait_for_clickable_xpath(upload_btn_xpath)
 		self._click_on_xpath(upload_btn_xpath)
 
-		# Wait for AJAX 
-		time.sleep(3)
+		# Dialog hides itself once all files are uploaded.
+		self._wait_for_invisible_by_id('%s:propertyValueMultipleImageUploadDialog' % form_name)
+		self._wait_for_invisible_loading_dialog()
 
 

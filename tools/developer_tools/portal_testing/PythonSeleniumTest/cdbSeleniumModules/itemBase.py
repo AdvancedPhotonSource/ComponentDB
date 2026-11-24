@@ -5,7 +5,8 @@ Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
 
-from selenium.webdriver.support.wait import WebDriverWait
+# Timeouts include page diagnostics (URL, messages, console errors) and save a screenshot.
+from cdbSeleniumModules.diagnosticWait import DiagnosticWebDriverWait as WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from cdbSeleniumModules.cdbSeleniumModuleBase import CdbSeleniumModuleBase

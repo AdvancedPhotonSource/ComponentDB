@@ -13,7 +13,8 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
+# Timeouts include page diagnostics (URL, messages, console errors) and save a screenshot.
+from cdbSeleniumModules.diagnosticWait import DiagnosticWebDriverWait as WebDriverWait
 
 from cdbSeleniumModules.cdbSeleniumModuleBase import CdbSeleniumModuleBase
 from cdbSeleniumModules.cdbSeleniumModuleDecorators import add_stale_protection
@@ -333,7 +334,7 @@ class MachineDesign(CdbSeleniumModuleBase):
 					for hierarchyIdx in range(0, hierarchyDepth):
 						currentItem = row[hierarchyIdx]
 
-						if currentItem is not '':
+						if currentItem != '':
 							if len(currentHierarchy) < hierarchyIdx:
 								raise Exception("Invalid Hierarchy in file: %s " % csvFile)
 							elif len(currentHierarchy) > hierarchyIdx:
