@@ -24,8 +24,9 @@ See LICENSE file.
                        var="allowedPropertyMetadataValue"
                        itemValue="#{allowedPropertyMetadataValue}"/>
         <p:column>
-            <b>#{allowedPropertyMetadataValueObject.metadataValue}</b>
-            <br/>
+            <!-- Component instead of literal <b>/<br/>: literal markup in JSTL loops can be misordered on ajax rebuilds. -->
+            <h:outputText value="#{allowedPropertyMetadataValueObject.metadataValue}"
+                          style="font-weight: bold; display: block;"/>
             <h:outputText rendered="#{allowedPropertyMetadataValueObject.description != null}"
                           value="#{allowedPropertyMetadataValueObject.description}"/>
         </p:column>

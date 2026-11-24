@@ -44,7 +44,8 @@ See LICENSE file.
                                value="Edit #{metadataLabel}" />
                 </p:commandLink>
 
-                <c:if test="#{not urlListType}">
+                <!-- Render-time conditionals: JSTL here rebuilt inconsistently on ajax postbacks, emitting stray table end tags. -->
+                <ui:fragment rendered="#{not urlListType}">
                     <h:outputText value="#{metadataValue}" 
                                   title="#{metadataLabel}" 
                                   rendered="#{emptyValue or not urlType}"
@@ -54,28 +55,25 @@ See LICENSE file.
                                   rendered="#{urlType and not emptyValue}">
                         "#{entityController.prepareLinkDisplay(metadataValue)}"
                     </h:outputLink>
-                </c:if>
+                </ui:fragment>
 
-                <c:if test="#{urlListType}">
-                    <ui:param name="urlList" 
-                              value="#{entityController.getMetadataUrlList(metadataValue)}"/>
+                <ui:fragment rendered="#{urlListType}">
                     <table>
                         <tbody>
                             <tr>
-                                <c:forEach items="#{urlList}"
-                                           var="url"
-                                           varStatus="loop">
+                                <ui:repeat value="#{entityController.getMetadataUrlList(metadataValue)}"
+                                           var="url">
                                     <td>
                                         <h:outputLink value="#{url}"
                                                       target="_blank">
                                             "#{entityController.prepareLinkDisplay(url)}"
                                         </h:outputLink>
                                     </td>
-                                </c:forEach>
+                                </ui:repeat>
                             </tr>
                         </tbody>
                     </table>
-                </c:if>
+                </ui:fragment>
 
             </p:outputPanel>
         </f:facet>
