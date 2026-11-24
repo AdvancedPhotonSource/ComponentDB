@@ -39,6 +39,7 @@ See LICENSE file.
                 </p:row>
             </p:panelGrid>   
             <p:remoteCommand name="updateSystemLogFilterViewPanelGrid"
+                             process="@this filterViewItemCategorySelection"
                              update="systemLogFilterViewPanelGrid" 
                              onstart="PF('loadingDialog').show()"
                              oncomplete="PF('loadingDialog').hide()"/>
