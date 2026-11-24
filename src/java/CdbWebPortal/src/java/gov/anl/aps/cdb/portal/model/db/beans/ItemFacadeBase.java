@@ -441,7 +441,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         List<ItemDomainEntity> itemList = new ArrayList<>();
         for (Object[] result : relationshipResultList) {
             ItemDomainEntity item = (ItemDomainEntity) result[0];
-            Long relationshipId = (Long) result[1];
+            Number relationshipId = (Number) result[1];
             
             if (item.getParentRelationshipId() != null) {
                 // Same item result with different parent relationship result. 
