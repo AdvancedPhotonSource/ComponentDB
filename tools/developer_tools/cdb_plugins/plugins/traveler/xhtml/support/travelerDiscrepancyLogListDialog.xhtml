@@ -28,7 +28,8 @@ See LICENSE file.
             <p:dataTable value="#{discrepancyLog.discrepancyLogs}"
                          var="log"
                          rows="5"
-                         paginator="true">
+                         paginator="true"
+                         paginatorPosition="both">
 
                 <p:column headerText="Input By">
                     #{log.inputBy}
