@@ -45,9 +45,9 @@ See LICENSE file.
                                       widgetVar="markdownAttachmentFileUploadWidget"    
                                       oncomplete="completePastedImage()"
                                       mode="simple"
-                                      auto="true"
-                                      fileLimit="1"                              
-                                      fileLimitMessage="Only one attachment can be added per upload."/>
+                                      auto="true">
+                            <p:validateFile fileLimit="1"/>
+                        </p:fileUpload>
                     </ui:insert>
 
 

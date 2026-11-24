@@ -23,12 +23,13 @@ See LICENSE file.
                         <p:column>
                             <p:fileUpload id="#{rootViewId}SelectFileUpload"
                                           listener="#{wizardController.fileUploadListenerData}" 
-                                          auto="true" 
-                                          allowTypes="/(\.|\/)([xX][lL][sS][xX]?)$/"
+                                          auto="true"
                                           rendered="#{wizardController.renderFileuploadData}"
                                           update="#{rootViewId}SelectFilePanel"
                                           oncomplete="update#{rootViewId}WizardButtons();"
-                                          label="Choose File"/>
+                                          label="Choose File">
+                                <p:validateFile allowTypes="/(\.|\/)([xX][lL][sS][xX]?)$/"/>
+                            </p:fileUpload>
                         </p:column>
                         
                         <p:column>
