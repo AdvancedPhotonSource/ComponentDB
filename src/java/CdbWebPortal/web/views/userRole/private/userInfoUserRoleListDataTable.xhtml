@@ -12,6 +12,7 @@ See LICENSE file.
     <ui:param name="userInfoObject" value="#{userInfoController.selected}"/>    
     <ui:param name="userRoleSettingObject" value="#{userRoleController.settingObject}" />
     <p:dataTable id="userInfoUserRoleListDataTable" 
+                 lazy="false"
                  widgetVar="userInfoUserRoleListDataTableWidget"
                  var="userRoleObject" 
                  value="#{userInfoObject.userRoleList}" 

@@ -12,6 +12,7 @@ See LICENSE file.
     <ui:param name="userInfoObject" value="#{userInfoController.selected}"/>    
     <ui:param name="userSettingSettingObject" value="#{userSettingController.settingObject}"/>
     <p:dataTable id="userSettingListDataTable" 
+                 lazy="false"
                  widgetVar="userSettingListDataTableWidget"
                  var="userSettingObject" 
                  value="#{userInfoObject.userSettingList}" 

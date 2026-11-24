@@ -12,6 +12,7 @@ See LICENSE file.
     <ui:param name="sourceSettingObject" value="#{sourceController.settingObject}" />
 
     <p:dataTable id="sourceListDataTable" 
+                 lazy="false"
                  widgetVar="sourceListDataTableWidget" 
                  var="sourceObject" 
                  value="#{sourceController.listDataModel}" 

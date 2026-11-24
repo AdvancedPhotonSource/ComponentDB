@@ -11,6 +11,7 @@ See LICENSE file.
     <!-- Must provide params: viewId, cableCatalogDataTableSelectionModel -->
     
     <p:dataTable id="cableCatalogDataTable-#{viewId}"
+                 lazy="false"
                  value="#{itemDomainCableCatalogController.selectDataModel}"
                  var="itemListObject"
                  rowKey="#{itemListObject.id}"

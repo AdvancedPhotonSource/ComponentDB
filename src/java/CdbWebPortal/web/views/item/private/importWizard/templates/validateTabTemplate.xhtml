@@ -73,6 +73,7 @@ See LICENSE file.
                         <p:column colspan="3" styleClass="topAlignedDataCell">
 
                             <p:dataTable id="#{rootViewId}TableContent"
+                                         lazy="false"
                                          value="#{wizardController.rows}"
                                          rendered="true"
                                          var="row"

@@ -11,6 +11,7 @@ See LICENSE file.
 
     <ui:param name="userInfoObject" value="#{userInfoController.selected}"/>    
     <p:dataTable id="userSettingEditListDataTable" 
+                 lazy="false"
                  widgetVar="userSettingEditListDataTableWidget" 
                  var="userSettingObject" 
                  value="#{userInfoObject.userSettingList}" 

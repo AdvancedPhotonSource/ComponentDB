@@ -16,6 +16,7 @@ See LICENSE file.
     <ui:param name="logSettingObject" value="#{logController.settingObject}" />
 
     <p:dataTable id="#{entityTypeName}LogListDataTable"
+                 lazy="false"
                  widgetVar="#{entityTypeName}LogListDataTableWidget" 
                  var="logObject"
                  value="#{logDataList}" 

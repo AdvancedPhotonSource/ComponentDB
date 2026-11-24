@@ -11,6 +11,7 @@ See LICENSE file.
     <ui:param name="propertyValueHistorySettingObject" value="#{propertyValueHistoryController.settingObject}" />
 
     <p:dataTable id="propertyValueHistoryListDataTable" 
+                 lazy="false"
                  widgetVar="propertyValueHistoryListDataTableWidget"
                  var="propertyValueHistoryObject" 
                  value="#{propertyValueHistoryController.selectedPropertyValueHistoryList}" 

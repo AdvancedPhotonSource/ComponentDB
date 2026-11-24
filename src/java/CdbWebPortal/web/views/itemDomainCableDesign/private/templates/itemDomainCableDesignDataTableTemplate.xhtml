@@ -12,6 +12,7 @@ See LICENSE file.
     <!-- Must provide params: viewId, selectionModel -->
     
     <p:dataTable id="cableDesignDataTable-#{viewId}"
+                 lazy="false"
                  value="#{itemDomainCableDesignController.selectDataModel}"
                  sortMode="single"
                  stripedRows="true"

@@ -46,6 +46,7 @@ See LICENSE file.
               
 
     <p:dataTable id="#{entityTypeName}ItemSelectDataTable#{viewName}" 
+                 lazy="false"
                  var="itemListObject" 
                  value="#{_selectDataModel}" 
                  rowKey="#{itemListObject.id}"

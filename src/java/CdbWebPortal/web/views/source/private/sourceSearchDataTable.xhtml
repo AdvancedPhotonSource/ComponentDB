@@ -10,6 +10,7 @@ See LICENSE file.
 
     <ui:param name="sourceSettingObject" value="#{sourceController.settingObject}" />
     <p:dataTable id="sourceSearchDataTable" 
+                 lazy="false"
                  var="searchResultObject" 
                  value="#{sourceController.searchResultList}" 
                  paginator="true"

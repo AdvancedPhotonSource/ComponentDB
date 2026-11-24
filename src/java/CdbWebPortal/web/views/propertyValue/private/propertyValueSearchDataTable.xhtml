@@ -10,6 +10,7 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <p:dataTable id="propertyValueSearchDataTable"
+                 lazy="false"
                  var="searchResultObject"
                  value="#{propertyValueController.searchResultList}"
                  sortMode="single"

@@ -19,6 +19,7 @@ See LICENSE file.
               value="#{facesUtility.displayFiltersForList(itemObject.itemElementDisplayList, 10)}" /> 
 
     <p:dataTable id="#{elementsEntityTypeName}ListDataTable"
+                 lazy="false"
                  value="#{itemObject.itemElementDisplayList}"
                  var="itemElementObject"                 
                  rows="#{entityController.settingObject.displayFileNumberOfItemsPerPage}"

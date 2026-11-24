@@ -15,6 +15,7 @@ See LICENSE file.
                        : entityController.itemEnforcedPropertiesController}" />
     <p:panel header="Configure Required Properties" styleClass="createWizardPanel">
         <p:dataTable value="#{entityEnforcedPropertyController.possibleEnforcedPropertyInformation}"
+                     lazy="false"
                      sortMode="single"
                      stripedRows="true"
                      var="enforcedPropertyInformation" >

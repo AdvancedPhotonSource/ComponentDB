@@ -26,6 +26,7 @@ See LICENSE file.
                       value="#{entityController.getCombinedItemElementHistory(itemElementObject)}" />
 
             <p:dataTable value="#{itemElementHistoryList}"
+                         lazy="false"
                          var="historyItem"
                          paginator="true" 
                          paginatorPosition="bottom"

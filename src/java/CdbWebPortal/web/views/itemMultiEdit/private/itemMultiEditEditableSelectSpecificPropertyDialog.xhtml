@@ -21,6 +21,7 @@ See LICENSE file.
 
         <p:outputPanel rendered="#{currentMultiEditPropertyRecord != null}">
             <p:dataTable value="#{currentMultiEditPropertyRecord.relatedPropertyValueList}"
+                         lazy="false"
                          var="relatedPropertyValue"
                          selection="#{currentMultiEditPropertyRecord.propertyValue}"
                          selectionMode="single"

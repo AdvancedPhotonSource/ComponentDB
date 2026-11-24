@@ -16,6 +16,7 @@ See LICENSE file.
     </ui:include>
 
     <p:dataTable id="#{entityTypeName}MaarcRelationshipListDataTable"
+                 lazy="false"
                  sortMode="single"
                  stripedRows="true"
                  value="#{entityController.relatedMAARCRelationshipsForCurrent}"

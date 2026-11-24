@@ -18,6 +18,7 @@ See LICENSE file.
               boxStyleClass="viewTransparentBackgroundDialog"
               dynamic="true">
         <p:dataTable value="#{locatableItemController.getLocationHistoryObjectList(itemObject)}"
+                     lazy="false"
                      var="itemElementLocationRelationshipHistoryObject"
                      sortMode="single"
                      stripedRows="true"

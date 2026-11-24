@@ -28,6 +28,7 @@ See LICENSE file.
         </p:commandButton>
     </div>
     <p:dataTable id="#{entityTypeName}PropertySelectDataTable" 
+                 lazy="false"
                  var="propertyTypeObject" 
                  value="#{propertyTypeController.filterViewDataModel}" 
                  selection="#{propertySelectDataTableSelectionValue}"             

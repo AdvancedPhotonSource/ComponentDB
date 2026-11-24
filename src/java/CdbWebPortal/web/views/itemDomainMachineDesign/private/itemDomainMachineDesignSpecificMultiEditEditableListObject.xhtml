@@ -25,6 +25,7 @@ See LICENSE file.
         <p:outputPanel rendered="#{machineDesignNameList != null}">
             NOTE: All other fields are ignored until fulfillment is acknowledged and complete. 
             <p:dataTable value="#{machineDesignNameList}"                     
+                         lazy="false"
                          var="replacementName">
                 <p:column headerText="Parameter Name"
                           styleClass="narrowColumn">

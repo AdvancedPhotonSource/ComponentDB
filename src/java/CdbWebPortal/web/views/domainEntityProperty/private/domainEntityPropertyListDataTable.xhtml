@@ -17,6 +17,7 @@ See LICENSE file.
     <ui:param name="propertyValueSettingObject" value="#{propertyValueController.settingObject}"/>
 
     <p:dataTable id="#{entityTypeName}PropertyListDataTable" 
+                 lazy="false"
                  widgetVar="#{entityTypeName}PropertyListDataTableWidget"
                  var="propertyValueObject" 
                  reflow="true"

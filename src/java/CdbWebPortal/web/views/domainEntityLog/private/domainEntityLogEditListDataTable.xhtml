@@ -12,6 +12,7 @@ See LICENSE file.
 
     <ui:param name="logSettingObject" value="#{logController.settingObject}" />
     <p:dataTable id="#{entityTypeName}LogEditListDataTable" 
+                 lazy="false"
                  widgetVar="#{entityTypeName}LogEditListDataTableWidget"
                  var="logObject" 
                  value="#{entityObject.logList}"

@@ -9,6 +9,7 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <p:dataTable id="#{itemDomainController.entityTypeName}SearchDataTable" 
+                 lazy="false"
                  var="searchResultObject" 
                  value="#{itemDomainController.searchResultList}" 
                  sortMode="single"

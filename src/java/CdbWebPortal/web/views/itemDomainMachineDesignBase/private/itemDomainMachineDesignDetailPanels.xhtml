@@ -37,6 +37,7 @@ See LICENSE file.
                   value="#{facesUtility.islistSizeOverMin(inventoryList, 10)}"/>
 
         <p:dataTable id="machineDesingInventoryListDataTable"
+                     lazy="false"
                      sortMode="single"
                      stripedRows="true"
                      value="#{inventoryList}"

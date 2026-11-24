@@ -30,7 +30,7 @@ See LICENSE file.
         <p:outputPanel rendered="#{entityController.displayListConfigurationView}"
                        styleClass="#{machineDesignDualListViewRightStyleClass}">            
             <ui:include src="../itemDomainMachineDesignDualColumnListViewDetailsPanel.xhtml" /> 
-            <p:dataTable id="addCatalogToMachineDesignDataTable"/>
+            <p:dataTable lazy="false" id="addCatalogToMachineDesignDataTable"/>
         </p:outputPanel>
     </p:outputPanel>
 

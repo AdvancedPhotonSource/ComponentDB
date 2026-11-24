@@ -9,6 +9,7 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <p:dataTable id="propertyTypeCategorySearchDataTable" 
+                 lazy="false"
                  var="searchResultObject" 
                  value="#{propertyTypeCategoryController.searchResultList}" 
                  paginator="true"

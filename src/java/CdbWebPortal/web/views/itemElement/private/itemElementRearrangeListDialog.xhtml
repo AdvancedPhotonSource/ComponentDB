@@ -20,7 +20,7 @@ See LICENSE file.
               modal="true"
               resizable="false">
         <div class="dialog">
-            <p:dataGrid id="itemElementRearrangeListDataGrid" var="itemElementObject" value="#{itemElementController.sortableItemElementList}" columns="1" >
+            <p:dataGrid lazy="false" id="itemElementRearrangeListDataGrid" var="itemElementObject" value="#{itemElementController.sortableItemElementList}" columns="1" >
 
                 <p:panel id="itemElementRearrangeDataGridTopPanel" rendered="#{itemElementObject.sortOrder == null || itemElementObject.sortOrder == 1}" styleClass="sortDroppable"/>
                 <p:panel header="Item Element: #{itemElementObject.name}" 
