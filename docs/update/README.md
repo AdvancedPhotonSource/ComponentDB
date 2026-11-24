@@ -103,3 +103,29 @@ rm -rf support-`hostname -s`
 mv support-`hostname -s` support-`hostname -s`-<OLD_VERSION>
 make support
 ~~~~
+
+## Upgrading to 3.20.0 (Payara 7, Java 25)
+3.20.0 moves from Payara 5 / Java 11 to Payara 7 / Java 25, so the support software
+**must** be rebuilt when passing through this version. The old Payara domain is not
+migrated: JDBC pool, SSL certificate, MQTT connector, and any manual domain tweaks are
+set up again on the new `production` domain.
+~~~~
+./etc/init.d/cdb-glassfish stop          # stop the old Payara 5 domain
+mv support-`hostname -s` support-`hostname -s`-<OLD_VERSION>   # keep it until verified
+make support                             # prompts for new master and admin passwords
+source setup.sh
+# ...apply SQL updates (step 2 above)...
+make configure-web-portal                # JDBC pool/resource on the new domain
+make configure-mqtt                      # only if MQTT is used (deploys mqtt-rar 1.0.0)
+make deploy-cdb-plugin                   # redeploy each plugin in use
+make deploy-web-portal
+# Optional: re-apply a real SSL certificate (prompts for the new master password)
+# ./sbin/cdb_update_glassfish_ssl.sh KEY_FILE CRT_FILE
+~~~~
+Notes:
+- `make support` downloads Eclipse Temurin and Payara from the internet; versions are
+  set in `support/bin/versions.sh`.
+- The new domain runs the Payara data grid (Hazelcast) on ports 4900 and 6900; block
+  them in the firewall if the host is reachable from untrusted networks.
+- Keystores are now PKCS12 (`keystore.p12`, `cacerts.p12`);
+  `cdb_update_glassfish_ssl.sh` handles both formats.
