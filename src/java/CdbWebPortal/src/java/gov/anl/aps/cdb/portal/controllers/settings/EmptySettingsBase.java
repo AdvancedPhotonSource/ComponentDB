@@ -49,7 +49,7 @@ public abstract class EmptySettingsBase implements ICdbSettings {
     }
     
     private void logNoSettingsMessage(String loadingMessage) {
-        logger.warn("Attempting to load: " + loadingMessage + ". No settings for " + this.getClass().getSimpleName());        
+        logger.debug("Attempting to load: " + loadingMessage + ". No settings for " + this.getClass().getSimpleName());        
     }    
     
 }
