@@ -36,7 +36,7 @@ See LICENSE file.
                  liveResize="true"
                  sortMode="single"
                  stripedRows="true"
-                 paginator="true"
+                 paginator="#{entitySettingObject.displayNumberOfItemsPerPage gt 0}"
                  paginatorPosition="both" 
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No #{displayEntityTypeName}s found.">
