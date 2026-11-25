@@ -391,6 +391,16 @@ tr:hover .actionLink {
     margin-right: auto;
 }
 
+/* PF16 renders .ui-dialog as a full-viewport layer; keep the page clickable behind non-modal dialogs as in PF11.
+   PF16 only sets aria-modal for modal dialogs (aria-modal="true"); non-modal ones have no attribute. */
+.ui-dialog:not([aria-modal="true"]) {
+    pointer-events: none;
+}
+
+.ui-dialog:not([aria-modal="true"]) > .ui-dialog-box {
+    pointer-events: auto;
+}
+
 .sortDroppable {
     height: 0px; 
     border: none;
