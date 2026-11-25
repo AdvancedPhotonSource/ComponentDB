@@ -157,17 +157,17 @@ class CdbSeleniumModuleBase:
 		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(EC.url_contains(urlSubstring))
 
 	def _wait_until_enabled_by_xpath(self, xpath):
-		timeout = time.time() + CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT
-
-		while time.time() < timeout:
-			time.sleep(0.01)
+		# Raise (with diagnostics) on timeout; returning None surfaced later as an opaque null.click().
+		def xpath_enabled(driver):
 			try:
-				element = self._wait_for_xpath(xpath)
-				cssClass = element.get_attribute('class')
-				if not cssClass.__contains__('ui-state-disabled'):
-					return element
+				for element in driver.find_elements(By.XPATH, xpath):
+					if 'ui-state-disabled' not in (element.get_attribute('class') or ''):
+						return element
 			except StaleElementReferenceException:
 				pass
+			return False
+
+		return WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(xpath_enabled)
 
 	@add_stale_protection
 	def _wait_for_clickable_id_with_stale_protection(self,id):
