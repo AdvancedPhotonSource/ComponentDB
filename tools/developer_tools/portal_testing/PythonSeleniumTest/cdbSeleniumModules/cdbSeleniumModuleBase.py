@@ -25,8 +25,7 @@ class CdbSeleniumModuleBase:
 
 	WAIT_FOR_ELEMENT_TIMEOUT = 10
 	VISIBLE_ID_TIMEOUT = 10
-	# Longer than element waits: some pages queue one request per keystroke (e.g. MD create name field).
-	AJAX_IDLE_TIMEOUT = 30
+	AJAX_IDLE_TIMEOUT = 10
 	CLICK_RETRY_COUNT = 5
 	CLICK_RETRY_DELAY = 0.1
 	LOADING_DIALOG_ID = 'loadingDialog'

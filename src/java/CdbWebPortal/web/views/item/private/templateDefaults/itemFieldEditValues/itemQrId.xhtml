@@ -11,11 +11,10 @@ See LICENSE file.
               rendered="#{entityController.entityDisplayQrId}">
               <p:inputText id="qrIdIT#{viewName}"
                  value="#{itemObject.qrId}"                  
-                 title="QR Id" styleClass="entityDataEmphasizedText"
-                 onkeyup="updateQrId#{viewName}()"/>
-              <p:remoteCommand name="updateQrId#{viewName}"
-                               update="qrId#{viewName}" />
-              <p:message for="qrIdIT#{viewName}" />
+                 title="QR Id" styleClass="entityDataEmphasizedText">
+                  <p:ajax event="keyup" delay="300" process="@this" update="qrIdMessage#{viewName}"/>
+              </p:inputText>
+              <p:message id="qrIdMessage#{viewName}" for="qrIdIT#{viewName}" />
     </p:column>
 
 </ui:composition>

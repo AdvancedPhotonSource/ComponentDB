@@ -14,12 +14,10 @@ See LICENSE file.
                      title="#{entityController.nameTitle}" 
                      styleClass="entityDataEmphasizedText"
                      required="true"
-                     requiredMessage="#{entityController.nameTitle} is required"
-                     onkeyup="updateName#{viewName}()"/>
-        <p:remoteCommand name="updateName#{viewName}"
-                         update="name#{viewName}"
-                         process="name#{viewName}"/>
-        <p:message for="nameInputText#{viewName}" />
+                     requiredMessage="#{entityController.nameTitle} is required">
+            <p:ajax event="keyup" delay="300" process="@this" update="nameMessage#{viewName}"/>
+        </p:inputText>
+        <p:message id="nameMessage#{viewName}" for="nameInputText#{viewName}" />
     </p:column>
 
 

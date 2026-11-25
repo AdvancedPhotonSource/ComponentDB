@@ -12,10 +12,9 @@ See LICENSE file.
               rendered="#{entityController.entityDisplayItemIdentifier1}">
         <p:inputText id="itemIdentifier1IT#{viewName}"
                      value="#{itemObject.itemIdentifier1}"                      
-                     styleClass="entityDataEmphasizedText"
-                     onkeyup="updateItemIdentifier1#{viewName}()"/>
-        <p:remoteCommand name="updateItemIdentifier1#{viewName}"
-                         update="itemIdentifier1#{viewName}"/>
-        <p:message for="itemIdentifier1IT#{viewName}" />
+                     styleClass="entityDataEmphasizedText">
+            <p:ajax event="keyup" delay="300" process="@this" update="itemIdentifier1Message#{viewName}"/>
+        </p:inputText>
+        <p:message id="itemIdentifier1Message#{viewName}" for="itemIdentifier1IT#{viewName}" />
     </p:column>
 </ui:composition>
