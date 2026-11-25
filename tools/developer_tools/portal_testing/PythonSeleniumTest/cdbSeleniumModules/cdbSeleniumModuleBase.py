@@ -25,7 +25,8 @@ class CdbSeleniumModuleBase:
 
 	WAIT_FOR_ELEMENT_TIMEOUT = 10
 	VISIBLE_ID_TIMEOUT = 10
-	AJAX_IDLE_TIMEOUT = 10
+	# Ceiling, not a fixed wait: name/identifier fields send one request per keystroke, slow under parallel load.
+	AJAX_IDLE_TIMEOUT = 30
 	CLICK_RETRY_COUNT = 5
 	CLICK_RETRY_DELAY = 0.1
 	LOADING_DIALOG_ID = 'loadingDialog'
