@@ -61,11 +61,15 @@ class BrowseBy(CdbSeleniumModuleBase):
         form_id='componentInstanceForm'
         self._verify_filter_view_data_table(test, True, msg='Table not empty by default', form_id=form_id)
 
-        location_selection_first_item_xpath = '//*[@id="componentInstanceForm:filterViewItemHierarchySelectLevel:%s:filterViewItemLocationSelection"]/div[2]/ul/li[1]'
+        # The ui:repeat id is generated, so match the id suffix ":<level>:filterViewItemLocationSelection" (XPath 1.0 ends-with).
+        location_selection_first_item_xpath = (
+            '//*[starts-with(@id, "componentInstanceForm:") and '
+            'substring(@id, string-length(@id) - string-length(":%(level)s:filterViewItemLocationSelection") + 1)'
+            ' = ":%(level)s:filterViewItemLocationSelection"]/div[2]/ul/li[1]')
 
 
         # Click on first tech sys
-        self._click_on_xpath(location_selection_first_item_xpath % '0')
+        self._click_on_xpath(location_selection_first_item_xpath % {'level': 0})
         time.sleep(1)
 
         self._verify_filter_view_data_table(test, False, msg='Table filters did not update table in time..',
@@ -74,7 +78,7 @@ class BrowseBy(CdbSeleniumModuleBase):
         # Verify that next level of locations loaded
         failed = False
         try:
-            self._wait_for_visible_xpath(location_selection_first_item_xpath % '1')
+            self._wait_for_visible_xpath(location_selection_first_item_xpath % {'level': 1})
         except TimeoutException:
             failed = True
 
