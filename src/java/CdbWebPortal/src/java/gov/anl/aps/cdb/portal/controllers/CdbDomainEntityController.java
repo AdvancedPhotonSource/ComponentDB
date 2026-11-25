@@ -557,7 +557,10 @@ public abstract class CdbDomainEntityController<ControllerUtility extends CdbDom
         EntityType cdbDomainEntity = getCurrent();
         List<Log> cdbDomainEntityLogList = cdbDomainEntity.getLogList();
         cdbDomainEntityLogList.remove(cdbDomainEntityLog);
-        updateOnRemoval();
+        // Unlink via the owner update first (its log diff still sees the row), then delete the log.
+        if (updateOnRemoval() != null) {
+            LogController.getInstance().destroy(cdbDomainEntityLog);
+        }
     }
 
     public List<PropertyValue> getFilteredPropertyValueList() {

@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbRole;
+import gov.anl.aps.cdb.mqtt.CdbMqttTopic;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignDeletedItemSettings;
@@ -196,6 +197,8 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
             }
         }
 
+        prepareTrashChanges(itemsToRestore, itemToRestore,
+                CdbMqttTopic.MACHINE_DESIGN_RESTORE, true);
         // remove 'deleted' entity type for all items
         for (ItemDomainMachineDesign item : itemsToRestore) {
             item.unsetIsDeleted();

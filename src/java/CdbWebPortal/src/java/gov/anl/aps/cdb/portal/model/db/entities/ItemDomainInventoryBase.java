@@ -6,10 +6,12 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.mqtt.metadata.InventoryAssemblyElementChange;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
+import java.util.ArrayList;
 import java.util.List;
 import org.primefaces.model.TreeNode;
 
@@ -22,6 +24,7 @@ public abstract class ItemDomainInventoryBase<CatalogItemType extends ItemDomain
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE = "Spare";        
 
     private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
+    private transient List<InventoryAssemblyElementChange> pendingAssemblyElementChanges = new ArrayList<>();
 
     private transient InventoryBillOfMaterialItem containedInBOM;
     
@@ -55,6 +58,16 @@ public abstract class ItemDomainInventoryBase<CatalogItemType extends ItemDomain
 
     public void setInventoryDomainBillOfMaterialList(List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList) {
         this.inventoryDomainBillOfMaterialList = inventoryDomainBillOfMaterialList;
+    }
+
+    @JsonIgnore
+    public void addPendingAssemblyElementChange(InventoryAssemblyElementChange change) {
+        pendingAssemblyElementChanges.add(change);
+    }
+
+    @JsonIgnore
+    public List<InventoryAssemblyElementChange> getPendingAssemblyElementChanges() {
+        return new ArrayList<>(pendingAssemblyElementChanges);
     }
     
     @JsonIgnore

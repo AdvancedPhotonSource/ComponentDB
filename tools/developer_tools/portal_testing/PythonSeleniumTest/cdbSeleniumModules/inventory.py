@@ -1,4 +1,7 @@
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 from cdbSeleniumModules.itemBase import ItemBase
 
@@ -30,6 +33,76 @@ class Inventory(ItemBase):
     TEST_REPLACEMENT_DESTINATION = [
         'Machine Assignment Replacement Root',
         'Machine Assignment Replacement Destination']
+
+    UI_ACTION_TIMEOUT = 30
+    LOCATION_DETAILS_OUTPUT_CSS = "[id$=':locationDetails']"
+    LOCATION_DETAILS_EDIT_XPATH = "//a[contains(@id, 'locationDetailsViewOutputEditShowButton')]"
+    # Only one p:inplace editor is open at a time; its content holds the input, check and cancel.
+    INPLACE_CONTENT_XPATH = "//*[contains(concat(' ', @class, ' '), ' ui-inplace-content ')]"
+    LOCATION_DETAILS_WIDGET = 'locationDetailsViewOutputEditableWidget'
+    ASSIGNED_ITEM_DIALOG_ID = VIEW_FORM_NAME + ':updateAssignedInventoryItemDialog'
+
+    def open_inventory_by_id(self, inventory_id):
+        self._open_inventory_by_id(inventory_id)
+
+    def get_location_details(self):
+        return self.driver.find_element(By.CSS_SELECTOR, self.LOCATION_DETAILS_OUTPUT_CSS).text.strip()
+
+    def _open_inplace_editor(self):
+        def visible_editor(driver):
+            for content in driver.find_elements(By.XPATH, self.INPLACE_CONTENT_XPATH):
+                if content.is_displayed():
+                    return content
+            return False
+        return WebDriverWait(self.driver, self.UI_ACTION_TIMEOUT,
+                             ignored_exceptions=(StaleElementReferenceException,)).until(visible_editor)
+
+    def set_location_details_inline(self, details):
+        """Edit location details in place on the inventory view page (saves the item)."""
+        self._wait_for_clickable_xpath(self.LOCATION_DETAILS_EDIT_XPATH).click()
+        editor = self._open_inplace_editor()
+        details_input = editor.find_element(By.XPATH, ".//input[@type='text']")
+        details_input.clear()
+        if details:
+            details_input.send_keys(details)
+        buttons = [b for b in editor.find_elements(By.XPATH, ".//button") if b.is_displayed()]
+        if buttons:
+            buttons[0].click()  # check (save); the second is cancel
+        else:
+            # Same as the check button's oncomplete: submit the inplace editor.
+            self.driver.execute_script("PF('%s').save()" % self.LOCATION_DETAILS_WIDGET)
+        WebDriverWait(self.driver, self.UI_ACTION_TIMEOUT,
+                      ignored_exceptions=(StaleElementReferenceException,)).until(
+            lambda driver: self.get_location_details() == (details or ''))
+        self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
+
+    def update_assembly_element(self, element_name, new_item_id, new_item_name):
+        """Assign an inventory item to an assembly element via the edit-assignment dialog.
+
+        Rows are selected by PrimeFaces row key (item id); ``new_item_name`` is used to
+        filter when the item is not on the first page.
+        """
+        edit_xpath = ("//tr[td[normalize-space(.)=%s]]//a[contains(@id, 'AssignedItemEditActionButton')]"
+                      % self._xpath_literal(element_name))
+        self._wait_for_clickable_xpath(edit_xpath).click()
+        self._wait_for_visible_id(self.ASSIGNED_ITEM_DIALOG_ID)
+
+        row_xpath = ("//*[@id='%s']//tbody[contains(@id, 'ItemSelectDataTable')]/tr[@data-rk='%s']"
+                     % (self.ASSIGNED_ITEM_DIALOG_ID, new_item_id))
+        if not self.driver.find_elements(By.XPATH, row_xpath):
+            name_filter = self._wait_for_visible_xpath(
+                "//*[@id='%s']//input[contains(@id, 'NameColumn:filter')]" % self.ASSIGNED_ITEM_DIALOG_ID)
+            name_filter.clear()
+            name_filter.send_keys(new_item_name)
+        WebDriverWait(self.driver, self.UI_ACTION_TIMEOUT).until(
+            EC.element_to_be_clickable((By.XPATH, row_xpath))).click()
+        # Selection re-renders the dialog panel under the loading dialog.
+        self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
+
+        save_xpath = "//*[@id='%s']//button[.//span[text()='Save']]" % self.ASSIGNED_ITEM_DIALOG_ID
+        self._wait_for_clickable_xpath(save_xpath).click()
+        self._wait_for_invisible_by_id(self.ASSIGNED_ITEM_DIALOG_ID, timeout=self.UI_ACTION_TIMEOUT)
+        self._wait_for_invisible_loading_dialog(timeout=self.UI_ACTION_TIMEOUT)
 
     def navigate_to_inventory_list(self):
         self._navigate_to_dropdown('inventoryDropdownButton', 'componentInstanceButton', '%s/list' % self.VIEW_BASE_NAME)

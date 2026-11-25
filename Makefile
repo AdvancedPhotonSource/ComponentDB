@@ -9,6 +9,7 @@ TOP = .
 SUBDIRS = src
 
 .PHONY: support support-mysql dev-config prepare-release release-python-client
+.PHONY: mqtt-configuration configure-mqtt mqtt-configuration-dev configure-mqtt-dev
 .PHONY: db backup db-dev deploy-web-portal undeploy-web-portal deploy-web-service undeploy-web-service
 .PHONY: db-dev backup-dev deploy-web-portal-dev undeploy-web-portal-dev deploy-web-service-dev undeploy-web-service-dev
 
@@ -27,6 +28,12 @@ release-python-client:
 
 configuration:
 	$(TOP)/sbin/cdb_create_configuration.sh
+
+mqtt-configuration:
+	$(TOP)/sbin/cdb_create_mqtt_configuration.sh cdb
+
+configure-mqtt:
+	$(TOP)/sbin/cdb_configure_mqtt_service.sh cdb
 
 support:
 	$(TOP)/sbin/cdb_install_support.sh
@@ -78,6 +85,12 @@ undeploy-web-service:
 
 configuration-dev:
 	$(TOP)/sbin/cdb_create_configuration.sh cdb_dev
+
+mqtt-configuration-dev:
+	$(TOP)/sbin/cdb_create_mqtt_configuration.sh cdb_dev
+
+configure-mqtt-dev:
+	$(TOP)/sbin/cdb_configure_mqtt_service.sh cdb_dev
 
 db-dev:
 	$(TOP)/sbin/cdb_create_db.sh cdb_dev

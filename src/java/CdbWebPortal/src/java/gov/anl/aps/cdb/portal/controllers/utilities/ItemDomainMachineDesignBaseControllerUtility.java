@@ -8,6 +8,10 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.base.mqtt.MqttEvent;
+import gov.anl.aps.cdb.mqtt.CdbMachineAddEvent;
+import gov.anl.aps.cdb.mqtt.CdbMachineMoveEvent;
+import gov.anl.aps.cdb.mqtt.metadata.MachineAddChange;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
@@ -30,8 +34,13 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.model.DefaultTreeNode;
@@ -342,8 +351,13 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
 
     public ItemElement performMachineMoveWithUpdate(
             ItemDomainMachineDesign newParent, ItemDomainMachineDesign child, UserInfo sessionUser) throws CdbException {
+        ItemDomainMachineDesign oldParent = child.getParentMachineDesign();
+        if (Objects.equals(oldParent, newParent)) {
+            return child.getParentMachineElement();
+        }
         ItemElement currentItemElement = performMachineMove(newParent, child, sessionUser);
         update(newParent, sessionUser);
+        publishMqttEvent(new CdbMachineMoveEvent(child, oldParent, newParent, sessionUser));
         return currentItemElement;
     }
 
@@ -849,7 +863,14 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
             }
         }
 
+        ItemElement oldRepresentedElement = node.getRepresentsCatalogElement();
         node.setRepresentsCatalogElement(representedElement);
+        if (updateFromTemplate && !Objects.equals(oldRepresentedElement, representedElement)) {
+            Item template = node.getCreatedFromTemplate();
+            node.setPendingRepresentedElementChange(oldRepresentedElement,
+                    template instanceof ItemDomainMachineDesign
+                            ? (ItemDomainMachineDesign) template : null);
+        }
 
         if (node.getIsItemTemplate()) {
             List<ItemDomainMachineDesign> itemsCreatedFromThisTemplateItem
@@ -941,6 +962,167 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
 
         updateList(machinesToUpdate, updateUser);
         ieru.destroyList(relationshipsToDestroy, null, updateUser);
+    }
+
+    @Override
+    protected void prepareSpecializedCreateEvents(
+            List<ItemDomainMachineDesign> entities, UserInfo userInfo) {
+        super.prepareSpecializedCreateEvents(entities, userInfo);
+        // Identity set: unsaved items compare equal by identifiers; one node may be reachable via several roots.
+        Set<ItemDomainMachineDesign> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        List<List<MachineAddChange>> changesPerEntity = new ArrayList<>();
+        List<MachineAddChange> allChanges = new ArrayList<>();
+        for (ItemDomainMachineDesign entity : entities) {
+            List<MachineAddChange> changes = new ArrayList<>();
+            collectNewMachines(entity, entity.getParentMachineDesign(), true, changes, visited);
+            changesPerEntity.add(changes);
+            allChanges.addAll(changes);
+        }
+        Map<ItemDomainMachineDesign, MachineAddChange> templateChanges = addTemplateContext(allChanges);
+        for (int i = 0; i < entities.size(); i++) {
+            List<MachineAddChange> changes = new ArrayList<>();
+            for (MachineAddChange change : changesPerEntity.get(i)) {
+                changes.add(templateChanges.getOrDefault(change.getMachine(), change));
+            }
+            entities.get(i).setPendingMachineAddChanges(changes);
+        }
+    }
+
+    /**
+     * Resolves template context across one save: each template-cloned node gets its source
+     * template, the machine the template was applied to, and how many nodes that application added.
+     */
+    private Map<ItemDomainMachineDesign, MachineAddChange> addTemplateContext(
+            List<MachineAddChange> changes) {
+        Map<ItemDomainMachineDesign, MachineAddChange> changeByMachine = new IdentityHashMap<>();
+        Map<ItemDomainMachineDesign, ItemDomainMachineDesign> templateByMachine = new IdentityHashMap<>();
+        for (MachineAddChange change : changes) {
+            changeByMachine.put(change.getMachine(), change);
+            ItemDomainMachineDesign template = getSourceTemplate(change.getMachine());
+            if (template != null) {
+                templateByMachine.put(change.getMachine(), template);
+            }
+        }
+
+        Map<ItemDomainMachineDesign, ItemDomainMachineDesign> appliedToByMachine = new IdentityHashMap<>();
+        Map<ItemDomainMachineDesign, Integer> countByAppliedTo = new IdentityHashMap<>();
+        for (ItemDomainMachineDesign machine : templateByMachine.keySet()) {
+            ItemDomainMachineDesign appliedTo = machine;
+            ItemDomainMachineDesign parent = changeByMachine.get(machine).getParent();
+            while (parent != null) {
+                MachineAddChange parentChange = changeByMachine.get(parent);
+                if (parentChange != null && templateByMachine.containsKey(parent)) {
+                    appliedTo = parent;
+                    parent = parentChange.getParent();
+                    continue;
+                }
+                // Existing machine whose template was just assigned (relationship not yet saved).
+                if (parentChange == null && hasUnsavedTemplateRelationship(parent)) {
+                    appliedTo = parent;
+                }
+                break;
+            }
+            appliedToByMachine.put(machine, appliedTo);
+            countByAppliedTo.merge(appliedTo, 1, Integer::sum);
+        }
+
+        Map<ItemDomainMachineDesign, MachineAddChange> result = new IdentityHashMap<>();
+        for (Map.Entry<ItemDomainMachineDesign, ItemDomainMachineDesign> entry : appliedToByMachine.entrySet()) {
+            MachineAddChange change = changeByMachine.get(entry.getKey());
+            result.put(entry.getKey(), new MachineAddChange(change.getMachine(), change.getParent(),
+                    templateByMachine.get(entry.getKey()), entry.getValue(),
+                    countByAppliedTo.get(entry.getValue())));
+        }
+        return result;
+    }
+
+    private static ItemDomainMachineDesign getSourceTemplate(ItemDomainMachineDesign machine) {
+        ItemElementRelationship relationship = getTemplateRelationship(machine);
+        if (relationship == null || relationship.getSecondItemElement() == null) {
+            return null;
+        }
+        Item template = relationship.getSecondItemElement().getParentItem();
+        return template instanceof ItemDomainMachineDesign ? (ItemDomainMachineDesign) template : null;
+    }
+
+    private static boolean hasUnsavedTemplateRelationship(ItemDomainMachineDesign machine) {
+        ItemElementRelationship relationship = getTemplateRelationship(machine);
+        return relationship != null && relationship.getId() == null;
+    }
+
+    // Null-safe variant of Item.getCreatedFromTemplateRelationship for unsaved clones.
+    private static ItemElementRelationship getTemplateRelationship(ItemDomainMachineDesign machine) {
+        List<ItemElementRelationship> relationships = machine.getItemElementRelationshipList();
+        if (relationships == null) {
+            return null;
+        }
+        String templateName = ItemElementRelationshipTypeNames.template.getValue();
+        for (ItemElementRelationship relationship : relationships) {
+            if (relationship.getRelationshipType() != null
+                    && templateName.equals(relationship.getRelationshipType().getName())) {
+                return relationship;
+            }
+        }
+        return null;
+    }
+
+    // Mirrors ItemFacadeBase.populateItemsToAdd: only recurse below roots and unsaved nodes.
+    private void collectNewMachines(ItemDomainMachineDesign machine,
+            ItemDomainMachineDesign parent, boolean persistenceRoot,
+            List<MachineAddChange> changes, Set<ItemDomainMachineDesign> visited) {
+        if (machine == null || !visited.add(machine)) {
+            return;
+        }
+        boolean persisted = isMachinePersisted(machine);
+        if (!persisted) {
+            changes.add(new MachineAddChange(machine, parent));
+        } else if (!persistenceRoot) {
+            return;
+        }
+        ItemElement selfElement = machine.getSelfElement();
+        List<ItemElement> elements = machine.getFullItemElementList();
+        if (elements != null) {
+            for (ItemElement element : elements) {
+                Item child = element == selfElement ? null : element.getContainedItem();
+                if (child instanceof ItemDomainMachineDesign) {
+                    collectNewMachines((ItemDomainMachineDesign) child, machine, false,
+                            changes, visited);
+                }
+            }
+        }
+        // ItemDomainMachineDesignFacade.edit cascades into itemsToUpdate as further roots.
+        for (ItemDomainMachineDesign itemToUpdate : machine.getItemsToUpdate()) {
+            collectNewMachines(itemToUpdate, itemToUpdate.getParentMachineDesign(), true,
+                    changes, visited);
+        }
+    }
+
+    /** Mirrors ItemFacadeBase.populateItemsToAdd: an ID alone does not mean the row exists. */
+    protected boolean isMachinePersisted(ItemDomainMachineDesign machine) {
+        return machine.getId() != null && getEntityDbFacade().findItem(machine.getId()) != null;
+    }
+
+    @Override
+    protected List<MqttEvent> createSpecializedCreateEvents(
+            List<ItemDomainMachineDesign> entities, UserInfo userInfo) {
+        List<MqttEvent> events = new ArrayList<>();
+        for (ItemDomainMachineDesign entity : entities) {
+            for (MachineAddChange change : entity.getPendingMachineAddChanges()) {
+                // Skip nodes that did not receive an ID (not actually persisted).
+                if (change.getMachine().getId() == null) {
+                    continue;
+                }
+                try {
+                    events.add(new CdbMachineAddEvent(change, userInfo));
+                } catch (RuntimeException ex) {
+                    logger.error("Failed to create machine add MQTT event", ex);
+                }
+            }
+            entity.setPendingMachineAddChanges(null);
+        }
+        // Machine adds precede log adds so a new machine is announced before its logs.
+        events.addAll(super.createSpecializedCreateEvents(entities, userInfo));
+        return events;
     }
 
 }

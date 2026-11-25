@@ -1,0 +1,44 @@
+{% set name = "cdb-bely-message-broker-base" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  path: ./src
+
+build:
+  number: 0
+  noarch: python
+
+requirements:
+  build:
+    - pip
+    - python>3.10
+    - pytest-asyncio
+    - python-dotenv
+  run:
+    - python>3.10
+    - click
+    - paho-mqtt >=2.0.0
+    - pydantic >=2.0.0
+    - python-dotenv
+    - pyyaml
+
+test:
+  imports:
+    - cdb_bely_message_broker_base
+  source_files:
+    - tests
+    - pytest.ini
+  requires:
+    - pytest
+    - pytest-asyncio
+  commands:
+    - pytest tests -v
+
+about:
+  home: "https://github.com/AdvancedPhotonSource/ComponentDB"
+  license: "Copyright (c) UChicago Argonne, LLC. All rights reserved."
+  summary: "Shared pluggable MQTT message broker framework for ComponentDB and BELY"

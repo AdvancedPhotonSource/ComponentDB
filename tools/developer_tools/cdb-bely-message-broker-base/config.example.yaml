@@ -1,0 +1,20 @@
+# MQTT Message Broker Configuration
+# This file configures global settings and handler-specific parameters.
+
+# Global configuration shared across all handlers
+global:
+  # Public-facing portal URL used for links in notifications. The key name is
+  # set by the application's GlobalConfig.PUBLIC_URL_KEY (cdb_url, bely_url, ...).
+  url: https://portal.example.com/app
+
+  # (Optional) Internal API URL for broker-to-server API calls.
+  # Defaults to the public URL if not specified.
+  # api_url: http://localhost:8080/app
+
+# Handler-specific configurations, keyed by handler class name.
+# Values are passed as keyword arguments to the handler constructor.
+handlers:
+  LoggingHandler: {}
+
+  MyHandler:
+    param1: value1

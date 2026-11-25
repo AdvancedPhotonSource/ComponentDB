@@ -1,0 +1,39 @@
+{% set name = "cdb-mqtt-message-broker" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  path: ./src
+
+build:
+  number: 0
+  noarch: python
+
+requirements:
+  build:
+    - pip
+    - python>3.10
+  run:
+    - python>3.10
+    - cdb-bely-message-broker-base >=1.0.0
+
+test:
+  imports:
+    - cdb_mqtt
+  source_files:
+    - tests
+    - pytest.ini
+  requires:
+    - pytest
+    - pytest-asyncio
+  commands:
+    - cdb-mqtt --help
+    - pytest tests -v
+
+about:
+  home: "https://github.com/AdvancedPhotonSource/ComponentDB"
+  license: "Copyright (c) UChicago Argonne, LLC. All rights reserved."
+  summary: "Pluggable Python framework for handling ComponentDB MQTT events"

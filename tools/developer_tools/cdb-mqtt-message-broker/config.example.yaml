@@ -1,0 +1,19 @@
+# CDB MQTT Message Broker Configuration
+# Pass with --config (or CDB_CONFIG).
+
+# Global configuration shared across all handlers (handler.global_config)
+global:
+  # Public-facing CDB portal URL, used for links in notifications.
+  cdb_url: https://cdb.example.com/cdb
+
+  # (Optional) Internal API URL for broker-to-portal API calls.
+  # Defaults to cdb_url if not specified.
+  # api_url: http://localhost:8080/cdb
+
+# Handler-specific configuration, keyed by handler class name.
+# Values are passed as keyword arguments to the handler constructor.
+handlers:
+  LoggingHandler: {}
+
+  MachineDesignAuditHandler:
+    audit_file: /tmp/cdb-machine-design-audit.jsonl

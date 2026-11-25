@@ -5,15 +5,25 @@
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.mqtt.metadata.ItemLogChange;
+import gov.anl.aps.cdb.mqtt.metadata.LogAttachmentChange;
 import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
 import gov.anl.aps.cdb.portal.controllers.utilities.LogControllerUtility;
+import gov.anl.aps.cdb.portal.model.db.entities.Attachment;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -51,6 +61,91 @@ public class LogUtility {
         Log logEntry = createLogEntry(logText);
         logEntry.setLogTopic(logTopic);
         return logEntry;
+    }
+
+    /**
+     * Compares persisted item log entries by ID with the submitted list. Attachments are
+     * excluded so attachment-only edits are not reported as log updates. New entries
+     * (no ID) are handled after persistence since their IDs are DB-assigned.
+     */
+    public static List<ItemLogChange> prepareLogChanges(List<Log> originalLogList, List<Log> newLogList) {
+        List<ItemLogChange> changes = new ArrayList<>();
+        List<Log> originals = originalLogList == null ? Collections.emptyList() : originalLogList;
+        List<Log> submitted = newLogList == null ? Collections.emptyList() : newLogList;
+        Map<Integer, Log> submittedById = new HashMap<>();
+        for (Log log : submitted) {
+            if (log.getId() != null) {
+                submittedById.put(log.getId(), log);
+            }
+        }
+        for (Log original : originals) {
+            if (original.getId() == null) {
+                continue;
+            }
+            Log log = submittedById.get(original.getId());
+            if (log == null) {
+                changes.add(ItemLogChange.deleted(original));
+            } else if (isLogEntryModified(original, log)) {
+                changes.add(ItemLogChange.updated(original, log));
+            }
+        }
+        return changes;
+    }
+
+    /**
+     * Attachments newly associated with persisted logs: no ID yet, or an ID the persisted
+     * log does not reference (REST creates the attachment row before linking it).
+     */
+    public static List<LogAttachmentChange> findAddedAttachments(List<Log> originalLogList,
+            List<Log> newLogList) {
+        List<LogAttachmentChange> changes = new ArrayList<>();
+        if (originalLogList == null || newLogList == null) {
+            return changes;
+        }
+        Map<Integer, Log> originalsById = new HashMap<>();
+        for (Log original : originalLogList) {
+            if (original.getId() != null) {
+                originalsById.put(original.getId(), original);
+            }
+        }
+        for (Log log : newLogList) {
+            Log original = log.getId() == null ? null : originalsById.get(log.getId());
+            if (original == null || log.getAttachmentList() == null) {
+                continue;
+            }
+            Set<Integer> originalIds = new HashSet<>();
+            if (original.getAttachmentList() != null) {
+                for (Attachment attachment : original.getAttachmentList()) {
+                    originalIds.add(attachment.getId());
+                }
+            }
+            for (Attachment attachment : log.getAttachmentList()) {
+                if (attachment.getId() == null || !originalIds.contains(attachment.getId())) {
+                    changes.add(new LogAttachmentChange(log, attachment));
+                }
+            }
+        }
+        return changes;
+    }
+
+    private static boolean isLogEntryModified(Log original, Log log) {
+        return !Objects.equals(original.getText(), log.getText())
+                || !sameInstant(original.getEffectiveFromDateTime(), log.getEffectiveFromDateTime())
+                || !sameInstant(original.getEffectiveToDateTime(), log.getEffectiveToDateTime())
+                || !Objects.equals(original.getLogTopic(), log.getLogTopic());
+    }
+
+    // java.sql.Timestamp.equals(Date) is false for the same instant.
+    private static boolean sameInstant(Date first, Date second) {
+        return first == null ? second == null : second != null && first.getTime() == second.getTime();
+    }
+
+    /** Associates an attachment with a log in memory; the owning entity's update persists it. */
+    public static void addAttachment(Log log, Attachment attachment) {
+        if (log.getAttachmentList() == null) {
+            log.setAttachmentList(new ArrayList<>());
+        }
+        log.getAttachmentList().add(attachment);
     }
 
     public static void searchLogList(List<Log> logList, Pattern searchPattern, SearchResult searchResult) {
