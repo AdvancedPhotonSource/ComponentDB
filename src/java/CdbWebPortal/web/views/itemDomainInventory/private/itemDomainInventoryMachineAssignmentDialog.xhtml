@@ -19,14 +19,15 @@ See LICENSE file.
 
         <p:panelGrid layout="tabular" columns="2">
             <h:outputText value="Assignment State" />
-            <p:selectBooleanButton id="machineAssignmentInstalled"
-                                   value="#{itemDomainInventoryController.machineAssignmentInstalled}"
-                                   offLabel="Planned"
-                                   onLabel="Installed">
+            <ui:fragment>
                 <p:tooltip for="machineAssignmentInstalled">
                     Installed items use the machine location. Planned items retain their current location.
                 </p:tooltip>
-            </p:selectBooleanButton>
+                <p:selectBooleanButton id="machineAssignmentInstalled"
+                                       value="#{itemDomainInventoryController.machineAssignmentInstalled}"
+                                       offLabel="Planned"
+                                       onLabel="Installed"/>
+            </ui:fragment>
         </p:panelGrid>
 
         <f:facet name="footer">

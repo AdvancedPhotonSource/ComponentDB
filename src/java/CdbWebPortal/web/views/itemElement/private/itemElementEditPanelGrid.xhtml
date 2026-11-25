@@ -13,10 +13,11 @@ See LICENSE file.
     <p:panelGrid layout="tabular" id="itemElementEditPanelGrid" columns="2" styleClass="editEntityDetails">
 
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
-        <p:inputText id="name" value="#{itemElementObject.name}" title="Name" styleClass="entityDataEmphasizedText">
+        <ui:fragment>
             <p:message for="name"/> 
             <p:tooltip for="name" value="Enter item element name."/>
-        </p:inputText>
+            <p:inputText id="name" value="#{itemElementObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
+        </ui:fragment>
         
         <ui:include src="templateDefaults/itemElementFieldLabels/itemElementParentItem.xhtml"/>
         <ui:include src="templateDefaults/itemElementFieldViewValues/itemElementParentItem.xhtml"/>

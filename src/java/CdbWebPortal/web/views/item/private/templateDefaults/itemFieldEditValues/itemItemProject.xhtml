@@ -32,6 +32,8 @@ See LICENSE file.
         <ui:param name="defaultOnHideUpdateTarget" value="itemProjectSelectCB#{viewName}"/>
         <ui:param name="onHideUpdateTarget" value="#{onHideUpdateTarget != null ? onHideUpdateTarget : defaultOnHideUpdateTarget}" />
         
+        <p:remoteCommand name="itemProjectSelectCBUpdate#{viewName}"
+                         update="#{onHideUpdateTarget}" />
         <p:selectCheckboxMenu id="itemProjectSelectCB#{viewName}"
                               label="#{itemProjectLabel}"
                               onHide="itemProjectSelectCBUpdate#{viewName}()"
@@ -41,10 +43,6 @@ See LICENSE file.
                               requiredMessage="#{requiredMessage}"
                               filter="true" filterMatchMode="contains">
             <f:selectItems value="#{itemProjectController.availableItems}" /> 
-            
-            <p:remoteCommand name="itemProjectSelectCBUpdate#{viewName}"
-                             update="#{onHideUpdateTarget}" />
-
         </p:selectCheckboxMenu>        
         <p:message for="itemProjectSelectCB#{viewName}" />
     </p:column>

@@ -9,11 +9,8 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="jakarta.faces.html">    
 
-    <p:selectBooleanButton id="currentElementIsInstalledFlagButton#{viewId}" 
-                           value="#{currentMd.inventoryIsInstalled}" 
-                           offLabel="Planned"
-                           onLabel="Installed"> 
-        <p:tooltip for="currentElementIsInstalledFlagButton" >
+    <ui:fragment>
+        <p:tooltip for="currentElementIsInstalledFlagButton#{viewId}" >
             Indicates if the item is "installed" or "planned" for this machine node.
 
             <br/>
@@ -22,6 +19,10 @@ See LICENSE file.
             <br/><b>Planned</b>
             <br/>Item stays in its location but is marked to be installed on machine node in the future.
         </p:tooltip>
-    </p:selectBooleanButton>
+        <p:selectBooleanButton id="currentElementIsInstalledFlagButton#{viewId}" 
+                               value="#{currentMd.inventoryIsInstalled}" 
+                               offLabel="Planned"
+                               onLabel="Installed"/>
+    </ui:fragment>
 
 </ui:composition>
