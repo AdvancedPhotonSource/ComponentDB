@@ -9,8 +9,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 /**
  *
@@ -75,7 +75,7 @@ public abstract class CdbEntityFacade<T> {
     }
 
     public List<T> findAll() {
-        javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
+        jakarta.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
         return getEntityManager().createQuery(cq).getResultList();
     }
@@ -98,19 +98,19 @@ public abstract class CdbEntityFacade<T> {
     }
 
     public List<T> findRange(int[] range) {
-        javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
+        jakarta.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
-        javax.persistence.Query q = getEntityManager().createQuery(cq);
+        jakarta.persistence.Query q = getEntityManager().createQuery(cq);
         q.setMaxResults(range[1] - range[0] + 1);
         q.setFirstResult(range[0]);
         return q.getResultList();
     }
 
     public int count() {
-        javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
-        javax.persistence.criteria.Root<T> rt = cq.from(entityClass);
+        jakarta.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
+        jakarta.persistence.criteria.Root<T> rt = cq.from(entityClass);
         cq.select(getEntityManager().getCriteriaBuilder().count(rt));
-        javax.persistence.Query q = getEntityManager().createQuery(cq);
+        jakarta.persistence.Query q = getEntityManager().createQuery(cq);
         return ((Long) q.getSingleResult()).intValue();
     }
     

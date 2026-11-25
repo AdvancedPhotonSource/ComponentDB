@@ -5,15 +5,15 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
                 xmlns:p="http://primefaces.org/ui">
 
     <h:outputText value="Sequence Start"
                   rendered="#{rendered}"/>
 
     <p:inputText value="#{entityController.currentSequenceStartValueToColumnWithFormat}"
-                 onkeypress="if (event.which &lt; 48 || event.which &gt; 57) return false; "
+                 onkeypress="if (48 > event.which || event.which > 57) return false;"
                  rendered="#{rendered}"/>    
 
 </ui:composition>

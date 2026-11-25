@@ -5,23 +5,23 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ui="jakarta.faces.facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                xmlns:f="jakarta.faces.core"
+                xmlns:h="jakarta.faces.html">
 
     <p:dialog id="dmsCollectionInfoDialog" 
               widgetVar="dmsCollectionInfoDialogWidget" 
               header="DMS Collection Information" 
               modal="true"
               resizable="false"
-              styleClass="viewTransparentBackgroundDialog">
+              boxStyleClass="viewTransparentBackgroundDialog">
 
         <p:outputPanel rendered="#{docManagamentBean.selectedCollection != null}">
             <ui:param name="collectionObject"
                       value="#{docManagamentBean.selectedCollection}" /> 
             <p:panel header="Details">
-                <p:panelGrid columns="4">
+                <p:panelGrid layout="tabular" columns="4">
 
                     <h:outputLabel value="Collection Id"
                                    styleClass="entityDataEmphasizedLabel"/>

@@ -3,23 +3,21 @@
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
 
-
-ANT_VERSION=1.10.9
-
 currentDir=`pwd`
 cd `dirname $0`/.. && topDir=`pwd`
+. $topDir/bin/versions.sh
 
 srcDir=$topDir/src
 buildDir=$topDir/build
 antInstallDir=$topDir/ant
 antFileName=apache-ant-${ANT_VERSION}-bin.tar.gz
-DOWNLOAD_URL=http://archive.apache.org/dist/ant/binaries/$antFileName
+DOWNLOAD_URL=https://archive.apache.org/dist/ant/binaries/$antFileName
 
 mkdir -p $srcDir
 cd $srcDir
 if [ ! -f $antFileName ]; then
     echo "Retrieving $DOWNLOAD_URL"
-    curl -L -O $DOWNLOAD_URL
+    curl -f -L -O $DOWNLOAD_URL || { rm -f $antFileName; exit 1; }
 fi
 
 

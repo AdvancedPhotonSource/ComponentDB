@@ -18,8 +18,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.EJB;
 
 /**
  *

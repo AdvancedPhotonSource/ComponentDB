@@ -27,11 +27,11 @@ import gov.anl.aps.cdb.portal.view.objects.AdvancedFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.StoredProcedureQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.persistence.StoredProcedureQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -441,7 +441,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         List<ItemDomainEntity> itemList = new ArrayList<>();
         for (Object[] result : relationshipResultList) {
             ItemDomainEntity item = (ItemDomainEntity) result[0];
-            Long relationshipId = (Long) result[1];
+            Number relationshipId = (Number) result[1];
             
             if (item.getParentRelationshipId() != null) {
                 // Same item result with different parent relationship result. 

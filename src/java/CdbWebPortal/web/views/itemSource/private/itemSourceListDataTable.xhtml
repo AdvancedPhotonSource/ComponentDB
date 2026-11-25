@@ -5,9 +5,9 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:f="jakarta.faces.core"
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="breadcrumb" value="#{itemSourceController.currentViewId}"/>
@@ -16,6 +16,7 @@ See LICENSE file.
     <ui:param name="itemSourceSettingObject" value="#{itemSourceController.settingObject}" />
     
     <p:dataTable id="itemSourceListDataTable" 
+                 lazy="false"
                  widgetVar="itemSourceListWidget"
                  var="itemSourceObject" 
                  value="#{itemSourceDataList}" 
@@ -23,7 +24,8 @@ See LICENSE file.
                  sortMode="single"
                  stripedRows="true"
                  rows="#{itemSourceSettingObject.displayNumberOfItemsPerPage}"
-                 paginator="true" 
+                 paginator="true"
+                 paginatorPosition="both" 
                  reflow="true"
                  paginatorAlwaysVisible="false"
                  editable="true"

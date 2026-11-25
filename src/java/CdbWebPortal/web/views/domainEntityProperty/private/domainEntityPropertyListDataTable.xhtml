@@ -5,9 +5,9 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:f="jakarta.faces.core"
+                xmlns:h="jakarta.faces.html"
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="renderActionColumn" value="#{viewMode != 'rowExpansion' and viewMode != 'inViewRowExpansion'}" />
@@ -17,6 +17,7 @@ See LICENSE file.
     <ui:param name="propertyValueSettingObject" value="#{propertyValueController.settingObject}"/>
 
     <p:dataTable id="#{entityTypeName}PropertyListDataTable" 
+                 lazy="false"
                  widgetVar="#{entityTypeName}PropertyListDataTableWidget"
                  var="propertyValueObject" 
                  reflow="true"
@@ -25,7 +26,8 @@ See LICENSE file.
                  rows="#{propertyValueSettingObject.displayNumberOfItemsPerPage}"
                  sortMode="single"
                  stripedRows="true"
-                 paginator="true" 
+                 paginator="true"
+                 paginatorPosition="both" 
                  paginatorAlwaysVisible="false"
                  emptyMessage="No #{entityTypeDisplayName} properties found.">
 

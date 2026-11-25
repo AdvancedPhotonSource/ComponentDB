@@ -8,8 +8,8 @@ import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignBaseController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import java.io.Serializable;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

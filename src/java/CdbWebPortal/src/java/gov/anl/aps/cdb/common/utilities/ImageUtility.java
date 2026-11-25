@@ -108,6 +108,10 @@ public class ImageUtility {
             ByteArrayInputStream data = new ByteArrayInputStream(imageData);
             Metadata metadata = ImageMetadataReader.readMetadata(data);
             Directory exifD0 = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+            // No EXIF orientation (e.g. most PNGs): nothing to rotate.
+            if (exifD0 == null || !exifD0.containsTag(ExifIFD0Directory.TAG_ORIENTATION)) {
+                return imageData;
+            }
             orientation = exifD0.getInt(ExifIFD0Directory.TAG_ORIENTATION);
         } catch (Exception ex) {
             logger.error(ex);

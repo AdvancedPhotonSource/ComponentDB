@@ -36,9 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import javax.faces.model.DataModel;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.faces.model.DataModel;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

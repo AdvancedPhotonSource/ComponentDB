@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -16,27 +17,27 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.persistence.Basic;
-import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -319,10 +320,14 @@ public class PropertyType extends CdbEntity implements Serializable {
         return allowedPropertyValueList;
     }
 
+    // Derived list: read-only for JSON, otherwise Jackson fills it via the getter (getters-as-setters) on request bodies.
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public List<AllowedPropertyValue> getSortedAllowedPropertyValueList() {
         if (sortedAllowedPropertyValueList == null) {
             sortedAllowedPropertyValueList = new ArrayList<>();
-            sortedAllowedPropertyValueList.addAll(allowedPropertyValueList);
+            if (allowedPropertyValueList != null) {
+                sortedAllowedPropertyValueList.addAll(allowedPropertyValueList);
+            }
 
             Collections.sort(sortedAllowedPropertyValueList, new Comparator<AllowedPropertyValue>() {
                 @Override

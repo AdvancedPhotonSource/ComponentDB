@@ -4,7 +4,7 @@
  */
 package gov.anl.aps.cdb.rest.authentication;
 
-import javax.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.SecurityContext;
 import java.security.Principal;
  
 /**

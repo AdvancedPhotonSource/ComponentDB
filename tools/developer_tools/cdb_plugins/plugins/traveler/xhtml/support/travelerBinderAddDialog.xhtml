@@ -5,10 +5,10 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ui="jakarta.faces.facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core">
 
     <ui:param name="travelerDomainInstanceController"
               value="#{travelerDomainInstanceController != null ? travelerDomainInstanceController : itemTravelerDomainInventoryController}" />
@@ -17,14 +17,14 @@ See LICENSE file.
               widgetVar="travelerBinderAddDialogWidget" 
               header="Create Traveler Binder" 
               resizable="false"
-              styleClass="viewTransparentBackgroundDialog">
+              boxStyleClass="viewTransparentBackgroundDialog">
 
         <ui:param name="binder"
                   value="#{travelerDomainInstanceController.newBinder}" />
 
         <p:outputPanel rendered="#{binder != null}">
             <h3>Binder Details</h3>
-            <p:panelGrid columns="2" styleClass="centeredContent">
+            <p:panelGrid layout="tabular" columns="2" styleClass="centeredContent">
 
                 <h:outputLabel value="Title"/>
                 <h:inputText value="#{binder.title}"/>
@@ -34,11 +34,12 @@ See LICENSE file.
 
             </p:panelGrid>
             <h3>Travelers For Binder</h3>
-            <p:panelGrid columns="2" styleClass="centeredContent">
+            <p:panelGrid layout="tabular" columns="2" styleClass="centeredContent">
                 <h:outputText value="Select Traveler Templates" />
                 <p:dataTable id="travelerBinderTemplateSelectionListDataTable"
                              value="#{travelerDomainInstanceController.availableTemplates}"
                              selection="#{travelerDomainInstanceController.newBinderTemplateSelection}"
+                             selectionMode="multiple"
                              rowKey="#{travelerTemplateObject.id}"
                              sortMode="single"
                              stripedRows="true"
@@ -54,7 +55,7 @@ See LICENSE file.
                     <p:ajax event="rowUnselectCheckbox"
                             onstart="updateTravelerBinderTemplateSelectionListDataTable()"/>
 
-                    <p:column selectionMode="multiple" />
+                    <p:column selectionBox="true" />
 
                     <p:column sortBy="#{travelerTemplateObject.title}"
                               headerText="Template Title" >

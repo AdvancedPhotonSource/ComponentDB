@@ -4,18 +4,17 @@ Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 -->
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ui="jakarta.faces.facelets"
                 xmlns:p="http://primefaces.org/ui">
     
     <p:column id="qrId#{viewName}"
               rendered="#{entityController.entityDisplayQrId}">
               <p:inputText id="qrIdIT#{viewName}"
                  value="#{itemObject.qrId}"                  
-                 title="QR Id" styleClass="entityDataEmphasizedText"
-                 onkeyup="updateQrId#{viewName}()"/>
-              <p:remoteCommand name="updateQrId#{viewName}"
-                               update="qrId#{viewName}" />
-              <p:message for="qrIdIT#{viewName}" />
+                 title="QR Id" styleClass="entityDataEmphasizedText">
+                  <p:ajax event="keyup" process="@this" update="qrIdMessage#{viewName}"/>
+              </p:inputText>
+              <p:message id="qrIdMessage#{viewName}" for="qrIdIT#{viewName}" />
     </p:column>
 
 </ui:composition>

@@ -6,6 +6,9 @@
     </Console>
   </Appenders>
   <Loggers>
+     <!-- Third-party libraries logging via SLF4J (log4j-slf4j-impl); keep their debug output out of server.log. -->
+     <Logger name="io.swagger" level="warn"/>
+     <Logger name="org.mariadb" level="warn"/>
      <Root level="debug">
         <AppenderRef ref="Console"/>
      </Root>   

@@ -10,7 +10,8 @@ import time
 from selenium import webdriver
 from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException, NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver import ActionChains
-from selenium.webdriver.support.wait import WebDriverWait
+# Timeouts include page diagnostics (URL, messages, console errors) and save a screenshot.
+from cdbSeleniumModules.diagnosticWait import DiagnosticWebDriverWait as WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
@@ -24,6 +25,8 @@ class CdbSeleniumModuleBase:
 
 	WAIT_FOR_ELEMENT_TIMEOUT = 10
 	VISIBLE_ID_TIMEOUT = 10
+	# Ceiling, not a fixed wait: name/identifier fields send one request per keystroke, slow under parallel load.
+	AJAX_IDLE_TIMEOUT = 30
 	CLICK_RETRY_COUNT = 5
 	CLICK_RETRY_DELAY = 0.1
 	LOADING_DIALOG_ID = 'loadingDialog'
@@ -76,10 +79,12 @@ class CdbSeleniumModuleBase:
 		self.driver.execute_script('arguments[0].click()', element)
 
 	def _click_on_xpath(self, id):
+		self._wait_for_ui_idle()
 		element = self._find_by_xpath(id)
 		element.click()
 
 	def _click_on_id(self, id):
+		self._wait_for_ui_idle()
 		element = self._find_by_id(id)
 		element.click()
 
@@ -96,6 +101,7 @@ class CdbSeleniumModuleBase:
 	def _wait_for_id_and_click(self, id):
 		for attempt in range(self.CLICK_RETRY_COUNT):
 			try:
+				self._wait_for_ui_idle()
 				element = self._wait_for_clickable_id(id)
 				element.click()
 				return
@@ -110,6 +116,11 @@ class CdbSeleniumModuleBase:
 
 	def _wait_for_invisible_loading_dialog(self, timeout=VISIBLE_ID_TIMEOUT):
 		self._wait_for_invisible_by_id(self.LOADING_DIALOG_ID, timeout)
+
+	def _wait_for_ui_idle(self):
+		# PF16's modal loadingDialog root covers the viewport, so clicks during a request are intercepted.
+		self._wait_for_ajax_idle()
+		self._wait_for_invisible_loading_dialog()
 
 	def _wait_for_visible_xpath(self, xpath):
 		return self._wait_for_visible(By.XPATH, xpath)
@@ -156,17 +167,26 @@ class CdbSeleniumModuleBase:
 		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(EC.url_contains(urlSubstring))
 
 	def _wait_until_enabled_by_xpath(self, xpath):
-		timeout = time.time() + CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT
-
-		while time.time() < timeout:
-			time.sleep(0.01)
+		# Raise (with diagnostics) on timeout; returning None surfaced later as an opaque null.click().
+		# No visibility check: submenu items stay hidden and are clicked via JavaScript.
+		def xpath_enabled(driver):
 			try:
-				element = self._wait_for_xpath(xpath)
-				cssClass = element.get_attribute('class')
-				if not cssClass.__contains__('ui-state-disabled'):
-					return element
+				for element in driver.find_elements(By.XPATH, xpath):
+					if 'ui-state-disabled' not in (element.get_attribute('class') or ''):
+						return element
 			except StaleElementReferenceException:
 				pass
+			return False
+
+		return WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(xpath_enabled)
+
+	def _wait_for_ajax_idle(self):
+		# Clicking while an update is in flight acts on DOM that the response is about to replace.
+		def primefaces_ajax_queue_empty(driver):
+			return driver.execute_script(
+				'return !window.PrimeFaces || !PrimeFaces.ajax || PrimeFaces.ajax.Queue.isEmpty();')
+
+		WebDriverWait(self.driver, CdbSeleniumModuleBase.AJAX_IDLE_TIMEOUT).until(primefaces_ajax_queue_empty)
 
 	@add_stale_protection
 	def _wait_for_clickable_id_with_stale_protection(self,id):
@@ -254,7 +274,13 @@ class CdbSeleniumModuleBase:
 		self._click_on_id_with_stale_protection(next_step_id)
 
 		time.sleep(1)
-		
+
+		# A failed import still enables Finish and returns to the list, so check the result text.
+		result_panel = self._wait_for_visible_id('%s:importWizardResultsPanel' % form_name)
+		result_text = result_panel.text.strip()
+		if not result_text.startswith('Operation succeeded'):
+			raise AssertionError('Import did not succeed: %s' % result_text)
+
 		finish_id = '%s:importWizardFinishButton' % form_name
 		self._wait_for_clickable_id_with_stale_protection(finish_id)
 		self._click_on_id_with_stale_protection(finish_id)
@@ -373,22 +399,85 @@ class CdbSeleniumModuleBase:
 			dialog_xpath + '//button[.//span[text()="Done"]]'))
 		self._wait_for_invisible_by_xpath(dialog_xpath)
 
-	def _add_property_to_item(self, test, form_name, entity_name, prop_value_text, needs_toggler=True):
+	def _add_document_property_to_item(self, form_name, entity_name, sample_file_name='test.csv',
+									   property_type_name='Document (Upload)', needs_toggler=True):
+		"""Add a document property and upload its file; the upload dialog saves the item."""
+		if needs_toggler:
+			self._expand_panel(form_name, '%sViewPropertiesPanel' % entity_name)
+
+		self._wait_for_id_and_click('%s:%sPropertyAddButton' % (form_name, entity_name))
+		self._select_property_type(form_name, entity_name, property_type_name)
+
+		self._click_using_javascript(self._wait_for_visible_xpath(
+			'//button[.//span[normalize-space()="Upload Document"]]'))
+		dialog_xpath = '//*[@id="%s:propertyValueDocumentUploadDialog"]' % form_name
+		self._wait_for_visible_xpath(dialog_xpath)
+		self._find_by_xpath(dialog_xpath + '//input[@type="file"]').send_keys(os.path.abspath('data/' + sample_file_name))
+		self._click_using_javascript(self._wait_for_visible_xpath(
+			dialog_xpath + '//button[contains(@class, "ui-fileupload-upload")]'))
+		# Upload completion runs a remote command that stores the file, saves the item and re-renders the form.
+		self._wait_for_ui_idle()
+		table_id = '%s:%sPropertyListDataTable' % (form_name, entity_name)
+		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(
+			lambda driver: property_type_name in driver.find_element(By.ID, table_id).text)
+
+	def _add_markdown_property_to_item(self, form_name, entity_name, title, markdown_text, sample_file_name='AnlLogo.png',
+									   property_type_name='Markdown Document', needs_toggler=True):
+		"""Add a markdown property: title, content, one uploaded file reference, then Save (saves the item)."""
+		if needs_toggler:
+			self._expand_panel(form_name, '%sViewPropertiesPanel' % entity_name)
+
+		self._wait_for_id_and_click('%s:%sPropertyAddButton' % (form_name, entity_name))
+		self._select_property_type(form_name, entity_name, property_type_name)
+
+		title_input = self._wait_for_visible_id('%s:mdTitle' % form_name)
+		title_input.send_keys(title)
+		self._wait_for_id_and_click('%s:addMdContentButton' % form_name)
+
+		dialog_xpath = '//*[@id="%s:propertyValueMarkdownValueDialog"]' % form_name
+		self._wait_for_visible_xpath(dialog_xpath)
+		textarea_id = '%s:propertyValueMarkdownValueDialogEditTabView:markdownPropertyTextareaEdit' % form_name
+		textarea = self._wait_for_visible_id(textarea_id)
+		textarea.send_keys(markdown_text)
+
+		# Simple auto upload; on completion portal.js appends the file's markdown reference to the textarea.
+		self._find_by_xpath(dialog_xpath + '//input[@type="file"]').send_keys(os.path.abspath('data/' + sample_file_name))
+		self._wait_for_ui_idle()
+		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(
+			lambda driver: len(driver.find_element(By.ID, textarea_id).get_attribute('value').strip()) > len(markdown_text.strip()))
+
+		self._click_using_javascript(self._wait_for_visible_xpath(dialog_xpath + '//button[.//span[normalize-space()="Save"]]'))
+		self._wait_for_ui_idle()
+		table_id = '%s:%sPropertyListDataTable' % (form_name, entity_name)
+		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(
+			lambda driver: title in driver.find_element(By.ID, table_id).text)
+
+	def _select_property_type(self, form_name, entity_name, property_type_name):
+		"""Pick a type in the single property select dialog (first category) and confirm with Done."""
+		self._wait_for_visible_xpath("//*[@id='%s:filterViewItemCategorySelection']//li[1]" % form_name).click()
+		if property_type_name is None:
+			type_cell_xpath = "//tbody[@id='%s:%sPropertySelectDataTable_data']/tr[1]/td[4]" % (form_name, entity_name)
+		else:
+			type_cell_xpath = "//tbody[@id='%s:%sPropertySelectDataTable_data']//td[normalize-space()='%s']" % (
+				form_name, entity_name, property_type_name)
+		self._wait_for_xpath(type_cell_xpath)
+		self._click_on_x_path_with_stale_protection(type_cell_xpath)
+		self._click_on_id('%s:%sSinglePropertySelectDialogDoneButton' % (form_name, entity_name))
+
+	def _export_list_to_xls(self, test, list_form_name, entity_type_name):
+		"""List toolbar xls export (p:dataExporter); broke once on a POI mismatch."""
+		self._wait_for_id_and_click('%s:%sExportXlsButton' % (list_form_name, entity_type_name))
+		test.verify_file_downloaded('%sList.xls' % entity_type_name)
+
+	def _add_property_to_item(self, test, form_name, entity_name, prop_value_text, needs_toggler=True,
+							  property_type_name='Test Property'):
 		if needs_toggler:
 			self._expand_panel(form_name, '%sViewPropertiesPanel' % entity_name)
 
 		add_btn_id = '%s:%sPropertyAddButton' % (form_name, entity_name)
 		self._wait_for_id_and_click(add_btn_id)
-		categorySelectionXpath = "//*[@id='%s:filterViewItemCategorySelection']//li[1]" % form_name
-		categorySel = self._wait_for_visible_xpath(categorySelectionXpath)
-		categorySel.click()
-
-		property_type_selection_xpath = "//tbody[@id='%s:%sPropertySelectDataTable_data']/tr[1]/td[4]" % (form_name, entity_name)
-		self._wait_for_xpath(property_type_selection_xpath)
-		self._click_on_x_path_with_stale_protection(property_type_selection_xpath)
-		
-		done_btn_id = '%s:%sSinglePropertySelectDialogDoneButton' % (form_name, entity_name)
-		self._click_on_id(done_btn_id)
+		# By name: catalog also allows "Document (Upload)" in the same category, so row order isn't reliable.
+		self._select_property_type(form_name, entity_name, property_type_name)
 
 		property_value_input_id = "%s:freeFormTextValue" % form_name
 		self._wait_for_id(property_value_input_id)
@@ -397,12 +486,20 @@ class CdbSeleniumModuleBase:
 		save_btn_id = "%s:%sSinglePropertyEditSaveButton" % (form_name, entity_name)
 		self._click_on_id(save_btn_id)	
 
-		time.sleep(1)
+		self._wait_for_ui_idle()
 
 		expected_value_box_id = "%s:%sPropertyListDataTable:0:propertyValueListObjectValueFreeFormOutputText" % (form_name, entity_name) 
-		value_element = self._find_by_id(expected_value_box_id)
+		# The property list can re-render after the save, so re-find the cell if it goes stale.
+		for attempt in range(self.CLICK_RETRY_COUNT):
+			try:
+				value_text = self._wait_for_id(expected_value_box_id).text
+				break
+			except StaleElementReferenceException:
+				if attempt == self.CLICK_RETRY_COUNT - 1:
+					raise
+				time.sleep(self.CLICK_RETRY_DELAY)
 
-		test.assertEqual(value_element.text, prop_value_text, msg='%s found but expected %s for new property value.' % (value_element.text,prop_value_text ))
+		test.assertEqual(value_text, prop_value_text, msg='%s found but expected %s for new property value.' % (value_text, prop_value_text))
 
 	def _open_property_edit_dialog(self, form_name, entity_name, row_index, needs_toggler):
 		if needs_toggler:
@@ -444,11 +541,13 @@ class CdbSeleniumModuleBase:
 		abs_path = os.path.abspath(rel_path)
 		upload_input.send_keys(abs_path)
 
-		upload_btn_xpath = '//*[@id="%s:propertyValueMultipleImageFileUpload"]/div[1]/button[1]' % form_name
+		# Class-based: PF16 changed the button bar position inside the fileUpload.
+		upload_btn_xpath = '//*[@id="%s:propertyValueMultipleImageFileUpload"]//button[contains(@class,"ui-fileupload-upload")]' % form_name
 		self._wait_for_clickable_xpath(upload_btn_xpath)
 		self._click_on_xpath(upload_btn_xpath)
 
-		# Wait for AJAX 
-		time.sleep(3)
+		# Dialog hides itself once all files are uploaded.
+		self._wait_for_invisible_by_id('%s:propertyValueMultipleImageUploadDialog' % form_name)
+		self._wait_for_invisible_loading_dialog()
 
 

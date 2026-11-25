@@ -5,18 +5,19 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ui="jakarta.faces.facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                xmlns:h="jakarta.faces.html">
 
     <ui:param name="itemElementObject" value="#{itemElementController.selected}"/>
-    <p:panelGrid id="itemElementEditPanelGrid" columns="2" styleClass="editEntityDetails">
+    <p:panelGrid layout="tabular" id="itemElementEditPanelGrid" columns="2" styleClass="editEntityDetails">
 
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
-        <p:inputText id="name" value="#{itemElementObject.name}" title="Name" styleClass="entityDataEmphasizedText">
+        <ui:fragment>
             <p:message for="name"/> 
             <p:tooltip for="name" value="Enter item element name."/>
-        </p:inputText>
+            <p:inputText id="name" value="#{itemElementObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
+        </ui:fragment>
         
         <ui:include src="templateDefaults/itemElementFieldLabels/itemElementParentItem.xhtml"/>
         <ui:include src="templateDefaults/itemElementFieldViewValues/itemElementParentItem.xhtml"/>

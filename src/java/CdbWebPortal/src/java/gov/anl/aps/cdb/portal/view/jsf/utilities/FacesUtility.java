@@ -12,14 +12,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import javax.enterprise.context.RequestScoped;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UISelectItems;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.inject.Named;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.UISelectItems;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.convert.Converter;
+import jakarta.faces.convert.FacesConverter;
+import jakarta.faces.model.DataModel;
+import jakarta.faces.model.SelectItem;
+import jakarta.inject.Named;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
@@ -40,6 +41,19 @@ public class FacesUtility {
 
     public SelectOneMenu getSelectOneMenu() {
         return selectOneMenu;
+    }
+
+    // String-valued copy for column filter facets: matches what filterOptions rendered and avoids entity converter validation.
+    public SelectItem[] getFilterSelectItems(SelectItem[] items) {
+        if (items == null) {
+            return new SelectItem[0];
+        }
+        SelectItem[] filterItems = new SelectItem[items.length];
+        for (int i = 0; i < items.length; i++) {
+            Object value = items[i].getValue();
+            filterItems[i] = new SelectItem(value == null ? "" : value.toString(), items[i].getLabel());
+        }
+        return filterItems;
     }
 
     public void updateToToday(Date date) {

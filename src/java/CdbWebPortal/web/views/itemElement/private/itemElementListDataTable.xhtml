@@ -5,7 +5,7 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ui="jakarta.faces.facelets"
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="breadcrumb" value="#{itemElementController.currentViewId}"/>
@@ -18,6 +18,7 @@ See LICENSE file.
     <ui:param name="itemElementAssemblyStartCount" value="#{itemElementAssemblyStartCount != null ? itemElementAssemblyStartCount : 1}" /> 
 
     <p:dataTable id="#{childEntityTypeName}ListDataTable"
+                 lazy="false"
                  widgetVar="#{childEntityTypeName}ListDataTableWidget"
                  sortMode="single"
                  stripedRows="true"
@@ -30,7 +31,8 @@ See LICENSE file.
                  draggableRows="#{isEntityWriteable 
                                   and currentItemController.entityHasSortableElements}"
                  liveResize="true"
-                 paginator="true" 
+                 paginator="true"
+                 paginatorPosition="both" 
                  paginatorAlwaysVisible="false"
                  emptyMessage="No item elements found."
                  rowStyleClass="#{itemElementController.getDisplayRowStyle(itemElementObject)}">

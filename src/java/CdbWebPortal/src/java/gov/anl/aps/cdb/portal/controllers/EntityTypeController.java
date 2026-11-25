@@ -11,13 +11,13 @@ import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
-import javax.ejb.EJB;
-import javax.inject.Named;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
+import jakarta.ejb.EJB;
+import jakarta.inject.Named;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.convert.Converter;
+import jakarta.faces.convert.FacesConverter;
 
 @Named("entityTypeController")
 @SessionScoped

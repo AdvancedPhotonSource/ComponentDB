@@ -11,9 +11,9 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueBase;
 
 import java.io.Serializable;
-import javax.ejb.EJB;
-import javax.inject.Named;
-import javax.enterprise.context.SessionScoped;
+import jakarta.ejb.EJB;
+import jakarta.inject.Named;
+import jakarta.enterprise.context.SessionScoped;
 
 @Named("propertyMetadataController")
 @SessionScoped

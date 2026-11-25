@@ -6,16 +6,16 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ui="jakarta.faces.facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:f="jakarta.faces.core">
     
     <ui:param name="headerItem" value="#{inventoryController.displayEntityTypeName}" />
 
     <p:dialog widgetVar="addInventoryItemDialogWidget"
               header="Add #{headerItem}"
               modal="true"
-              styleClass="viewTransparentBackgroundDialog"
+              boxStyleClass="viewTransparentBackgroundDialog"
               closable="false">
         <p:outputPanel rendered="#{inventoryController.current != null}" >
             <ui:include src="../../itemDomainInventoryBase/private/itemDomainInventoryBaseBillOfMaterialsEditView.xhtml">
@@ -23,7 +23,7 @@ See LICENSE file.
                 <ui:param name="displayLocationSelectionTieredMenu" value="#{false}" />
             </ui:include>
         </p:outputPanel>
-        <f:facet name="footer" class="dialog">
+        <f:facet name="footer">
             <p:commandButton  action="#{inventoryController.createSaveFromDialog('addInventoryItemSuccess()')}"
                               id="addInventoryItemDialogWidgetSaveButton"
                               value="Save" alt="Save" icon="fa fa-save"/>

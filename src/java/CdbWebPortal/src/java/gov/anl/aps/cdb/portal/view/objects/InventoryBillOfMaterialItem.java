@@ -18,8 +18,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
+import jakarta.faces.model.DataModel;
+import jakarta.faces.model.ListDataModel;
 
 /**
  * The purpose of this class is to store information required to create an

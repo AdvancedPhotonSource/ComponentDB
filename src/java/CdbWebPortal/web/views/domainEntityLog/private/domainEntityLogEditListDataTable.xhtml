@@ -5,13 +5,14 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:f="jakarta.faces.core"
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="logSettingObject" value="#{logController.settingObject}" />
     <p:dataTable id="#{entityTypeName}LogEditListDataTable" 
+                 lazy="false"
                  widgetVar="#{entityTypeName}LogEditListDataTableWidget"
                  var="logObject" 
                  value="#{entityObject.logList}"
@@ -19,7 +20,8 @@ See LICENSE file.
                  rows="#{logSettingObject.displayNumberOfItemsPerPage}"
                  sortMode="single"
                  stripedRows="true"
-                 paginator="true" 
+                 paginator="true"
+                 paginatorPosition="both" 
                  paginatorAlwaysVisible="false"
                  editable="true"
                  emptyMessage="No #{entityTypeName} log entries found."

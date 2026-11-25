@@ -6,14 +6,14 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets">
+                xmlns:ui="jakarta.faces.facelets">
 
     <ui:param name="itemDerivedController" value="#{itemDerivedController != null ? itemDerivedController : entityController}" />
     <ui:param name="childEntityTypeName" value="#{itemDerivedController.entityTypeName}ItemDerived"/>
 
     <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(entityController.current.entityInfo)}"/>
     
-    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{loginController.isEntityWriteable(entityController.current.entityInfo)}">
+    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="childEntityController" value="#{itemDerivedController}"/>
         <ui:param name="childEntityTypeName" value="#{childEntityTypeName}"/>
@@ -25,9 +25,9 @@ See LICENSE file.
         <ui:param name="displayAddButton" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
     </ui:include>  
 
-    <ui:include src="itemDerivedEditListDataTable.xhtml" rendered="#{isEntityWriteable}"/>
+    <ui:include src="itemDerivedEditListDataTable.xhtml"/>
 
-    <ui:include src="itemDerivedEditListCustomizeDisplayDialog.xhtml" rendered="#{isEntityWriteable}"/>
+    <ui:include src="itemDerivedEditListCustomizeDisplayDialog.xhtml"/>
 
 </ui:composition>
 

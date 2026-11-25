@@ -29,7 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
-import javax.faces.context.FacesContext;
+import jakarta.faces.context.FacesContext;
 import javax.imageio.ImageIO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

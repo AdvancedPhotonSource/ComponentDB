@@ -6,11 +6,11 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:f="jakarta.faces.core"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:c="jakarta.tags.core">
 
     <ui:param name="useDefaultControllerPropertyValueObject" 
               value="#{useDefaultControllerPropertyValueObject != null 
@@ -41,7 +41,7 @@ See LICENSE file.
     <p:dialog id="#{entityTypeName}SinglePropertyEditDialog"
               widgetVar="#{entityTypeName}SinglePropertyEditDialogWidget" 
               header="Edit property value" 
-              styleClass="viewTransparentBackgroundDialog"
+              boxStyleClass="viewTransparentBackgroundDialog"
               resizable="false"
               closable="false"
               modal="true">
@@ -49,7 +49,7 @@ See LICENSE file.
                        rendered="#{propertyValueObject != null}">
             <div>
 
-                <p:panelGrid styleClass="createEntityDetails">
+                <p:panelGrid layout="tabular" columns="0" styleClass="createEntityDetails">
                     <p:row>
                         <p:column>
                             <h:outputLabel for="propertyTypeName" value="Property Type" styleClass="entityDataEmphasizedLabel"/>
@@ -87,7 +87,7 @@ See LICENSE file.
                             <p:panel toggleable="true"
                                      collapsed="true"
                                      header="Additional Attributes">
-                                <p:panelGrid>
+                                <p:panelGrid layout="tabular" columns="0">
                                      <p:row>
                                         <p:column>
                                             <h:outputLabel for="effectiveFromDateUserInput" value="Effective Date" styleClass="entityDataEmphasizedLabel"/>

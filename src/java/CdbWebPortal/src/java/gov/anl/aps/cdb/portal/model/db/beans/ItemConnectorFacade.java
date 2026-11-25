@@ -7,9 +7,9 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.ejb.Stateless;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 /**
  *

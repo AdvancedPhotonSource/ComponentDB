@@ -23,6 +23,8 @@ class CatalogTest(CdbPortalTestCase):
         self.catalog.search_for_sample_catalog_item()
         self.catalog.add_log_to_catalog_item()
         self.catalog.add_property_to_catalog_item(self)
+        self.catalog.add_document_property_to_catalog_item()
+        self.catalog.add_markdown_property_to_catalog_item()
         self.catalog.add_image_to_catalog_item()
 
         self.catalog.delete_current_item()
@@ -34,6 +36,10 @@ class CatalogTest(CdbPortalTestCase):
     def test_catalog_export(self):
         self.catalog.navigate_to_catalog_list()
         self.catalog.export_catalog(self)
+
+    def test_catalog_list_xls_export(self):
+        self.catalog.navigate_to_catalog_list()
+        self.catalog.export_catalog_list_to_xls(self)
 
     def test_catalog_import(self):
         self.catalog.navigate_to_catalog_list()

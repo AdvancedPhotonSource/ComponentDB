@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'src/java/CdbWebPortal/src/java/**'
+      - 'src/java/CdbWebPortal/lib/**'
       - 'tools/developer_tools/code_testing/CdbWebPortalTest/**'
       - '.github/workflows/test-cdbportal.yml'
   workflow_dispatch:
@@ -24,11 +25,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 11 and Maven cache
+      - name: Set up JDK 25 and Maven cache
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '11'
+          java-version: '25'
           cache: maven
           cache-dependency-path: tools/developer_tools/code_testing/CdbWebPortalTest/pom.xml
 

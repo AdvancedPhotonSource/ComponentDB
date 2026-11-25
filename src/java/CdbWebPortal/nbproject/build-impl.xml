@@ -984,52 +984,52 @@ exists or setup the property manually. For example like this:
     <target depends="init" if="dist.ear.dir" name="library-inclusion-in-manifest">
         <copyfiles files="${file.reference.pdfbox-2.0.24.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.font-awesome-4.7.0.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.primefaces-11.0.0.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.primefaces-extensions-11.0.0.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.primefaces-16.0.2.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.primefaces-extensions-16.0.2.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.libphonenumber-8.12.3.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.commons-logging-1.2.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.omnifaces-3.10.1.jar-1}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.commons-lang3-3.11.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.omnifaces-5.5.7.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.commons-lang3-3.18.0.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.gson-2.10.1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.bcmail-jdk14-1.38.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.itextpdf-5.5.13.1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.bcprov-jdk14-1.38.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.bctsp-jdk14-1.38.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.fontbox-2.0.24.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.poi-4.0.1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.poi-ooxml-4.0.1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.poi-ooxml-schemas-4.0.1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.xmlbeans-3.0.2.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.commons-collections4-4.2.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.commons-compress-1.18.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.poi-5.5.1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.poi-ooxml-5.5.1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.poi-ooxml-lite-5.5.1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.xmlbeans-5.3.0.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.commons-collections4-4.5.0.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.commons-compress-1.28.0.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.curvesapi-1.08.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.SparseBitSet-1.3.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.commons-math3-3.6.1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.commons-codec-1.20.0.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.commons-io-2.21.0.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.jackson-core-2.19.4.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.jackson-datatype-jsr310-2.13.4.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.jackson-datatype-jsr310-2.19.4.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.jackson-databind-2.19.4.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.jackson-annotations-2.19.4.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.jackson-jaxrs-base-2.19.4.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.jackson-jaxrs-json-provider-2.19.4.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.jackson-jakarta-rs-base-2.19.4.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.jackson-jakarta-rs-json-provider-2.19.4.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.jackson-dataformat-yaml-2.19.4.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.jersey-media-json-jackson-2.28.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.slf4j-api-1.7.26.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.classgraph-4.8.31.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.snakeyaml-2.6.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.swagger-annotations-2.2.52.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.swagger-core-2.2.52.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.swagger-jaxrs2-2.2.52.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.swagger-models-2.2.52.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.swagger-integration-2.2.52.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.ejb-api-3.0.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.javaee-web-api-8.0.1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.javax.faces-api-2.1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.javax.inject-1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.javax.servlet-api-4.0.1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.swagger-annotations-jakarta-2.2.52.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.swagger-core-jakarta-2.2.52.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.swagger-jaxrs2-jakarta-2.2.52.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.swagger-models-jakarta-2.2.52.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.swagger-integration-jakarta-2.2.52.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.xmpcore-6.1.10.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.metadata-extractor-2.17.0.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.javax.xml.soap-api-1.4.0.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.log4j-api-2.26.0.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.log4j-core-2.26.0.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.log4j-slf4j-impl-2.26.0.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.dm-api-3.3.1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.dm-base-3.3.1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.jaxb-api-2.3.1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.flexmark-0.64.8.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.flexmark-util-ast-0.64.8.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.flexmark-util-builder-0.64.8.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
@@ -1049,52 +1049,52 @@ exists or setup the property manually. For example like this:
     <target depends="init" name="library-inclusion-in-archive" unless="dist.ear.dir">
         <copyfiles files="${file.reference.pdfbox-2.0.24.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.font-awesome-4.7.0.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.primefaces-11.0.0.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.primefaces-extensions-11.0.0.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.primefaces-16.0.2.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.primefaces-extensions-16.0.2.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.libphonenumber-8.12.3.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.commons-logging-1.2.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.omnifaces-3.10.1.jar-1}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.commons-lang3-3.11.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.omnifaces-5.5.7.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.commons-lang3-3.18.0.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.gson-2.10.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.bcmail-jdk14-1.38.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.itextpdf-5.5.13.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.bcprov-jdk14-1.38.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.bctsp-jdk14-1.38.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.fontbox-2.0.24.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.poi-4.0.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.poi-ooxml-4.0.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.poi-ooxml-schemas-4.0.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.xmlbeans-3.0.2.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.commons-collections4-4.2.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.commons-compress-1.18.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.poi-5.5.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.poi-ooxml-5.5.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.poi-ooxml-lite-5.5.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.xmlbeans-5.3.0.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.commons-collections4-4.5.0.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.commons-compress-1.28.0.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.curvesapi-1.08.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.SparseBitSet-1.3.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.commons-math3-3.6.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.commons-codec-1.20.0.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.commons-io-2.21.0.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.jackson-core-2.19.4.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.jackson-datatype-jsr310-2.13.4.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.jackson-datatype-jsr310-2.19.4.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.jackson-databind-2.19.4.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.jackson-annotations-2.19.4.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.jackson-jaxrs-base-2.19.4.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.jackson-jaxrs-json-provider-2.19.4.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.jackson-jakarta-rs-base-2.19.4.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.jackson-jakarta-rs-json-provider-2.19.4.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.jackson-dataformat-yaml-2.19.4.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.jersey-media-json-jackson-2.28.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.slf4j-api-1.7.26.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.classgraph-4.8.31.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.snakeyaml-2.6.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.swagger-annotations-2.2.52.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.swagger-core-2.2.52.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.swagger-jaxrs2-2.2.52.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.swagger-models-2.2.52.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.swagger-integration-2.2.52.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.ejb-api-3.0.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.javaee-web-api-8.0.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.javax.faces-api-2.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.javax.inject-1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.javax.servlet-api-4.0.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.swagger-annotations-jakarta-2.2.52.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.swagger-core-jakarta-2.2.52.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.swagger-jaxrs2-jakarta-2.2.52.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.swagger-models-jakarta-2.2.52.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.swagger-integration-jakarta-2.2.52.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.xmpcore-6.1.10.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.metadata-extractor-2.17.0.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.javax.xml.soap-api-1.4.0.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.log4j-api-2.26.0.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.log4j-core-2.26.0.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.log4j-slf4j-impl-2.26.0.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.dm-api-3.3.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.dm-base-3.3.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${file.reference.jaxb-api-2.3.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.flexmark-0.64.8.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.flexmark-util-ast-0.64.8.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.flexmark-util-builder-0.64.8.jar}" todir="${build.web.dir}/WEB-INF/lib"/>

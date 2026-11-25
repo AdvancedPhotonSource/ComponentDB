@@ -17,10 +17,10 @@ import gov.anl.aps.cdb.portal.view.objects.FilterViewResultItem;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ejb.EJB;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.model.ListDataModel;
-import javax.inject.Named;
+import jakarta.ejb.EJB;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.model.ListDataModel;
+import jakarta.inject.Named;
 import org.primefaces.model.TreeNode;
 
 /**

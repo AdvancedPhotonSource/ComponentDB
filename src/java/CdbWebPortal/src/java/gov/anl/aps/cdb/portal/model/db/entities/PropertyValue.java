@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
@@ -20,31 +21,31 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.NamedStoredProcedureQueries;
-import javax.persistence.NamedStoredProcedureQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.ParameterMode;
-import javax.persistence.StoredProcedureParameter;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.NamedStoredProcedureQueries;
+import jakarta.persistence.NamedStoredProcedureQuery;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.ParameterMode;
+import jakarta.persistence.StoredProcedureParameter;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -729,6 +730,8 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
         this.editModeWidgets = editModeWidgets;
     }
 
+    // Derived from the property type metadata; read-only for JSON (no setter).
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public List<PropertyValueMetadata> getPropertyValueMetadataList() {
         if (propertyValueMetadataList == null) {
             if (propertyType != null) {

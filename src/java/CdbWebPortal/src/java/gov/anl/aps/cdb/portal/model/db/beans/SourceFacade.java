@@ -8,10 +8,10 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
+import jakarta.ejb.Stateless;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
 
 /**
  *
@@ -78,9 +78,9 @@ public class SourceFacade extends CdbEntityFacade<Source> {
 
 
     public List<Source> findAllSortedByName() {
-        javax.persistence.criteria.CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        javax.persistence.criteria.CriteriaQuery cq = cb.createQuery();
-        javax.persistence.criteria.Root<Source> s = cq.from(Source.class);
+        jakarta.persistence.criteria.CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        jakarta.persistence.criteria.CriteriaQuery cq = cb.createQuery();
+        jakarta.persistence.criteria.Root<Source> s = cq.from(Source.class);
         cq.select(s);
         cq.orderBy(cb.asc(s.get("name")));
         return getEntityManager().createQuery(cq).getResultList();

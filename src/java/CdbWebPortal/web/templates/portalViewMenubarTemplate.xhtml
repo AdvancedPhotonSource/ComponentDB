@@ -5,10 +5,10 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:fn="jakarta.tags.functions"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:f="jakarta.faces.core">
     <p:outputPanel styleClass="mainMenuBar">
         <p:menubar>
             <p:submenu label="Browse"
@@ -129,7 +129,7 @@ See LICENSE file.
                                 id="qridMenuItem">
                         <p:autoComplete id="jumpToQrIdInput" placeholder="QrId/ID"       
                                         styleClass="expandingAutoComplete menuBarAutoComplete"
-                                     onkeypress="if ((event.which &lt; 48 || event.which &gt; 57) &amp;&amp; event.which != 32) return false;"
+                                     onkeypress="if (48 > event.which || event.which > 57) { if (event.which != 32) return false; }"
                                      completeMethod="#{facesUtility.getJumpToQrIdEntryCompleteText}"                                     
                                      value="#{facesUtility.jumpToQrIdEntry}"                                                                           
                                      title="Jump to QRID">

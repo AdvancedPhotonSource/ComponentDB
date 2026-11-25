@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
 import org.primefaces.model.TreeNode;
 
 /**

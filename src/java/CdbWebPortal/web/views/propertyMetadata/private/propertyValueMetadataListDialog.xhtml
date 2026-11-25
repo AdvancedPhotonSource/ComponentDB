@@ -5,9 +5,9 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:f="jakarta.faces.core"
                 xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="propertyValueMetadataListDialog" 
@@ -15,7 +15,7 @@ See LICENSE file.
               header="Property Value Metadata"
               modal="true"              
               resizable="false"
-              styleClass="viewTransparentBackgroundDialog">
+              boxStyleClass="viewTransparentBackgroundDialog">
         
         <ui:param name="propertyValueBaseObject" value="#{propertyMetadataController.currentMetadataShown}"/>
 
@@ -27,6 +27,7 @@ See LICENSE file.
                            mode="native"
                            rendered="#{propertyValueController.displayShowMetadataForPropertyValue(propertyValueBaseObject)}">
                 <p:dataTable id="#{entityTypeName}PropertyValueMetadataListDataTable"
+                             lazy="false"
                              sortMode="single"
                  stripedRows="true"
                              value="#{propertyValueBaseObject.propertyMetadataBaseList}"                     
@@ -49,7 +50,7 @@ See LICENSE file.
             </p:scrollPanel>
         </p:outputPanel>
 
-        <f:facet name="footer" class="dialog">
+        <f:facet name="footer">
             <p:commandButton id="propertyValueMetadataDoneButton" value="Done" alt="Done" 
                              onstart="PF('propertyValueMetadataListDialogWidget').hide()" 
                              icon="fa fa-times"/>

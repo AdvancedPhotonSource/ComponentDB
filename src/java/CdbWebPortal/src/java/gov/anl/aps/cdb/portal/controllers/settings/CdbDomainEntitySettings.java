@@ -8,7 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.CdbDomainEntityController;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
-import javax.faces.event.ActionEvent;
+import jakarta.faces.event.ActionEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

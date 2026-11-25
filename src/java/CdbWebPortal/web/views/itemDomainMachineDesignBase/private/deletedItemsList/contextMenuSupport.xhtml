@@ -5,18 +5,18 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:ui="jakarta.faces.facelets"                                
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://java.sun.com/jsf/html">  
+                xmlns:f="jakarta.faces.core"
+                xmlns:h="jakarta.faces.html">  
 
     <p:dialog id="permanentlyRemoveDialog"
               header="Permanently remove: #{entityController.permanentlyRemoveDisplayName}"
               modal="true"
               widgetVar="permanentlyRemoveDialogWidget"
-              styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+              boxStyleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
         <p:panel id="permanentlyRemoveDialogPanel">
-            <p:panelGrid>
+            <p:panelGrid layout="tabular" columns="0">
                 <p:row>
                     <p:column>
                         <div style="white-space: pre-wrap">
@@ -65,9 +65,9 @@ See LICENSE file.
     <p:dialog header="Restore deleted item"
               modal="true"
               widgetVar="restoreDeletedItemDialogWidget"
-              styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+              boxStyleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
         <p:panel id="restoreDeletedItemDialogPanel">
-            <p:panelGrid>
+            <p:panelGrid layout="tabular" columns="0">
                 <p:row>
                     <p:column>
                         <div style="white-space: pre-wrap">

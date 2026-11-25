@@ -4,7 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers.settings;
 
-import javax.faces.event.ActionEvent;
+import jakarta.faces.event.ActionEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
@@ -49,7 +49,7 @@ public abstract class EmptySettingsBase implements ICdbSettings {
     }
     
     private void logNoSettingsMessage(String loadingMessage) {
-        logger.warn("Attempting to load: " + loadingMessage + ". No settings for " + this.getClass().getSimpleName());        
+        logger.debug("Attempting to load: " + loadingMessage + ". No settings for " + this.getClass().getSimpleName());        
     }    
     
 }

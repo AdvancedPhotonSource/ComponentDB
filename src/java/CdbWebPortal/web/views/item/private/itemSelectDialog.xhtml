@@ -6,9 +6,9 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:f="jakarta.faces.core"
                 xmlns:p="http://primefaces.org/ui">
 
     <!-- REQUIRED: selectionTarget what the dialog should set upon complete selection. -->
@@ -33,11 +33,11 @@ See LICENSE file.
               widgetVar="#{entityTypeName}ItemSelectDialogWidget" 
               header="Select Item" 
               appendTo="@form"
-              styleClass="dialog">
+              boxStyleClass="dialog">
         <div class="dialog">
             <div class="actionButton"> 
                 <ui:remove>
-                    <p:panelGrid columns="2" rendered="#{renderDomainSelection}">
+                    <p:panelGrid layout="tabular" columns="2" rendered="#{renderDomainSelection}">
                         <h:outputLabel value="Domain" />
                         <p:selectOneMenu id="#{entityTypeName}selectItemSelectionDomain" 
                                          value="#{entityController.selectionDomain}" 
@@ -67,7 +67,7 @@ See LICENSE file.
                 <ui:param name="singleClickSelectionDisabled" value="#{true}" />
             </ui:include>
 
-            <f:facet name="footer" class="dialog">
+            <f:facet name="footer">
 
                 <p:commandButton value="Done" alt="Done" 
                                  id="#{entityTypeName}ItemSelectDialogDoneButton"

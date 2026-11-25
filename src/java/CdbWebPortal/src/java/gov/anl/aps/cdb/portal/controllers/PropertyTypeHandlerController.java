@@ -12,13 +12,13 @@ import gov.anl.aps.cdb.portal.plugins.CdbPluginManager;
 
 import java.io.Serializable;
 import java.util.List;
-import javax.ejb.EJB;
-import javax.inject.Named;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
+import jakarta.ejb.EJB;
+import jakarta.inject.Named;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.convert.Converter;
+import jakarta.faces.convert.FacesConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -141,7 +141,8 @@ public class PropertyTypeHandlerController extends CdbEntityController<PropertyT
         @Override
         public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
             if (object == null) {
-                return null;
+                // "" (not null) so a "Select" option renders value="" instead of submitting its label.
+                return "";
             }
             if (object instanceof PropertyTypeHandler) {
                 PropertyTypeHandler o = (PropertyTypeHandler) object;

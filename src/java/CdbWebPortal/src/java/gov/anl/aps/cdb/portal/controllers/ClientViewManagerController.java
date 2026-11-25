@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
 
 @Named(ClientViewManagerController.controllerNamed)
 @SessionScoped

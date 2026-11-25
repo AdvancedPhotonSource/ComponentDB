@@ -5,9 +5,9 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:f="jakarta.faces.core"
+                xmlns:h="jakarta.faces.html"
                 xmlns:p="http://primefaces.org/ui"
                 template="../../templates/portalViewTemplate.xhtml">      
 
@@ -19,10 +19,10 @@ See LICENSE file.
                 <h1>Browse System Logs</h1>
             </div>
 
-            <p:panelGrid id="systemLogFilterViewPanelGrid">
+            <p:panelGrid layout="tabular" columns="0" id="systemLogFilterViewPanelGrid">
                 <p:row>
                     <p:column styleClass="topAlignedDataCell">
-                        <p:panelGrid>
+                        <p:panelGrid layout="tabular" columns="0">
                             <p:row>
                                 <p:column styleClass="leftAlignedText">
                                     <ui:include src="private/logLevelSelectManyMenu.xhtml">
@@ -39,6 +39,7 @@ See LICENSE file.
                 </p:row>
             </p:panelGrid>   
             <p:remoteCommand name="updateSystemLogFilterViewPanelGrid"
+                             process="@this filterViewItemCategorySelection"
                              update="systemLogFilterViewPanelGrid" 
                              onstart="PF('loadingDialog').show()"
                              oncomplete="PF('loadingDialog').hide()"/>

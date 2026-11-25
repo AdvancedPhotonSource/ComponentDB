@@ -36,7 +36,7 @@ import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Forms;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.ReleasedForm;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.ReleasedForms;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Traveler;
-import javax.faces.model.SelectItem;
+import jakarta.faces.model.SelectItem;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,7 +49,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

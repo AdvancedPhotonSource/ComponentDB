@@ -5,8 +5,8 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
       xmlns:p="http://primefaces.org/ui">
 
     <h:body>
@@ -19,12 +19,10 @@ See LICENSE file.
                     
                     <div class="login">
                         <div>
-                            <p:inputText id="username" value="#{loginController.username}" title="Username"/>
-                            <p:watermark for="username" value="Username"/>
+                            <p:inputText id="username" value="#{loginController.username}" title="Username" placeholder="Username"/>
                         </div>
                         <div>
-                            <p:password id="password" value="#{loginController.password}" title="Password"/>
-                            <p:watermark for="password" value="Password"/>
+                            <p:password id="password" value="#{loginController.password}" title="Password" placeholder="Password"/>
                         </div>
                         <p/>
                         <div>

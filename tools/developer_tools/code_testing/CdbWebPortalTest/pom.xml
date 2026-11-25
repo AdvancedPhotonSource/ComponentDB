@@ -39,18 +39,18 @@
                     </execution>
                 </executions>
             </plugin>     
-            <!-- The compiler plugin enforces Java 1.6 compatibility and controls execution of annotation processors  -->
+            <!-- Compile for the Java LTS used by Payara 7. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.14.0</version>
                 <configuration>
-                    <release>11</release>
+                    <release>25</release>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M3</version>
+                <version>3.5.4</version>
             </plugin>          
         </plugins>
     </build>
@@ -59,7 +59,7 @@
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
-                <version>1.0.3.Final</version>
+                <version>1.10.2.Final</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -94,7 +94,12 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>4.0.1</version>
+            <version>5.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.5.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -114,12 +119,12 @@
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
-            <version>11.0.0</version>
+            <version>16.0.2</version>
         </dependency>        
         <dependency>
             <groupId>org.primefaces.extensions</groupId>
             <artifactId>primefaces-extensions</artifactId>
-            <version>11.0.0</version>
+            <version>16.0.2</version>
         </dependency>
         <dependency>
             <groupId>com.itextpdf</groupId>
@@ -129,7 +134,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.11</version>
+            <version>3.18.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
@@ -140,17 +145,6 @@
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
             <version>3.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <version>2.6.4</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>1.0.2</version>
         </dependency>
 
         <dependency>
@@ -183,19 +177,20 @@
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
             <version>2.2.52</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
-            <version>2.28</version>
+            <version>4.0.2</version>
+            <scope>provided</scope>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-jaxrs2</artifactId>
+            <artifactId>swagger-jaxrs2-jakarta</artifactId>
             <version>2.2.52</version>
             <type>jar</type>
         </dependency>
@@ -215,36 +210,18 @@
             <artifactId>hazelcast</artifactId>
             <version>5.3.5</version>
         </dependency>
-                 
+        <!-- Jakarta EE 11 APIs; provided by Payara at runtime. -->
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-            <version>1.3.2</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
-            <version>2.1</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>8.0.1</version>
-            <type>jar</type>
-        </dependency>
-        
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>2.0.1.Final</version>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>11.0.0</version>
+            <scope>provided</scope>
         </dependency>                        
 
         <dependency>
             <groupId>org.omnifaces</groupId>
             <artifactId>omnifaces</artifactId>
-            <version>3.10.1</version>
+            <version>5.5.7</version>
         </dependency>
     </dependencies>
     <profiles>
@@ -257,18 +234,18 @@
                 <dependency>
                     <groupId>fish.payara.arquillian</groupId>
                     <artifactId>payara-container-common</artifactId>
-                    <version>1.1</version>
+                    <version>3.1</version>
                 </dependency>
                 <dependency>
                     <groupId>fish.payara.arquillian</groupId>
                     <artifactId>arquillian-payara-server-embedded</artifactId>
-                    <version>1.1</version>
+                    <version>3.1</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
                     <groupId>fish.payara.extras</groupId>
                     <artifactId>payara-embedded-all</artifactId>
-                    <version>5.194</version>
+                    <version>7.2026.11</version>
                     <scope>test</scope>
                 </dependency>
 
@@ -298,7 +275,7 @@
                     <!-- The surefire plugin is configured to pass a system property to GlassFish to retarget the derby log file -->
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.22.2</version>
+                        <version>3.5.4</version>
                         <configuration>
                             <systemPropertyVariables>
                                 <java.util.logging.config.file>

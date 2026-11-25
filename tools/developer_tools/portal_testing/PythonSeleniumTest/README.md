@@ -28,6 +28,14 @@ make test
 `make test` runs the suite in parallel with `-m "not mqtt"`, then runs the MQTT tests below
 serially (`pytest tests/ -m mqtt -p no:xdist`). Set `CDB_TEST_MQTT=false` to skip them.
 
+## Failure artifacts
+
+Failed (and rerun) tests write to `test-failures/` (git-ignored), named `<TestClass.test>-<timestamp>-…`:
+
+- `.log`: the pytest failure report (traceback plus captured stdout/stderr/log).
+- `.png` / `.html`: screenshot and page source captured when a wait times out. The timeout message
+  also lists the current URL, visible growl/error messages, loading dialog state, and browser console errors.
+
 ## MQTT tests
 
 These tests are marked `mqtt` and build on `tests/mqtt_base.py`. Each one fires portal events

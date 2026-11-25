@@ -1,7 +1,8 @@
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
+# Timeouts include page diagnostics (URL, messages, console errors) and save a screenshot.
+from cdbSeleniumModules.diagnosticWait import DiagnosticWebDriverWait as WebDriverWait
 
 from cdbSeleniumModules.itemBase import ItemBase
 

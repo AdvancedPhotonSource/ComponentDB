@@ -5,15 +5,15 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ui="jakarta.faces.facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core">
 
     <p:dialog id="multiEditSelectSpecificPropertyValueDialog"
               widgetVar="multiEditSelectSpecificPropertyValueDialogWidget"
               resizable="false"
-              styleClass="viewTransparentBackgroundDialog"
+              boxStyleClass="viewTransparentBackgroundDialog"
               header="Select specific property value for the multi edit screen."
               modal="true">
         <ui:param name="currentMultiEditPropertyRecord"
@@ -21,8 +21,10 @@ See LICENSE file.
 
         <p:outputPanel rendered="#{currentMultiEditPropertyRecord != null}">
             <p:dataTable value="#{currentMultiEditPropertyRecord.relatedPropertyValueList}"
+                         lazy="false"
                          var="relatedPropertyValue"
                          selection="#{currentMultiEditPropertyRecord.propertyValue}"
+                         selectionMode="single"
                          sortMode="single"
                          stripedRows="true"
                          rowKey="#{relatedPropertyValue.viewUUID}">
@@ -33,7 +35,7 @@ See LICENSE file.
                         oncomplete="PF('loadingDialog').hide();
                         PF('multiEditSelectSpecificPropertyValueDialogWidget').hide()"/>
 
-                <p:column selectionMode="single" />
+                <p:column selectionBox="true" />
 
                 <p:column headerText="Tag">
                     <h:outputText value="#{relatedPropertyValue.tag}" />

@@ -6,10 +6,10 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
+import jakarta.ejb.Stateless;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
 
 /**
  *

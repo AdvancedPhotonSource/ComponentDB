@@ -108,6 +108,11 @@ public class LdapUtility {
                 bind = bindToLdap(ldapLookupDn, ldapLookupDnBindPassword);            
             }
 
+            if (bind == null) {
+                logger.error("LDAP lookup bind failed; cannot resolve dn for user: " + username);
+                return dn;
+            }
+
             String filter = ldapLookupDnUsernamefilter.replace("%s", username);
 
             SearchControls search = new SearchControls();

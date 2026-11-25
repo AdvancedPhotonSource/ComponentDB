@@ -13,8 +13,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemTypeCategoryEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
+import jakarta.faces.model.DataModel;
+import jakarta.faces.model.ListDataModel;
 
 public abstract class ItemTypeCategoryController<ControllerUtility extends ItemTypeCategoryControllerUtility<EntityType, FacadeType>, EntityType extends ItemTypeCategoryEntity, FacadeType extends CdbEntityFacade<EntityType>, SettingObject extends CdbEntitySettingsBase> extends CdbEntityController<ControllerUtility, EntityType, FacadeType, SettingObject> {
 

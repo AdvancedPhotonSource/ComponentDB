@@ -380,7 +380,8 @@ tr:hover .actionLink {
     text-align: center;
 }
 
-.dialog {
+/* PF16 dialogs: style the visible box; confirmDialog (no boxStyleClass) puts the class on the full-page .ui-dialog layer. */
+.dialog:not(.ui-dialog), .ui-dialog.dialog > .ui-dialog-box {
     background: #6da5d8;    
     box-shadow: 0px 3px 5px #d5d5d5;    
     vertical-align: central;
@@ -388,6 +389,16 @@ tr:hover .actionLink {
     margin: 0;
     margin-left: auto;
     margin-right: auto;
+}
+
+/* PF16 renders .ui-dialog as a full-viewport layer; keep the page clickable behind non-modal dialogs as in PF11.
+   PF16 only sets aria-modal for modal dialogs (aria-modal="true"); non-modal ones have no attribute. */
+.ui-dialog:not([aria-modal="true"]) {
+    pointer-events: none;
+}
+
+.ui-dialog:not([aria-modal="true"]) > .ui-dialog-box {
+    pointer-events: auto;
 }
 
 .sortDroppable {
@@ -1257,12 +1268,36 @@ body .ui-panel .ui-panel-titlebar  {
     color: #EEE;
 }
 
-#loadingDialog {
-    padding: 0.2rem;
-    padding-top: 1.75rem;
+/* PF16: #loadingDialog is the full-viewport layer; style the visible box instead. */
+#loadingDialog > .ui-dialog-box {
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
-.viewTransparentBackgroundDialog  {
+#loadingDialog .ui-dialog-content {
+    padding: 1.25rem 2rem;
+}
+
+.loadingDialogContent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.loadingDialogSpinner {
+    font-size: 1.75rem;
+}
+
+/* Modal mask PrimeFaces appends to <body> for the loading dialog. */
+#loadingDialog_modal {
+    background-color: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+}
+
+.viewTransparentBackgroundDialog:not(.ui-dialog), .ui-dialog.viewTransparentBackgroundDialog > .ui-dialog-box {
     background-color: rgba(242, 250, 255, 0.93) !important;
     border-radius: 5px 5px 10px 10px;
     vertical-align: central;
@@ -1273,7 +1308,7 @@ body .ui-panel .ui-panel-titlebar  {
 
 }
 
-.viewTransparentBackgroundDialog-alert {
+.viewTransparentBackgroundDialog-alert:not(.ui-dialog), .ui-dialog.viewTransparentBackgroundDialog-alert > .ui-dialog-box {
     background-color: rgba(255, 180, 180, 0.93) !important;
 }
 

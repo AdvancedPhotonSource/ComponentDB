@@ -5,20 +5,20 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ui="jakarta.faces.facelets"
                 xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="propertyValueImageUploadDialog" 
               widgetVar="propertyValueImageUploadDialogWidget" 
               header="Image Upload" 
               appendTo="@form"
-              styleClass="viewTransparentBackgroundDialog"
+              boxStyleClass="viewTransparentBackgroundDialog"
               resizable="false">
 
         <p:fileUpload listener="#{propertyValueImageUploadBean.handleSingleFileUpload}"
-                      fileLimit="1" 
-                      allowTypes="/(\.|\/)([gG][iI][fF]|[jJ][pP][eE]?[gG]|[pP][nN][gG]|[pP][dD][fF])$/"
-                      oncomplete="propertyValueImageUploadDialogFileUploadOnComplete()"/>
+                      oncomplete="propertyValueImageUploadDialogFileUploadOnComplete()">
+            <p:validateFile fileLimit="1" allowTypes="/(\.|\/)([gG][iI][fF]|[jJ][pP][eE]?[gG]|[pP][nN][gG]|[pP][dD][fF])$/"/>
+        </p:fileUpload>
 
         <p:remoteCommand name="propertyValueImageUploadDialogFileUploadOnComplete"
                          onstart="PF('loadingDialog').show();"

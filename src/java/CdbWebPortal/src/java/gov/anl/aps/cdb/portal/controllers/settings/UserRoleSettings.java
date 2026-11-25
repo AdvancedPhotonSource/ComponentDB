@@ -22,17 +22,17 @@ public class UserRoleSettings extends CdbEntitySettingsBase<UserRoleController> 
 
     @Override
     protected void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // No user role settings to load or save.
     }
 
     @Override
     protected void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // No user role settings to load or save.
     }
 
     @Override
     protected void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // No user role settings to load or save.
     }
     
     

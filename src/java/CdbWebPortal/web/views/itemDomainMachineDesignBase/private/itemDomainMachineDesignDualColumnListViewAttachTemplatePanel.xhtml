@@ -5,9 +5,9 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:ui="jakarta.faces.facelets"                                
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">   
+                xmlns:h="jakarta.faces.html">   
 
 
     <p:panel header="Attach a Template Item"
@@ -53,7 +53,7 @@ See LICENSE file.
 
         <p:outputPanel rendered="#{templateToCreateNewItem != null and currentViewIsTemplate}">
             The selected machine element will be reused within the template. 
-            <p:panelGrid columns="2">
+            <p:panelGrid layout="tabular" columns="2">
                 <h:outputText value="Machine Name Change"/>
                 <h:outputText value="#{entityController.machineDesignUpdatedName}"/>
             </p:panelGrid>

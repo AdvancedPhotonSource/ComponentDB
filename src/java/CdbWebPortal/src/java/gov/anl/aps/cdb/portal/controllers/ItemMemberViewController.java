@@ -10,9 +10,9 @@ import gov.anl.aps.cdb.portal.model.ItemGenericLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import javax.ejb.EJB;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
+import jakarta.ejb.EJB;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
 
 /**
  * Controller used to manage settings for the item member view for the Item Entity. 

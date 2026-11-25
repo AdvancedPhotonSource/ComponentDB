@@ -14,7 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserRole;
 import gov.anl.aps.cdb.portal.model.db.entities.UserRolePK;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import java.util.List;
-import javax.ejb.EJB;
+import jakarta.ejb.EJB;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

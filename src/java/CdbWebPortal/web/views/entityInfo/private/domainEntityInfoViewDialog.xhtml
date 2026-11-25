@@ -5,10 +5,10 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:f="jakarta.faces.core">
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
 
@@ -16,10 +16,10 @@ See LICENSE file.
               widgetVar="#{entityTypeName}EntityInfoViewDialogWidget"
               header="More Information"
               resizable="false"
-              styleClass="viewTransparentBackgroundDialog">
+              boxStyleClass="viewTransparentBackgroundDialog">
         <div>
 
-            <p:panelGrid columns="2">
+            <p:panelGrid layout="tabular" columns="2">
                 <ui:param name="domainEntityObject" value="#{entityController.current}" />
 
                 <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>

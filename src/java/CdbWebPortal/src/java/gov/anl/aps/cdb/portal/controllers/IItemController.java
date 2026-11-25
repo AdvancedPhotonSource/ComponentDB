@@ -12,8 +12,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import java.util.List;
-import javax.faces.model.DataModel;
-import javax.faces.model.SelectItem;
+import jakarta.faces.model.DataModel;
+import jakarta.faces.model.SelectItem;
 import org.primefaces.event.ToggleEvent;
 
 /**

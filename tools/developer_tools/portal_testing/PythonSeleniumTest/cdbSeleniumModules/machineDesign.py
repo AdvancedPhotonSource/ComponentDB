@@ -13,7 +13,8 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
+# Timeouts include page diagnostics (URL, messages, console errors) and save a screenshot.
+from cdbSeleniumModules.diagnosticWait import DiagnosticWebDriverWait as WebDriverWait
 
 from cdbSeleniumModules.cdbSeleniumModuleBase import CdbSeleniumModuleBase
 from cdbSeleniumModules.cdbSeleniumModuleDecorators import add_stale_protection
@@ -146,6 +147,8 @@ class MachineDesign(CdbSeleniumModuleBase):
 		:param hierarchy: list ['topParentName', 'SubParentName', 'ActualItem']
 		:return: xpath to the desired item
 		"""
+		# The tree body is replaced while an add/select update is in flight.
+		self._wait_for_ajax_idle()
 
 		if not reset:
 			# collapse the tree nodes
@@ -240,7 +243,8 @@ class MachineDesign(CdbSeleniumModuleBase):
 		action.context_click()
 		action.perform()
 
-		time.sleep(0.5)
+		# Right-click fires a contextMenu ajax that re-renders the menus; wait so we don't click the stale copy.
+		self._wait_for_ajax_idle()
 
 		addButtonXpath = menuItemXpath
 
@@ -260,11 +264,14 @@ class MachineDesign(CdbSeleniumModuleBase):
 
 		self._context_click_x_path(parentListItemXpath, add_menu_xpath)
 
-		addPlaceholderElement = self._find_by_xpath(menu_placeholder_xpath)
+		# PF16 tiered menus open submenus on hover; hover Add in case the JS click didn't expand it.
+		if not self._find_by_xpath(menu_placeholder_xpath).is_displayed():
+			ActionChains(self.driver).move_to_element(self._find_by_xpath(add_menu_xpath)).perform()
+
+		addPlaceholderElement = self._wait_for_visible_xpath(menu_placeholder_xpath)
 
 		action = ActionChains(self.driver)
 		action.move_to_element(addPlaceholderElement)
-		# action.move_by_offset(0, 15)
 		action.click().perform()
 
 		placeholderName = self._wait_for_visible_id('itemMachineDesignListForm:newMachineDesignNameplaceholder')
@@ -333,7 +340,7 @@ class MachineDesign(CdbSeleniumModuleBase):
 					for hierarchyIdx in range(0, hierarchyDepth):
 						currentItem = row[hierarchyIdx]
 
-						if currentItem is not '':
+						if currentItem != '':
 							if len(currentHierarchy) < hierarchyIdx:
 								raise Exception("Invalid Hierarchy in file: %s " % csvFile)
 							elif len(currentHierarchy) > hierarchyIdx:

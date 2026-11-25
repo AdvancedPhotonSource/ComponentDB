@@ -5,10 +5,10 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ui="jakarta.faces.facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core">
 
     <ui:insert name="propertyValueMarkdownValueDialogUiParams">
         <ui:param name="propertyValueMarkdownValueDialogId" value="propertyValueMarkdownValueDialog" /> 
@@ -34,7 +34,7 @@ See LICENSE file.
         <f:facet name="footer">
             <p:outputPanel id="propertyValueMarkdownValueDialogFooter#{viewId}"
                            style="display: inline-block">                
-                <p:panelGrid id="markdownEditFileUploadPanelGrid#{viewId}"
+                <p:panelGrid layout="tabular" id="markdownEditFileUploadPanelGrid#{viewId}"
                              columns="2"
                              rendered="#{propertyValueObject.editMode and propertyValueObject.editModeWidgets}">
 
@@ -45,9 +45,9 @@ See LICENSE file.
                                       widgetVar="markdownAttachmentFileUploadWidget"    
                                       oncomplete="completePastedImage()"
                                       mode="simple"
-                                      auto="true"
-                                      fileLimit="1"                              
-                                      fileLimitMessage="Only one attachment can be added per upload."/>
+                                      auto="true">
+                            <p:validateFile fileLimit="1"/>
+                        </p:fileUpload>
                     </ui:insert>
 
 

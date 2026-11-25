@@ -6,14 +6,14 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets">
+                xmlns:ui="jakarta.faces.facelets">
     
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
     <ui:param name="entityTypeDisplayName" value="#{entityController.displayEntityTypeName}" />
     <ui:param name="entityObject" value="#{entityController.selected}" />
 
     <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(entityController.selected.entityInfo)}"/>
-    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{isEntityWriteable}">
+    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="childEntityController" value="#{propertyValueController}"/>
         <ui:param name="childEntityTypeName" value="#{entityTypeName}Property"/>
@@ -25,11 +25,11 @@ See LICENSE file.
         <ui:param name="displayAddButton" value="#{isEntityWriteable}"/>
     </ui:include>
     
-    <ui:include src="domainEntityPropertyEditListDataTable.xhtml" rendered="#{isEntityWriteable}"/>
+    <ui:include src="domainEntityPropertyEditListDataTable.xhtml"/>
 
-    <ui:include src="domainEntityPropertyEditListCustomizeDisplayDialog.xhtml" rendered="#{isEntityWriteable}"/>
+    <ui:include src="domainEntityPropertyEditListCustomizeDisplayDialog.xhtml"/>
 
-    <ui:include src="domainEntityPropertySelectDialog.xhtml" rendered="#{isEntityWriteable}"/>
+    <ui:include src="domainEntityPropertySelectDialog.xhtml"/>
 
 </ui:composition>
 

@@ -21,14 +21,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.ejb.EJB;
-import javax.inject.Named;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
+import jakarta.ejb.EJB;
+import jakarta.inject.Named;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.convert.Converter;
+import jakarta.faces.convert.FacesConverter;
+import jakarta.faces.model.DataModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -270,7 +270,8 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
         @Override
         public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
             if (object == null) {
-                return null;
+                // "" (not null) so a "Select" option renders value="" instead of submitting its label.
+                return "";
             }
             if (object instanceof UserInfo) {
                 UserInfo o = (UserInfo) object;

@@ -8,9 +8,9 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.PreDestroy;
-import javax.inject.Named;
-import org.omnifaces.cdi.ViewScoped;
+import jakarta.annotation.PreDestroy;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 
 /**
  *

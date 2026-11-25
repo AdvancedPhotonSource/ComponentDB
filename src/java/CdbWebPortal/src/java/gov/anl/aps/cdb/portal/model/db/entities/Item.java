@@ -37,36 +37,36 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.ColumnResult;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.EntityResult;
-import javax.persistence.ManyToOne;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.NamedStoredProcedureQueries;
-import javax.persistence.NamedStoredProcedureQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.ParameterMode;
-import javax.persistence.SqlResultSetMapping;
-import javax.persistence.SqlResultSetMappings;
-import javax.persistence.StoredProcedureParameter;
-import javax.persistence.Table;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.ColumnResult;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.EntityResult;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.NamedStoredProcedureQueries;
+import jakarta.persistence.NamedStoredProcedureQuery;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.ParameterMode;
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.SqlResultSetMappings;
+import jakarta.persistence.StoredProcedureParameter;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlTransient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.model.TreeNode;
@@ -2074,7 +2074,8 @@ public class Item extends CdbDomainEntity implements Serializable {
             PropertyTypeMetadata ptMeta = getCorePropertyTypeMetadata(key);
             String value = getCoreMetadataPropertyFieldValue(key);
 
-            if (value == null) {
+            // Blank means unset; setCoreMetadataPropertyFieldValue stores null as "".
+            if (value == null || value.isEmpty()) {
                 continue;
             }
 

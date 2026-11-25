@@ -11,8 +11,8 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControllerUtility;
 import java.util.List;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 /**
  *

@@ -13,7 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.LogLevel;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.Date;
-import javax.ejb.EJB;
+import jakarta.ejb.EJB;
 
 /**
  *

@@ -43,7 +43,7 @@ fi
 # Constants
 MQTT_POOL_NAME="cdb/MQTT/pool"
 MQTT_RESOURCE_NAME="cdb/MQTT/resource"
-MQTT_RAR_NAME="mqtt-rar-0.8.0"
+MQTT_RAR_NAME="mqtt-rar-1.0.0"
 MQTT_CONNECTOR_RAR_DEPLOYMENT_NAME="cdb-mqtt-rar-deployment"
 MQTT_RAR_PATH=$CDB_ROOT_DIR/src/lib/${MQTT_RAR_NAME}.rar
 

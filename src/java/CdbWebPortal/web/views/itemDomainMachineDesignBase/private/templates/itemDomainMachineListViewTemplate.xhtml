@@ -5,10 +5,13 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ui="jakarta.faces.facelets"
                 template="../../../item/private/templates/itemListTemplate.xhtml"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:f="jakarta.faces.core"
                 xmlns:p="http://primefaces.org/ui">        
+
+    <!-- The list hosts upload dialogs (details panel gallery), so the form must be multipart. -->
+    <ui:param name="listFormEnctype" value="multipart/form-data" />
 
     <ui:define name="itemListPageEmphasizedContentBelowTitle">
         <p:outputPanel id="emphasizedContentBelowTitleOutputPanel">
@@ -22,17 +25,17 @@ See LICENSE file.
 
             <ui:insert name="additionalEmphasizedContentBelowTitle" />
 
-            <p:selectBooleanButton onLabel="Favorites Enabled" offLabel="Favorites Disabled"
-                                   onIcon="fa fa-star" offIcon="fa fa-star-o"
-                                   value="#{entityController.favoritesShown}"
-                                   onchange="onChangeFavoritesEnabled()"
-                                   rendered="#{!entityController.displayListConfigurationView 
-                                               and loginController.loggedIn
-                                               and entityController.currentViewIsStandard}">
-                <p:remoteCommand name="onChangeFavoritesEnabled"                         
+            <ui:fragment rendered="#{!entityController.displayListConfigurationView 
+                                     and loginController.loggedIn
+                                     and entityController.currentViewIsStandard}">
+                <p:remoteCommand name="onChangeFavoritesEnabled"
                                  action="#{entityController.list()}"
-                                 onstart="PF('loadingDialog').show()"/> 
-            </p:selectBooleanButton>
+                                 onstart="PF('loadingDialog').show()"/>
+                <p:selectBooleanButton onLabel="Favorites Enabled" offLabel="Favorites Disabled"
+                                       onIcon="fa fa-star" offIcon="fa fa-star-o"
+                                       value="#{entityController.favoritesShown}"
+                                       onchange="onChangeFavoritesEnabled()"/>
+            </ui:fragment>
 
             <p:panel widgetVar="machineDesignSearchBarPanelWidget" 
                      styleClass="noPaddingPanel"

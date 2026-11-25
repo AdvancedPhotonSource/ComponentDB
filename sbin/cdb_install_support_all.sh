@@ -36,7 +36,9 @@ execute() {
 
 echo "Creating new CDB support directory $CDB_SUPPORT_DIR."
 cd `dirname $CDB_SUPPORT_DIR`
-execute cp -R $CDB_ROOT_DIR/support $CDB_SUPPORT_DIR
+# Copy contents so re-runs refresh scripts instead of nesting a stale support/ copy.
+execute mkdir -p $CDB_SUPPORT_DIR
+execute cp -R $CDB_ROOT_DIR/support/. $CDB_SUPPORT_DIR
 
 cd $CDB_SUPPORT_DIR
 echo "Building support in $PWD"

@@ -8,8 +8,8 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
 
 /**
  *

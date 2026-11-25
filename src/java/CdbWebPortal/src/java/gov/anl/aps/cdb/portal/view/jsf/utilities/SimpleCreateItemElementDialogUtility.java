@@ -4,8 +4,8 @@
  */
 package gov.anl.aps.cdb.portal.view.jsf.utilities;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
 import org.primefaces.component.panel.Panel;
 
 /**

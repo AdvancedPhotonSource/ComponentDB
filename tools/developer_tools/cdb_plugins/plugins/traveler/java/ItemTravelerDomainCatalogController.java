@@ -7,8 +7,8 @@ package gov.anl.aps.cdb.portal.plugins.support.traveler;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import java.io.Serializable;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
 
 /**
  *

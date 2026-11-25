@@ -5,19 +5,21 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ui="jakarta.faces.facelets"
                 xmlns:p="http://primefaces.org/ui">
     
     <ui:param name="itemDerivedSettingObject" value="#{itemDerivedController.settingObject}" />
 
     <p:dataTable id="#{childEntityTypeName}EditListDataTable" 
+                 lazy="false"
                  widgetVar="#{childEntityTypeName}EditListDataTableWidget"
                  var="itemListObject" 
                  value="#{itemObject.derivedFromItemList}" 
                  rows="#{itemDerivedSettingObject.displayNumberOfItemsPerPage}"
                  sortMode="single"
                  stripedRows="true"
-                 paginator="true" 
+                 paginator="true"
+                 paginatorPosition="both" 
                  paginatorAlwaysVisible="false" 
                  editable="true"
                  emptyMessage="No #{entityController.itemsDerivedFromItemTitle} found."

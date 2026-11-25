@@ -5,9 +5,9 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:f="jakarta.faces.core"
                 xmlns:p="http://primefaces.org/ui">
 
     <f:metadata>
@@ -29,7 +29,7 @@ See LICENSE file.
                     <p:growl id="messages" showDetail="true">
                         <p:autoUpdate/>
                     </p:growl>
-                    <p:panelGrid columns="3" styleClass="editEntityDetails">
+                    <p:panelGrid layout="tabular" columns="3" styleClass="editEntityDetails">
                         <h:outputLabel for="searchString" value="Search String" styleClass="entityDataLabel"/>
                         <p:inputText id="searchString" value="#{searchController.searchString}" title="Search String" styleClass="entityDataText"/>
                         <p:message for="searchString"/> 
@@ -87,8 +87,7 @@ See LICENSE file.
                         <div class="sectionTitle">
                             <h2>Loading Search Results</h2>
                         </div>  
-                        <p/>
-                        <p:graphicImage library="images" name="ajax-loader.gif" />
+                        <i class="pi pi-spin pi-spinner loadingDialogSpinner" aria-hidden="true"></i>
                     </ui:fragment>
 
                     <ui:include src="private/searchCustomizeDialog.xhtml"/>

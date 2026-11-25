@@ -5,7 +5,7 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:ui="jakarta.faces.facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
 
     <ui:param name="dualConfigurationViewEnabled"
@@ -43,6 +43,16 @@ See LICENSE file.
                     update="@form:machineDesignDualViewContextMenuPermissions" />
             
             <p:ajax event="select"      
+                    disabled="#{!entityController.displayListViewItemDetailsView}"
+                    onstart="PF('loadingDialog').show(); showDetailsForNewSelection();"/>
+
+            <!--PF16 right-click selects silently and fires only contextMenu (PF11 also fired select).-->
+            <p:ajax event="contextMenu"
+                    disabled="#{entityController.displayListViewItemDetailsView}"
+                    oncomplete="showLastContextMenu()"
+                    update="@form:machineDesignDualViewContextMenuPermissions" />
+
+            <p:ajax event="contextMenu"
                     disabled="#{!entityController.displayListViewItemDetailsView}"
                     onstart="PF('loadingDialog').show(); showDetailsForNewSelection();"/>
 

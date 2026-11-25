@@ -5,18 +5,17 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ui="jakarta.faces.facelets"
                 xmlns:p="http://primefaces.org/ui">
     
     <p:column id="itemIdentifier2#{viewName}"
               rendered="#{entityController.entityDisplayItemIdentifier2}">
         <p:inputText id="itemIdentifier2IT#{viewName}"
                      value="#{itemObject.itemIdentifier2}"                      
-                     styleClass="entityDataEmphasizedText"
-                     onkeyup="updateItemIdentifier2#{viewName}()"/>
-        <p:remoteCommand name="updateItemIdentifier2#{viewName}"
-                         update="itemIdentifier2#{viewName}"/>
-        <p:message for="itemIdentifier2IT#{viewName}" />
+                     styleClass="entityDataEmphasizedText">
+            <p:ajax event="keyup" process="@this" update="itemIdentifier2Message#{viewName}"/>
+        </p:inputText>
+        <p:message id="itemIdentifier2Message#{viewName}" for="itemIdentifier2IT#{viewName}" />
     </p:column>
     
 </ui:composition>

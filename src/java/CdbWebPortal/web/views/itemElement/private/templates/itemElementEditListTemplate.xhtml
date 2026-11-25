@@ -5,11 +5,11 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ui="jakarta.faces.facelets"
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(entityController.selected.entityInfo)}"/>
-    <ui:include src="../../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{isEntityWriteable}">
+    <ui:include src="../../../common/private/commonChildEditListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="childEntityController" value="#{itemElementController}"/>
         <ui:param name="childEntityTypeName" value="#{itemElementController.entityTypeName}"/>
@@ -28,11 +28,11 @@ See LICENSE file.
                      />
 
     <ui:insert name="itemElementEditListDataTable">
-        <ui:include src="../itemElementEditListDataTable.xhtml" rendered="#{isEntityWriteable}"/>
+        <ui:include src="../itemElementEditListDataTable.xhtml"/>
     </ui:insert>
 
     <ui:insert name="itemElementEditListCustomizeDisplayDialog">
-        <ui:include src="../itemElementEditListCustomizeDisplayDialog.xhtml" rendered="#{isEntityWriteable}"/>
+        <ui:include src="../itemElementEditListCustomizeDisplayDialog.xhtml"/>
     </ui:insert>
 
     <ui:include src="../itemElementRearrangeListDialog.xhtml" />

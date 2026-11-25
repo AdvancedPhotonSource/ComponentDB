@@ -15,7 +15,8 @@ apt-get install wget gcc git make cmake build-essential libcurses-ocaml-dev curl
 
 ***Versions used in production***
 - mariadb: 10.5.22
-- Other dependencies are automatically downloaded and installed when running `make support` command.
+- Payara 7 (Jakarta EE 11) and Java 25 LTS (Eclipse Temurin) on Linux x86_64; macOS (Intel and Apple Silicon) is supported for development.
+- Other dependencies are automatically downloaded and installed when running `make support` command. Their versions are set in `support/bin/versions.sh` and can be overridden from the environment, e.g. `PAYARA_VERSION=... make support`.
 
 
 # Deployment
@@ -63,7 +64,7 @@ Managing Payara:
 # Navigate to the ComponentDB distribution directory. 
 
 # Viewing logs
-tail -f ../support-`hostname -a`/payara/linux-x86_64/glassfish/domains/production/logs/server.log
+tail -f ../support-`hostname -s`/payara/$CDB_HOST_ARCH/glassfish/domains/production/logs/server.log
 
 # Restart payara server
 ./etc/init.d/cdb-glassfish restart
@@ -90,7 +91,13 @@ Restart application to reset any caches for `item_project`.
 
 # Deployment Upgrade
 See [docs/update/README.md](docs/update/README.md) for the full procedure, including
-how to skip multiple releases at once. Summary, upgrading to 3.18.0:
+how to skip multiple releases at once.
+
+> **Upgrading from 3.19.x or earlier to 3.20.0 or later:** the platform moved to Payara 7 and Java 25.
+> Rebuild the support software first and reconfigure the new Payara domain; see
+> [Rebuilding Support Software](docs/update/README.md#rebuilding-support-software-rarely-needed).
+
+Summary, upgrading to 3.18.0:
 ```sh
 cd $CDB_INSTALL_DIR
 wget https://github.com/AdvancedPhotonSource/ComponentDB/archive/v3.18.0.tar.gz
@@ -159,6 +166,8 @@ netbeans &
 ```
 
 ## Preparing Netbeans
+`make support-netbeans` installs NetBeans 32 and configures it to run on the support JDK (Java 25), which the project needs to compile (`--release 25`). If you use another NetBeans install, start it with `--jdkhome $desired_dev_directory/support-`hostname -s`/java/$CDB_HOST_ARCH` or set `netbeans_jdkhome` in its `etc/netbeans.conf`. Don't select a separate Java Platform in the project properties; that would break `make` builds.
+
 Once netbeans is open a few steps need to be taken to prepare netbeans for CDB development.
 1. Open CDB Project: File > Open Project
 2. Navigate to $desired_dev_directory/ComponentDB/src/java
@@ -167,8 +176,9 @@ Once netbeans is open a few steps need to be taken to prepare netbeans for CDB d
 5. Click "Resolve Missing Server Problem"
 6. Add Server -> Payara Server
   - Installation Location: $desired_dev_directory/support-`hostname`/netbeans/payara
-  - Version: 5.2022.5
+  - Version: the Payara version in `support/bin/versions.sh` (currently 7.2026.11)
   - Use the wizard's download 
+  - Java Platform: the default (support JDK 25)
 7. Next -> Use Default Domain Location -> Finish add server instance wizard
 8. Select the Newly added "Payara Server"
 9. Copy over the required mysql client to new payara server. 
@@ -176,7 +186,28 @@ Once netbeans is open a few steps need to be taken to prepare netbeans for CDB d
 # cd into the $desired_dev_directory/$distribution_directory
 cp src/java/CdbWebPortal/lib/mariadb-java-client-3.1.0.jar ../support-`hostname`/netbeans/payara/glassfish/domains/domain1/lib/
 ```
-10. Run the project
+10. Increase the server heap. The NetBeans-installed domain defaults to `-Xmx512m`, which runs out of memory (`OutOfMemoryError: Java heap space`) under the parallel Selenium suite and after repeated redeploys. With the server running:
+```sh
+ASADMIN=../support-`hostname`/netbeans/payara/bin/asadmin
+$ASADMIN list-jvm-options | grep Xm          # remove every existing -Xmx/-Xms value shown
+$ASADMIN delete-jvm-options -- -Xmx512m
+$ASADMIN create-jvm-options -- -Xmx4g
+$ASADMIN create-jvm-options -- -Xms1g
+$ASADMIN list-jvm-options | grep Xm          # should show only -Xmx4g and -Xms1g
+$ASADMIN restart-domain
+```
+11. Run the project
+
+> Repeated NetBeans redeploys leak memory (old application class loaders are not fully released). Restart Payara before running the test suite or when the server slows down.
+
+> **Optional (macOS):** Payara's Hazelcast data grid defaults to port 5900, which is also used by macOS Screen Sharing (VNC). If startup hangs and `server.log` repeats `Unknown protocol: RFB`, move Hazelcast to another port. The `make support` domain already uses 6900; the NetBeans-installed copy needs this once. Stop the server first (a running server keeps the old value and can write it back), then use the domain path shown in NetBeans under Services → Servers → Payara → Properties:
+> ```sh
+> DOMAIN_XML=../support-`hostname`/netbeans/payara/glassfish/domains/domain1/config/domain.xml
+> # Sets or adds start-port; the element may have no attributes when Payara relies on the 5900 default.
+> sed -i '' -E 's#<hazelcast-runtime-configuration( start-port="[0-9]+")?#<hazelcast-runtime-configuration start-port="6900"#' $DOMAIN_XML   # GNU sed on Linux: sed -i -E ...
+> grep hazelcast-runtime-configuration $DOMAIN_XML                     # should show start-port="6900"
+> ```
+> If the server is running, `asadmin set-hazelcast-configuration --enabled=true --startport 6900` followed by a restart does the same.
 
 ## ~~Python Web Service Development~~
 The python web service is deprecated but is still a part of the distribution for legacy integrations. 
@@ -193,6 +224,8 @@ The python web service is deprecated but is still a part of the distribution for
 source setup.sh
 make test
 ```
+
+The Selenium suite runs several browsers in parallel against the portal; give Payara at least a 4 GB heap (see step 10 of Preparing Netbeans) and restart it after a long redeploy session. Failure logs, screenshots, and page source are written to `tools/developer_tools/portal_testing/PythonSeleniumTest/test-failures/` (see `tools/developer_tools/portal_testing/PythonSeleniumTest/README.md`).
 
 See the test setup in `tools/developer_tools/{python-client,portal_testing/PythonSeleniumTest}/README.md`.
 

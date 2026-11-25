@@ -5,10 +5,10 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ui="jakarta.faces.facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core">
 
     <ui:param name="viewName"
               value="ItemSourceAddDialog"/> 
@@ -16,7 +16,7 @@ See LICENSE file.
     <p:dialog id="#{entityTypeName}ItemSourceAddDialog"
               widgetVar="#{entityTypeName}ItemSourceAddDialogWidget" 
               header="Add Item Source Entry" 
-              styleClass="viewTransparentBackgroundDialog"
+              boxStyleClass="viewTransparentBackgroundDialog"
               closable="false"
               resizable="false"
               modal="true">
@@ -25,7 +25,7 @@ See LICENSE file.
         
         <ui:param name="inputStyleClass" value="longCellInput" />
 
-        <p:panelGrid columns="2" rendered="#{itemSourceObject != null}"
+        <p:panelGrid layout="tabular" columns="2" rendered="#{itemSourceObject != null}"
                      id="#{entityTypeName}ItemSourceAddDialogPanelGrid"
                      styleClass="leftAlignedText">
             <h:outputText value="Name"/>
@@ -68,7 +68,7 @@ See LICENSE file.
                 <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceDescription.xhtml"/>
             </p:column>
         </p:panelGrid>
-        <f:facet name="footer" class="dialog">
+        <f:facet name="footer">
             <p:outputPanel rendered="#{itemSourceObject != null}">
                 <p:commandButton value="Save" alt="Save" 
                                  id="#{entityTypeName}SaveItemSourceButton"                                 

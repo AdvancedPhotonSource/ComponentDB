@@ -7,7 +7,8 @@ See LICENSE file.
 
 import time
 
-from selenium.webdriver.support.wait import WebDriverWait
+# Timeouts include page diagnostics (URL, messages, console errors) and save a screenshot.
+from cdbSeleniumModules.diagnosticWait import DiagnosticWebDriverWait as WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
@@ -124,6 +125,17 @@ class Catalog(ItemBase):
 		self._clear_notifications()
 
 		self._add_property_to_item(test, self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, prop_value_text)
+
+	def add_document_property_to_catalog_item(self, sample_file_name='test.csv'):
+		self._clear_notifications()
+		self._add_document_property_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, sample_file_name)
+
+	def add_markdown_property_to_catalog_item(self, title='Selenium Markdown', markdown_text='# Selenium markdown test'):
+		self._clear_notifications()
+		self._add_markdown_property_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, title, markdown_text)
+
+	def export_catalog_list_to_xls(self, test):
+		self._export_list_to_xls(test, self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME)
 
 	def update_first_catalog_property(self, new_value):
 		self._clear_notifications()

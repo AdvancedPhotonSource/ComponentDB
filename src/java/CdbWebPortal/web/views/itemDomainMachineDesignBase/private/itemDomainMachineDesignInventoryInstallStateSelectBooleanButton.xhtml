@@ -5,15 +5,12 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:ui="jakarta.faces.facelets"                                
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">    
+                xmlns:h="jakarta.faces.html">    
 
-    <p:selectBooleanButton id="currentElementIsInstalledFlagButton#{viewId}" 
-                           value="#{currentMd.inventoryIsInstalled}" 
-                           offLabel="Planned"
-                           onLabel="Installed"> 
-        <p:tooltip for="currentElementIsInstalledFlagButton" >
+    <ui:fragment>
+        <p:tooltip for="currentElementIsInstalledFlagButton#{viewId}" >
             Indicates if the item is "installed" or "planned" for this machine node.
 
             <br/>
@@ -22,6 +19,10 @@ See LICENSE file.
             <br/><b>Planned</b>
             <br/>Item stays in its location but is marked to be installed on machine node in the future.
         </p:tooltip>
-    </p:selectBooleanButton>
+        <p:selectBooleanButton id="currentElementIsInstalledFlagButton#{viewId}" 
+                               value="#{currentMd.inventoryIsInstalled}" 
+                               offLabel="Planned"
+                               onLabel="Installed"/>
+    </ui:fragment>
 
 </ui:composition>
