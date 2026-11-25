@@ -16,9 +16,10 @@ See LICENSE file.
               showHeader="false" 
               boxStyleClass="viewTransparentBackgroundDialog"
               resizable="false">
-        <h:outputText value="Loading Results... Please Wait..." />
-        <p/>
-        <p:graphicImage library="images" name="ajax-loader.gif" />
+        <div class="loadingDialogContent">
+            <i class="pi pi-spin pi-spinner loadingDialogSpinner" aria-hidden="true"></i>
+            <h:outputText value="Loading…" />
+        </div>
     </p:dialog>
 
 </ui:composition>
