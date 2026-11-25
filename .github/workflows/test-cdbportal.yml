@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'src/java/CdbWebPortal/src/java/**'
+      - 'src/java/CdbWebPortal/lib/**'
       - 'tools/developer_tools/code_testing/CdbWebPortalTest/**'
       - '.github/workflows/test-cdbportal.yml'
   workflow_dispatch:
