@@ -399,22 +399,54 @@ class CdbSeleniumModuleBase:
 			dialog_xpath + '//button[.//span[text()="Done"]]'))
 		self._wait_for_invisible_by_xpath(dialog_xpath)
 
-	def _add_property_to_item(self, test, form_name, entity_name, prop_value_text, needs_toggler=True):
+	def _add_document_property_to_item(self, form_name, entity_name, sample_file_name='test.csv',
+									   property_type_name='Document (Upload)', needs_toggler=True):
+		"""Add a document property and upload its file; the upload dialog saves the item."""
+		if needs_toggler:
+			self._expand_panel(form_name, '%sViewPropertiesPanel' % entity_name)
+
+		self._wait_for_id_and_click('%s:%sPropertyAddButton' % (form_name, entity_name))
+		self._select_property_type(form_name, entity_name, property_type_name)
+
+		self._click_using_javascript(self._wait_for_visible_xpath(
+			'//button[.//span[normalize-space()="Upload Document"]]'))
+		dialog_xpath = '//*[@id="%s:propertyValueDocumentUploadDialog"]' % form_name
+		self._wait_for_visible_xpath(dialog_xpath)
+		self._find_by_xpath(dialog_xpath + '//input[@type="file"]').send_keys(os.path.abspath('data/' + sample_file_name))
+		self._click_using_javascript(self._wait_for_visible_xpath(
+			dialog_xpath + '//button[contains(@class, "ui-fileupload-upload")]'))
+		# Upload completion runs a remote command that stores the file, saves the item and re-renders the form.
+		self._wait_for_ui_idle()
+		table_id = '%s:%sPropertyListDataTable' % (form_name, entity_name)
+		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(
+			lambda driver: property_type_name in driver.find_element(By.ID, table_id).text)
+
+	def _select_property_type(self, form_name, entity_name, property_type_name):
+		"""Pick a type in the single property select dialog (first category) and confirm with Done."""
+		self._wait_for_visible_xpath("//*[@id='%s:filterViewItemCategorySelection']//li[1]" % form_name).click()
+		if property_type_name is None:
+			type_cell_xpath = "//tbody[@id='%s:%sPropertySelectDataTable_data']/tr[1]/td[4]" % (form_name, entity_name)
+		else:
+			type_cell_xpath = "//tbody[@id='%s:%sPropertySelectDataTable_data']//td[normalize-space()='%s']" % (
+				form_name, entity_name, property_type_name)
+		self._wait_for_xpath(type_cell_xpath)
+		self._click_on_x_path_with_stale_protection(type_cell_xpath)
+		self._click_on_id('%s:%sSinglePropertySelectDialogDoneButton' % (form_name, entity_name))
+
+	def _export_list_to_xls(self, test, list_form_name, entity_type_name):
+		"""List toolbar xls export (p:dataExporter); broke once on a POI mismatch."""
+		self._wait_for_id_and_click('%s:%sExportXlsButton' % (list_form_name, entity_type_name))
+		test.verify_file_downloaded('%sList.xls' % entity_type_name)
+
+	def _add_property_to_item(self, test, form_name, entity_name, prop_value_text, needs_toggler=True,
+							  property_type_name='Test Property'):
 		if needs_toggler:
 			self._expand_panel(form_name, '%sViewPropertiesPanel' % entity_name)
 
 		add_btn_id = '%s:%sPropertyAddButton' % (form_name, entity_name)
 		self._wait_for_id_and_click(add_btn_id)
-		categorySelectionXpath = "//*[@id='%s:filterViewItemCategorySelection']//li[1]" % form_name
-		categorySel = self._wait_for_visible_xpath(categorySelectionXpath)
-		categorySel.click()
-
-		property_type_selection_xpath = "//tbody[@id='%s:%sPropertySelectDataTable_data']/tr[1]/td[4]" % (form_name, entity_name)
-		self._wait_for_xpath(property_type_selection_xpath)
-		self._click_on_x_path_with_stale_protection(property_type_selection_xpath)
-		
-		done_btn_id = '%s:%sSinglePropertySelectDialogDoneButton' % (form_name, entity_name)
-		self._click_on_id(done_btn_id)
+		# By name: catalog also allows "Document (Upload)" in the same category, so row order isn't reliable.
+		self._select_property_type(form_name, entity_name, property_type_name)
 
 		property_value_input_id = "%s:freeFormTextValue" % form_name
 		self._wait_for_id(property_value_input_id)

@@ -1,6 +1,7 @@
 LOCK TABLES `allowed_property_domain` WRITE;
 /*!40000 ALTER TABLE `allowed_property_domain` DISABLE KEYS */;
 INSERT INTO `allowed_property_domain` VALUES
+(2,2),
 (9,7),
 (10,8),
 (11,8),

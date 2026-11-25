@@ -126,6 +126,13 @@ class Catalog(ItemBase):
 
 		self._add_property_to_item(test, self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, prop_value_text)
 
+	def add_document_property_to_catalog_item(self, sample_file_name='test.csv'):
+		self._clear_notifications()
+		self._add_document_property_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, sample_file_name)
+
+	def export_catalog_list_to_xls(self, test):
+		self._export_list_to_xls(test, self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME)
+
 	def update_first_catalog_property(self, new_value):
 		self._clear_notifications()
 		self._edit_property_value_on_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, new_value)
