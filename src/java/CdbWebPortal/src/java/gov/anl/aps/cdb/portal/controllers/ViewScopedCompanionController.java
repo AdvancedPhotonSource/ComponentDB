@@ -9,8 +9,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import jakarta.annotation.PreDestroy;
+import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
-import org.omnifaces.cdi.ViewScoped;
 
 /**
  *
