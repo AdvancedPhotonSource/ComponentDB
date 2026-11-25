@@ -20,8 +20,7 @@ See LICENSE file.
                         <p:column>
                             <p:commandButton id="#{rootViewId}FileDownloadButton"
                                              value="Download" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="fa fa-file-excel-o">
-                                <p:fileDownload id="#{rootViewId}FileDownload"
-                                                value="#{wizardController.downloadFile}" />
+                                <p:fileDownload value="#{wizardController.downloadFile}" />
                             </p:commandButton>      
                         </p:column>
                     </p:row>

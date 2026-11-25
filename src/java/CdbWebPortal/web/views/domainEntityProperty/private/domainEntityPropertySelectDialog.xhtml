@@ -36,7 +36,7 @@ See LICENSE file.
                           value="#{propertySelectDialogPropertySelectionMadeCommandName}" />
             </ui:include>
 
-            <f:facet name="footer" class="dialog">
+            <f:facet name="footer">
 
                 <p:remoteCommand name="#{entityTypeName}PropertySelectionMade"
                                  action="#{entityController.selectPropertyTypes(propertyTypeController.getSelectedObjectListAndResetSelectDataModel())}"

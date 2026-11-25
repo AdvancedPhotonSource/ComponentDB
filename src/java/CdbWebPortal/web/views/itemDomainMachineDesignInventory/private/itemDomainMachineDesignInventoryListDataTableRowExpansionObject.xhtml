@@ -33,7 +33,7 @@ See LICENSE file.
             </ui:define>
 
             <ui:define name="nameColumnObject">
-                <f:attribute name="exportValue" value="#{itemListObject.name}" rendered="#{!isTemplate}"/>
+                <f:attribute name="exportValue" value="#{itemListObject.name}"/>
                 <h:outputLink value="../item/view.xhtml?id=#{itemListObject.id}" title="View #{entityTypeName} details"
                               rendered="#{!isTemplate}"> 
                     <h:outputText value="#{itemListObject.name}" />
