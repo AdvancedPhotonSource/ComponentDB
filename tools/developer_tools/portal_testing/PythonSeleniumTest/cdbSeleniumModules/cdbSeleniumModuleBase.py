@@ -421,6 +421,37 @@ class CdbSeleniumModuleBase:
 		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(
 			lambda driver: property_type_name in driver.find_element(By.ID, table_id).text)
 
+	def _add_markdown_property_to_item(self, form_name, entity_name, title, markdown_text, sample_file_name='AnlLogo.png',
+									   property_type_name='Markdown Document', needs_toggler=True):
+		"""Add a markdown property: title, content, one uploaded file reference, then Save (saves the item)."""
+		if needs_toggler:
+			self._expand_panel(form_name, '%sViewPropertiesPanel' % entity_name)
+
+		self._wait_for_id_and_click('%s:%sPropertyAddButton' % (form_name, entity_name))
+		self._select_property_type(form_name, entity_name, property_type_name)
+
+		title_input = self._wait_for_visible_id('%s:mdTitle' % form_name)
+		title_input.send_keys(title)
+		self._wait_for_id_and_click('%s:addMdContentButton' % form_name)
+
+		dialog_xpath = '//*[@id="%s:propertyValueMarkdownValueDialog"]' % form_name
+		self._wait_for_visible_xpath(dialog_xpath)
+		textarea_id = '%s:propertyValueMarkdownValueDialogEditTabView:markdownPropertyTextareaEdit' % form_name
+		textarea = self._wait_for_visible_id(textarea_id)
+		textarea.send_keys(markdown_text)
+
+		# Simple auto upload; on completion portal.js appends the file's markdown reference to the textarea.
+		self._find_by_xpath(dialog_xpath + '//input[@type="file"]').send_keys(os.path.abspath('data/' + sample_file_name))
+		self._wait_for_ui_idle()
+		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(
+			lambda driver: len(driver.find_element(By.ID, textarea_id).get_attribute('value').strip()) > len(markdown_text.strip()))
+
+		self._click_using_javascript(self._wait_for_visible_xpath(dialog_xpath + '//button[.//span[normalize-space()="Save"]]'))
+		self._wait_for_ui_idle()
+		table_id = '%s:%sPropertyListDataTable' % (form_name, entity_name)
+		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(
+			lambda driver: title in driver.find_element(By.ID, table_id).text)
+
 	def _select_property_type(self, form_name, entity_name, property_type_name):
 		"""Pick a type in the single property select dialog (first category) and confirm with Done."""
 		self._wait_for_visible_xpath("//*[@id='%s:filterViewItemCategorySelection']//li[1]" % form_name).click()

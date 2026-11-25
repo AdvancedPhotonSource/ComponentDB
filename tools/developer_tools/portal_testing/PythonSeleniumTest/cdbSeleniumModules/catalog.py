@@ -130,6 +130,10 @@ class Catalog(ItemBase):
 		self._clear_notifications()
 		self._add_document_property_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, sample_file_name)
 
+	def add_markdown_property_to_catalog_item(self, title='Selenium Markdown', markdown_text='# Selenium markdown test'):
+		self._clear_notifications()
+		self._add_markdown_property_to_item(self.VIEW_FORM_NAME, self.ENTITY_TYPE_NAME, title, markdown_text)
+
 	def export_catalog_list_to_xls(self, test):
 		self._export_list_to_xls(test, self.LIST_FORM_NAME, self.ENTITY_TYPE_NAME)
 

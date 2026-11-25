@@ -13,6 +13,7 @@ INSERT INTO `allowed_property_domain` VALUES
 (13,6),
 (13,7),
 (13,8),
-(13,9);
+(13,9),
+(16,2);
 /*!40000 ALTER TABLE `allowed_property_domain` ENABLE KEYS */;
 UNLOCK TABLES;

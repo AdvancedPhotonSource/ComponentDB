@@ -24,6 +24,7 @@ class CatalogTest(CdbPortalTestCase):
         self.catalog.add_log_to_catalog_item()
         self.catalog.add_property_to_catalog_item(self)
         self.catalog.add_document_property_to_catalog_item()
+        self.catalog.add_markdown_property_to_catalog_item()
         self.catalog.add_image_to_catalog_item()
 
         self.catalog.delete_current_item()
