@@ -10,7 +10,9 @@ import time
 import unittest
 
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 
+from cdbSeleniumModules import diagnosticWait
 from cdbSeleniumModules.portal import Portal
 
 
@@ -44,6 +46,26 @@ class CdbPortalTestCase(unittest.TestCase):
 
         self.portal = Portal(self.driver)
         self.portal.login()
+
+    def _callTestMethod(self, method):
+        # Save screenshot/page source while the browser is still open (tearDown quits it).
+        try:
+            super()._callTestMethod(method)
+        except unittest.SkipTest:
+            raise
+        except Exception as ex:
+            self.save_failure_artifacts(ex)
+            raise
+
+    def save_failure_artifacts(self, ex):
+        # DiagnosticWebDriverWait timeouts already saved theirs.
+        if isinstance(ex, TimeoutException) and 'Artifacts:' in str(ex):
+            return
+        artifacts = diagnosticWait.save_failure_artifacts(self.driver, 'exception-%s' % type(ex).__name__)
+        # Printed output lands in the test's failure log (captured stdout section).
+        print('Failure artifacts: %s' % artifacts)
+        for line in diagnosticWait.collect_page_diagnostics(self.driver):
+            print(line)
 
     def tearDown(self):
         self.driver.quit()
