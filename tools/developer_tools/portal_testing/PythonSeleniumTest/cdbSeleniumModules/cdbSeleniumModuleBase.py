@@ -274,7 +274,13 @@ class CdbSeleniumModuleBase:
 		self._click_on_id_with_stale_protection(next_step_id)
 
 		time.sleep(1)
-		
+
+		# A failed import still enables Finish and returns to the list, so check the result text.
+		result_panel = self._wait_for_visible_id('%s:importWizardResultsPanel' % form_name)
+		result_text = result_panel.text.strip()
+		if not result_text.startswith('Operation succeeded'):
+			raise AssertionError('Import did not succeed: %s' % result_text)
+
 		finish_id = '%s:importWizardFinishButton' % form_name
 		self._wait_for_clickable_id_with_stale_protection(finish_id)
 		self._click_on_id_with_stale_protection(finish_id)

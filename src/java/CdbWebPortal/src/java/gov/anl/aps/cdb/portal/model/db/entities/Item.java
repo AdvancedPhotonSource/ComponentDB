@@ -2074,7 +2074,8 @@ public class Item extends CdbDomainEntity implements Serializable {
             PropertyTypeMetadata ptMeta = getCorePropertyTypeMetadata(key);
             String value = getCoreMetadataPropertyFieldValue(key);
 
-            if (value == null) {
+            // Blank means unset; setCoreMetadataPropertyFieldValue stores null as "".
+            if (value == null || value.isEmpty()) {
                 continue;
             }
 
