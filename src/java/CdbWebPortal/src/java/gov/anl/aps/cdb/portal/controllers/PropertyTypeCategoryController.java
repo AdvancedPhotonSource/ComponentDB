@@ -104,7 +104,8 @@ public class PropertyTypeCategoryController extends CdbEntityController<Property
         @Override
         public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
             if (object == null) {
-                return null;
+                // "" (not null) so a "Select" option renders value="" instead of submitting its label.
+                return "";
             }
             if (object instanceof PropertyTypeCategory) {
                 PropertyTypeCategory o = (PropertyTypeCategory) object;
