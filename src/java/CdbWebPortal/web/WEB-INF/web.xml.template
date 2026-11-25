@@ -12,6 +12,11 @@ See LICENSE file.
         <param-name>jakarta.faces.FACELETS_BUFFER_SIZE</param-name>
         <param-value>65536</param-value>
     </context-param>
+    <!-- Write the flash cookie before rendering; large pages commit the response early and the cookie was dropped (JSF1095). -->
+    <context-param>
+        <param-name>com.sun.faces.forceAlwaysWriteFlashCookie</param-name>
+        <param-value>true</param-value>
+    </context-param>
     <!-- Needed for p:validateFile browser-side checks (file count/size/type) since PrimeFaces 14. -->
     <context-param>
         <param-name>primefaces.CLIENT_SIDE_VALIDATION</param-name>
