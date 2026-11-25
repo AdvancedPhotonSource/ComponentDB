@@ -10,6 +10,9 @@ See LICENSE file.
                 xmlns:f="jakarta.faces.core"
                 xmlns:p="http://primefaces.org/ui">        
 
+    <!-- The list hosts upload dialogs (details panel gallery), so the form must be multipart. -->
+    <ui:param name="listFormEnctype" value="multipart/form-data" />
+
     <ui:define name="itemListPageEmphasizedContentBelowTitle">
         <p:outputPanel id="emphasizedContentBelowTitleOutputPanel">
             <p:commandButton id="itemDomainMachineDesignKeyboardShortcutButton"

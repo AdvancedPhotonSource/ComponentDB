@@ -27,7 +27,9 @@ See LICENSE file.
     <ui:define name="pageTitle">: #{entityController.itemListPageTitle}</ui:define>
 
     <ui:define name="middleCenter">
-        <h:form id="#{entityTypeName}ListForm" rendered="#{pageRendered}">  
+        <h:form id="#{entityTypeName}ListForm"
+                enctype="#{listFormEnctype != null ? listFormEnctype : 'application/x-www-form-urlencoded'}"
+                rendered="#{pageRendered}">  
             <p:outputPanel>
                 <div class="pageTitle">
                     <h1>

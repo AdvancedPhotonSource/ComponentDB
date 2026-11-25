@@ -27,7 +27,9 @@ See LICENSE file.
     <ui:define name="pageTitle">: View #{entityController.displayEntityTypeName} #{entityController.currentItemDisplayTitle}</ui:define> 
 
     <ui:define name="middleCenter">
-        <h:form id="#{entityTypeName}ViewForm" rendered="#{pageRendered}">
+        <h:form id="#{entityTypeName}ViewForm"
+                enctype="multipart/form-data"
+                rendered="#{pageRendered}">
             <ui:param name="formName" 
                       value="#{entityTypeName}ViewForm" /> 
             <div class="domainEntityLeftContent middleCenterLeftContent">
