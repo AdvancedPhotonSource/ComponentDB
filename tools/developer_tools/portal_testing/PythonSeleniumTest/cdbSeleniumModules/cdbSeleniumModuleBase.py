@@ -77,10 +77,12 @@ class CdbSeleniumModuleBase:
 		self.driver.execute_script('arguments[0].click()', element)
 
 	def _click_on_xpath(self, id):
+		self._wait_for_ui_idle()
 		element = self._find_by_xpath(id)
 		element.click()
 
 	def _click_on_id(self, id):
+		self._wait_for_ui_idle()
 		element = self._find_by_id(id)
 		element.click()
 
@@ -97,6 +99,7 @@ class CdbSeleniumModuleBase:
 	def _wait_for_id_and_click(self, id):
 		for attempt in range(self.CLICK_RETRY_COUNT):
 			try:
+				self._wait_for_ui_idle()
 				element = self._wait_for_clickable_id(id)
 				element.click()
 				return
@@ -111,6 +114,11 @@ class CdbSeleniumModuleBase:
 
 	def _wait_for_invisible_loading_dialog(self, timeout=VISIBLE_ID_TIMEOUT):
 		self._wait_for_invisible_by_id(self.LOADING_DIALOG_ID, timeout)
+
+	def _wait_for_ui_idle(self):
+		# PF16's modal loadingDialog root covers the viewport, so clicks during a request are intercepted.
+		self._wait_for_ajax_idle()
+		self._wait_for_invisible_loading_dialog()
 
 	def _wait_for_visible_xpath(self, xpath):
 		return self._wait_for_visible(By.XPATH, xpath)
@@ -407,10 +415,10 @@ class CdbSeleniumModuleBase:
 		save_btn_id = "%s:%sSinglePropertyEditSaveButton" % (form_name, entity_name)
 		self._click_on_id(save_btn_id)	
 
-		time.sleep(1)
+		self._wait_for_ui_idle()
 
 		expected_value_box_id = "%s:%sPropertyListDataTable:0:propertyValueListObjectValueFreeFormOutputText" % (form_name, entity_name) 
-		value_element = self._find_by_id(expected_value_box_id)
+		value_element = self._wait_for_id(expected_value_box_id)
 
 		test.assertEqual(value_element.text, prop_value_text, msg='%s found but expected %s for new property value.' % (value_element.text,prop_value_text ))
 
