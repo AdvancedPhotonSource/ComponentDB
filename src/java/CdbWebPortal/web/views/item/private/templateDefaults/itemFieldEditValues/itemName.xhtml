@@ -15,7 +15,7 @@ See LICENSE file.
                      styleClass="entityDataEmphasizedText"
                      required="true"
                      requiredMessage="#{entityController.nameTitle} is required">
-            <p:ajax event="keyup" delay="300" process="@this" update="nameMessage#{viewName}"/>
+            <p:ajax event="keyup" process="@this" update="nameMessage#{viewName}"/>
         </p:inputText>
         <p:message id="nameMessage#{viewName}" for="nameInputText#{viewName}" />
     </p:column>

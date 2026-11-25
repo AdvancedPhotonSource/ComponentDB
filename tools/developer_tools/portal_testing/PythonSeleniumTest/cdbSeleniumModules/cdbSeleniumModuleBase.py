@@ -425,9 +425,17 @@ class CdbSeleniumModuleBase:
 		self._wait_for_ui_idle()
 
 		expected_value_box_id = "%s:%sPropertyListDataTable:0:propertyValueListObjectValueFreeFormOutputText" % (form_name, entity_name) 
-		value_element = self._wait_for_id(expected_value_box_id)
+		# The property list can re-render after the save, so re-find the cell if it goes stale.
+		for attempt in range(self.CLICK_RETRY_COUNT):
+			try:
+				value_text = self._wait_for_id(expected_value_box_id).text
+				break
+			except StaleElementReferenceException:
+				if attempt == self.CLICK_RETRY_COUNT - 1:
+					raise
+				time.sleep(self.CLICK_RETRY_DELAY)
 
-		test.assertEqual(value_element.text, prop_value_text, msg='%s found but expected %s for new property value.' % (value_element.text,prop_value_text ))
+		test.assertEqual(value_text, prop_value_text, msg='%s found but expected %s for new property value.' % (value_text, prop_value_text))
 
 	def _open_property_edit_dialog(self, form_name, entity_name, row_index, needs_toggler):
 		if needs_toggler:

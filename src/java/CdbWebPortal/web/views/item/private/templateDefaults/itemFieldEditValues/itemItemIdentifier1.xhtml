@@ -13,7 +13,7 @@ See LICENSE file.
         <p:inputText id="itemIdentifier1IT#{viewName}"
                      value="#{itemObject.itemIdentifier1}"                      
                      styleClass="entityDataEmphasizedText">
-            <p:ajax event="keyup" delay="300" process="@this" update="itemIdentifier1Message#{viewName}"/>
+            <p:ajax event="keyup" process="@this" update="itemIdentifier1Message#{viewName}"/>
         </p:inputText>
         <p:message id="itemIdentifier1Message#{viewName}" for="itemIdentifier1IT#{viewName}" />
     </p:column>
