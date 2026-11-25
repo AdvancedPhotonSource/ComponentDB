@@ -358,7 +358,7 @@ public abstract class ItemController<
             return itemProjectController.getCurrentItemProject();
         }
 
-        LOGGER.warn("Item project controller was not set properly.");
+        LOGGER.debug("Item project controller was not set properly.");
         return null;
     }
 
