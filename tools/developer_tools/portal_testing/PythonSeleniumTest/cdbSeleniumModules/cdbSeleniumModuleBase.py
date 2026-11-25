@@ -25,6 +25,8 @@ class CdbSeleniumModuleBase:
 
 	WAIT_FOR_ELEMENT_TIMEOUT = 10
 	VISIBLE_ID_TIMEOUT = 10
+	# Longer than element waits: some pages queue one request per keystroke (e.g. MD create name field).
+	AJAX_IDLE_TIMEOUT = 30
 	CLICK_RETRY_COUNT = 5
 	CLICK_RETRY_DELAY = 0.1
 	LOADING_DIALOG_ID = 'loadingDialog'
@@ -184,7 +186,7 @@ class CdbSeleniumModuleBase:
 			return driver.execute_script(
 				'return !window.PrimeFaces || !PrimeFaces.ajax || PrimeFaces.ajax.Queue.isEmpty();')
 
-		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(primefaces_ajax_queue_empty)
+		WebDriverWait(self.driver, CdbSeleniumModuleBase.AJAX_IDLE_TIMEOUT).until(primefaces_ajax_queue_empty)
 
 	@add_stale_protection
 	def _wait_for_clickable_id_with_stale_protection(self,id):
