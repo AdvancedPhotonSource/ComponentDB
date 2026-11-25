@@ -158,6 +158,7 @@ class CdbSeleniumModuleBase:
 
 	def _wait_until_enabled_by_xpath(self, xpath):
 		# Raise (with diagnostics) on timeout; returning None surfaced later as an opaque null.click().
+		# No visibility check: submenu items stay hidden and are clicked via JavaScript.
 		def xpath_enabled(driver):
 			try:
 				for element in driver.find_elements(By.XPATH, xpath):
@@ -168,6 +169,14 @@ class CdbSeleniumModuleBase:
 			return False
 
 		return WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(xpath_enabled)
+
+	def _wait_for_ajax_idle(self):
+		# Clicking while an update is in flight acts on DOM that the response is about to replace.
+		def primefaces_ajax_queue_empty(driver):
+			return driver.execute_script(
+				'return !window.PrimeFaces || !PrimeFaces.ajax || PrimeFaces.ajax.Queue.isEmpty();')
+
+		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(primefaces_ajax_queue_empty)
 
 	@add_stale_protection
 	def _wait_for_clickable_id_with_stale_protection(self,id):

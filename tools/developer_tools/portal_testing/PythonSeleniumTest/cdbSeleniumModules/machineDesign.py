@@ -147,6 +147,8 @@ class MachineDesign(CdbSeleniumModuleBase):
 		:param hierarchy: list ['topParentName', 'SubParentName', 'ActualItem']
 		:return: xpath to the desired item
 		"""
+		# The tree body is replaced while an add/select update is in flight.
+		self._wait_for_ajax_idle()
 
 		if not reset:
 			# collapse the tree nodes
@@ -241,7 +243,8 @@ class MachineDesign(CdbSeleniumModuleBase):
 		action.context_click()
 		action.perform()
 
-		time.sleep(0.5)
+		# Right-click fires a contextMenu ajax that re-renders the menus; wait so we don't click the stale copy.
+		self._wait_for_ajax_idle()
 
 		addButtonXpath = menuItemXpath
 
@@ -261,11 +264,14 @@ class MachineDesign(CdbSeleniumModuleBase):
 
 		self._context_click_x_path(parentListItemXpath, add_menu_xpath)
 
-		addPlaceholderElement = self._find_by_xpath(menu_placeholder_xpath)
+		# PF16 tiered menus open submenus on hover; hover Add in case the JS click didn't expand it.
+		if not self._find_by_xpath(menu_placeholder_xpath).is_displayed():
+			ActionChains(self.driver).move_to_element(self._find_by_xpath(add_menu_xpath)).perform()
+
+		addPlaceholderElement = self._wait_for_visible_xpath(menu_placeholder_xpath)
 
 		action = ActionChains(self.driver)
 		action.move_to_element(addPlaceholderElement)
-		# action.move_by_offset(0, 15)
 		action.click().perform()
 
 		placeholderName = self._wait_for_visible_id('itemMachineDesignListForm:newMachineDesignNameplaceholder')
