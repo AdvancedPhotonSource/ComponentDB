@@ -13,7 +13,7 @@ See LICENSE file.
 
     <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(entityController.current.entityInfo)}"/>
     
-    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{loginController.isEntityWriteable(entityController.current.entityInfo)}">
+    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="childEntityController" value="#{itemDerivedController}"/>
         <ui:param name="childEntityTypeName" value="#{childEntityTypeName}"/>
@@ -25,9 +25,9 @@ See LICENSE file.
         <ui:param name="displayAddButton" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
     </ui:include>  
 
-    <ui:include src="itemDerivedEditListDataTable.xhtml" rendered="#{isEntityWriteable}"/>
+    <ui:include src="itemDerivedEditListDataTable.xhtml"/>
 
-    <ui:include src="itemDerivedEditListCustomizeDisplayDialog.xhtml" rendered="#{isEntityWriteable}"/>
+    <ui:include src="itemDerivedEditListCustomizeDisplayDialog.xhtml"/>
 
 </ui:composition>
 

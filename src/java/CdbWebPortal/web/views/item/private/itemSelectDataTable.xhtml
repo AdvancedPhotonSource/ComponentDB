@@ -95,8 +95,7 @@ See LICENSE file.
                      process="#{updateTarget}"
                      immediate="#{immediateUpdate}"
                      oncomplete="PF('loadingDialog').hide();">
-        <f:setPropertyActionListener rendered="#{selectionTarget != null}"
-                                     value="#{_selectionValue}" 
+        <f:setPropertyActionListener value="#{_selectionValue}" 
                                      target="#{selectionTarget}" />
     </p:remoteCommand>
 
@@ -107,8 +106,7 @@ See LICENSE file.
                      process="#{updateTarget}"
                      immediate="#{immediateUpdate}"
                      oncomplete="PF('loadingDialog').hide();">
-        <f:setPropertyActionListener rendered="#{selectionTarget != null}"
-                                     value="#{selectionValueWithReset}" 
+        <f:setPropertyActionListener value="#{selectionValueWithReset}" 
                                      target="#{selectionTarget}" />
         
     </p:remoteCommand>

@@ -18,7 +18,7 @@ See LICENSE file.
 
     <ui:param name="childEntityTypeName" value="#{entityController.entityTypeName}#{itemDerivedController.entityTypeName}"/>
     
-    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{loginController.isEntityWriteable(entityController.selected.entityInfo)}">
+    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="childEntityController" value="#{itemDerivedController}"/>        
         <ui:param name="addActionOnComplete" value="prepareAddInventoryItem()"/>

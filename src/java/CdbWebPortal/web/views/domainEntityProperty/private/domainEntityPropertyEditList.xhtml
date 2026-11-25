@@ -13,7 +13,7 @@ See LICENSE file.
     <ui:param name="entityObject" value="#{entityController.selected}" />
 
     <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(entityController.selected.entityInfo)}"/>
-    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{isEntityWriteable}">
+    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="childEntityController" value="#{propertyValueController}"/>
         <ui:param name="childEntityTypeName" value="#{entityTypeName}Property"/>
@@ -25,11 +25,11 @@ See LICENSE file.
         <ui:param name="displayAddButton" value="#{isEntityWriteable}"/>
     </ui:include>
     
-    <ui:include src="domainEntityPropertyEditListDataTable.xhtml" rendered="#{isEntityWriteable}"/>
+    <ui:include src="domainEntityPropertyEditListDataTable.xhtml"/>
 
-    <ui:include src="domainEntityPropertyEditListCustomizeDisplayDialog.xhtml" rendered="#{isEntityWriteable}"/>
+    <ui:include src="domainEntityPropertyEditListCustomizeDisplayDialog.xhtml"/>
 
-    <ui:include src="domainEntityPropertySelectDialog.xhtml" rendered="#{isEntityWriteable}"/>
+    <ui:include src="domainEntityPropertySelectDialog.xhtml"/>
 
 </ui:composition>
 

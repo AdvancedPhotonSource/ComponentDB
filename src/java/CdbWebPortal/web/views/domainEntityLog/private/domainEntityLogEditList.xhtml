@@ -10,7 +10,7 @@ See LICENSE file.
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
     <ui:param name="entityObject" value="#{entityController.selected}" />
 
-    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{loginController.isEntityWriteable(entityObject.entityInfo)}">
+    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="childEntityController" value="#{logController}"/>
         <ui:param name="childEntityTypeName" value="#{entityTypeName}Log"/>
