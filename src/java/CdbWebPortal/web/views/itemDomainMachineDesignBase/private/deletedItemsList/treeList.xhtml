@@ -41,6 +41,11 @@ See LICENSE file.
                     oncomplete="showLastContextMenu()"
                     update="@form:machineDesignDualViewContextMenuPermissions" />
 
+            <!--PF16 right-click selects silently and fires only contextMenu (PF11 also fired select).-->
+            <p:ajax event="contextMenu"
+                    oncomplete="showLastContextMenu()"
+                    update="@form:machineDesignDualViewContextMenuPermissions" />
+
             <!--Saves the collapse status for tree nodes. Seems its a bug in primefaces that this is needed.-->
             <p:ajax event="collapse" /> 
 
